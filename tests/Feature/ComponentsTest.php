@@ -332,6 +332,98 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('aria-label="حذف banner.jpg"', $html);
     }
 
+    public function test_timeline_renders_an_ordered_list_with_state_attributes(): void
+    {
+        $html = $this->render('<mds:timeline horizontal size="lg" align="start"><mds:timeline.item /></mds:timeline>');
+
+        $this->assertStringContainsString('<ol', $html);
+        $this->assertStringContainsString('data-mds-timeline', $html);
+        $this->assertStringContainsString('data-mds-timeline-horizontal', $html);
+        $this->assertStringContainsString('data-mds-timeline-size="lg"', $html);
+        $this->assertStringContainsString('data-mds-timeline-align="start"', $html);
+    }
+
+    public function test_timeline_item_inherits_align_from_the_timeline(): void
+    {
+        $html = $this->render('<mds:timeline align="end"><mds:timeline.item /></mds:timeline>');
+
+        // The <li> carries the resolved alignment, not just the <ol>...
+        $this->assertMatchesRegularExpression('/<li\s[^>]*data-mds-timeline-align="end"/', $html);
+    }
+
+    public function test_timeline_item_align_overrides_the_timeline(): void
+    {
+        $html = $this->render('<mds:timeline align="end"><mds:timeline.item align="baseline" /></mds:timeline>');
+
+        $this->assertMatchesRegularExpression('/<li\s[^>]*data-mds-timeline-align="baseline"/', $html);
+    }
+
+    public function test_timeline_item_defaults_to_center_without_a_parent(): void
+    {
+        $html = $this->render('<mds:timeline.item />');
+
+        $this->assertStringContainsString('data-mds-timeline-align="center"', $html);
+    }
+
+    public function test_timeline_item_renders_status_and_connector_lines(): void
+    {
+        $html = $this->render('<mds:timeline><mds:timeline.item status="complete" size="lg" /></mds:timeline>');
+
+        $this->assertStringContainsString('data-mds-timeline-item', $html);
+        $this->assertStringContainsString('data-mds-timeline-status="complete"', $html);
+        $this->assertStringContainsString('data-mds-timeline-size="lg"', $html);
+        $this->assertStringContainsString('data-mds-timeline-line="leading"', $html);
+        $this->assertStringContainsString('data-mds-timeline-line="trailing"', $html);
+    }
+
+    public function test_timeline_indicator_applies_a_color(): void
+    {
+        $html = $this->render('<mds:timeline.indicator color="green">OK</mds:timeline.indicator>');
+
+        $this->assertStringContainsString('data-mds-timeline-indicator', $html);
+        $this->assertStringContainsString('bg-green-500', $html);
+        $this->assertStringContainsString('rounded-full', $html);
+    }
+
+    public function test_timeline_indicator_bare_variant_drops_its_shell(): void
+    {
+        $html = $this->render('<mds:timeline.indicator variant="bare" color="green" />');
+
+        $this->assertStringContainsString('data-mds-timeline-bare', $html);
+        $this->assertStringNotContainsString('rounded-full', $html);
+        $this->assertStringNotContainsString('bg-green-500', $html);
+    }
+
+    public function test_timeline_indicator_can_override_the_item_status(): void
+    {
+        $html = $this->render('<mds:timeline.indicator status="current" />');
+
+        $this->assertMatchesRegularExpression('/data-mds-timeline-status="current"[^>]*data-mds-timeline-indicator/', $html);
+    }
+
+    public function test_timeline_content_block_and_subgrid_render(): void
+    {
+        $html = $this->render(<<<'BLADE'
+            <mds:timeline>
+                <mds:timeline.item>
+                    <mds:timeline.indicator>۱</mds:timeline.indicator>
+                    <mds:timeline.content>سفارش ثبت شد</mds:timeline.content>
+                </mds:timeline.item>
+                <mds:timeline.item>
+                    <mds:timeline.block>
+                        <mds:timeline.subgrid>پاسخ پشتیبانی</mds:timeline.subgrid>
+                    </mds:timeline.block>
+                </mds:timeline.item>
+            </mds:timeline>
+            BLADE);
+
+        $this->assertStringContainsString('data-mds-timeline-content', $html);
+        $this->assertStringContainsString('سفارش ثبت شد', $html);
+        $this->assertStringContainsString('data-mds-timeline-block', $html);
+        $this->assertStringContainsString('data-mds-timeline-subgrid', $html);
+        $this->assertStringContainsString('پاسخ پشتیبانی', $html);
+    }
+
     public function test_x_mds_namespace_also_works(): void
     {
         $html = $this->render('<x-mds::rating :value="3" />');

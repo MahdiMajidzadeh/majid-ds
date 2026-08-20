@@ -66,3 +66,250 @@
     border: 1px solid rgb(0 0 0 / 0.2);
     box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
 }
+
+/*
+|--------------------------------------------------------------------------
+| Timeline (mds:timeline)
+|--------------------------------------------------------------------------
+|
+| A CSS grid rail. Vertically the tracks are [indicator][gap][content];
+| `horizontal` transposes them to rows. Each item is a subgrid of five
+| tracks — [baseline offset][flex][indicator][flex][item gap] — so the
+| connector lines can run through the gap and meet the next indicator.
+|
+| Every offset uses logical properties, so the rail sits on the right and
+| a horizontal timeline flows right-to-left on RTL pages.
+|
+| Knobs (set them on <mds:timeline> with an arbitrary class):
+|   --mds-timeline-item-gap        space between items (default 1rem)
+|   --mds-timeline-content-gap     indicator-to-content space (0.75rem)
+|   --mds-timeline-indicator-size  indicator diameter (2rem; lg = 3rem)
+|   --mds-timeline-baseline        first line-height, for align="baseline"
+|
+| These live in @layer components on purpose: cascade layers outrank
+| specificity, so unlayered rules would beat Tailwind's @layer utilities
+| and swallow classes like `bg-green-500` on an indicator.
+|
+*/
+
+@layer components {
+    [data-mds-timeline] {
+        --mds-timeline-indicator-size: 2rem;
+        --mds-timeline-item-gap: 1rem;
+        --mds-timeline-content-gap: 0.75rem;
+        --mds-timeline-baseline: 1.25rem;
+        --mds-timeline-line: var(--color-zinc-200);
+
+        display: grid;
+        grid-template-columns: auto var(--mds-timeline-content-gap) minmax(0, 1fr);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    :where(.dark) [data-mds-timeline] {
+        --mds-timeline-line: var(--color-zinc-700);
+    }
+
+    [data-mds-timeline][data-mds-timeline-size='lg'] {
+        --mds-timeline-content-gap: 1rem;
+    }
+
+    [data-mds-timeline][data-mds-timeline-size='lg'],
+    [data-mds-timeline-item][data-mds-timeline-size='lg'] {
+        --mds-timeline-indicator-size: 3rem;
+    }
+
+    /* Items — one subgrid row each; the last one drops the trailing gap... */
+    [data-mds-timeline-item] {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        grid-template-rows: 0 1fr auto 1fr var(--mds-timeline-item-gap);
+    }
+
+    [data-mds-timeline] > [data-mds-timeline-item]:last-child {
+        --mds-timeline-item-gap: 0px;
+    }
+
+    [data-mds-timeline-item][data-mds-timeline-align='start'] {
+        grid-template-rows: 0 0 auto 1fr var(--mds-timeline-item-gap);
+    }
+
+    [data-mds-timeline-item][data-mds-timeline-align='end'] {
+        grid-template-rows: 0 1fr auto 0 var(--mds-timeline-item-gap);
+    }
+
+    /* Nudge the indicator onto the middle of the first line of text... */
+    [data-mds-timeline-item][data-mds-timeline-align='baseline'] {
+        grid-template-rows:
+            max(0px, calc((var(--mds-timeline-baseline) - var(--mds-timeline-indicator-size)) / 2))
+            0 auto 1fr var(--mds-timeline-item-gap);
+    }
+
+    [data-mds-timeline-indicator] {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    [data-mds-timeline-content] {
+        grid-column: 3;
+        grid-row: 2 / 5;
+    }
+
+    [data-mds-timeline-line='leading'] {
+        grid-column: 1;
+        grid-row: 1 / 3;
+    }
+
+    [data-mds-timeline-line='trailing'] {
+        grid-column: 1;
+        grid-row: 4 / -1;
+    }
+
+    /* Connector lines — a hairline centered in the indicator track... */
+    [data-mds-timeline-line] {
+        display: grid;
+        place-items: stretch center;
+    }
+
+    [data-mds-timeline-line] > span {
+        width: 1px;
+        border-radius: 9999px;
+        background: var(--mds-timeline-line);
+    }
+
+    [data-mds-timeline] > [data-mds-timeline-item]:first-child > [data-mds-timeline-line='leading'],
+    [data-mds-timeline] > [data-mds-timeline-item]:last-child > [data-mds-timeline-line='trailing'] {
+        visibility: hidden;
+    }
+
+    /* A completed step fills the rail up to the next indicator... */
+    [data-mds-timeline-status='complete'] > [data-mds-timeline-line='trailing'] > span,
+    [data-mds-timeline-status='complete'] + [data-mds-timeline-item] > [data-mds-timeline-line='leading'] > span {
+        background: var(--color-accent);
+    }
+
+    /* Indicators — :where() keeps specificity at zero so utility classes win... */
+    :where([data-mds-timeline-indicator]:not([data-mds-timeline-bare])) {
+        inline-size: var(--mds-timeline-indicator-size);
+        block-size: var(--mds-timeline-indicator-size);
+        background: var(--color-zinc-100);
+        color: var(--color-zinc-500);
+    }
+
+    :where(.dark [data-mds-timeline-indicator]:not([data-mds-timeline-bare])) {
+        background: var(--color-zinc-700);
+        color: var(--color-zinc-300);
+    }
+
+    :where([data-mds-timeline-status='complete'] [data-mds-timeline-indicator]:not([data-mds-timeline-status], [data-mds-timeline-bare])),
+    :where([data-mds-timeline-indicator][data-mds-timeline-status='complete']:not([data-mds-timeline-bare])) {
+        background: var(--color-accent);
+        color: var(--color-accent-foreground);
+    }
+
+    :where([data-mds-timeline-status='current'] [data-mds-timeline-indicator]:not([data-mds-timeline-status], [data-mds-timeline-bare])),
+    :where([data-mds-timeline-indicator][data-mds-timeline-status='current']:not([data-mds-timeline-bare])) {
+        border: 2px solid var(--color-accent);
+        background: transparent;
+        color: var(--color-accent);
+    }
+
+    :where([data-mds-timeline-status='incomplete'] [data-mds-timeline-indicator]:not([data-mds-timeline-status], [data-mds-timeline-bare])),
+    :where([data-mds-timeline-indicator][data-mds-timeline-status='incomplete']:not([data-mds-timeline-bare])) {
+        border: 2px solid var(--color-zinc-200);
+        background: transparent;
+        color: var(--color-zinc-400);
+    }
+
+    :where(.dark [data-mds-timeline-status='incomplete'] [data-mds-timeline-indicator]:not([data-mds-timeline-status], [data-mds-timeline-bare])),
+    :where(.dark [data-mds-timeline-indicator][data-mds-timeline-status='incomplete']:not([data-mds-timeline-bare])) {
+        border-color: var(--color-zinc-700);
+    }
+
+    [data-mds-timeline-status='incomplete'] > [data-mds-timeline-content] {
+        opacity: 0.75;
+    }
+
+    /* Block items span every track; a nested subgrid re-aligns to them... */
+    [data-mds-timeline-block] {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        grid-row: 2 / 5;
+    }
+
+    [data-mds-timeline-block] > *:not([data-mds-timeline-subgrid]) {
+        grid-column: 1 / -1;
+    }
+
+    [data-mds-timeline-subgrid] {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        align-items: start;
+    }
+
+    [data-mds-timeline-subgrid] > :first-child {
+        grid-column: 1;
+        justify-self: center;
+    }
+
+    [data-mds-timeline-subgrid] > :nth-child(n + 2) {
+        grid-column: 3;
+    }
+
+    /* Horizontal — indicators run along a row, content sits underneath... */
+    [data-mds-timeline][data-mds-timeline-horizontal] {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-template-rows: auto var(--mds-timeline-content-gap) minmax(0, 1fr);
+    }
+
+    [data-mds-timeline-horizontal] > [data-mds-timeline-item] {
+        grid-template-columns: 0 1fr auto 1fr var(--mds-timeline-item-gap);
+        grid-template-rows: subgrid;
+        grid-column: auto;
+        grid-row: 1 / -1;
+    }
+
+    [data-mds-timeline-horizontal] > [data-mds-timeline-item][data-mds-timeline-align='start'],
+    [data-mds-timeline-horizontal] > [data-mds-timeline-item][data-mds-timeline-align='baseline'] {
+        grid-template-columns: 0 0 auto 1fr var(--mds-timeline-item-gap);
+    }
+
+    [data-mds-timeline-horizontal] > [data-mds-timeline-item][data-mds-timeline-align='end'] {
+        grid-template-columns: 0 1fr auto 0 var(--mds-timeline-item-gap);
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-indicator] {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-content] {
+        grid-column: 2 / 5;
+        grid-row: 3;
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-line='leading'] {
+        grid-column: 1 / 3;
+        grid-row: 1;
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-line='trailing'] {
+        grid-column: 4 / -1;
+        grid-row: 1;
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-line] {
+        place-items: center stretch;
+    }
+
+    [data-mds-timeline-horizontal] [data-mds-timeline-line] > span {
+        width: auto;
+        height: 1px;
+    }
+}
