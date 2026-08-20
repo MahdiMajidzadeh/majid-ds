@@ -272,7 +272,7 @@ Components can also be used with standard component syntax: `<x-mds::rating>` �
 
 ## Demo & development
 
-A full RTL demo page ships in the workbench:
+Two RTL demos ship in the workbench — a component showcase and a layout gallery:
 
 ```bash
 composer install
@@ -280,6 +280,25 @@ npm install
 npm run demo:css        # compile the demo stylesheet (Tailwind v4)
 npm run demo:serve      # then open http://127.0.0.1:8720/demo
 ```
+
+| Route | What it shows |
+|---|---|
+| `/demo` | Every free Flux component plus the whole `<mds:*>` set |
+| `/layouts` | Gallery of all page layouts, with a wireframe and snippet for each |
+| `/layouts/header` | Top navbar only — header, main and footer all contained |
+| `/layouts/sidebar` | Full-height sidebar (sidebar before header) |
+| `/layouts/sidebar-header` | Full-width header above the sidebar (header first) |
+| `/layouts/collapsible` | Sidebar that collapses to an icon rail on desktop |
+| `/layouts/mobile` | Sidebar fixed on desktop, off-canvas below `lg` |
+| `/layouts/aside` | Three columns: sidebar, main and a sticky `flux:aside` |
+| `/layouts/sticky` | Sticky header, sidebar and aside with a long scrolling main |
+| `/layouts/container` | `container` prop and `flux:container` width control |
+
+Every layout page carries a floating switcher, so you can jump between them (and
+toggle dark mode) without going back to the gallery. Layout arrangement is decided
+by the order of the children: a `<flux:sidebar>` placed before `<flux:header>`
+claims the full height, a `<flux:header>` placed first spans the full width — in
+RTL the sidebar lands on the right with no extra classes.
 
 Run the test suite:
 

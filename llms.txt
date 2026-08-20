@@ -139,6 +139,31 @@ RTL note: canvas/sliders stay physically LTR (universal convention); field chrom
 - `.mds-checker` — checkerboard backdrop for transparent colors.
 - `.mds-range` — gradient range-slider styling (color-picker hue/alpha).
 
+## Page layouts (Flux grid; demo: workbench /layouts)
+
+The element that directly wraps `<flux:main>` becomes a 3x3 grid (rule lives in flux.css):
+
+    grid-template-areas: "header  header  header"
+                         "sidebar main    aside"
+                         "sidebar footer  aside";
+
+If `<flux:sidebar>` precedes `<flux:header>`, the first row becomes `"sidebar header header"` — sidebar full
+height, header beside it. Put `<flux:header>` first instead and the header spans the full width. Nothing else
+changes; child order picks the arrangement. In RTL the sidebar lands on the right automatically.
+
+- `<flux:header sticky container>` — sticky pins it and caps its height; container centres content at max-w-7xl.
+- `<flux:sidebar sticky collapsible>` — collapses to an icon rail on desktop; pair with `<flux:sidebar.collapse />`.
+- `<flux:sidebar sticky collapsible="mobile">` — fixed on desktop, off-canvas below `lg`; open it with
+  `<flux:sidebar.toggle class="lg:hidden" icon="bars-2" />` (backdrop is rendered by flux:sidebar itself).
+- `<flux:aside sticky class="w-80">` — third column, spans the main+footer rows; give it a width yourself.
+- `<flux:main container>`, `<flux:footer container>`, `<flux:container>` — width control; `<flux:spacer />` pushes
+  header actions to the far end.
+- Sidebar body: `sidebar.header`, `sidebar.brand`, `sidebar.search`, `sidebar.nav`, `sidebar.item`, `sidebar.group`
+  (`expandable`, `expanded`), `sidebar.spacer`, `sidebar.profile`. Top nav: `navbar` + `navbar.item`, with
+  `navmenu` inside a `dropdown` for mobile.
+- Persian labels: pass `tooltip="..."` to `sidebar.collapse` and `aria-label="..."` to `sidebar.toggle`; their
+  defaults are English.
+
 ## Rules of thumb for generated code
 
 - Prefer `<mds:*>` and `<flux:*>` components over raw HTML in Blade views.

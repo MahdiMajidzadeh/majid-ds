@@ -43,6 +43,8 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             </flux:brand>
 
             <div class="flex items-center gap-3">
+                <flux:button href="/layouts" size="sm" variant="filled" icon="squares-2x2">چیدمان‌های صفحه</flux:button>
+
                 <flux:profile avatar="https://picsum.photos/seed/user/64/64" name="مهدی مجیدزاده" />
 
                 <flux:tooltip content="حالت تاریک / روشن">
