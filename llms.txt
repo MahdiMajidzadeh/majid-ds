@@ -2,7 +2,7 @@
 
 > RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
 > Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
-> e-commerce components, and open implementations of Flux Pro's command palette and color picker.
+> e-commerce components, and open implementations of Flux Pro's command palette, color picker and file upload.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
 Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
@@ -16,7 +16,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    `@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';`
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, color-picker).
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, color-picker, file-upload).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -46,8 +46,9 @@ Facade `MajidDs\Mds`:
 - `Mds::toman($amount): string` / `Mds::rial($amount): string`
 - `Mds::jalali($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
 - `Mds::ago($date): string` — «۳ ساعت پیش» / «۲ روز دیگر»
+- `Mds::fileSize($bytes, ?bool $persianDigits = null): string` — «۱۵۹ کیلوبایت» / «۱٫۵ مگابایت»
 
-`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money`, `currencyLabel`, `ago`, `toDateTime` (DateTime|string|int -> DateTimeImmutable).
+`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money`, `currencyLabel`, `ago`, `fileSize` (bytes -> بایت/کیلوبایت/مگابایت/گیگابایت/ترابایت, 1024-based, 1 decimal below 100 and none for whole numbers), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
 
 `MajidDs\Support\Jalali` (static, dependency-free, intl-verified):
 - `fromGregorian(int $gy, int $gm, int $gd): array{0:int,1:int,2:int}` — e.g. (2026,8,20) -> [1405,5,29]
@@ -131,6 +132,55 @@ Slot replaces the default popover layout; subcomponents share state:
 - `<mds:color-picker.dropper label="قطره‌چکان" />`
 RTL note: canvas/sliders stay physically LTR (universal convention); field chrome follows page direction.
 
+### <mds:file-upload> — file upload (open version of Flux Pro's flux:file-upload)
+Wrapper. Props: `name` string|null (`[]` auto-appended when `multiple`) · `multiple` bool=false · `accept` string|null (input accept list) ·
+`label`/`description` (flux:field chrome) · `error` string|null (explicit message; when omitted and `name` is set, falls back to
+`$errors->first($name)` then `$errors->first("$name.*")`) · `invalid` bool=false · `disabled` bool=false · `fa` bool|null=config.
+Renders `flux:field` > `<label>` > sr-only `<input type="file" data-flux-control>` + slot. `wire:model` is forwarded to that input
+(everything else lands on the wrapper), so Livewire's native upload pipeline handles the transfer.
+Slot = the dropzone, or any custom markup (custom avatar uploader etc.).
+Behavior: click anywhere in the slot opens the picker (native `<label>`, so keyboard Enter/Space on the focused input works too);
+drag-and-drop writes `input.files` via DataTransfer and dispatches bubbling `change` + `input` (single-file mode keeps only the first drop).
+Data attributes on the wrapper: `data-dragging` (file over the zone), `data-loading` (upload in flight) — style descendants with
+Tailwind's `in-data-dragging:` / `in-data-loading:` prefixes. Also sets CSS custom properties on the wrapper:
+`--mds-file-upload-progress` (Latin `42%`, for widths) and `--mds-file-upload-progress-as-string` (quoted, fa-aware `'۴۲٪'`, for `content:`).
+
+### <mds:file-upload.dropzone>
+Props: `heading` string='فایل را اینجا رها کنید یا برای انتخاب کلیک کنید' · `text` string|null (size/format hint) ·
+`icon` string='cloud-arrow-up' · `inline` bool=false (compact horizontal layout) · `with-progress` bool=false (progress bar + percent
+while uploading, replacing `text`; pair it with `text` so the idle state still reads).
+Dashed border, accent border + tint while dragging, accent ring while the input is focus-visible, spinner swap while loading.
+Must be rendered inside `<mds:file-upload>` (it reads that component's Alpine state).
+
+### <mds:file-item>
+Props: `heading` string|null (file name; `dir="auto"` so Latin names read correctly in RTL lists) · `text` string|null
+(defaults to the formatted `size`) · `image` string|null (thumbnail URL) · `size` int|null (bytes -> Persian::fileSize) ·
+`icon` string='document' (shown when no `image`) · `invalid` bool=false (red border/icon/text) · `fa` bool|null=config.
+Named slot `actions` (inline-end) for buttons; default slot renders under the text column.
+Sits OUTSIDE `<mds:file-upload>` — render one per uploaded file yourself (see the Livewire snippet below).
+
+### <mds:file-item.remove>
+Props: `icon` string='x-mark' · `label` string='حذف فایل' (becomes `aria-label`). `wire:click` / `x-on:click` pass through.
+
+Livewire contract (same as Flux):
+```php
+use Livewire\WithFileUploads; use Livewire\Attributes\Validate;
+#[Validate(['photos.*' => 'image|max:10240'])] public $photos = [];
+public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->photos[$i]); $this->photos = array_values($this->photos); }
+```
+```blade
+<mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple>
+    <mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" with-progress />
+</mds:file-upload>
+<div class="mt-3 flex flex-col gap-2">
+    @foreach ($photos as $i => $photo)
+        <mds:file-item :heading="$photo->getClientOriginalName()" :image="$photo->temporaryUrl()" :size="$photo->getSize()">
+            <x-slot name="actions"><mds:file-item.remove wire:click="removePhoto({{ $i }})" :label="'حذف '.$photo->getClientOriginalName()" /></x-slot>
+        </mds:file-item>
+    @endforeach
+</div>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - `@theme { --font-sans: 'Vazirmatn', ... }` — font-sans becomes Persian-ready.
@@ -151,4 +201,5 @@ RTL note: canvas/sliders stay physically LTR (universal convention); field chrom
   dropdown/menu, field, heading, icon, input, modal, navbar, otp, pagination, profile, progress, radio, select,
   separator, skeleton, switch, table, text, textarea, toast, tooltip. Flux Pro-only components NOT available
   unless licensed: autocomplete, calendar, chart, date-picker, editor, tabs, etc. — use mds:command and
-  mds:color-picker instead of flux:command / flux:color-picker.
+  mds:command, mds:color-picker and mds:file-upload instead of flux:command / flux:color-picker / flux:file-upload.
+- File sizes shown to users: <mds:file-item :size="$bytes" /> or Persian::fileSize() — never a hand-rolled KB/MB formatter.

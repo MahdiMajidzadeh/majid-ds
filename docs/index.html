@@ -333,6 +333,8 @@ footer.site {
     <a href="#empty-state"><code>mds:empty-state</code></a>
     <a href="#command"><code>mds:command</code></a>
     <a href="#color-picker"><code>mds:color-picker</code></a>
+    <a href="#file-upload"><code>mds:file-upload</code></a>
+    <a href="#file-item"><code>mds:file-item</code></a>
   </div>
   <div class="group">
     <div class="eyebrow">Meta</div>
@@ -430,7 +432,8 @@ Mds::money(990, 'rial');         <span class="c">// ۹۹۰ ریال</span>
 Mds::toman(2500000);             <span class="c">// ۲٬۵۰۰٬۰۰۰ تومان</span>
 Mds::rial(990);                  <span class="c">// ۹۹۰ ریال</span>
 Mds::jalali(now(), 'Y/m/d');     <span class="c">// ۱۴۰۵/۰۵/۲۹</span>
-Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span></code></pre>
+Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span>
+Mds::fileSize(162400);           <span class="c">// ۱۵۹ کیلوبایت</span></code></pre>
 <h3><code>MajidDs\Support\Persian</code></h3>
 <table>
 <thead><tr><th>Method</th><th>Description</th></tr></thead>
@@ -441,6 +444,7 @@ Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span></c
 <tr><td><code>Persian::money($amount, $currency = null, $decimals = 0)</code></td><td>Formatted amount + currency label. <code>$currency</code>: <code>toman</code> | <code>rial</code> | <code>none</code> | literal | <code>null</code> → config.</td></tr>
 <tr><td><code>Persian::currencyLabel($currency)</code></td><td>The display label for a currency id (<span class="fa-text">تومان</span>, <span class="fa-text">ریال</span>, …).</td></tr>
 <tr><td><code>Persian::ago($date)</code></td><td>Relative phrase: <span class="fa-text">لحظاتی پیش، ۵ دقیقه پیش، ۲ روز دیگر</span>. Accepts DateTime, string, or timestamp.</td></tr>
+<tr><td><code>Persian::fileSize($bytes, $persianDigits = null)</code></td><td>1024-based byte count with Persian units: <span class="fa-text">۹۰۰ بایت، ۱۵۹ کیلوبایت، ۱٫۵ مگابایت</span>. One decimal below 100, none for whole numbers.</td></tr>
 <tr><td><code>Persian::toDateTime($date)</code></td><td>Normalizes DateTime | string | int timestamp → <code>DateTimeImmutable</code>.</td></tr>
 </tbody>
 </table>
@@ -772,6 +776,121 @@ Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span></c
 <tr><td><code>color-picker.dropper</code></td><td><code>label</code> = <span class="fa-text">قطره‌چکان</span></td><td>Screen EyeDropper; auto-hidden without browser support.</td></tr>
 </tbody>
 </table>
+</section>
+
+<hr class="section-rule">
+<section id="file-upload">
+<h2><code>&lt;mds:file-upload&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
+<p>An open implementation of Flux Pro's file upload: drag-and-drop, click-to-browse, a dashed dropzone with a compact <code>inline</code> variant, and a live progress bar wired to Livewire's upload events. The wrapper is just chrome around a real <code>&lt;input type="file"&gt;</code>, so <code>wire:model</code>, plain form posts, and native keyboard access all work.</p>
+<pre><code>&lt;mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple&gt;
+    &lt;mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" /&gt;
+&lt;/mds:file-upload&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Input name for plain form posts. <code>[]</code> is appended automatically when <code>multiple</code> is set.</td></tr>
+<tr><td><code>multiple</code></td><td>bool</td><td><code>false</code></td><td>Allow selecting/dropping more than one file. A multi-file drop on a single-file input keeps the first file only.</td></tr>
+<tr><td><code>accept</code></td><td>string|null</td><td><code>null</code></td><td>Native <code>accept</code> list, e.g. <code>image/*</code> or <code>application/pdf</code>.</td></tr>
+<tr><td><code>label</code> / <code>description</code></td><td>string|null</td><td><code>null</code></td><td>Field chrome via <code>flux:field</code>.</td></tr>
+<tr><td><code>error</code></td><td>string|null</td><td><code>null</code></td><td>Error message. When omitted and <code>name</code> is set, falls back to <code>$errors-&gt;first($name)</code>, then <code>$errors-&gt;first("$name.*")</code> — so Livewire validation shows up with no extra wiring.</td></tr>
+<tr><td><code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Marks the input <code>aria-invalid</code> without printing a message. Implied by <code>error</code>.</td></tr>
+<tr><td><code>disabled</code></td><td>bool</td><td><code>false</code></td><td>Blocks clicking and dropping, dims the zone, and dims the label.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits in the progress percentage.</td></tr>
+</tbody>
+</table>
+<p><code>wire:model</code> is forwarded to the file input itself; every other attribute lands on the wrapper.</p>
+<h3>Dropzone</h3>
+<pre><code>&lt;mds:file-upload label="حالت فشرده"&gt;
+    &lt;mds:file-upload.dropzone heading="فایل را رها کنید" text="فقط PDF تا ۵ مگابایت" inline /&gt;
+&lt;/mds:file-upload&gt;
+
+&lt;mds:file-upload wire:model="attachment"&gt;
+    &lt;mds:file-upload.dropzone text="هر فرمتی تا ۲۰ مگابایت" inline with-progress /&gt;
+&lt;/mds:file-upload&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>heading</code></td><td>string</td><td><span class="fa-text">فایل را اینجا رها کنید یا برای انتخاب کلیک کنید</span></td><td>Main line of text.</td></tr>
+<tr><td><code>text</code></td><td>string|null</td><td><code>null</code></td><td>Supporting hint (accepted formats, size cap).</td></tr>
+<tr><td><code>icon</code></td><td>string</td><td><code>cloud-arrow-up</code></td><td>Any Flux/heroicon name. Swapped for a spinner while uploading.</td></tr>
+<tr><td><code>inline</code></td><td>bool</td><td><code>false</code></td><td>Compact horizontal layout instead of the tall centered one.</td></tr>
+<tr><td><code>with-progress</code></td><td>bool</td><td><code>false</code></td><td>Show a progress bar and percentage during upload, in place of <code>text</code>. Pair it with <code>text</code> so the idle state still reads.</td></tr>
+</tbody>
+</table>
+<h3>Custom uploaders</h3>
+<p>Anything you put in the slot inherits the full upload behavior — the dropzone is only the default look. The wrapper exposes two state attributes you can target with Tailwind's <code>in-*</code> variants:</p>
+<pre><code>&lt;mds:file-upload wire:model="avatar" accept="image/*"&gt;
+    &lt;div class="size-20 rounded-full bg-zinc-100 in-data-dragging:border-accent in-data-loading:opacity-50 ..."&gt;
+        &lt;flux:icon icon="user" variant="solid" /&gt;
+    &lt;/div&gt;
+&lt;/mds:file-upload&gt;</code></pre>
+<table>
+<thead><tr><th>Hook</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>data-dragging</code></td><td>On the wrapper while files hover the zone. Use <code>in-data-dragging:</code>.</td></tr>
+<tr><td><code>data-loading</code></td><td>On the wrapper while an upload is in flight. Use <code>in-data-loading:</code>.</td></tr>
+<tr><td><code>--mds-file-upload-progress</code></td><td>Progress as a Latin percentage (<code>42%</code>) — use it for widths, transforms, conic gradients.</td></tr>
+<tr><td><code>--mds-file-upload-progress-as-string</code></td><td>Same value quoted and <code>fa</code>-aware (<code>'۴۲٪'</code>) — drop it straight into <code>content:</code>.</td></tr>
+</tbody>
+</table>
+</section>
+
+<hr class="section-rule">
+<section id="file-item">
+<h2><code>&lt;mds:file-item&gt;</code></h2>
+<p>One row per uploaded file: thumbnail or type icon, name, and a size that is formatted in Persian units. File items sit <em>outside</em> <code>&lt;mds:file-upload&gt;</code> — you render one per file, which is what makes per-file removal and error states possible.</p>
+<pre><code>&lt;mds:file-item heading="Profile_pic.jpg" image="/img/user.png" :size="162400"&gt;
+    &lt;x-slot name="actions"&gt;
+        &lt;mds:file-item.remove wire:click="removePhoto(0)" label="حذف Profile_pic.jpg" /&gt;
+    &lt;/x-slot&gt;
+&lt;/mds:file-item&gt;
+
+&lt;mds:file-item heading="archive.zip" text="حجم فایل بیش از ۱۰ مگابایت است." icon="exclamation-triangle" invalid /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>heading</code></td><td>string|null</td><td><code>null</code></td><td>File name. Rendered with <code>dir="auto"</code> so Latin names stay readable in an RTL list.</td></tr>
+<tr><td><code>text</code></td><td>string|null</td><td>formatted <code>size</code></td><td>Secondary line. Defaults to the formatted byte count.</td></tr>
+<tr><td><code>image</code></td><td>string|null</td><td><code>null</code></td><td>Thumbnail URL (e.g. <code>$photo-&gt;temporaryUrl()</code>).</td></tr>
+<tr><td><code>size</code></td><td>int|null</td><td><code>null</code></td><td>Bytes. Formatted through <code>Persian::fileSize()</code> — <span class="fa-text">۱۵۹ کیلوبایت</span>, <span class="fa-text">۱٫۵ مگابایت</span>.</td></tr>
+<tr><td><code>icon</code></td><td>string</td><td><code>document</code></td><td>Shown when there is no <code>image</code>.</td></tr>
+<tr><td><code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Red border, icon, and text — for rejected files.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits in the formatted size.</td></tr>
+</tbody>
+</table>
+<p>Named slot <code>actions</code> renders at the inline end. <code>&lt;mds:file-item.remove&gt;</code> is the pre-styled button for it: props <code>icon</code> (<code>x-mark</code>) and <code>label</code> (<span class="fa-text">حذف فایل</span>, used as the <code>aria-label</code>); <code>wire:click</code> passes through.</p>
+<h3>Livewire</h3>
+<pre><code>use Livewire\WithFileUploads;
+use Livewire\Attributes\Validate;
+
+#[Validate(['photos.*' =&gt; 'image|max:10240'])]
+public $photos = [];
+
+public function removePhoto($index)
+{
+    $this-&gt;photos[$index]-&gt;delete();
+
+    unset($this-&gt;photos[$index]);
+
+    $this-&gt;photos = array_values($this-&gt;photos);
+}</code></pre>
+<pre><code>&lt;mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple&gt;
+    &lt;mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" with-progress /&gt;
+&lt;/mds:file-upload&gt;
+
+&lt;div class="mt-3 flex flex-col gap-2"&gt;
+    @foreach ($photos as $index =&gt; $photo)
+        &lt;mds:file-item
+            :heading="$photo-&gt;getClientOriginalName()"
+            :image="$photo-&gt;temporaryUrl()"
+            :size="$photo-&gt;getSize()"
+        &gt;
+            &lt;x-slot name="actions"&gt;
+                &lt;mds:file-item.remove wire:click="removePhoto({{ $index }})" /&gt;
+            &lt;/x-slot&gt;
+        &lt;/mds:file-item&gt;
+    @endforeach
+&lt;/div&gt;</code></pre>
 </section>
 
 <hr class="section-rule">

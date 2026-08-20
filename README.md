@@ -27,7 +27,7 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>` |
-| Pro alternatives | `<mds:command>` (⌘K palette) and `<mds:color-picker>` — open versions of Flux Pro-only components |
+| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:color-picker>`, and `<mds:file-upload>` — open versions of Flux Pro-only components |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
@@ -211,6 +211,44 @@ The popover layout is composable — pass a slot to build your own from `color-p
 
 The canvas and sliders are intentionally left-to-right even on RTL pages (the universal convention for color controls); labels and field layout follow the page direction.
 
+### `<mds:file-upload>` and `<mds:file-item>`
+
+An open implementation of Flux Pro's file upload, API-compatible with `flux:file-upload`. Drag-and-drop, click-to-browse, a compact `inline` variant, and a progress bar driven by Livewire's own upload events. Under the chrome it is a real `<input type="file">`, so `wire:model`, plain form posts, and keyboard access all work:
+
+```blade
+<mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple accept="image/*">
+    <mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" with-progress />
+</mds:file-upload>
+
+<div class="mt-3 flex flex-col gap-2">
+    @foreach ($photos as $index => $photo)
+        <mds:file-item
+            :heading="$photo->getClientOriginalName()"
+            :image="$photo->temporaryUrl()"
+            :size="$photo->getSize()"
+        >
+            <x-slot name="actions">
+                <mds:file-item.remove wire:click="removePhoto({{ $index }})" />
+            </x-slot>
+        </mds:file-item>
+    @endforeach
+</div>
+```
+
+`<mds:file-item :size="162400" />` renders «۱۵۹ کیلوبایت» — sizes go through `Persian::fileSize()`, and file names get `dir="auto"` so Latin names stay readable in an RTL list. Pass `invalid` for rejected files.
+
+Props — `file-upload`: `name` (`[]` appended when `multiple`), `multiple`, `accept`, `label`, `description`, `error` (falls back to `$errors->first($name)` when omitted), `invalid`, `disabled`, `fa`; `file-upload.dropzone`: `heading`, `text`, `icon` (default `cloud-arrow-up`), `inline`, `with-progress`; `file-item`: `heading`, `text`, `image`, `size`, `icon`, `invalid`, `fa`, plus an `actions` slot; `file-item.remove`: `icon`, `label` (its `aria-label`).
+
+Any markup in the slot inherits the upload behavior, so custom uploaders are just HTML. The wrapper carries `data-dragging` and `data-loading` (target them with Tailwind's `in-data-dragging:` / `in-data-loading:`) and sets `--mds-file-upload-progress` (`42%`) and `--mds-file-upload-progress-as-string` (`'۴۲٪'`) for custom progress UIs:
+
+```blade
+<mds:file-upload wire:model="avatar" accept="image/*">
+    <div class="size-20 rounded-full bg-zinc-100 in-data-dragging:border-accent in-data-loading:opacity-50">
+        <flux:icon icon="user" variant="solid" />
+    </div>
+</mds:file-upload>
+```
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade
@@ -239,6 +277,7 @@ use MajidDs\Support\{Persian, Jalali};
 Mds::toman(2500000);                       // ۲٬۵۰۰٬۰۰۰ تومان
 Mds::jalali(now(), 'Y/m/d');               // ۱۴۰۵/۰۵/۲۹
 Mds::ago(now()->subHours(3));              // ۳ ساعت پیش
+Mds::fileSize(162400);                     // ۱۵۹ کیلوبایت
 Persian::digits('order 123');              // order ۱۲۳
 Persian::latinDigits('۰۹۱۲');              // 0912
 Jalali::fromGregorian(2026, 8, 20);        // [1405, 5, 29]
