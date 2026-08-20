@@ -27,7 +27,7 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>` |
-| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:color-picker>`, and `<mds:file-upload>` — open versions of Flux Pro-only components |
+| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:color-picker>`, `<mds:file-upload>`, and `<mds:timeline>` — open versions of Flux Pro-only components |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
@@ -247,6 +247,65 @@ Any markup in the slot inherits the upload behavior, so custom uploaders are jus
         <flux:icon icon="user" variant="solid" />
     </div>
 </mds:file-upload>
+```
+
+### `<mds:timeline>`
+
+An open implementation of Flux Pro's timeline, API-compatible with `flux:timeline`. A CSS-grid rail with connector lines, step statuses, coloured indicators, and full-width blocks. The rail sits on the **right** in RTL, and a horizontal timeline flows right-to-left:
+
+```blade
+<mds:timeline horizontal>
+    <mds:timeline.item status="complete">
+        <mds:timeline.indicator><flux:icon icon="credit-card" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content>
+            <flux:heading>پرداخت شد</flux:heading>
+            <flux:text>@jalali($order->paid_at)</flux:text>
+        </mds:timeline.content>
+    </mds:timeline.item>
+
+    <mds:timeline.item status="current">
+        <mds:timeline.indicator><flux:icon icon="truck" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content><flux:heading>در حال ارسال</flux:heading></mds:timeline.content>
+    </mds:timeline.item>
+
+    <mds:timeline.item status="incomplete">
+        <mds:timeline.indicator><flux:icon icon="home" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content><flux:heading>تحویل به مشتری</flux:heading></mds:timeline.content>
+    </mds:timeline.item>
+</mds:timeline>
+```
+
+`status` drives the rail as well as the dot: `complete` paints the connector up to the next indicator in your accent colour, `current` gets an accent ring, `incomplete` is muted and dims its content.
+
+```blade
+{{-- Numbered checkout steps --}}
+<mds:timeline size="lg" align="start">
+    <mds:timeline.item status="complete">
+        <mds:timeline.indicator>@fa(1)</mds:timeline.indicator>
+        <mds:timeline.content>
+            <flux:heading>سبد خرید</flux:heading>
+            <flux:text>کالاها را بررسی و تعداد را نهایی کنید.</flux:text>
+        </mds:timeline.content>
+    </mds:timeline.item>
+</mds:timeline>
+
+{{-- A full-width block, re-aligned to the rail's columns --}}
+<mds:timeline.item>
+    <mds:timeline.block class="rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5">
+        <mds:timeline.subgrid class="p-3">
+            <flux:avatar size="xs" circle src="..." />
+            <flux:text>مرسوله شما امروز از انبار تهران ارسال می‌شود.</flux:text>
+        </mds:timeline.subgrid>
+    </mds:timeline.block>
+</mds:timeline.item>
+```
+
+Props — `timeline`: `horizontal`, `align` (`start` | `baseline` | `center` | `end`), `size` (`lg`); `timeline.item`: `status` (`complete` | `current` | `incomplete`), plus `align` / `size` overrides; `timeline.indicator`: `variant="bare"` (icon-only marker), `status`, `color` (the 17 Tailwind hues plus `zinc`, and it outranks `status`). `timeline.content`, `timeline.block`, and `timeline.subgrid` take no props.
+
+Geometry is four CSS variables: `--mds-timeline-item-gap`, `--mds-timeline-content-gap`, `--mds-timeline-indicator-size`, and `--mds-timeline-baseline` (the first line-height `align="baseline"` centres on — raise it for large headings). Set them with an arbitrary class:
+
+```blade
+<mds:timeline class="[--mds-timeline-item-gap:3rem]">...</mds:timeline>
 ```
 
 ### `<mds:discount-badge>` and `<mds:empty-state>`

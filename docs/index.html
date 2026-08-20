@@ -335,6 +335,7 @@ footer.site {
     <a href="#color-picker"><code>mds:color-picker</code></a>
     <a href="#file-upload"><code>mds:file-upload</code></a>
     <a href="#file-item"><code>mds:file-item</code></a>
+    <a href="#timeline"><code>mds:timeline</code></a>
   </div>
   <div class="group">
     <div class="eyebrow">Meta</div>
@@ -891,6 +892,84 @@ public function removePhoto($index)
         &lt;/mds:file-item&gt;
     @endforeach
 &lt;/div&gt;</code></pre>
+</section>
+
+<hr class="section-rule">
+<section id="timeline">
+<h2><code>&lt;mds:timeline&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
+<p>An open implementation of Flux Pro's timeline: a CSS-grid rail with connector lines, step statuses, coloured indicators, and full-width blocks. Vertically the tracks are <code>[indicator] [gap] [content]</code>; <code>horizontal</code> transposes them to rows. Every offset is a logical property, so the rail sits on the <strong>right</strong> in RTL and a horizontal timeline flows right-to-left — which is what an Iranian order-tracking strip wants.</p>
+<pre><code>&lt;mds:timeline&gt;
+    &lt;mds:timeline.item&gt;
+        &lt;mds:timeline.indicator&gt;&lt;flux:icon icon="shopping-bag" variant="micro" /&gt;&lt;/mds:timeline.indicator&gt;
+        &lt;mds:timeline.content&gt;
+            &lt;flux:heading&gt;سفارش ثبت شد &lt;flux:text inline&gt;· &lt;mds:jalali-date :date="$order-&gt;created_at" ago /&gt;&lt;/flux:text&gt;&lt;/flux:heading&gt;
+        &lt;/mds:timeline.content&gt;
+    &lt;/mds:timeline.item&gt;
+
+    &lt;mds:timeline.item&gt;
+        &lt;mds:timeline.indicator color="green"&gt;&lt;flux:icon icon="check" variant="micro" /&gt;&lt;/mds:timeline.indicator&gt;
+        &lt;mds:timeline.content&gt;&lt;flux:heading&gt;تحویل داده شد&lt;/flux:heading&gt;&lt;/mds:timeline.content&gt;
+    &lt;/mds:timeline.item&gt;
+&lt;/mds:timeline&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>horizontal</code></td><td>bool</td><td><code>false</code></td><td>Indicators run along a row with content underneath. Columns are equal width (Flux sizes them to their content) so a progress strip reads evenly.</td></tr>
+<tr><td><code>align</code></td><td>string</td><td><code>center</code></td><td><code>start</code> | <code>baseline</code> | <code>center</code> | <code>end</code> — where the indicator sits against its content. Inherited by every item unless the item overrides it.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>lg</code> bumps indicators from 2rem to 3rem (and the content gap to 1rem). Good for numbered steps.</td></tr>
+</tbody>
+</table>
+<h3>Steps and statuses</h3>
+<p><code>status</code> drives both the indicator and the rail: a <code>complete</code> item paints the connector up to the next indicator in your accent colour, <code>current</code> gets an accent ring, and <code>incomplete</code> is muted and dims its content to 75%.</p>
+<pre><code>&lt;mds:timeline horizontal&gt;
+    &lt;mds:timeline.item status="complete"&gt;...&lt;/mds:timeline.item&gt;
+    &lt;mds:timeline.item status="current"&gt;...&lt;/mds:timeline.item&gt;
+    &lt;mds:timeline.item status="incomplete"&gt;...&lt;/mds:timeline.item&gt;
+&lt;/mds:timeline&gt;
+
+&lt;mds:timeline size="lg" align="start"&gt;
+    &lt;mds:timeline.item status="complete"&gt;
+        &lt;mds:timeline.indicator&gt;@fa(1)&lt;/mds:timeline.indicator&gt;
+        &lt;mds:timeline.content&gt;
+            &lt;flux:heading&gt;سبد خرید&lt;/flux:heading&gt;
+            &lt;flux:text&gt;کالاها را بررسی کنید.&lt;/flux:text&gt;
+        &lt;/mds:timeline.content&gt;
+    &lt;/mds:timeline.item&gt;
+&lt;/mds:timeline&gt;</code></pre>
+<table>
+<thead><tr><th>Subcomponent</th><th>Props</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>timeline.item</code></td><td><code>status</code>, <code>align</code>, <code>size</code></td><td>Renders an <code>&lt;li&gt;</code> and draws its own connector lines. <code>align</code> and <code>size</code> override the timeline per item; the first item's leading line and the last item's trailing line are hidden automatically.</td></tr>
+<tr><td><code>timeline.indicator</code></td><td><code>variant</code>, <code>status</code>, <code>color</code></td><td>Put an icon, number, or text in the slot. <code>variant="bare"</code> strips the circle so a standalone icon can be the marker. <code>color</code> takes any of the 17 Tailwind hues plus <code>zinc</code>, and outranks <code>status</code>.</td></tr>
+<tr><td><code>timeline.content</code></td><td>—</td><td>The cell beside the indicator.</td></tr>
+<tr><td><code>timeline.block</code></td><td>—</td><td>Full-width item body with no indicator column — callouts, cards, comment threads. Direct children span every track.</td></tr>
+<tr><td><code>timeline.subgrid</code></td><td>—</td><td>Inside a block, re-aligns to the timeline's tracks: first child in the indicator track, later children in the content track. Vertical only.</td></tr>
+</tbody>
+</table>
+<pre><code>&lt;mds:timeline.item&gt;
+    &lt;mds:timeline.block class="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5"&gt;
+        &lt;mds:timeline.subgrid class="p-3"&gt;
+            &lt;flux:avatar size="xs" circle src="..." /&gt;
+            &lt;div class="space-y-1"&gt;
+                &lt;flux:heading&gt;پشتیبانی &lt;flux:text inline&gt;پاسخ داد&lt;/flux:text&gt;&lt;/flux:heading&gt;
+                &lt;flux:text&gt;مرسوله شما امروز ارسال می‌شود.&lt;/flux:text&gt;
+            &lt;/div&gt;
+        &lt;/mds:timeline.subgrid&gt;
+    &lt;/mds:timeline.block&gt;
+&lt;/mds:timeline.item&gt;</code></pre>
+<h3>Spacing and baseline</h3>
+<p>Four CSS custom properties tune the geometry. Set them on the timeline with an arbitrary class:</p>
+<pre><code>&lt;mds:timeline class="[--mds-timeline-item-gap:3rem] [--mds-timeline-content-gap:1rem]"&gt;...&lt;/mds:timeline&gt;</code></pre>
+<table>
+<thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--mds-timeline-item-gap</code></td><td><code>1rem</code></td><td>Space between items — vertical or horizontal, whichever the timeline is.</td></tr>
+<tr><td><code>--mds-timeline-content-gap</code></td><td><code>0.75rem</code></td><td>Space between the indicator and its content (<code>1rem</code> at <code>size="lg"</code>).</td></tr>
+<tr><td><code>--mds-timeline-indicator-size</code></td><td><code>2rem</code></td><td>Indicator diameter (<code>3rem</code> at <code>size="lg"</code>).</td></tr>
+<tr><td><code>--mds-timeline-baseline</code></td><td><code>1.25rem</code></td><td>The first line's line-height, used by <code>align="baseline"</code> to centre the indicator on it. Raise it for large headings: <code>class="[--mds-timeline-baseline:1.75rem]"</code>. This replaces Flux's <code>[data-flux-timeline-baseline]</code> font-size trick.</td></tr>
+</tbody>
+</table>
+<p>The timeline's CSS lives in <code>@layer components</code> on purpose. Cascade layers outrank specificity, so an unlayered rule would beat Tailwind's <code>@layer utilities</code> and swallow any class you put on an indicator.</p>
 </section>
 
 <hr class="section-rule">

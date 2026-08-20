@@ -2,7 +2,7 @@
 
 > RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
 > Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
-> e-commerce components, and open implementations of Flux Pro's command palette, color picker and file upload.
+> e-commerce components, and open implementations of Flux Pro's command palette, color picker, file upload and timeline.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
 Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
@@ -188,6 +188,62 @@ public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->phot
 - `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
 - `.mds-checker` — checkerboard backdrop for transparent colors.
 - `.mds-range` — gradient range-slider styling (color-picker hue/alpha).
+- `@layer components { [data-mds-timeline] ... }` — the timeline grid, connector lines and indicator states.
+  It MUST stay inside `@layer components`: cascade layers outrank specificity, so unlayered rules would beat
+  Tailwind's `@layer utilities` and swallow classes users put on an indicator (e.g. `bg-green-500`).
+
+### <mds:timeline> — timeline (open version of Flux Pro's flux:timeline)
+Container, renders `<ol>`. Props: `horizontal` bool=false (indicators along a row, content beneath) ·
+`align` start|baseline|center|end='center' (cross-axis placement of the indicator against its content) · `size` lg|null.
+CSS grid: vertical tracks are `[indicator] [content-gap] [content]`; `horizontal` transposes them to rows.
+All offsets are logical, so the rail sits on the RIGHT in RTL and a horizontal timeline flows right-to-left.
+CSS custom properties (set with an arbitrary class, e.g. `class="[--mds-timeline-item-gap:3rem]"`):
+`--mds-timeline-item-gap` (1rem) · `--mds-timeline-content-gap` (0.75rem; 1rem when size=lg) ·
+`--mds-timeline-indicator-size` (2rem; 3rem when size=lg) · `--mds-timeline-baseline` (1.25rem, the first
+line-height used by `align="baseline"` — this replaces Flux's `[data-flux-timeline-baseline]` font-size trick).
+
+### <mds:timeline.item>
+Renders `<li>`. Props: `status` complete|current|incomplete|null · `align` (per-item override; inherited from the
+timeline via @aware when omitted) · `size` lg|null (per-item indicator size).
+Draws its own leading/trailing connector lines; the first item's leading and the last item's trailing line are
+hidden, and a `complete` item paints the rail up to the next indicator in `--color-accent`.
+`status="incomplete"` also dims its content to 75%.
+
+### <mds:timeline.indicator>
+The dot between the lines — put an icon, a number, or text in the slot. Props: `variant` bare|null
+(strips the circle/size so a standalone icon can be the marker) · `status` (overrides the item's) ·
+`color` red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|zinc|null.
+Defaults: zinc chip; `complete` = accent fill, `current` = accent ring, `incomplete` = muted ring.
+An explicit `color` outranks `status` (real utility classes beat the layer's defaults).
+
+### <mds:timeline.content>
+The cell next to the indicator. No props.
+
+### <mds:timeline.block>
+Full-width item body with no indicator column — for callouts, cards, comment threads. Spans every track;
+its direct children span the full width unless they are `<mds:timeline.subgrid>`.
+
+### <mds:timeline.subgrid>
+Used inside a block to re-align to the timeline's tracks: the first child lands in the indicator track
+(centered), every later child in the content track. Vertical timelines only.
+
+Typical order-tracking timeline (Jalali dates, RTL rail):
+```blade
+<mds:timeline horizontal>
+    <mds:timeline.item status="complete">
+        <mds:timeline.indicator><flux:icon icon="credit-card" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content><flux:heading>پرداخت شد</flux:heading><flux:text>@jalali($order->paid_at)</flux:text></mds:timeline.content>
+    </mds:timeline.item>
+    <mds:timeline.item status="current">
+        <mds:timeline.indicator><flux:icon icon="truck" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content><flux:heading>در حال ارسال</flux:heading></mds:timeline.content>
+    </mds:timeline.item>
+    <mds:timeline.item status="incomplete">
+        <mds:timeline.indicator><flux:icon icon="home" variant="micro" /></mds:timeline.indicator>
+        <mds:timeline.content><flux:heading>تحویل به مشتری</flux:heading></mds:timeline.content>
+    </mds:timeline.item>
+</mds:timeline>
+```
 
 ## Rules of thumb for generated code
 
@@ -201,5 +257,6 @@ public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->phot
   dropdown/menu, field, heading, icon, input, modal, navbar, otp, pagination, profile, progress, radio, select,
   separator, skeleton, switch, table, text, textarea, toast, tooltip. Flux Pro-only components NOT available
   unless licensed: autocomplete, calendar, chart, date-picker, editor, tabs, etc. — use mds:command and
-  mds:command, mds:color-picker and mds:file-upload instead of flux:command / flux:color-picker / flux:file-upload.
+  mds:command, mds:color-picker, mds:file-upload and mds:timeline instead of flux:command / flux:color-picker /
+  flux:file-upload / flux:timeline.
 - File sizes shown to users: <mds:file-item :size="$bytes" /> or Persian::fileSize() — never a hand-rolled KB/MB formatter.
