@@ -2,7 +2,8 @@
 
 > RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
 > Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
-> e-commerce components, and open implementations of Flux Pro's command palette, color picker, file upload and timeline.
+> Hugeicons in place of heroicons, e-commerce components, and open implementations of Flux Pro's command
+> palette, color picker, file upload and timeline.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
 Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
@@ -14,6 +15,8 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    `@import 'tailwindcss';`
    `@import '../../vendor/livewire/flux/dist/flux.css';`
    `@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';`
+   `@source '../../vendor/mahdimajidzadeh/ds/resources/views';`  <- REQUIRED: Tailwind v4 skips gitignored
+   paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
 4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, color-picker, file-upload).
@@ -25,6 +28,10 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
 
 - `mds.currency` (default `'toman'`): default currency for price component/directives/helpers. Values: `toman` | `rial` | `none` | any literal label string.
 - `mds.persian_digits` (default `true`): global default for Persian-digit rendering. Every component overrides per-instance via `:fa="true|false"`.
+- `mds.icons.default` (default `'hugeicons'`): icon set for `<mds:icon>` and every mds component's `icon` prop. `'flux'` reverts the whole kit to heroicons.
+- `mds.icons.style` (default `'stroke-rounded'`): Hugeicons style used when a component doesn't ask for one.
+- `mds.icons.fallback_style` (default `true`): fall back to the free Stroke Rounded set when a requested Pro style isn't registered.
+- `mds.icons.sets` (default `[]`): `style => directory of .svg` for Hugeicons Pro exports. Each becomes a blade-icons set named `mds-hugeicons-{style}`. No Pro file is ever shipped with this package.
 
 Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views/mds/, app copies override package), `mds-assets` (mds.css copy).
 
@@ -188,9 +195,31 @@ public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->phot
 - `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
 - `.mds-checker` — checkerboard backdrop for transparent colors.
 - `.mds-range` — gradient range-slider styling (color-picker hue/alpha).
+- `@layer components { [data-mds-icon] ... }` — icon default size (1.5rem) and the opt-in `--mds-icon-stroke` rule.
 - `@layer components { [data-mds-timeline] ... }` — the timeline grid, connector lines and indicator states.
   It MUST stay inside `@layer components`: cascade layers outrank specificity, so unlayered rules would beat
   Tailwind's `@layer utilities` and swallow classes users put on an indicator (e.g. `bg-green-500`).
+
+### <mds:icon> — Hugeicons (replaces heroicons across the kit)
+Props: `icon` / `name` string (interchangeable, matching flux:icon) · `variant` string|null (either a Flux variant
+`outline|solid|mini|micro` or a Hugeicons style `stroke-rounded|solid-rounded|twotone-rounded|duotone-rounded|
+bulk-rounded|stroke-standard|solid-standard|stroke-sharp|solid-sharp`) · `stroke` int|float|null (opt-in
+stroke-width override) · `label` string|null (`role="img"` + `aria-label`; without it the icon is `aria-hidden`).
+Renders the raw `<svg>` with `data-mds-icon`. Size and colour are plain Tailwind classes (`class="size-4 text-accent"`);
+the default 1.5rem comes from mds.css, so any `size-*` utility wins.
+Source: the free Stroke Rounded set (6,200 icons) via the `afatmustafa/blade-hugeicons` dependency. Pro styles
+resolve only from `mds.icons.sets`.
+Resolution order for a name: `Icons::OVERRIDES` -> the literal Hugeicons name -> `Icons::ALIASES` -> `flux:icon`.
+So a real Hugeicons name always wins, heroicon names still work, and an unknown name still renders as a heroicon.
+`MajidDs\Support\Icons` (static): `ALIASES` (47 heroicon names with no Hugeicons counterpart, e.g.
+`magnifying-glass` -> `search-01`, `x-mark` -> `cancel-01`, `cloud-arrow-up` -> `cloud-upload`, `document` -> `file-01`,
+`exclamation-triangle` -> `alert-02`, `photo` -> `image-01`, `trash` -> `delete-02`, `users` -> `user-multiple`,
+`banknotes` -> `banknote`) · `OVERRIDES` (6 names Hugeicons also has but draws differently: `arrow-up|down|left|right`
+are chevrons there, `moon` is full not crescent, `map-pin` is a pin on a map) · `STYLES` · `VARIANTS` ·
+`style(?string $variant): string` · `prefixes(string $style): array` · `svg(string $name, ?string $variant, array $attributes): ?Svg`.
+NOTE: `stroke` is opt-in because 453 free icons vary stroke weight on purpose — do not force a global width.
+NOTE: `<flux:*>` components (button, badge, navbar, callout, ...) resolve their own `icon` prop internally and keep
+rendering heroicons. Only `mds:*` components and `<mds:icon>` use Hugeicons.
 
 ### <mds:timeline> — timeline (open version of Flux Pro's flux:timeline)
 Container, renders `<ol>`. Props: `horizontal` bool=false (indicators along a row, content beneath) ·
@@ -285,3 +314,5 @@ changes; child order picks the arrangement. In RTL the sidebar lands on the righ
   mds:command, mds:color-picker, mds:file-upload and mds:timeline instead of flux:command / flux:color-picker /
   flux:file-upload / flux:timeline.
 - File sizes shown to users: <mds:file-item :size="$bytes" /> or Persian::fileSize() — never a hand-rolled KB/MB formatter.
+- Icons: prefer <mds:icon icon="..." /> with a Hugeicons name (hugeicons.com) over raw <svg> or <flux:icon>.
+  Heroicon names still resolve, so existing markup needs no rewrite.

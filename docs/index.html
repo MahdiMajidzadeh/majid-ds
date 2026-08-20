@@ -321,6 +321,7 @@ footer.site {
   </div>
   <div class="group">
     <div class="eyebrow">Components</div>
+    <a href="#icons"><code>mds:icon</code></a>
     <a href="#rating"><code>mds:rating</code></a>
     <a href="#rating-input"><code>mds:rating.input</code></a>
     <a href="#price"><code>mds:price</code></a>
@@ -363,6 +364,10 @@ footer.site {
 <pre><code>@import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 @import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
+
+<span class="c">/* Tailwind v4 skips gitignored paths — without this the utility classes
+   inside the kit's Blade views are never generated. */</span>
+@source '../../vendor/mahdimajidzadeh/ds/resources/views';
 
 @custom-variant dark (&amp;:where(.dark, .dark *));</code></pre>
 <p>The layer sets Vazirmatn as <code>--font-sans</code>, ships the <code>[x-cloak]</code> rule, keeps <code>type="tel"</code> and <code>[data-ltr]</code> inputs left-to-right inside RTL forms, and provides the checkerboard/range-slider styles used by <code>mds:color-picker</code>.</p>
@@ -475,6 +480,51 @@ Mds::fileSize(162400);           <span class="c">// ۱۵۹ کیلوبایت</spa
 <tr><td><code>.mds-range</code></td><td>Gradient range-slider styling (hue/alpha sliders).</td></tr>
 </tbody>
 </table>
+</section>
+
+<hr class="section-rule">
+<section id="icons">
+<h2><code>&lt;mds:icon&gt;</code></h2>
+<p>Majid DS uses <a href="https://hugeicons.com">Hugeicons</a> rather than the heroicons Flux ships. Every <code>mds:*</code> component's <code>icon</code> prop routes through this component, so the whole kit shares one icon language. The free <strong>Stroke Rounded</strong> set — 6,200 icons — comes with the <code>afatmustafa/blade-hugeicons</code> dependency and works out of the box.</p>
+<pre><code>&lt;mds:icon icon="shopping-cart-01" /&gt;                        <span class="c">{{-- a Hugeicons name --}}</span>
+&lt;mds:icon icon="magnifying-glass" /&gt;                        <span class="c">{{-- a heroicon name, aliased --}}</span>
+&lt;mds:icon icon="truck-delivery" class="size-4 text-accent" /&gt;
+&lt;mds:icon icon="notification-01" :stroke="2" /&gt;             <span class="c">{{-- thicker strokes --}}</span>
+&lt;mds:icon icon="alert-02" label="هشدار" /&gt;                  <span class="c">{{-- role="img" + aria-label --}}</span></code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>icon</code> / <code>name</code></td><td>string|null</td><td><code>null</code></td><td>Interchangeable, matching <code>flux:icon</code>. Takes a Hugeicons name or a heroicon name.</td></tr>
+<tr><td><code>variant</code></td><td>string|null</td><td>config</td><td>Either a Flux variant (<code>outline</code>, <code>solid</code>, <code>mini</code>, <code>micro</code>) or a Hugeicons style (<code>stroke-rounded</code> … <code>solid-sharp</code>). One prop takes both vocabularies, so markup written against <code>flux:icon</code> keeps rendering.</td></tr>
+<tr><td><code>stroke</code></td><td>int|float|null</td><td><code>null</code></td><td>Stroke-width override. Opt-in on purpose — 453 of the free icons vary their stroke weight deliberately, and forcing one width flattens them.</td></tr>
+<tr><td><code>label</code></td><td>string|null</td><td><code>null</code></td><td>Gives the icon <code>role="img"</code> and an <code>aria-label</code>. Without it the icon is <code>aria-hidden</code>, which is right for decoration.</td></tr>
+</tbody>
+</table>
+<p>Size and colour are plain Tailwind classes. The 1.5rem default comes from <code>mds.css</code> at zero specificity, so any <code>size-*</code> utility wins.</p>
+<h3>Heroicon names keep working</h3>
+<p>Two maps in <code>MajidDs\Support\Icons</code> bridge the vocabularies, and a name resolves in this order:</p>
+<pre><code>Icons::OVERRIDES  →  the literal Hugeicons name  →  Icons::ALIASES  →  flux:icon</code></pre>
+<table>
+<thead><tr><th>Map</th><th>Holds</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><code>ALIASES</code></td><td>47 heroicon names with no Hugeicons icon of the same name. Consulted <em>after</em> the literal lookup, so a real Hugeicons name always wins — <code>icon="heart"</code> gets you Hugeicons' own heart.</td><td><code>magnifying-glass</code> → <code>search-01</code>, <code>x-mark</code> → <code>cancel-01</code>, <code>cloud-arrow-up</code> → <code>cloud-upload</code>, <code>document</code> → <code>file-01</code>, <code>exclamation-triangle</code> → <code>alert-02</code>, <code>trash</code> → <code>delete-02</code></td></tr>
+<tr><td><code>OVERRIDES</code></td><td>The six names Hugeicons <em>also</em> has but draws differently. Consulted <em>before</em> the literal lookup so the heroicon meaning wins.</td><td>Hugeicons' <code>arrow-up</code>/<code>down</code>/<code>left</code>/<code>right</code> are chevrons, its <code>moon</code> is full rather than crescent, and its <code>map-pin</code> is a pin on a map instead of the bare teardrop</td></tr>
+</tbody>
+</table>
+<p>A name neither map covers falls through to <code>flux:icon</code>, which still renders heroicons — so no existing <code>icon="..."</code> prop breaks. Note that <code>&lt;flux:*&gt;</code> components (button, badge, navbar, callout, …) resolve their own <code>icon</code> prop internally and keep using heroicons; only <code>mds:*</code> components follow this setting.</p>
+<h3>Pro styles</h3>
+<p>Only Stroke Rounded is free, and no Pro file is ever bundled with this package. Register your own licensed export and the other eight styles resolve by name:</p>
+<pre><code><span class="c">// config/mds.php</span>
+'icons' =&gt; [
+    'default' =&gt; 'hugeicons',    <span class="c">// 'flux' reverts the whole kit to heroicons</span>
+    'style' =&gt; 'stroke-rounded',
+    'fallback_style' =&gt; true,    <span class="c">// use the free set when a Pro style isn't registered</span>
+    'sets' =&gt; [
+        'solid-rounded' =&gt; resource_path('svg/hugeicons/solid-rounded'),
+    ],
+],</code></pre>
+<p>Each entry becomes a Blade Icons set named <code>mds-hugeicons-{style}</code>, read from your app's own directory.</p>
+<p>On licensing: the free set is published to npm as MIT and redistributed by <code>afatmustafa/blade-hugeicons</code>, while Hugeicons' own <a href="https://hugeicons.com/license-agreement">licence agreement</a> claims to cover the free versions too. Read both if it matters to your project. Pro files stay in your app either way.</p>
 </section>
 
 <hr class="section-rule">

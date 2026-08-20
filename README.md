@@ -22,6 +22,7 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Area | What Majid DS adds |
 |---|---|
 | Typography | Vazirmatn font wired into Tailwind's `--font-sans` (`@mdsFonts` directive for the `<link>` tags) |
+| Icons | [Hugeicons](https://hugeicons.com) via `<mds:icon>`, replacing heroicons across every `mds:*` component (heroicon names still work) |
 | Numbers | Persian digits (۰۱۲۳), Persian separators (٬ / ٫), `@fa` / `@faNum` directives |
 | Money | `<mds:price>`, `@toman` / `@rial` directives, configurable default currency |
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
@@ -54,6 +55,10 @@ composer require mahdimajidzadeh/ds
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 @import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
+
+/* Tailwind v4 skips gitignored paths, so point it at the kit's Blade views
+   or the utility classes inside them never get generated. */
+@source '../../vendor/mahdimajidzadeh/ds/resources/views';
 
 @custom-variant dark (&:where(.dark, .dark *));
 ```
@@ -248,6 +253,44 @@ Any markup in the slot inherits the upload behavior, so custom uploaders are jus
     </div>
 </mds:file-upload>
 ```
+
+### `<mds:icon>`
+
+Majid DS uses [Hugeicons](https://hugeicons.com) instead of heroicons. Every `mds:*` component's `icon` prop routes through `<mds:icon>`, so the whole kit shares one icon language:
+
+```blade
+<mds:icon icon="shopping-cart-01" />                       {{-- a Hugeicons name --}}
+<mds:icon icon="magnifying-glass" />                       {{-- a heroicon name, aliased --}}
+<mds:icon icon="truck-delivery" class="size-4 text-accent" />
+<mds:icon icon="notification-01" :stroke="2" />            {{-- thicker strokes --}}
+<mds:icon icon="alert-02" label="هشدار" />                 {{-- role="img" + aria-label --}}
+```
+
+The free **Stroke Rounded** set (6,200 icons) ships with the `afatmustafa/blade-hugeicons` dependency, so it works out of the box. Sizing and colour are plain Tailwind classes; unlabelled icons are `aria-hidden`, and a `label` promotes them to `role="img"`.
+
+**Heroicon names keep working.** Two maps handle the vocabulary gap: `ALIASES` translates heroicon names with no Hugeicons counterpart (`magnifying-glass` → `search-01`, `x-mark` → `cancel-01`, `cloud-arrow-up` → `cloud-upload`), and `OVERRIDES` handles the six names Hugeicons *also* has but draws differently — its `arrow-*` are chevrons rather than arrows, its `moon` is full rather than crescent, and its `map-pin` is a pin on a map. A literal Hugeicons name always beats an alias, so `icon="heart"` gets you Hugeicons' own heart. Anything neither map covers falls back to `flux:icon`, which still renders heroicons — so nothing breaks.
+
+`:stroke` is opt-in on purpose: 453 of the free icons vary their stroke weight deliberately, and forcing one width would flatten them.
+
+**Pro styles.** Only Stroke Rounded is free. The other eight styles are never bundled — register your own licensed export and they resolve by name:
+
+```php
+// config/mds.php
+'icons' => [
+    'default' => 'hugeicons',            // 'flux' switches the whole kit back to heroicons
+    'style' => 'stroke-rounded',
+    'sets' => [
+        'solid-rounded' => resource_path('svg/hugeicons/solid-rounded'),
+    ],
+],
+```
+
+```blade
+<mds:icon icon="user" variant="solid-rounded" />   {{-- a Hugeicons style --}}
+<mds:icon icon="user" variant="micro" />           {{-- a Flux variant, mapped --}}
+```
+
+`variant` takes either vocabulary, so markup written against `flux:icon` keeps rendering. Licensing: the free set is published to npm as MIT and redistributed by `afatmustafa/blade-hugeicons`; note that Hugeicons' own [licence agreement](https://hugeicons.com/license-agreement) claims to cover the free versions too, so if that matters to you, read both before shipping. Pro files stay in your app either way.
 
 ### `<mds:timeline>`
 
