@@ -1,5 +1,5 @@
 {
-    "name": "mahdimajidzadeh/majid-ds",
+    "name": "mahdimajidzadeh/ds",
     "description": "Majid DS — an RTL/Persian-first UI kit for Laravel Livewire, built on top of Flux UI with extra e-commerce components.",
     "type": "library",
     "license": "MIT",

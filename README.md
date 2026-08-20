@@ -40,7 +40,7 @@ All components are RTL-first (built with logical properties, so they also work L
 ## Installation
 
 ```bash
-composer require mahdimajidzadeh/majid-ds
+composer require mahdimajidzadeh/ds
 ```
 
 **1. CSS** — in `resources/css/app.css`, import the Majid DS layer after Flux:
@@ -48,7 +48,7 @@ composer require mahdimajidzadeh/majid-ds
 ```css
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
-@import '../../vendor/mahdimajidzadeh/majid-ds/resources/css/mds.css';
+@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 ```

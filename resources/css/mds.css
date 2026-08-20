@@ -7,7 +7,7 @@
 |
 |   @import 'tailwindcss';
 |   @import '../../vendor/livewire/flux/dist/flux.css';
-|   @import '../../vendor/mahdimajidzadeh/majid-ds/resources/css/mds.css';
+|   @import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
 |
 | Then load the Vazirmatn font in your layout's <head> with the @mdsFonts
 | Blade directive (or self-host it — recommended for production traffic

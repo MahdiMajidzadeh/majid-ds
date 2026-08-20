@@ -7,7 +7,7 @@ Minimal integration example for a real Laravel 11/12 + Livewire 3 app.
 ## 1. Install
 
 ```bash
-composer require mahdimajidzadeh/majid-ds
+composer require mahdimajidzadeh/ds
 ```
 
 ## 2. resources/css/app.css
@@ -15,7 +15,7 @@ composer require mahdimajidzadeh/majid-ds
 ```css
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
-@import '../../vendor/mahdimajidzadeh/majid-ds/resources/css/mds.css';
+@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 ```
