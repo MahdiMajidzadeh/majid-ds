@@ -2,9 +2,11 @@
 
 namespace MajidDs;
 
+use BladeUI\Icons\Factory as IconFactory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use MajidDs\Support\Icons;
 use MajidDs\Support\Jalali;
 use MajidDs\Support\Persian;
 
@@ -25,7 +27,34 @@ class MajidDsServiceProvider extends ServiceProvider
         $this->bootComponentPath();
         $this->bootTagCompiler();
         $this->bootDirectives();
+        $this->bootIconSets();
         $this->bootPublishing();
+    }
+
+    /**
+     * Register a blade-icons set per configured Hugeicons Pro style. Pro icons
+     * are never shipped with this package — these read from the app's own
+     * licensed export, so only licensed users ever hold the files.
+     */
+    protected function bootIconSets(): void
+    {
+        $sets = (array) config('mds.icons.sets', []);
+
+        if ($sets === [] || ! class_exists(IconFactory::class)) {
+            return;
+        }
+
+        $this->callAfterResolving(IconFactory::class, function (IconFactory $factory) use ($sets) {
+            foreach ($sets as $style => $path) {
+                if (! is_string($path) || ! is_dir($path)) {
+                    continue;
+                }
+
+                $prefix = Icons::PRO_PREFIX.'-'.$style;
+
+                $factory->add($prefix, ['path' => $path, 'prefix' => $prefix]);
+            }
+        });
     }
 
     protected function bootComponentPath(): void

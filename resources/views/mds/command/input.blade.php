@@ -8,7 +8,7 @@
 
 <div class="flex items-center gap-2 border-b border-zinc-200 px-3 dark:border-white/10" data-mds-command-input>
     @if ($icon)
-        <flux:icon :icon="$icon" variant="micro" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+        <mds:icon :icon="$icon" variant="micro" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
     @endif
 
     <input

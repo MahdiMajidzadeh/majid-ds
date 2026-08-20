@@ -26,6 +26,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "afatmustafa/blade-hugeicons": "^2.0",
         "laravel/framework": "^11.0|^12.0",
         "livewire/flux": "^2.0"
     },

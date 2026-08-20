@@ -11,5 +11,5 @@
     aria-label="{{ $label }}"
     data-mds-color-picker-dropper
 >
-    <flux:icon icon="eye-dropper" variant="micro" class="size-4" />
+    <mds:icon icon="eye-dropper" variant="micro" class="size-4" />
 </button>

@@ -21,7 +21,7 @@ $attributes = $attributes->merge($href ? ['href' => $href] : ['type' => 'button'
     data-mds-command-item
 >
     @if ($icon)
-        <flux:icon :icon="$icon" :variant="$iconVariant" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+        <mds:icon :icon="$icon" :variant="$iconVariant" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
     @endif
 
     <span class="flex-1 truncate">{{ $slot }}</span>

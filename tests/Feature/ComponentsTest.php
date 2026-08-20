@@ -424,6 +424,116 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('پاسخ پشتیبانی', $html);
     }
 
+    public function test_icon_renders_a_hugeicons_svg(): void
+    {
+        $html = $this->render('<mds:icon icon="search-01" />');
+
+        $this->assertStringContainsString('data-mds-icon', $html);
+        $this->assertStringContainsString('viewBox="0 0 24 24"', $html);
+        $this->assertStringContainsString('stroke="currentColor"', $html);
+        $this->assertStringContainsString('aria-hidden="true"', $html);
+    }
+
+    public function test_icon_resolves_heroicon_names_through_the_alias_map(): void
+    {
+        // search-01 opens its path with the magnifier handle...
+        $expected = $this->render('<mds:icon icon="search-01" />');
+
+        $this->assertSame($expected, $this->render('<mds:icon icon="magnifying-glass" />'));
+    }
+
+    public function test_icon_overrides_beat_a_same_named_hugeicon(): void
+    {
+        // Hugeicons' own "arrow-up" is a chevron, so the override must win...
+        $this->assertSame(
+            $this->render('<mds:icon icon="arrow-up-02" />'),
+            $this->render('<mds:icon icon="arrow-up" />'),
+        );
+
+        $this->assertNotSame(
+            $this->render('<mds:icon icon="arrow-up-01" />'),
+            $this->render('<mds:icon icon="arrow-up" />'),
+        );
+    }
+
+    public function test_icon_prefers_a_literal_hugeicons_name_over_an_alias(): void
+    {
+        // "heart" exists in Hugeicons, so it must not be redirected...
+        $this->assertNotSame(
+            $this->render('<mds:icon icon="favourite" />'),
+            $this->render('<mds:icon icon="heart" />'),
+        );
+    }
+
+    public function test_icon_falls_back_to_flux_for_unmapped_names(): void
+    {
+        $html = $this->render('<mds:icon icon="arrow-trending-up" />');
+
+        $this->assertStringContainsString('data-flux-icon', $html);
+    }
+
+    public function test_icon_honours_the_flux_driver(): void
+    {
+        config(['mds.icons.default' => 'flux']);
+
+        $html = $this->render('<mds:icon icon="magnifying-glass" />');
+
+        $this->assertStringContainsString('data-flux-icon', $html);
+    }
+
+    public function test_icon_stroke_override_is_opt_in(): void
+    {
+        $plain = $this->render('<mds:icon icon="user" />');
+        $thick = $this->render('<mds:icon icon="user" :stroke="2" />');
+
+        $this->assertStringNotContainsString('data-mds-icon-stroke', $plain);
+        $this->assertStringNotContainsString('--mds-icon-stroke', $plain);
+
+        $this->assertStringContainsString('data-mds-icon-stroke', $thick);
+        $this->assertStringContainsString('--mds-icon-stroke:2', $thick);
+    }
+
+    public function test_icon_label_promotes_it_to_an_image_role(): void
+    {
+        $html = $this->render('<mds:icon icon="user" label="حساب کاربری" />');
+
+        $this->assertStringContainsString('role="img"', $html);
+        $this->assertStringContainsString('aria-label="حساب کاربری"', $html);
+        $this->assertStringNotContainsString('aria-hidden', $html);
+    }
+
+    public function test_icon_passes_classes_through(): void
+    {
+        $html = $this->render('<mds:icon icon="user" class="size-4 text-zinc-400" />');
+
+        $this->assertStringContainsString('class="size-4 text-zinc-400"', $html);
+    }
+
+    public function test_icon_accepts_a_name_prop_like_flux(): void
+    {
+        $this->assertSame(
+            $this->render('<mds:icon icon="user" />'),
+            $this->render('<mds:icon name="user" />'),
+        );
+    }
+
+    public function test_mds_components_render_hugeicons(): void
+    {
+        $html = $this->render('<mds:empty-state icon="shopping-cart" title="خالی" />');
+
+        $this->assertStringContainsString('data-mds-icon', $html);
+        $this->assertStringNotContainsString('data-flux-icon', $html);
+    }
+
+    public function test_mds_components_follow_the_flux_driver(): void
+    {
+        config(['mds.icons.default' => 'flux']);
+
+        $html = $this->render('<mds:empty-state icon="shopping-cart" title="خالی" />');
+
+        $this->assertStringContainsString('data-flux-icon', $html);
+    }
+
     public function test_x_mds_namespace_also_works(): void
     {
         $html = $this->render('<x-mds::rating :value="3" />');

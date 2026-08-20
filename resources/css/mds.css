@@ -69,6 +69,30 @@
 
 /*
 |--------------------------------------------------------------------------
+| Icons (mds:icon)
+|--------------------------------------------------------------------------
+|
+| Hugeicons files carry width="24" height="24" and per-path stroke-width.
+| These rules live in @layer components so a caller's `size-4` / `text-*`
+| utilities win, while still beating the SVG's own presentation attributes.
+|
+*/
+
+@layer components {
+    :where([data-mds-icon]) {
+        width: 1.5rem;
+        height: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    /* Opt-in only: 453 of the free icons vary stroke weight on purpose... */
+    :where([data-mds-icon][data-mds-icon-stroke]) :is(path, circle, rect, line, ellipse, polyline, polygon) {
+        stroke-width: var(--mds-icon-stroke);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Timeline (mds:timeline)
 |--------------------------------------------------------------------------
 |

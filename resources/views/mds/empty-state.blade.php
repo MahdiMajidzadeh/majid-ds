@@ -7,7 +7,7 @@
 <div {{ $attributes->class('flex flex-col items-center gap-2 px-6 py-12 text-center') }} data-mds-empty-state>
     @if ($icon)
         <div class="mb-2 flex size-16 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-white/10 dark:text-zinc-500">
-            <flux:icon :icon="$icon" class="size-8" />
+            <mds:icon :icon="$icon" class="size-8" />
         </div>
     @endif
 

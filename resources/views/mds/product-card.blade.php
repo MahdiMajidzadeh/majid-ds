@@ -42,7 +42,7 @@ $percent = (! $unavailable && $original !== null && $amount !== null && $origina
                 >
             @else
                 <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 dark:bg-white/5 dark:text-zinc-600">
-                    <flux:icon icon="photo" class="size-10" />
+                    <mds:icon icon="photo" class="size-10" />
                 </div>
             @endif
         </a>

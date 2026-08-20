@@ -35,7 +35,7 @@ $heading ??= 'فایل را اینجا رها کنید یا برای انتخا�
         </span>
 
         <span x-show="! loading">
-            <flux:icon :icon="$icon" @class(['size-4' => $inline, 'size-6' => ! $inline]) />
+            <mds:icon :icon="$icon" @class(['size-4' => $inline, 'size-6' => ! $inline]) />
         </span>
     </div>
 

@@ -32,7 +32,7 @@ $text ??= $size === null ? null : \MajidDs\Support\Persian::fileSize($size, $fa)
             'bg-red-50 text-red-500 dark:bg-red-400/10 dark:text-red-400' => $invalid,
             'bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400' => ! $invalid,
         ])>
-            <flux:icon :icon="$icon" class="size-5" />
+            <mds:icon :icon="$icon" class="size-5" />
         </div>
     @endif
 

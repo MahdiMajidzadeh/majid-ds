@@ -134,7 +134,7 @@ document.addEventListener('alpine:init', () => {
     @if (filled($error))
         {{-- Same markup as flux:error, without its dependency on the session error bag... --}}
         <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400" data-flux-error>
-            <flux:icon icon="exclamation-triangle" variant="mini" class="inline" />
+            <mds:icon icon="exclamation-triangle" variant="mini" class="inline size-4" />
             {{ $error }}
         </div>
     @endif

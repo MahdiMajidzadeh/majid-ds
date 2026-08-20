@@ -1,6 +1,8 @@
 providers:
   - Livewire\LivewireServiceProvider
   - Flux\FluxServiceProvider
+  - BladeUI\Icons\BladeIconsServiceProvider
+  - Afatmustafa\HugeIcons\BladeHugeIconsServiceProvider
   - MajidDs\MajidDsServiceProvider
 
 workbench:
