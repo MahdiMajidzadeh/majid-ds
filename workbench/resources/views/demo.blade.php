@@ -64,6 +64,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:navbar.item href="#overlays">منو و مودال</flux:navbar.item>
                 <flux:navbar.item href="#command" icon="command-line">کامند</flux:navbar.item>
                 <flux:navbar.item href="#color-picker" icon="swatch">انتخاب رنگ</flux:navbar.item>
+                <flux:navbar.item href="#file-upload" icon="cloud-arrow-up">بارگذاری فایل</flux:navbar.item>
                 <flux:navbar.item href="#table">جدول</flux:navbar.item>
                 <flux:navbar.item href="#mds" badge="جدید" badge-color="lime">اجزای mds</flux:navbar.item>
             </flux:navbar>
@@ -424,6 +425,86 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:text class="text-sm">حالت دکمه‌ای:</flux:text>
                 <mds:color-picker type="button" value="#8b5cf6" />
                 <mds:color-picker type="button" />
+            </div>
+        </flux:card>
+
+        {{-- ============================== File upload ============================== --}}
+        <flux:card id="file-upload" class="space-y-6">
+            <flux:heading size="lg">بارگذاری فایل — mds:file-upload</flux:heading>
+            <flux:text>نسخه آزاد از کامپوننت File Upload (در Flux فقط Pro) — کشیدن و رها کردن، انتخاب با کلیک، نوار پیشرفت آپلود Livewire، و فهرست فایل‌ها با حجم فارسی.</flux:text>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-3">
+                    <mds:file-upload name="photos" label="بارگذاری تصاویر" description="می‌توانید چند فایل را همزمان انتخاب کنید." accept="image/*" multiple>
+                        <mds:file-upload.dropzone
+                            heading="فایل‌ها را اینجا رها کنید یا کلیک کنید"
+                            text="JPG، PNG یا GIF تا ۱۰ مگابایت"
+                        />
+                    </mds:file-upload>
+
+                    <div class="flex flex-col gap-2">
+                        <mds:file-item heading="Profile_pic.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400">
+                            <x-slot name="actions">
+                                <mds:file-item.remove label="حذف Profile_pic.jpg" />
+                            </x-slot>
+                        </mds:file-item>
+
+                        <mds:file-item heading="قرارداد-فروش.pdf" :size="2411724">
+                            <x-slot name="actions">
+                                <mds:file-item.remove label="حذف قرارداد-فروش.pdf" />
+                            </x-slot>
+                        </mds:file-item>
+
+                        <mds:file-item heading="archive.zip" text="حجم فایل بیش از ۱۰ مگابایت است." icon="exclamation-triangle" invalid>
+                            <x-slot name="actions">
+                                <mds:file-item.remove label="حذف archive.zip" />
+                            </x-slot>
+                        </mds:file-item>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <mds:file-upload name="invoice" label="حالت فشرده (inline)" accept="application/pdf">
+                        <mds:file-upload.dropzone
+                            heading="فایل را رها کنید یا کلیک کنید"
+                            text="فقط PDF تا ۵ مگابایت"
+                            inline
+                        />
+                    </mds:file-upload>
+
+                    <mds:file-upload name="attachment" label="با نوار پیشرفت">
+                        <mds:file-upload.dropzone
+                            heading="افزودن پیوست"
+                            text="هر فرمتی تا ۲۰ مگابایت"
+                            inline
+                            with-progress
+                        />
+                    </mds:file-upload>
+
+                    <mds:file-upload label="غیرفعال" disabled>
+                        <mds:file-upload.dropzone heading="بارگذاری در دسترس نیست" text="ابتدا سفارش را ثبت کنید" inline />
+                    </mds:file-upload>
+
+                    <mds:file-upload name="broken" label="با خطای اعتبارسنجی" error="حجم فایل انتخابی بیش از حد مجاز است.">
+                        <mds:file-upload.dropzone heading="تصویر کالا" text="JPG یا PNG تا ۲ مگابایت" inline />
+                    </mds:file-upload>
+                </div>
+            </div>
+
+            <flux:separator text="بارگذارِ سفارشی (آواتار)" />
+
+            <div class="flex items-center gap-4">
+                <mds:file-upload name="avatar" accept="image/*">
+                    <div class="relative flex size-20 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 transition-colors hover:bg-zinc-200 in-data-dragging:border-accent dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/15">
+                        <flux:icon icon="user" variant="solid" class="text-zinc-500 dark:text-zinc-400" />
+
+                        <div class="absolute bottom-0 end-0 rounded-full bg-white dark:bg-zinc-800">
+                            <flux:icon icon="arrow-up-circle" variant="solid" class="text-zinc-500 dark:text-zinc-400" />
+                        </div>
+                    </div>
+                </mds:file-upload>
+
+                <flux:text>هر HTML دلخواهی داخل <code>&lt;mds:file-upload&gt;</code> رفتار کامل بارگذاری را می‌گیرد؛ با <code>in-data-dragging:</code> و <code>in-data-loading:</code> می‌توانید حالت‌ها را استایل بدهید.</flux:text>
             </div>
         </flux:card>
 
