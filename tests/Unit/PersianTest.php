@@ -45,6 +45,21 @@ class PersianTest extends TestCase
         $this->assertSame('۱۰۰ ریال', Persian::money(100));
     }
 
+    public function test_it_formats_file_sizes(): void
+    {
+        $this->assertSame('۰ بایت', Persian::fileSize(0));
+        $this->assertSame('۹۰۰ بایت', Persian::fileSize(900));
+        $this->assertSame('۱۵۹ کیلوبایت', Persian::fileSize(162400));
+        $this->assertSame('۱٫۵ مگابایت', Persian::fileSize(1572864));
+        $this->assertSame('۲ گیگابایت', Persian::fileSize(2 * 1024 ** 3));
+    }
+
+    public function test_file_size_supports_latin_digits(): void
+    {
+        $this->assertSame('159 کیلوبایت', Persian::fileSize(162400, false));
+        $this->assertSame('1.5 مگابایت', Persian::fileSize(1572864, false));
+    }
+
     public function test_it_renders_relative_time(): void
     {
         $this->assertSame('لحظاتی پیش', Persian::ago(new \DateTimeImmutable('-10 seconds')));

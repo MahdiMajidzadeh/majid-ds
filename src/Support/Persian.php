@@ -69,6 +69,33 @@ class Persian
     }
 
     /**
+     * Format a byte count with Persian units, e.g. "۱۵۹ کیلوبایت".
+     */
+    public static function fileSize(mixed $bytes, ?bool $persianDigits = null): string
+    {
+        $persianDigits ??= config('mds.persian_digits', true);
+
+        $units = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت', 'ترابایت'];
+
+        $bytes = max(0.0, (float) $bytes);
+        $unit = 0;
+
+        while ($bytes >= 1024 && $unit < count($units) - 1) {
+            $bytes /= 1024;
+            $unit++;
+        }
+
+        // Whole numbers, byte counts, and values of 100+ read better without a fraction...
+        $decimals = ($unit === 0 || $bytes >= 100 || $bytes === floor($bytes)) ? 0 : 1;
+
+        $number = $persianDigits
+            ? static::number($bytes, $decimals)
+            : number_format($bytes, $decimals);
+
+        return $number.' '.$units[$unit];
+    }
+
+    /**
      * A short human-readable "time ago" phrase in Persian, e.g. "۵ دقیقه پیش".
      */
     public static function ago(mixed $date): string

@@ -37,6 +37,11 @@ class MdsManager
         return Jalali::format($date, $format, $persianDigits);
     }
 
+    public function fileSize(mixed $bytes, ?bool $persianDigits = null): string
+    {
+        return Persian::fileSize($bytes, $persianDigits);
+    }
+
     public function ago(mixed $date): string
     {
         return Persian::ago($date);

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string rial(mixed $amount)
  * @method static string jalali(mixed $date, string $format = 'j F Y', ?bool $persianDigits = null)
  * @method static string ago(mixed $date)
+ * @method static string fileSize(mixed $bytes, ?bool $persianDigits = null)
  *
  * @see \MajidDs\MdsManager
  */
