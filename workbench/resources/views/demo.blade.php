@@ -68,6 +68,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:navbar.item href="#color-picker" icon="swatch">انتخاب رنگ</flux:navbar.item>
                 <flux:navbar.item href="#file-upload" icon="cloud-arrow-up">بارگذاری فایل</flux:navbar.item>
                 <flux:navbar.item href="#timeline" icon="clock">خط زمانی</flux:navbar.item>
+                <flux:navbar.item href="#icons" icon="sparkles">آیکون‌ها</flux:navbar.item>
                 <flux:navbar.item href="#table">جدول</flux:navbar.item>
                 <flux:navbar.item href="#mds" badge="جدید" badge-color="lime">اجزای mds</flux:navbar.item>
             </flux:navbar>
@@ -499,10 +500,10 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             <div class="flex items-center gap-4">
                 <mds:file-upload name="avatar" accept="image/*">
                     <div class="relative flex size-20 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 transition-colors hover:bg-zinc-200 in-data-dragging:border-accent dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/15">
-                        <flux:icon icon="user" variant="solid" class="text-zinc-500 dark:text-zinc-400" />
+                        <mds:icon icon="user" class="text-zinc-500 dark:text-zinc-400" />
 
                         <div class="absolute bottom-0 end-0 rounded-full bg-white dark:bg-zinc-800">
-                            <flux:icon icon="arrow-up-circle" variant="solid" class="text-zinc-500 dark:text-zinc-400" />
+                            <mds:icon icon="arrow-up-circle" class="size-5 text-zinc-500 dark:text-zinc-400" />
                         </div>
                     </div>
                 </mds:file-upload>
@@ -717,6 +718,84 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                     </mds:timeline.item>
                 </mds:timeline>
             </div>
+        </flux:card>
+
+        {{-- ============================== Icons ============================== --}}
+        <flux:card id="icons" class="space-y-6">
+            <flux:heading size="lg">آیکون‌ها — mds:icon</flux:heading>
+            <flux:text>آیکون‌های <a href="https://hugeicons.com" class="underline">Hugeicons</a> جایگزین heroicons در همه اجزای mds شده‌اند. مجموعه رایگان Stroke Rounded (۶٬۲۰۰ آیکون) همراه بسته می‌آید؛ نام‌های heroicons هم از طریق نقشه معادل‌ها کار می‌کنند.</flux:text>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-3">
+                    <flux:subheading>نام مستقیم Hugeicons</flux:subheading>
+
+                    <div class="flex flex-wrap items-center gap-4 text-zinc-600 dark:text-zinc-300">
+                        @foreach (['shopping-cart-01', 'truck-delivery', 'discount-tag-01', 'wallet-01', 'store-01', 'gift', 'coins-01', 'delivery-box-01'] as $sample)
+                            <flux:tooltip :content="$sample">
+                                <div><mds:icon :icon="$sample" /></div>
+                            </flux:tooltip>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <flux:subheading>نام heroicons (نقشه معادل‌ها)</flux:subheading>
+
+                    <div class="flex flex-wrap items-center gap-4 text-zinc-600 dark:text-zinc-300">
+                        @foreach (['magnifying-glass', 'shopping-bag', 'credit-card', 'exclamation-triangle', 'heart', 'map-pin', 'trash', 'user'] as $sample)
+                            <flux:tooltip :content="$sample.' → '.(\MajidDs\Support\Icons::ALIASES[$sample] ?? $sample)">
+                                <div><mds:icon :icon="$sample" /></div>
+                            </flux:tooltip>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <flux:separator />
+
+            <div class="grid gap-6 md:grid-cols-3">
+                <div class="space-y-3">
+                    <flux:subheading>اندازه با کلاس‌های Tailwind</flux:subheading>
+
+                    <div class="flex items-end gap-3 text-zinc-600 dark:text-zinc-300">
+                        <mds:icon icon="package" class="size-4" />
+                        <mds:icon icon="package" class="size-5" />
+                        <mds:icon icon="package" />
+                        <mds:icon icon="package" class="size-8" />
+                        <mds:icon icon="package" class="size-10" />
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <flux:subheading>ضخامت خط (stroke)</flux:subheading>
+
+                    <div class="flex items-center gap-3 text-zinc-600 dark:text-zinc-300">
+                        <mds:icon icon="notification-01" class="size-8" :stroke="1" />
+                        <mds:icon icon="notification-01" class="size-8" />
+                        <mds:icon icon="notification-01" class="size-8" :stroke="2" />
+                        <mds:icon icon="notification-01" class="size-8" :stroke="3" />
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <flux:subheading>رنگ و دسترس‌پذیری</flux:subheading>
+
+                    <div class="flex items-center gap-3">
+                        <mds:icon icon="checkmark-circle-02" class="size-8 text-green-500" label="تأیید شد" />
+                        <mds:icon icon="alert-02" class="size-8 text-amber-500" label="هشدار" />
+                        <mds:icon icon="cancel-circle" class="size-8 text-red-500" label="خطا" />
+                        <mds:icon icon="favourite" class="size-8 text-accent" />
+                    </div>
+                </div>
+            </div>
+
+            <flux:callout icon="information-circle" heading="سبک‌های Pro">
+                <flux:callout.text>
+                    فقط سبک Stroke Rounded رایگان است. برای هشت سبک دیگر، خروجی لایسنس خودتان را در
+                    <code>config('mds.icons.sets')</code> ثبت کنید — این بسته هیچ فایل Pro را همراه خود ندارد.
+                    با <code>config('mds.icons.default') = 'flux'</code> همه‌چیز به heroicons برمی‌گردد.
+                </flux:callout.text>
+            </flux:callout>
         </flux:card>
 
         {{-- ============================== Breadcrumbs ============================== --}}
