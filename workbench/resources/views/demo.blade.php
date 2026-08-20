@@ -65,6 +65,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:navbar.item href="#command" icon="command-line">کامند</flux:navbar.item>
                 <flux:navbar.item href="#color-picker" icon="swatch">انتخاب رنگ</flux:navbar.item>
                 <flux:navbar.item href="#file-upload" icon="cloud-arrow-up">بارگذاری فایل</flux:navbar.item>
+                <flux:navbar.item href="#timeline" icon="clock">خط زمانی</flux:navbar.item>
                 <flux:navbar.item href="#table">جدول</flux:navbar.item>
                 <flux:navbar.item href="#mds" badge="جدید" badge-color="lime">اجزای mds</flux:navbar.item>
             </flux:navbar>
@@ -505,6 +506,214 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 </mds:file-upload>
 
                 <flux:text>هر HTML دلخواهی داخل <code>&lt;mds:file-upload&gt;</code> رفتار کامل بارگذاری را می‌گیرد؛ با <code>in-data-dragging:</code> و <code>in-data-loading:</code> می‌توانید حالت‌ها را استایل بدهید.</flux:text>
+            </div>
+        </flux:card>
+
+        {{-- ============================== Timeline ============================== --}}
+        <flux:card id="timeline" class="space-y-6">
+            <flux:heading size="lg">خط زمانی — mds:timeline</flux:heading>
+            <flux:text>نسخه آزاد از کامپوننت Timeline (در Flux فقط Pro) — عمودی و افقی، وضعیت مرحله‌ها، نشانگرهای رنگی و بلوک‌های تمام‌عرض. ریل زمانی روی محور راست‌چین قرار می‌گیرد.</flux:text>
+
+            <div class="grid gap-8 md:grid-cols-2">
+                <div class="space-y-4">
+                    <flux:subheading>پیش‌فرض</flux:subheading>
+
+                    <mds:timeline>
+                        <mds:timeline.item>
+                            <mds:timeline.indicator>
+                                <flux:icon icon="shopping-bag" variant="micro" />
+                            </mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>سفارش ثبت شد <flux:text inline>· <mds:jalali-date :date="now()->subDays(4)" ago /></flux:text></flux:heading>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+
+                        <mds:timeline.item>
+                            <mds:timeline.indicator>
+                                <flux:icon icon="banknotes" variant="micro" />
+                            </mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>پرداخت تأیید شد <flux:badge size="sm" color="lime">آنلاین</flux:badge></flux:heading>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+
+                        <mds:timeline.item>
+                            <mds:timeline.indicator color="green">
+                                <flux:icon icon="check" variant="micro" />
+                            </mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>تحویل داده شد <flux:text inline>· <mds:jalali-date :date="now()->subDays(1)" /></flux:text></flux:heading>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+                    </mds:timeline>
+                </div>
+
+                <div class="space-y-4">
+                    <flux:subheading>بزرگ (size="lg") با مرحله‌های شماره‌دار</flux:subheading>
+
+                    <mds:timeline size="lg" align="start">
+                        <mds:timeline.item status="complete">
+                            <mds:timeline.indicator>@fa(1)</mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>سبد خرید</flux:heading>
+                                <flux:text>کالاها را بررسی و تعداد را نهایی کنید.</flux:text>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+
+                        <mds:timeline.item status="current">
+                            <mds:timeline.indicator>@fa(2)</mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>آدرس و زمان ارسال</flux:heading>
+                                <flux:text>نشانی گیرنده و بازه تحویل را انتخاب کنید.</flux:text>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+
+                        <mds:timeline.item status="incomplete">
+                            <mds:timeline.indicator>@fa(3)</mds:timeline.indicator>
+                            <mds:timeline.content>
+                                <flux:heading>پرداخت</flux:heading>
+                                <flux:text>پرداخت آنلاین یا در محل.</flux:text>
+                            </mds:timeline.content>
+                        </mds:timeline.item>
+                    </mds:timeline>
+                </div>
+            </div>
+
+            <flux:separator text="افقی + وضعیت مرحله" />
+
+            <mds:timeline horizontal>
+                <mds:timeline.item status="complete">
+                    <mds:timeline.indicator>
+                        <flux:icon icon="credit-card" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>پرداخت شد</flux:heading>
+                        <flux:text>@jalali(now()->subDays(2))</flux:text>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+
+                <mds:timeline.item status="complete">
+                    <mds:timeline.indicator>
+                        <flux:icon icon="archive-box" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>بسته‌بندی شد</flux:heading>
+                        <flux:text>@jalali(now()->subDays(1))</flux:text>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+
+                <mds:timeline.item status="current">
+                    <mds:timeline.indicator>
+                        <flux:icon icon="truck" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>در حال ارسال</flux:heading>
+                        <flux:text>پیک در راه است</flux:text>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+
+                <mds:timeline.item status="incomplete">
+                    <mds:timeline.indicator>
+                        <flux:icon icon="home" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>تحویل به مشتری</flux:heading>
+                        <flux:text>تا فردا</flux:text>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+            </mds:timeline>
+
+            <flux:separator text="ترازبندی نشانگر با متن بلند (align)" />
+
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                @foreach (['start' => 'ابتدا', 'baseline' => 'خط اول متن', 'center' => 'وسط (پیش‌فرض)', 'end' => 'انتها'] as $alignment => $alignmentLabel)
+                    <div class="space-y-3">
+                        <flux:subheading>{{ $alignmentLabel }} — <code>{{ $alignment }}</code></flux:subheading>
+
+                        <mds:timeline :align="$alignment">
+                            <mds:timeline.item>
+                                <mds:timeline.indicator>@fa(1)</mds:timeline.indicator>
+                                <mds:timeline.content>
+                                    <flux:heading>ارسال مدارک</flux:heading>
+                                    <flux:text>تصویر کارت ملی و آخرین مدرک تحصیلی را بارگذاری کنید تا کارشناسان پرونده شما را بررسی کنند.</flux:text>
+                                </mds:timeline.content>
+                            </mds:timeline.item>
+
+                            <mds:timeline.item>
+                                <mds:timeline.indicator>@fa(2)</mds:timeline.indicator>
+                                <mds:timeline.content>
+                                    <flux:heading>بررسی نهایی</flux:heading>
+                                </mds:timeline.content>
+                            </mds:timeline.item>
+                        </mds:timeline>
+                    </div>
+                @endforeach
+            </div>
+
+            <flux:separator text="نشانگر رنگی، بدون قالب (bare) و بلوک" />
+
+            <div class="grid gap-8 md:grid-cols-2">
+                <mds:timeline>
+                    <mds:timeline.item>
+                        <mds:timeline.indicator color="red">
+                            <flux:icon icon="x-mark" variant="micro" />
+                        </mds:timeline.indicator>
+                        <mds:timeline.content>
+                            <flux:heading>استقرار ناموفق بود</flux:heading>
+                        </mds:timeline.content>
+                    </mds:timeline.item>
+
+                    <mds:timeline.item>
+                        <mds:timeline.indicator color="amber">
+                            <flux:icon icon="exclamation-triangle" variant="micro" />
+                        </mds:timeline.indicator>
+                        <mds:timeline.content>
+                            <flux:heading>هشدار صادر شد</flux:heading>
+                        </mds:timeline.content>
+                    </mds:timeline.item>
+
+                    <mds:timeline.item align="baseline" class="[--mds-timeline-baseline:1.75rem]">
+                        <mds:timeline.indicator variant="bare">
+                            <flux:icon icon="rocket-launch" class="size-6 text-zinc-400" />
+                        </mds:timeline.indicator>
+                        <mds:timeline.content>
+                            <flux:heading size="lg">منتشر شد</flux:heading>
+                            <flux:text>نشانگر روی خط اول عنوان بزرگ می‌نشیند (align="baseline").</flux:text>
+                        </mds:timeline.content>
+                    </mds:timeline.item>
+                </mds:timeline>
+
+                <mds:timeline>
+                    <mds:timeline.item>
+                        <mds:timeline.indicator>
+                            <flux:icon icon="chat-bubble-left-right" variant="micro" />
+                        </mds:timeline.indicator>
+                        <mds:timeline.content>
+                            <flux:heading>مهدی <flux:text inline>دیدگاهی ثبت کرد · @jalali(now()->subDays(3))</flux:text></flux:heading>
+                        </mds:timeline.content>
+                    </mds:timeline.item>
+
+                    <mds:timeline.item>
+                        <mds:timeline.block class="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5">
+                            <mds:timeline.subgrid class="p-3">
+                                <flux:avatar size="xs" circle src="https://picsum.photos/seed/user/64/64" />
+                                <div class="space-y-1">
+                                    <flux:heading>پشتیبانی <flux:text inline>پاسخ داد</flux:text></flux:heading>
+                                    <flux:text>مرسوله شما امروز از انبار تهران ارسال می‌شود.</flux:text>
+                                </div>
+                            </mds:timeline.subgrid>
+                        </mds:timeline.block>
+                    </mds:timeline.item>
+
+                    <mds:timeline.item>
+                        <mds:timeline.indicator color="green">
+                            <flux:icon icon="check" variant="micro" />
+                        </mds:timeline.indicator>
+                        <mds:timeline.content>
+                            <flux:heading>تیکت بسته شد</flux:heading>
+                        </mds:timeline.content>
+                    </mds:timeline.item>
+                </mds:timeline>
             </div>
         </flux:card>
 
