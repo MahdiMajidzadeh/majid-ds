@@ -1,0 +1,11 @@
+providers:
+  - Livewire\LivewireServiceProvider
+  - Flux\FluxServiceProvider
+  - MajidDs\MajidDsServiceProvider
+
+workbench:
+  start: '/demo'
+  install: true
+  discovers:
+    web: true
+    views: true

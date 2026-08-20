@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+/.phpunit.cache
+composer.lock
+workbench/public/demo.css
+.DS_Store
+.phpunit.result.cache

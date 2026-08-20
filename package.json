@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "demo:css": "tailwindcss -i workbench/resources/css/demo-input.css -o workbench/public/demo.css --minify",
+    "demo:serve": "vendor/bin/testbench serve --port=8720 --no-reload"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

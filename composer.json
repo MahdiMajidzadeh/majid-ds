@@ -1,0 +1,65 @@
+{
+    "name": "mahdimajidzadeh/majid-ds",
+    "description": "Majid DS — an RTL/Persian-first UI kit for Laravel Livewire, built on top of Flux UI with extra e-commerce components.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/MahdiMajidzadeh/majid-ds",
+    "support": {
+        "issues": "https://github.com/MahdiMajidzadeh/majid-ds/issues",
+        "source": "https://github.com/MahdiMajidzadeh/majid-ds"
+    },
+    "keywords": [
+        "laravel",
+        "livewire",
+        "flux",
+        "blade",
+        "ui-kit",
+        "rtl",
+        "persian",
+        "farsi",
+        "e-commerce"
+    ],
+    "authors": [
+        {
+            "name": "Mahdi Majidzadeh"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0|^12.0",
+        "livewire/flux": "^2.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MajidDs\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MajidDs\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MajidDs\\MajidDsServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": false
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
