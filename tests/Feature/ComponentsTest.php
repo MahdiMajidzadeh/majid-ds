@@ -238,6 +238,100 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۳ ساعت پیش', $html);
     }
 
+    public function test_file_upload_renders_field_and_file_input(): void
+    {
+        $html = $this->render('<mds:file-upload name="photos" label="بارگذاری تصاویر" description="حداکثر ۱۰ مگابایت" multiple accept="image/*"><mds:file-upload.dropzone /></mds:file-upload>');
+
+        $this->assertStringContainsString('data-mds-file-upload', $html);
+        $this->assertStringContainsString('data-mds-file-upload-dropzone', $html);
+        $this->assertStringContainsString('type="file"', $html);
+        $this->assertStringContainsString('name="photos[]"', $html);
+        $this->assertStringContainsString('multiple', $html);
+        $this->assertStringContainsString('accept="image/*"', $html);
+        $this->assertStringContainsString('بارگذاری تصاویر', $html);
+        $this->assertStringContainsString('حداکثر ۱۰ مگابایت', $html);
+    }
+
+    public function test_file_upload_single_does_not_append_array_brackets(): void
+    {
+        $html = $this->render('<mds:file-upload name="photo" />');
+
+        $this->assertStringContainsString('name="photo"', $html);
+        $this->assertStringNotContainsString('name="photo[]"', $html);
+    }
+
+    public function test_file_upload_forwards_wire_model_to_the_file_input(): void
+    {
+        $html = $this->render('<mds:file-upload wire:model="photos" multiple />');
+
+        // wire:model must land on the file input itself, not the wrapper...
+        $this->assertMatchesRegularExpression('/<input\s[^>]*type="file"[^>]*wire:model="photos"/', $html);
+    }
+
+    public function test_file_upload_disabled_state(): void
+    {
+        $html = $this->render('<mds:file-upload disabled />');
+
+        $this->assertStringContainsString('disabled', $html);
+        $this->assertStringContainsString('cursor-not-allowed', $html);
+    }
+
+    public function test_file_upload_renders_error_message(): void
+    {
+        $html = $this->render('<mds:file-upload error="حجم فایل بیش از حد مجاز است." />');
+
+        $this->assertStringContainsString('حجم فایل بیش از حد مجاز است.', $html);
+        $this->assertStringContainsString('aria-invalid="true"', $html);
+    }
+
+    public function test_file_upload_falls_back_to_the_validation_error_bag(): void
+    {
+        $bag = new \Illuminate\Support\ViewErrorBag;
+        $bag->put('default', new \Illuminate\Support\MessageBag(['photos' => ['هر فایل باید کمتر از ۱۰ مگابایت باشد.']]));
+
+        // ShareErrorsFromSession shares the bag view-wide; mirror that here...
+        \Illuminate\Support\Facades\View::share('errors', $bag);
+
+        $html = $this->render('<mds:file-upload name="photos" multiple />');
+
+        $this->assertStringContainsString('هر فایل باید کمتر از ۱۰ مگابایت باشد.', $html);
+    }
+
+    public function test_dropzone_inline_and_progress_variants(): void
+    {
+        $html = $this->render('<mds:file-upload><mds:file-upload.dropzone heading="رها کنید" text="JPG تا ۱۰ مگابایت" inline with-progress /></mds:file-upload>');
+
+        $this->assertStringContainsString('رها کنید', $html);
+        $this->assertStringContainsString('JPG تا ۱۰ مگابایت', $html);
+        $this->assertStringContainsString('role="progressbar"', $html);
+    }
+
+    public function test_file_item_formats_size_in_persian(): void
+    {
+        $html = $this->render('<mds:file-item heading="Profile_pic.jpg" :size="162400" />');
+
+        $this->assertStringContainsString('data-mds-file-item', $html);
+        $this->assertStringContainsString('Profile_pic.jpg', $html);
+        $this->assertStringContainsString('۱۵۹ کیلوبایت', $html);
+    }
+
+    public function test_file_item_renders_image_preview_and_actions_slot(): void
+    {
+        $html = $this->render('<mds:file-item heading="banner.jpg" image="/img/banner.jpg"><x-slot name="actions"><mds:file-item.remove /></x-slot></mds:file-item>');
+
+        $this->assertStringContainsString('src="/img/banner.jpg"', $html);
+        $this->assertStringContainsString('data-mds-file-item-remove', $html);
+        $this->assertStringContainsString('aria-label="حذف فایل"', $html);
+    }
+
+    public function test_file_item_remove_forwards_wire_click_and_custom_label(): void
+    {
+        $html = $this->render('<mds:file-item.remove wire:click="removePhoto(1)" label="حذف banner.jpg" />');
+
+        $this->assertStringContainsString('wire:click="removePhoto(1)"', $html);
+        $this->assertStringContainsString('aria-label="حذف banner.jpg"', $html);
+    }
+
     public function test_x_mds_namespace_also_works(): void
     {
         $html = $this->render('<x-mds::rating :value="3" />');
