@@ -31,6 +31,11 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
+## Documentation
+
+- **Human docs**: [docs/index.html](docs/index.html) — the full reference (setup, every component, every prop) as a single self-contained page. Enable GitHub Pages on `/docs` to host it.
+- **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
+
 ## Requirements
 
 - PHP 8.2+, Laravel 11+

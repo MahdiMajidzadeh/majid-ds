@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Majid DS Docs</title>
+<meta name="description" content="Documentation for Majid DS — an RTL/Persian-first UI kit for Laravel Livewire, built on top of Flux UI.">
+</head>
+<body>
+<!--CONTENT-START-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Vazirmatn:wght@400;600;700&display=swap">
+<style>
+:root {
+  --bg: #f7f8f8;
+  --surface: #ffffff;
+  --surface2: #eff3f2;
+  --ink: #1f2426;
+  --muted: #687275;
+  --line: #e2e7e6;
+  --accent: #0e8074;
+  --accent-soft: #0e807414;
+  --rose: #e11d48;
+  --rose-soft: #e11d4814;
+  --amber: #d97706;
+  --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+  --body: 'Figtree', 'Vazirmatn', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Vazirmatn', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1212;
+    --surface: #161a1a;
+    --surface2: #1d2323;
+    --ink: #e8ecec;
+    --muted: #9aa5a4;
+    --line: #262d2d;
+    --accent: #35b8ab;
+    --accent-soft: #35b8ab1c;
+    --rose: #fb7185;
+    --rose-soft: #fb718522;
+    --amber: #fbbf24;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1212;
+  --surface: #161a1a;
+  --surface2: #1d2323;
+  --ink: #e8ecec;
+  --muted: #9aa5a4;
+  --line: #262d2d;
+  --accent: #35b8ab;
+  --accent-soft: #35b8ab1c;
+  --rose: #fb7185;
+  --rose-soft: #fb718522;
+  --amber: #fbbf24;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 48px;
+}
+header.site {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+header.site .bar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.brand {
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.brand .fa { color: var(--accent); font-family: 'Vazirmatn', var(--body); font-weight: 700; }
+.version {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.bar .links { margin-inline-start: auto; display: flex; gap: 18px; font-size: 14px; }
+.bar .links a { color: var(--muted); text-decoration: none; }
+.bar .links a:hover { color: var(--accent); }
+nav.side {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 48px;
+  font-size: 13.5px;
+}
+nav.side .group { margin-bottom: 22px; }
+nav.side .eyebrow {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+nav.side a {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 3px 10px;
+  border-inline-start: 2px solid transparent;
+  border-radius: 0 6px 6px 0;
+}
+nav.side a:hover { color: var(--accent); border-inline-start-color: var(--accent); background: var(--accent-soft); }
+nav.side a code { font-family: var(--mono); font-size: 12px; background: none; padding: 0; }
+main { padding: 36px 0 90px; min-width: 0; }
+h1 {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  text-wrap: balance;
+}
+.lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0 0 8px; }
+h2 {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  padding-top: 56px;
+  text-wrap: balance;
+}
+h2 code, h3 code { font-family: var(--mono); font-size: 0.86em; color: var(--accent); background: none; padding: 0; }
+h3 { font-family: var(--display); font-size: 16.5px; font-weight: 600; margin: 30px 0 8px; }
+section > p, section > ul { max-width: 68ch; }
+p { margin: 0 0 14px; }
+ul { margin: 0 0 14px; padding-inline-start: 22px; }
+li { margin-bottom: 4px; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--surface2);
+  border-radius: 5px;
+  padding: 1.5px 5px;
+}
+pre {
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+pre code { background: none; padding: 0; font-size: 12.8px; }
+pre .c { color: var(--muted); }
+.section-rule { border: 0; border-top: 1px solid var(--line); margin: 56px 0 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 6px 0 20px;
+  display: block;
+  overflow-x: auto;
+}
+th, td { text-align: start; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+td:first-child code { color: var(--accent); background: none; padding: 0; }
+td .fa-text { font-family: 'Vazirmatn', var(--body); }
+.pill {
+  display: inline-block;
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 10px;
+  vertical-align: 2px;
+  margin-inline-start: 8px;
+}
+.pill.pro { background: var(--rose-soft); color: var(--rose); }
+.pill.fa-first { background: var(--accent-soft); color: var(--accent); }
+.note {
+  border-inline-start: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  margin: 0 0 16px;
+  font-size: 14px;
+  max-width: 68ch;
+}
+.note strong { color: var(--accent); }
+.preview {
+  direction: rtl;
+  font-family: 'Vazirmatn', var(--body);
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+}
+.preview .cap {
+  direction: ltr;
+  font-family: var(--body);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  width: 100%;
+}
+.stars { color: #f59e0b; letter-spacing: 2px; }
+.stars .off { color: var(--line); }
+.pv-num { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pv-muted { color: var(--muted); font-size: 13px; }
+.pv-badge {
+  background: var(--rose);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.pv-del { color: var(--muted); text-decoration: line-through; font-size: 12px; display: block; }
+.pv-price { font-weight: 700; font-size: 17px; }
+.pv-unit { font-size: 12px; color: var(--muted); }
+.pv-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-weight: 600;
+}
+.pv-qty .op { color: var(--accent); font-weight: 700; }
+kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 5px;
+  background: var(--surface);
+}
+footer.site {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  padding: 24px;
+  text-align: center;
+}
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; }
+  nav.side { position: static; max-height: none; padding-bottom: 0; }
+  nav.side .group { display: inline-block; vertical-align: top; margin-inline-end: 28px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+
+<header class="site">
+  <div class="bar">
+    <span class="brand">Majid DS <span class="fa">· مجید</span></span>
+    <span class="version">v0.1.0</span>
+    <span class="links">
+      <a href="https://github.com/MahdiMajidzadeh/majid-ds">GitHub</a>
+      <a href="https://github.com/MahdiMajidzadeh/majid-ds/blob/main/llms.txt">llms.txt — docs for AI agents</a>
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="side" aria-label="Documentation sections">
+  <div class="group">
+    <div class="eyebrow">Getting started</div>
+    <a href="#install">Installation</a>
+    <a href="#stylesheet">Stylesheet</a>
+    <a href="#layout">Layout</a>
+    <a href="#config">Configuration</a>
+    <a href="#customizing">Customizing views</a>
+  </div>
+  <div class="group">
+    <div class="eyebrow">Reference</div>
+    <a href="#directives">Blade directives</a>
+    <a href="#helpers">PHP helpers</a>
+    <a href="#css-layer">CSS layer</a>
+  </div>
+  <div class="group">
+    <div class="eyebrow">Components</div>
+    <a href="#rating"><code>mds:rating</code></a>
+    <a href="#rating-input"><code>mds:rating.input</code></a>
+    <a href="#price"><code>mds:price</code></a>
+    <a href="#discount-badge"><code>mds:discount-badge</code></a>
+    <a href="#quantity"><code>mds:quantity</code></a>
+    <a href="#product-card"><code>mds:product-card</code></a>
+    <a href="#stepper"><code>mds:stepper</code></a>
+    <a href="#countdown"><code>mds:countdown</code></a>
+    <a href="#jalali-date"><code>mds:jalali-date</code></a>
+    <a href="#empty-state"><code>mds:empty-state</code></a>
+    <a href="#command"><code>mds:command</code></a>
+    <a href="#color-picker"><code>mds:color-picker</code></a>
+  </div>
+  <div class="group">
+    <div class="eyebrow">Meta</div>
+    <a href="#ai-agents">For AI agents</a>
+  </div>
+</nav>
+
+<main>
+
+<h1>An RTL, Persian-first layer on top of Flux UI</h1>
+<p class="lede">Majid DS extends <a href="https://fluxui.dev">Flux UI</a> for Laravel Livewire. Every <code>&lt;flux:*&gt;</code> component keeps working untouched; an <code>&lt;mds:*&gt;</code> namespace adds Persian typography and digits, Jalali dates, Toman/Rial money, e-commerce components, and open implementations of two Flux Pro components.</p>
+<p class="lede">Requires PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. <code>livewire/flux</code> (free tier) installs automatically.</p>
+
+<hr class="section-rule">
+<section id="install">
+<h2>Installation</h2>
+<pre><code>composer require mahdimajidzadeh/ds</code></pre>
+<p>The service provider is auto-discovered. Both tag syntaxes work everywhere: <code>&lt;mds:rating /&gt;</code> and the standard <code>&lt;x-mds::rating /&gt;</code>.</p>
+<p><em>While the repo is private</em>, add it as a composer repository first — <code>{"type": "vcs", "url": "git@github.com:MahdiMajidzadeh/majid-ds.git"}</code> — or use a path repository during local development.</p>
+</section>
+
+<section id="stylesheet">
+<h2>Stylesheet</h2>
+<p>In <code>resources/css/app.css</code>, import the Majid DS layer after Tailwind and Flux:</p>
+<pre><code>@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
+
+@custom-variant dark (&amp;:where(.dark, .dark *));</code></pre>
+<p>The layer sets Vazirmatn as <code>--font-sans</code>, ships the <code>[x-cloak]</code> rule, keeps <code>type="tel"</code> and <code>[data-ltr]</code> inputs left-to-right inside RTL forms, and provides the checkerboard/range-slider styles used by <code>mds:color-picker</code>.</p>
+</section>
+
+<section id="layout">
+<h2>Layout</h2>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fa" dir="rtl"&gt;
+&lt;head&gt;
+    @mdsFonts          <span class="c">{{-- Vazirmatn &lt;link&gt; tags --}}</span>
+    @vite('resources/css/app.css')
+    @fluxAppearance    <span class="c">{{-- dark-mode handling --}}</span>
+&lt;/head&gt;
+&lt;body class="min-h-screen bg-zinc-50 font-sans antialiased dark:bg-zinc-900"&gt;
+    {{ $slot }}
+    @fluxScripts
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<div class="note"><strong>Alpine requirement.</strong> The interactive components (<code>quantity</code>, <code>countdown</code>, <code>rating.input</code>, <code>command</code>, <code>color-picker</code>) need Alpine. Livewire injects it on any page that renders a Livewire component; on purely static pages add <code>@livewireScripts</code>.</div>
+<p>For production traffic from Iran, self-host Vazirmatn instead of using <code>@mdsFonts</code> (Google Fonts can be slow or blocked).</p>
+</section>
+
+<section id="config">
+<h2>Configuration</h2>
+<pre><code>php artisan vendor:publish --tag=mds-config</code></pre>
+<table>
+<thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>mds.currency</code></td><td><code>'toman'</code></td><td>Default currency for <code>mds:price</code>, <code>@toman</code>-style directives, and <code>Persian::money()</code>. Accepts <code>toman</code>, <code>rial</code>, <code>none</code>, or any literal label (e.g. <span class="fa-text">«درهم»</span>).</td></tr>
+<tr><td><code>mds.persian_digits</code></td><td><code>true</code></td><td>Global default for rendering numbers with Persian digits (۰۱۲۳). Every component that displays numbers overrides this per-instance with <code>:fa="true|false"</code>.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="customizing">
+<h2>Customizing views</h2>
+<pre><code>php artisan vendor:publish --tag=mds-views   <span class="c"># copies to resources/views/mds/</span>
+php artisan vendor:publish --tag=mds-assets  <span class="c"># copies mds.css to resources/css/vendor/</span></code></pre>
+<p>App-level views in <code>resources/views/mds/</code> take precedence over the package's, exactly like Flux's own publish flow. Components use Flux's <code>--color-accent</code> tokens, so a single Flux theme customization restyles both libraries.</p>
+</section>
+
+<hr class="section-rule">
+<section id="directives">
+<h2>Blade directives</h2>
+<table>
+<thead><tr><th>Directive</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td><code>@fa(123)</code></td><td><span class="fa-text">۱۲۳</span> — digits only (Latin and Arabic-Indic → Persian)</td></tr>
+<tr><td><code>@faNum(2500000)</code></td><td><span class="fa-text">۲٬۵۰۰٬۰۰۰</span> — formatted with Persian separators <span class="fa-text">٬</span> / <span class="fa-text">٫</span></td></tr>
+<tr><td><code>@toman(2500000)</code></td><td><span class="fa-text">۲٬۵۰۰٬۰۰۰ تومان</span></td></tr>
+<tr><td><code>@rial(990)</code></td><td><span class="fa-text">۹۹۰ ریال</span></td></tr>
+<tr><td><code>@jalali('2026-08-20')</code></td><td><span class="fa-text">۲۹ مرداد ۱۴۰۵</span> — fixed <code>j F Y</code> format; use the facade for custom formats</td></tr>
+<tr><td><code>@mdsFonts</code></td><td>Vazirmatn <code>&lt;link&gt;</code> tags (preconnect + stylesheet) for the page head</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="helpers">
+<h2>PHP helpers</h2>
+<h3>The <code>Mds</code> facade</h3>
+<pre><code>use MajidDs\Mds;
+
+Mds::fa('order 123');            <span class="c">// order ۱۲۳</span>
+Mds::number(4.3, 1);             <span class="c">// ۴٫۳</span>
+Mds::money(2500000);             <span class="c">// ۲٬۵۰۰٬۰۰۰ تومان (config currency)</span>
+Mds::money(990, 'rial');         <span class="c">// ۹۹۰ ریال</span>
+Mds::toman(2500000);             <span class="c">// ۲٬۵۰۰٬۰۰۰ تومان</span>
+Mds::rial(990);                  <span class="c">// ۹۹۰ ریال</span>
+Mds::jalali(now(), 'Y/m/d');     <span class="c">// ۱۴۰۵/۰۵/۲۹</span>
+Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span></code></pre>
+<h3><code>MajidDs\Support\Persian</code></h3>
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>Persian::digits($value)</code></td><td>Latin/Arabic-Indic digits → Persian digits; other characters untouched.</td></tr>
+<tr><td><code>Persian::latinDigits($value)</code></td><td>Persian/Arabic-Indic digits → Latin. Useful for normalizing form input.</td></tr>
+<tr><td><code>Persian::number($value, $decimals = 0)</code></td><td>Number formatted with <span class="fa-text">٬</span> thousands and <span class="fa-text">٫</span> decimal separators, Persian digits.</td></tr>
+<tr><td><code>Persian::money($amount, $currency = null, $decimals = 0)</code></td><td>Formatted amount + currency label. <code>$currency</code>: <code>toman</code> | <code>rial</code> | <code>none</code> | literal | <code>null</code> → config.</td></tr>
+<tr><td><code>Persian::currencyLabel($currency)</code></td><td>The display label for a currency id (<span class="fa-text">تومان</span>, <span class="fa-text">ریال</span>, …).</td></tr>
+<tr><td><code>Persian::ago($date)</code></td><td>Relative phrase: <span class="fa-text">لحظاتی پیش، ۵ دقیقه پیش، ۲ روز دیگر</span>. Accepts DateTime, string, or timestamp.</td></tr>
+<tr><td><code>Persian::toDateTime($date)</code></td><td>Normalizes DateTime | string | int timestamp → <code>DateTimeImmutable</code>.</td></tr>
+</tbody>
+</table>
+<h3><code>MajidDs\Support\Jalali</code></h3>
+<p>Dependency-free Jalali (Shamsi) calendar, tested against PHP's <code>intl</code> Persian calendar across a 110-year range.</p>
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>Jalali::fromGregorian($gy, $gm, $gd)</code></td><td>→ <code>[$jy, $jm, $jd]</code>, e.g. <code>(2026, 8, 20)</code> → <code>[1405, 5, 29]</code>.</td></tr>
+<tr><td><code>Jalali::toGregorian($jy, $jm, $jd)</code></td><td>→ <code>[$gy, $gm, $gd]</code> — exact inverse.</td></tr>
+<tr><td><code>Jalali::format($date, $format = 'j F Y', $persianDigits = null)</code></td><td>Formats any date-ish value in the Jalali calendar. Tokens below.</td></tr>
+<tr><td><code>Jalali::MONTHS</code> / <code>Jalali::WEEKDAYS</code></td><td>Persian month names (1-indexed) and weekday names (keyed by PHP's <code>w</code>).</td></tr>
+</tbody>
+</table>
+<p><strong>Format tokens</strong>: <code>Y</code> year, <code>y</code> 2-digit year, <code>n</code>/<code>m</code> month, <code>j</code>/<code>d</code> day, <code>F</code> month name, <code>l</code>/<code>D</code> weekday name — plus time passthroughs <code>H G h g i s v</code> and <code>A</code>/<code>a</code> (<span class="fa-text">قبل‌ازظهر / بعدازظهر</span>). Escape a token with a backslash.</p>
+</section>
+
+<section id="css-layer">
+<h2>CSS layer</h2>
+<table>
+<thead><tr><th>Piece</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>@theme --font-sans</code></td><td>Vazirmatn first in Tailwind's sans stack — <code>font-sans</code> becomes Persian-ready everywhere.</td></tr>
+<tr><td><code>[x-cloak]</code></td><td>Hidden until Alpine boots — used by mds components' conditional UI.</td></tr>
+<tr><td><code>[dir='rtl'] input[type='tel'], [data-ltr]</code></td><td>Keeps phone numbers and codes left-to-right inside RTL forms, aligned to the inline end.</td></tr>
+<tr><td><code>.mds-checker</code></td><td>Checkerboard backdrop for transparent colors.</td></tr>
+<tr><td><code>.mds-range</code></td><td>Gradient range-slider styling (hue/alpha sliders).</td></tr>
+</tbody>
+</table>
+</section>
+
+<hr class="section-rule">
+<section id="rating">
+<h2><code>&lt;mds:rating&gt;</code></h2>
+<p>Star rating display with fractional fill (half stars render correctly in both directions).</p>
+<div class="preview">
+  <span class="cap">static preview</span>
+  <span><span class="stars">★★★★<span class="off">★</span></span> <span class="pv-num">۴٫۳</span> <span class="pv-muted">(۱۲۶)</span></span>
+  <span><span class="stars">★★★<span class="off">★★</span></span> <span class="pv-num">۳</span></span>
+</div>
+<pre><code>&lt;mds:rating :value="4.3" :count="126" /&gt;
+&lt;mds:rating :value="2.5" size="lg" /&gt;
+&lt;mds:rating :value="3.7" :fa="false" /&gt;   <span class="c">{{-- Latin digits --}}</span></code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>value</code></td><td>float</td><td><code>0</code></td><td>Rating value; clamped to <code>0..max</code>. Fractions render as partial star fill.</td></tr>
+<tr><td><code>max</code></td><td>int</td><td><code>5</code></td><td>Number of stars.</td></tr>
+<tr><td><code>count</code></td><td>int|null</td><td><code>null</code></td><td>Review count shown in parentheses.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>show-value</code></td><td>bool</td><td><code>true</code></td><td>Show the numeric value next to the stars.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="rating-input">
+<h2><code>&lt;mds:rating.input&gt;</code></h2>
+<p>Interactive star input (integer stars) with hover preview. Renders <code>role="radiogroup"</code>; the value lives in a hidden input that emits <code>input</code> events, so <code>wire:model</code> and plain form posts both work.</p>
+<pre><code>&lt;mds:rating.input wire:model="score" /&gt;
+&lt;mds:rating.input name="score" :value="3" size="lg" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>value</code></td><td>int</td><td><code>0</code></td><td>Initial value.</td></tr>
+<tr><td><code>max</code></td><td>int</td><td><code>5</code></td><td>Number of stars.</td></tr>
+<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name for form submission.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>label</code></td><td>string</td><td><span class="fa-text">امتیاز</span></td><td>Accessible group label.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="price">
+<h2><code>&lt;mds:price&gt;</code></h2>
+<p>Price display with currency label, optional compare-at strikethrough, and an automatic discount badge — <code>percent = round((1 − amount/original) × 100)</code>.</p>
+<div class="preview">
+  <span class="cap">static preview</span>
+  <span style="display:flex;align-items:center;gap:10px">
+    <span class="pv-badge">۲۲٪</span>
+    <span><span class="pv-del">۳٬۲۰۰٬۰۰۰</span><span class="pv-price">۲٬۵۰۰٬۰۰۰</span> <span class="pv-unit">تومان</span></span>
+  </span>
+  <span><span class="pv-price">۸۹۰٬۰۰۰</span> <span class="pv-unit">تومان</span></span>
+</div>
+<pre><code>&lt;mds:price :amount="2500000" /&gt;
+&lt;mds:price :amount="2500000" :original="3200000" size="lg" /&gt;
+&lt;mds:price :amount="14500000" currency="rial" size="sm" /&gt;
+&lt;mds:price :amount="1200000" :fa="false" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>amount</code></td><td>number</td><td><code>0</code></td><td>Current price.</td></tr>
+<tr><td><code>original</code></td><td>number|null</td><td><code>null</code></td><td>Compare-at price. When higher than <code>amount</code>, renders strikethrough + discount badge.</td></tr>
+<tr><td><code>currency</code></td><td>string|null</td><td>config</td><td><code>toman</code> | <code>rial</code> | <code>none</code> | literal label.</td></tr>
+<tr><td><code>decimals</code></td><td>int</td><td><code>0</code></td><td>Decimal places.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
+<tr><td><code>badge</code></td><td>bool</td><td><code>true</code></td><td>Show the auto discount badge when <code>original</code> is present.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="discount-badge">
+<h2><code>&lt;mds:discount-badge&gt;</code></h2>
+<p>Red percentage pill. Pass <code>percent</code> directly, or <code>amount</code> + <code>original</code> and it computes.</p>
+<pre><code>&lt;mds:discount-badge :percent="20" /&gt;
+&lt;mds:discount-badge :amount="80000" :original="100000" size="lg" /&gt;   <span class="c">{{-- ۲۰٪ --}}</span></code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>percent</code></td><td>int|null</td><td><code>null</code></td><td>Discount percent. Computed from amounts when omitted.</td></tr>
+<tr><td><code>amount</code> / <code>original</code></td><td>number|null</td><td><code>null</code></td><td>Price pair used to compute the percent.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="quantity">
+<h2><code>&lt;mds:quantity&gt;</code></h2>
+<p>Cart quantity stepper. The <code>+</code> sits at the inline start (right in RTL). Buttons disable at the bounds. The hidden input always holds <em>Latin</em> digits and dispatches <code>input</code> events, so <code>wire:model</code> and form posts are safe regardless of the Persian display.</p>
+<div class="preview">
+  <span class="cap">static preview</span>
+  <span class="pv-qty"><span class="op">+</span> ۲ <span class="op">−</span></span>
+</div>
+<pre><code>&lt;mds:quantity wire:model.live="qty" :min="1" :max="5" /&gt;
+&lt;mds:quantity name="quantity" :value="2" size="lg" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>value</code></td><td>int|null</td><td><code>min</code></td><td>Initial value.</td></tr>
+<tr><td><code>min</code></td><td>int</td><td><code>1</code></td><td>Lower bound.</td></tr>
+<tr><td><code>max</code></td><td>int|null</td><td><code>null</code></td><td>Upper bound; <code>null</code> = unlimited.</td></tr>
+<tr><td><code>step</code></td><td>int</td><td><code>1</code></td><td>Increment step.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits for the display.</td></tr>
+<tr><td><code>increment-label</code> / <code>decrement-label</code></td><td>string</td><td><span class="fa-text">افزایش/کاهش تعداد</span></td><td>Accessible button labels.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="product-card">
+<h2><code>&lt;mds:product-card&gt;</code></h2>
+<p>Marketplace-style product card composing <code>flux:card</code>, <code>mds:rating</code>, <code>mds:price</code>, and <code>mds:discount-badge</code>. The slot renders an actions area (add-to-cart button, etc.).</p>
+<pre><code>&lt;mds:product-card
+    title="گوشی موبایل سامسونگ مدل Galaxy S25"
+    image="/images/phone.jpg"
+    :amount="42500000"
+    :original="48900000"
+    :rating="4.6"
+    :reviews="342"
+    badge="ارسال امروز"
+    href="/products/galaxy-s25"
+&gt;
+    &lt;flux:button variant="primary" size="sm" class="w-full"&gt;افزودن به سبد&lt;/flux:button&gt;
+&lt;/mds:product-card&gt;
+
+&lt;mds:product-card title="..." image="..." unavailable /&gt;   <span class="c">{{-- grayscale + ناموجود --}}</span></code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>title</code></td><td>string</td><td><code>''</code></td><td>Product title; clamps to two lines.</td></tr>
+<tr><td><code>image</code></td><td>string|null</td><td><code>null</code></td><td>Square product image URL. Placeholder icon when omitted.</td></tr>
+<tr><td><code>href</code></td><td>string|null</td><td><code>null</code></td><td>Link for image and title.</td></tr>
+<tr><td><code>amount</code> / <code>original</code></td><td>number|null</td><td><code>null</code></td><td>Price pair; discount badge renders when <code>original &gt; amount</code>.</td></tr>
+<tr><td><code>currency</code></td><td>string|null</td><td>config</td><td>Currency id or label.</td></tr>
+<tr><td><code>rating</code> / <code>reviews</code></td><td>number|null</td><td><code>null</code></td><td>Rating row (hidden when <code>rating</code> is null).</td></tr>
+<tr><td><code>badge</code></td><td>string|null</td><td><code>null</code></td><td>Corner badge text (top inline-start over the image).</td></tr>
+<tr><td><code>badge-color</code></td><td>string</td><td><code>lime</code></td><td>Any Flux badge color.</td></tr>
+<tr><td><code>unavailable</code></td><td>bool</td><td><code>false</code></td><td>Grayscale image, <span class="fa-text">«ناموجود»</span> instead of price.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off (cascades to rating/price).</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="stepper">
+<h2><code>&lt;mds:stepper&gt;</code></h2>
+<p>Horizontal checkout-flow steps. Steps before <code>current</code> render completed (check icon, accent), the current step is emphasized (<code>aria-current="step"</code>), later steps are muted. Connector lines fill with the accent as steps complete.</p>
+<pre><code>&lt;mds:stepper :steps="['سبد خرید', 'آدرس و زمان ارسال', 'پرداخت', 'تأیید نهایی']" :current="2" class="w-full" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>steps</code></td><td>array</td><td><code>[]</code></td><td>Step labels, in order.</td></tr>
+<tr><td><code>current</code></td><td>int</td><td><code>1</code></td><td>1-based index of the active step.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits for step numbers.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="countdown">
+<h2><code>&lt;mds:countdown&gt;</code></h2>
+<p>Deal countdown, server-rendered with real initial values (no blank flash) and ticking via Alpine. Two display conventions, both deliberate: the plain variant is a wall-clock time and is forced <abbr title="left-to-right">LTR</abbr> (<span class="fa-text">۰۷:۴۱:۵۵</span>, hours first); the labeled variant follows the Iranian e-commerce convention — boxes right-to-left with <span class="fa-text">روز / ساعت / دقیقه / ثانیه</span> labels underneath.</p>
+<pre><code>&lt;mds:countdown :until="$deal->ends_at" :days="false" /&gt;
+&lt;mds:countdown :until="$deal->ends_at" labels size="lg" /&gt;
+&lt;mds:countdown :until="$deal->ends_at" expired-text="این پیشنهاد به پایان رسید" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>until</code></td><td>DateTime|string</td><td>required</td><td>Deadline.</td></tr>
+<tr><td><code>days</code></td><td>bool</td><td><code>true</code></td><td>Include a days segment; when <code>false</code>, hours accumulate (e.g. 50 hours).</td></tr>
+<tr><td><code>labels</code></td><td>bool</td><td><code>false</code></td><td>Labeled-boxes variant.</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits.</td></tr>
+<tr><td><code>expired-text</code></td><td>string</td><td><span class="fa-text">به پایان رسید</span></td><td>Shown when the deadline passes.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="jalali-date">
+<h2><code>&lt;mds:jalali-date&gt;</code></h2>
+<p>Renders a date in the Jalali calendar inside a semantic <code>&lt;time datetime="…"&gt;</code> element (the machine-readable attribute stays Gregorian ISO-8601).</p>
+<pre><code>&lt;mds:jalali-date :date="now()" /&gt;                        <span class="c">{{-- ۲۹ مرداد ۱۴۰۵ --}}</span>
+&lt;mds:jalali-date :date="now()" format="l j F Y" /&gt;       <span class="c">{{-- پنجشنبه ۲۹ مرداد ۱۴۰۵ --}}</span>
+&lt;mds:jalali-date :date="now()" format="Y/m/d" /&gt;         <span class="c">{{-- ۱۴۰۵/۰۵/۲۹ --}}</span>
+&lt;mds:jalali-date :date="$order->created_at" ago /&gt;       <span class="c">{{-- ۳ ساعت پیش --}}</span></code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>date</code></td><td>DateTime|string|int</td><td>required</td><td>The date (DateTime, parseable string, or Unix timestamp).</td></tr>
+<tr><td><code>format</code></td><td>string</td><td><code>'j F Y'</code></td><td>Jalali format string (tokens in <a href="#helpers">PHP helpers</a>).</td></tr>
+<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits.</td></tr>
+<tr><td><code>ago</code></td><td>bool</td><td><code>false</code></td><td>Relative mode (<span class="fa-text">۳ ساعت پیش</span>); the full Jalali date moves to the <code>title</code> tooltip.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="empty-state">
+<h2><code>&lt;mds:empty-state&gt;</code></h2>
+<p>Centered icon + heading + description with an actions slot. Composes <code>flux:icon</code>, <code>flux:heading</code>, <code>flux:text</code>.</p>
+<pre><code>&lt;mds:empty-state
+    icon="shopping-cart"
+    title="سبد خرید شما خالی است"
+    description="هنوز کالایی اضافه نکرده‌اید."
+&gt;
+    &lt;flux:button variant="primary"&gt;مشاهده پیشنهادها&lt;/flux:button&gt;
+&lt;/mds:empty-state&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>icon</code></td><td>string|null</td><td><code>null</code></td><td>Any Heroicon name (via <code>flux:icon</code>).</td></tr>
+<tr><td><code>title</code></td><td>string|null</td><td><code>null</code></td><td>Heading.</td></tr>
+<tr><td><code>description</code></td><td>string|null</td><td><code>null</code></td><td>Muted body text.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="command">
+<h2><code>&lt;mds:command&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
+<p>An open, API-compatible implementation of Flux Pro's command palette. Client-side filtering with Persian normalization (Arabic <span class="fa-text">ي/ك</span> and Arabic-Indic digits match their Persian forms), arrow-key navigation, Enter to select, hover synced with keyboard state, and group headings that hide while searching.</p>
+<pre><code>&lt;mds:command&gt;
+    &lt;mds:command.input placeholder="جستجوی فرمان..." clearable /&gt;
+
+    &lt;mds:command.items&gt;
+        &lt;mds:command.heading&gt;ناوبری&lt;/mds:command.heading&gt;
+        &lt;mds:command.item icon="shopping-bag" kbd="⌘O" wire:click="..."&gt;سفارش‌های من&lt;/mds:command.item&gt;
+        &lt;mds:command.item icon="heart" href="/wishlist"&gt;علاقه‌مندی‌ها&lt;/mds:command.item&gt;
+    &lt;/mds:command.items&gt;
+&lt;/mds:command&gt;</code></pre>
+<p>Global <kbd>⌘K</kbd> palette — pair with Flux's modal (the <code>shortcut</code> prop and <code>bare</code> variant are free):</p>
+<pre><code>&lt;flux:modal.trigger name="search" shortcut="cmd.k"&gt;
+    &lt;flux:input as="button" placeholder="جستجو..." icon="magnifying-glass" kbd="⌘K" /&gt;
+&lt;/flux:modal.trigger&gt;
+
+&lt;flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"&gt;
+    &lt;mds:command&gt;
+        &lt;mds:command.input placeholder="جستجو در همه‌جا..." closable autofocus /&gt;
+        &lt;mds:command.items&gt;...&lt;/mds:command.items&gt;
+    &lt;/mds:command&gt;
+&lt;/flux:modal&gt;</code></pre>
+<h3>Subcomponents</h3>
+<table>
+<thead><tr><th>Component</th><th>Props</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>command.input</code></td><td><code>icon</code> = <code>magnifying-glass</code>, <code>clearable</code>, <code>closable</code>, <code>clear-label</code>, <code>close-label</code></td><td><code>closable</code> closes the containing <code>&lt;dialog&gt;</code> (Flux modal). Arrow keys / Enter drive the list.</td></tr>
+<tr><td><code>command.items</code></td><td><code>empty</code> = <span class="fa-text">«نتیجه‌ای یافت نشد.»</span></td><td>Scrollable listbox with a built-in no-results state.</td></tr>
+<tr><td><code>command.item</code></td><td><code>icon</code>, <code>icon-variant</code> = <code>micro</code>, <code>kbd</code>, <code>href</code></td><td><code>href</code> renders <code>&lt;a&gt;</code>; otherwise <code>&lt;button type="button"&gt;</code>. Your <code>wire:click</code> / <code>x-on:click</code> pass through. <code>kbd</code> renders LTR at the inline end.</td></tr>
+<tr><td><code>command.heading</code></td><td>—</td><td>Group label; hides automatically while a query is typed.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="color-picker">
+<h2><code>&lt;mds:color-picker&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
+<p>An open, API-compatible implementation of Flux Pro's color picker: saturation/value canvas, hue slider, alpha slider (for alpha formats), hex input, swatch palette, and an EyeDropper button. The canvas and sliders stay physically left-to-right on RTL pages — the universal convention for color controls — while labels and field layout follow the page direction.</p>
+<pre><code>&lt;mds:color-picker label="رنگ اصلی" wire:model="color" clearable dropper /&gt;
+
+&lt;mds:color-picker type="button" value="#8b5cf6" /&gt;                 <span class="c">{{-- chip-only trigger --}}</span>
+&lt;mds:color-picker format="rgba" value="rgba(59, 130, 246, 0.5)" /&gt; <span class="c">{{-- adds alpha slider --}}</span>
+&lt;mds:color-picker :swatches="[['#ef4444', 'قرمز'], '#3b82f6']" /&gt;
+&lt;mds:color-picker :swatches="false" /&gt;</code></pre>
+<table>
+<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>value</code></td><td>string|null</td><td><code>null</code></td><td>Initial color in any supported form; normalized to <code>format</code>.</td></tr>
+<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name. <code>wire:model</code> is forwarded to the same input, which emits <code>input</code> events.</td></tr>
+<tr><td><code>format</code></td><td>string</td><td><code>hex</code></td><td><code>hex</code> | <code>hexa</code> | <code>rgb</code> | <code>rgba</code> | <code>hsl</code> | <code>hsla</code>. Alpha formats add the alpha slider. Pasted colors in any of these forms parse (3-digit hex included).</td></tr>
+<tr><td><code>type</code></td><td>string</td><td><code>input</code></td><td><code>input</code> (chip + editable text field) | <code>button</code> (chip only).</td></tr>
+<tr><td><code>label</code> / <code>description</code></td><td>string|null</td><td><code>null</code></td><td>Field chrome via <code>flux:field</code>.</td></tr>
+<tr><td><code>placeholder</code></td><td>string|null</td><td><code>null</code></td><td>Trigger text-input placeholder.</td></tr>
+<tr><td><code>swatches</code></td><td>array|false|null</td><td>20-color palette</td><td>Hex strings or <code>[value, label]</code> pairs; <code>false</code> hides the grid.</td></tr>
+<tr><td><code>dropper</code></td><td>bool</td><td><code>false</code></td><td>EyeDropper button; hides itself where the browser API is unsupported.</td></tr>
+<tr><td><code>clearable</code></td><td>bool</td><td><code>false</code></td><td>X button to clear the value (input trigger).</td></tr>
+<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> for a tighter trigger.</td></tr>
+<tr><td><code>disabled</code> / <code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Disabled state / red border.</td></tr>
+</tbody>
+</table>
+<h3>Custom popover layout</h3>
+<p>Pass a slot to replace the default panel; subcomponents share the picker's state:</p>
+<pre><code>&lt;mds:color-picker type="button"&gt;
+    &lt;div class="flex flex-col gap-3"&gt;
+        &lt;mds:color-picker.input placeholder="#000000" /&gt;
+        &lt;mds:color-picker.area /&gt;
+        &lt;mds:color-picker.slider channel="hue" /&gt;
+        &lt;mds:color-picker.slider channel="alpha" /&gt;
+        &lt;mds:color-picker.swatches&gt;
+            &lt;mds:color-picker.swatch value="#ef4444" label="قرمز" /&gt;
+        &lt;/mds:color-picker.swatches&gt;
+        &lt;mds:color-picker.dropper /&gt;
+    &lt;/div&gt;
+&lt;/mds:color-picker&gt;</code></pre>
+<table>
+<thead><tr><th>Subcomponent</th><th>Props</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>color-picker.area</code></td><td>—</td><td>Saturation/value canvas; pointer-drag, always LTR.</td></tr>
+<tr><td><code>color-picker.slider</code></td><td><code>channel</code> = <code>hue</code></td><td><code>hue</code> (0–360) or <code>alpha</code> (0–100%, checkerboard track). Native range inputs — keyboard accessible.</td></tr>
+<tr><td><code>color-picker.input</code></td><td><code>placeholder</code> = <code>#000000</code></td><td>Text input; parses hex/rgb/hsl strings on change.</td></tr>
+<tr><td><code>color-picker.swatches</code> / <code>.swatch</code></td><td>swatch: <code>value</code>, <code>label</code></td><td>Grid container + individual color buttons.</td></tr>
+<tr><td><code>color-picker.dropper</code></td><td><code>label</code> = <span class="fa-text">قطره‌چکان</span></td><td>Screen EyeDropper; auto-hidden without browser support.</td></tr>
+</tbody>
+</table>
+</section>
+
+<hr class="section-rule">
+<section id="ai-agents">
+<h2>For AI agents <span class="pill fa-first">llms.txt</span></h2>
+<p>The repo ships a machine-oriented version of this documentation at <a href="https://github.com/MahdiMajidzadeh/majid-ds/blob/main/llms.txt"><code>llms.txt</code></a> — the complete API surface (every component, prop, default, and behavioral contract) in compact markdown, written for coding agents rather than people.</p>
+<p>To make an agent use the kit correctly in your app, point it there from your project's agent instructions:</p>
+<pre><code><span class="c"># CLAUDE.md / AGENTS.md</span>
+UI components: this app uses Majid DS (mds: namespace) on top of Flux UI.
+Full component reference: vendor/mahdimajidzadeh/ds/llms.txt — read it before
+writing any Blade view. Prefer &lt;mds:*&gt; and &lt;flux:*&gt; components over raw HTML.</code></pre>
+</section>
+
+</main>
+</div>
+
+<footer class="site">Majid DS · MIT · built on Flux UI &amp; Tailwind CSS — <span style="font-family:'Vazirmatn',sans-serif">ساخته‌شده برای وب فارسی</span></footer>
+<!--CONTENT-END-->
+</body>
+</html>

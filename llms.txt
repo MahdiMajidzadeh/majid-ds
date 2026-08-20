@@ -1,0 +1,154 @@
+# Majid DS (mahdimajidzadeh/ds)
+
+> RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
+> Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
+> e-commerce components, and open implementations of Flux Pro's command palette and color picker.
+> This file is the complete machine-oriented API reference. Human docs: docs/index.html.
+
+Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
+
+## Setup contract
+
+1. `composer require mahdimajidzadeh/ds` (service provider auto-discovered).
+2. resources/css/app.css MUST import, in order:
+   `@import 'tailwindcss';`
+   `@import '../../vendor/livewire/flux/dist/flux.css';`
+   `@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';`
+   `@custom-variant dark (&:where(.dark, .dark *));`
+3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, color-picker).
+   Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
+5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
+6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
+
+## Config (config/mds.php; publish tag `mds-config`)
+
+- `mds.currency` (default `'toman'`): default currency for price component/directives/helpers. Values: `toman` | `rial` | `none` | any literal label string.
+- `mds.persian_digits` (default `true`): global default for Persian-digit rendering. Every component overrides per-instance via `:fa="true|false"`.
+
+Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views/mds/, app copies override package), `mds-assets` (mds.css copy).
+
+## Blade directives
+
+- `@fa($value)` -> Persian digits only ("order 123" -> "order ۱۲۳")
+- `@faNum($value)` -> number with Persian separators (2500000 -> ۲٬۵۰۰٬۰۰۰)
+- `@toman($amount)` -> ۲٬۵۰۰٬۰۰۰ تومان
+- `@rial($amount)` -> ۹۹۰ ریال
+- `@jalali($date)` -> ۲۹ مرداد ۱۴۰۵ (fixed 'j F Y'; custom formats via Mds::jalali())
+- `@mdsFonts` -> Vazirmatn <link> tags (put in <head>)
+
+## PHP API
+
+Facade `MajidDs\Mds`:
+- `Mds::fa($v): string` — digit conversion
+- `Mds::number($v, int $decimals = 0): string`
+- `Mds::money($amount, ?string $currency = null, int $decimals = 0): string`
+- `Mds::toman($amount): string` / `Mds::rial($amount): string`
+- `Mds::jalali($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
+- `Mds::ago($date): string` — «۳ ساعت پیش» / «۲ روز دیگر»
+
+`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money`, `currencyLabel`, `ago`, `toDateTime` (DateTime|string|int -> DateTimeImmutable).
+
+`MajidDs\Support\Jalali` (static, dependency-free, intl-verified):
+- `fromGregorian(int $gy, int $gm, int $gd): array{0:int,1:int,2:int}` — e.g. (2026,8,20) -> [1405,5,29]
+- `toGregorian(int $jy, int $jm, int $jd): array` — exact inverse
+- `format($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
+- Format tokens: Y y n m j d F(month name) l/D(weekday name) + time passthroughs H G h g i s v, A/a (قبل‌ازظهر/بعدازظهر). Backslash escapes a token.
+- Constants: `Jalali::MONTHS` (1-indexed Persian month names), `Jalali::WEEKDAYS` (keyed by PHP `w`, 0=Sunday).
+
+## Livewire/form binding contract
+
+Components with values render a hidden `<input>`; `wire:model` attributes are forwarded to it and it dispatches
+bubbling `input` events on every change. Hidden values are ALWAYS Latin digits / machine formats regardless of
+Persian display. Applies to: quantity, rating.input, color-picker. `name="..."` enables plain form posts.
+
+## Components
+
+### <mds:rating> — star display
+Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5 · `count` int|null=null (review count) · `size` sm|lg|default · `show-value` bool=true · `fa` bool|null=config.
+Renders role="img" with aria-label. RTL-correct partial fill.
+
+### <mds:rating.input> — interactive stars
+Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string='امتیاز'.
+role="radiogroup"; hover preview; integer values; wire:model forwarded.
+
+### <mds:price>
+Props: `amount` number=0 · `original` number|null=null (compare-at; when > amount renders strikethrough + auto badge) · `currency` toman|rial|none|literal|null=config · `decimals` int=0 · `size` sm|lg|default · `fa` bool|null=config · `badge` bool=true (auto discount badge on/off).
+Discount percent = round((1 - amount/original) * 100).
+
+### <mds:discount-badge>
+Props: `percent` int|null · `amount`+`original` number|null (computes percent when `percent` omitted) · `size` sm|lg|default · `fa`.
+Red pill, Persian percent sign ٪.
+
+### <mds:quantity> — cart stepper
+Props: `value` int|null=min · `min` int=1 · `max` int|null=null · `step` int=1 · `size` sm|lg|default · `name` · `fa` · `increment-label`='افزایش تعداد' · `decrement-label`='کاهش تعداد'.
+`+` sits at inline-start (right in RTL). Buttons disable at bounds. Hidden input = Latin digits.
+
+### <mds:product-card>
+Props: `title` string='' · `image` string|null · `href` string|null · `amount`/`original` number|null · `currency` · `rating` float|null · `reviews` int|null · `badge` string|null (corner flux:badge text) · `badge-color` string='lime' (any Flux badge color) · `unavailable` bool=false (grayscale + «ناموجود») · `fa`.
+Slot = actions area (e.g. add-to-cart flux:button). Composes flux:card + mds:rating + mds:price + mds:discount-badge.
+
+### <mds:stepper> — checkout steps
+Props: `steps` array=[] (labels in order) · `current` int=1 (1-based active index) · `fa`.
+States: completed (check, accent) / current (aria-current="step") / upcoming (muted). data-mds-stepper-step attr per state.
+
+### <mds:countdown>
+Props: `until` DateTime|string REQUIRED · `days` bool=true (false = hours accumulate) · `labels` bool=false ·
+`size` sm|lg|default · `fa` · `expired-text` string='به پایان رسید'.
+Server-renders initial segments (no blank flash), ticks via Alpine.
+Direction contract: plain variant is dir="ltr" wall-clock (۰۷:۴۱:۵۵ hours-first); `labels` variant is RTL boxes
+(days rightmost) with روز/ساعت/دقیقه/ثانیه labels — Iranian e-commerce convention. Do not override.
+
+### <mds:jalali-date>
+Props: `date` DateTime|string|int REQUIRED · `format` string='j F Y' (Jalali tokens above) · `fa` · `ago` bool=false.
+Renders `<time datetime="<gregorian ISO>">`; `ago` mode shows relative text with full Jalali date in title attr.
+
+### <mds:empty-state>
+Props: `icon` string|null (heroicon name) · `title` string|null · `description` string|null. Slot = action buttons.
+
+### <mds:command> — command palette (open version of Flux Pro's flux:command)
+Wrapper holds state. Compose:
+- `<mds:command.input>` props: `icon`='magnifying-glass' · `clearable` bool=false · `closable` bool=false (closes containing <dialog>/Flux modal) · `clear-label`='پاک کردن' · `close-label`='بستن' · plus any input attrs (placeholder, autofocus).
+- `<mds:command.items>` props: `empty`='نتیجه‌ای یافت نشد.' (no-results text). Scrollable listbox.
+- `<mds:command.item>` props: `icon` · `icon-variant`='micro' · `kbd` string|null (rendered LTR at inline-end) · `href` (renders <a>; else <button type="button">). wire:click / x-on:click pass through.
+- `<mds:command.heading>` — group label, auto-hides while a query is typed.
+Behavior: live filter with Persian normalization (Arabic ي/ك -> ی/ک; Persian/Arabic-Indic digits -> Latin before matching);
+ArrowUp/ArrowDown move active item; Enter clicks it; hover syncs active state; built-in empty state.
+Global ⌘K pattern (Flux free modal): `<flux:modal.trigger name="search" shortcut="cmd.k"><flux:input as="button" .../></flux:modal.trigger>`
++ `<flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"><mds:command>...</mds:command></flux:modal>`.
+
+### <mds:color-picker> — color picker (open version of Flux Pro's flux:color-picker)
+Props: `value` string|null (any supported color string; normalized to `format`) · `name` · `format` hex|hexa|rgb|rgba|hsl|hsla='hex'
+(alpha formats add an alpha slider) · `type` input|button='input' · `label`/`description` (flux:field chrome) · `placeholder` ·
+`swatches` array|false|null=20-color default palette (items: hex string or [value, label]) · `dropper` bool=false (EyeDropper API;
+auto-hidden if unsupported) · `clearable` bool=false · `size` sm · `disabled` bool=false · `invalid` bool=false.
+wire:model forwarded to hidden input (emits input events). Parses pasted hex(3/6/8-digit)/rgb(a)/hsl(a) strings.
+Slot replaces the default popover layout; subcomponents share state:
+- `<mds:color-picker.area />` — saturation/value canvas (pointer drag, always LTR)
+- `<mds:color-picker.slider channel="hue|alpha" />` — native range inputs (keyboard accessible)
+- `<mds:color-picker.input placeholder="#000000" />` — parses on change
+- `<mds:color-picker.swatches>` + `<mds:color-picker.swatch value="#..." label="..." />`
+- `<mds:color-picker.dropper label="قطره‌چکان" />`
+RTL note: canvas/sliders stay physically LTR (universal convention); field chrome follows page direction.
+
+## CSS layer (resources/css/mds.css)
+
+- `@theme { --font-sans: 'Vazirmatn', ... }` — font-sans becomes Persian-ready.
+- `[x-cloak] { display: none !important }`.
+- `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
+- `.mds-checker` — checkerboard backdrop for transparent colors.
+- `.mds-range` — gradient range-slider styling (color-picker hue/alpha).
+
+## Rules of thumb for generated code
+
+- Prefer `<mds:*>` and `<flux:*>` components over raw HTML in Blade views.
+- Use logical utilities (ms-/me-/ps-/pe-/start-/end-) — never ml-/mr-/left-/right- — so RTL keeps working.
+- Money: never hardcode number_format for prices; use <mds:price>, @toman/@rial, or Persian::money().
+- Dates shown to users: Jalali via <mds:jalali-date> or Mds::jalali(); machine values stay Gregorian ISO.
+- Keep phone/OTP/code inputs LTR: type="tel" or data-ltr attribute.
+- Persian digits are display-only; anything submitted/bound stays Latin (the components already guarantee this).
+- Flux free components available alongside: avatar, badge, brand, breadcrumbs, button, callout, card, checkbox,
+  dropdown/menu, field, heading, icon, input, modal, navbar, otp, pagination, profile, progress, radio, select,
+  separator, skeleton, switch, table, text, textarea, toast, tooltip. Flux Pro-only components NOT available
+  unless licensed: autocomplete, calendar, chart, date-picker, editor, tabs, etc. — use mds:command and
+  mds:color-picker instead of flux:command / flux:color-picker.
