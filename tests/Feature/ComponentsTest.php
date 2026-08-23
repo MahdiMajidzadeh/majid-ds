@@ -332,6 +332,153 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('aria-label="حذف banner.jpg"', $html);
     }
 
+    public function test_composer_renders_a_textarea_with_label_and_rows(): void
+    {
+        $html = $this->render('<mds:composer name="prompt" label="پیام" description="کوتاه بنویسید" placeholder="چطور کمک کنم؟" rows="3" />');
+
+        $this->assertStringContainsString('data-mds-composer', $html);
+        $this->assertStringContainsString('data-mds-composer-input', $html);
+        $this->assertStringContainsString('rows="3"', $html);
+        $this->assertStringContainsString('name="prompt"', $html);
+        $this->assertStringContainsString('placeholder="چطور کمک کنم؟"', $html);
+        $this->assertStringContainsString('پیام', $html);
+        $this->assertStringContainsString('کوتاه بنویسید', $html);
+    }
+
+    public function test_composer_forwards_wire_model_to_the_textarea(): void
+    {
+        $html = $this->render('<mds:composer wire:model="prompt" />');
+
+        // wire:model must land on the textarea itself, not the wrapper...
+        $this->assertMatchesRegularExpression('/<textarea\s[^>]*wire:model="prompt"/', $html);
+    }
+
+    public function test_composer_renders_the_named_slots_in_grid_order(): void
+    {
+        $html = $this->render('<mds:composer><x-slot name="header">HEADER</x-slot><x-slot name="footer">FOOTER</x-slot><x-slot name="actionsLeading">LEADING</x-slot><x-slot name="actionsTrailing">TRAILING</x-slot></mds:composer>');
+
+        foreach (['HEADER', 'LEADING', 'TRAILING', 'FOOTER'] as $content) {
+            $this->assertStringContainsString($content, $html);
+        }
+
+        // Header above the input, actions below it, footer last...
+        $this->assertLessThan(strpos($html, '<textarea'), strpos($html, 'HEADER'));
+        $this->assertGreaterThan(strpos($html, '<textarea'), strpos($html, 'LEADING'));
+        $this->assertGreaterThan(strpos($html, 'LEADING'), strpos($html, 'TRAILING'));
+        $this->assertGreaterThan(strpos($html, 'TRAILING'), strpos($html, 'FOOTER'));
+    }
+
+    public function test_composer_input_slot_replaces_the_textarea(): void
+    {
+        $html = $this->render('<mds:composer><x-slot name="input"><div id="editor"></div></x-slot></mds:composer>');
+
+        $this->assertStringContainsString('id="editor"', $html);
+        $this->assertStringNotContainsString('<textarea', $html);
+    }
+
+    public function test_composer_inline_puts_the_actions_on_the_input_row(): void
+    {
+        $html = $this->render('<mds:composer inline rows="1"><x-slot name="actionsLeading">L</x-slot><x-slot name="actionsTrailing">T</x-slot></mds:composer>');
+
+        $this->assertStringContainsString('col-start-1 row-start-1', $html);
+        $this->assertStringContainsString('col-start-4 row-start-1', $html);
+        $this->assertStringContainsString('col-span-2 col-start-2 row-start-1', $html);
+    }
+
+    public function test_composer_inline_with_a_header_moves_the_input_row_down(): void
+    {
+        $html = $this->render('<mds:composer inline><x-slot name="header">H</x-slot><x-slot name="actionsTrailing">T</x-slot></mds:composer>');
+
+        $this->assertStringContainsString('row-start-1', $html);   // the header
+        $this->assertStringContainsString('col-start-4 row-start-2', $html);
+    }
+
+    public function test_composer_input_variant_swaps_the_corner_radius(): void
+    {
+        $html = $this->render('<mds:composer variant="input" />');
+
+        $this->assertStringContainsString('rounded-lg', $html);
+        $this->assertStringNotContainsString('rounded-2xl', $html);
+    }
+
+    public function test_composer_submit_prop_only_accepts_the_two_known_modes(): void
+    {
+        $this->assertStringContainsString("submit: 'enter'", $this->render('<mds:composer submit="enter" />'));
+        $this->assertStringContainsString("submit: 'cmd+enter'", $this->render('<mds:composer />'));
+        $this->assertStringContainsString("submit: 'cmd+enter'", $this->render('<mds:composer submit="whatever" />'));
+    }
+
+    public function test_composer_counter_counts_characters_in_persian(): void
+    {
+        $html = $this->render('<mds:composer :maxlength="280" counter value="سلام" />');
+
+        $this->assertStringContainsString('maxlength="280"', $html);
+        // «سلام» is 4 characters, not 8 bytes...
+        $this->assertStringContainsString('۴ / ۲۸۰', $html);
+        $this->assertStringContainsString('dir="ltr"', $html);
+    }
+
+    public function test_composer_counter_supports_latin_digits_and_no_limit(): void
+    {
+        $html = $this->render('<mds:composer counter :fa="false" value="hello" />');
+
+        $this->assertStringContainsString('>5</span>', $html);
+    }
+
+    public function test_composer_max_rows_never_drops_below_rows(): void
+    {
+        $html = $this->render('<mds:composer rows="4" max-rows="2" />');
+
+        $this->assertStringContainsString('maxRows: 4', $html);
+    }
+
+    public function test_composer_takes_its_initial_text_from_the_default_slot(): void
+    {
+        $html = $this->render('<mds:composer>سلام دنیا</mds:composer>');
+
+        $this->assertStringContainsString('>سلام دنیا</textarea>', $html);
+    }
+
+    public function test_composer_label_sr_only_hides_the_label_visually(): void
+    {
+        $html = $this->render('<mds:composer label="پیام" label:sr-only description="راهنما" description:sr-only />');
+
+        $this->assertStringContainsString('sr-only', $html);
+        // Flux's colon syntax must not leak through as a stray attribute...
+        $this->assertStringNotContainsString('label:sr-only="', $html);
+        $this->assertStringNotContainsString('description:sr-only="', $html);
+    }
+
+    public function test_composer_disabled_state_is_inert(): void
+    {
+        $html = $this->render('<mds:composer disabled />');
+
+        $this->assertStringContainsString('inert', $html);
+        $this->assertStringContainsString('aria-disabled="true"', $html);
+        $this->assertMatchesRegularExpression('/<textarea\s[^>]*disabled/', $html);
+    }
+
+    public function test_composer_renders_error_message_and_marks_the_input_invalid(): void
+    {
+        $html = $this->render('<mds:composer error="نوشتن پیام الزامی است." />');
+
+        $this->assertStringContainsString('نوشتن پیام الزامی است.', $html);
+        $this->assertStringContainsString('aria-invalid="true"', $html);
+        $this->assertStringContainsString('border-red-500', $html);
+    }
+
+    public function test_composer_falls_back_to_the_validation_error_bag(): void
+    {
+        $bag = new \Illuminate\Support\ViewErrorBag;
+        $bag->put('default', new \Illuminate\Support\MessageBag(['prompt' => ['پیام نمی‌تواند خالی باشد.']]));
+
+        \Illuminate\Support\Facades\View::share('errors', $bag);
+
+        $html = $this->render('<mds:composer name="prompt" />');
+
+        $this->assertStringContainsString('پیام نمی‌تواند خالی باشد.', $html);
+    }
+
     public function test_timeline_renders_an_ordered_list_with_state_attributes(): void
     {
         $html = $this->render('<mds:timeline horizontal size="lg" align="start"><mds:timeline.item /></mds:timeline>');

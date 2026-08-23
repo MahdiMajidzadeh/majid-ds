@@ -92,6 +92,8 @@ class Icons
         'users'                  => 'user-multiple',
         'chat-bubble-left-right' => 'bubble-chat',
         'chat-bubble-oval-left'  => 'message-01',
+        'paper-airplane'         => 'sent',
+        'microphone'             => 'mic-01',
         'envelope'               => 'mail-01',
         'phone'                  => 'call',
         'device-phone-mobile'    => 'smart-phone-01',
