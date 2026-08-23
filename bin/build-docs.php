@@ -60,6 +60,14 @@ $app = Testbench::createFromConfig(
 $app->make(Illuminate\Contracts\Http\Kernel::class)->bootstrap();
 
 /*
+| Freeze the clock so rebuilds are byte-identical. Several previews call now()
+| (relative Jalali dates, countdown deadlines); without this, every rebuild
+| dirties those committed pages even when nothing changed. The pinned instant
+| is arbitrary but fixed — change it only if a preview needs a different era.
+*/
+Illuminate\Support\Facades\Date::setTestNow('2026-08-24 10:00:00');
+
+/*
 | A real request gets $errors from ShareErrorsFromSession. There is no request
 | here, so share an empty bag — flux:error reads it unconditionally.
 */

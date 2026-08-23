@@ -116,7 +116,9 @@ $server = proc_open(
     $root,
     // The demo's "docs" link has no route on the dev server, so it points at the
     // published page by default; in the static build the docs root is one level up.
-    ['MDS_DOCS_HREF' => '../index.html'] + getenv(),
+    // MDS_TEST_NOW freezes the server's clock (see routes/web.php) so the crawled
+    // pages are byte-identical across rebuilds.
+    ['MDS_DOCS_HREF' => '../index.html', 'MDS_TEST_NOW' => '2026-08-24 10:00:00'] + getenv(),
 );
 
 if (! is_resource($server)) {
@@ -245,6 +247,10 @@ foreach ($pages as $path => $html) {
     // but make it relative anyway rather than ship a localhost URL that would
     // point a visitor's browser back at their own machine.
     $html = str_replace($origin.'/', '', $html);
+
+    // The CSRF token on that same script tag is random per crawl and equally
+    // unused on a static page — pin it so rebuilds are byte-identical.
+    $html = preg_replace('/\sdata-csrf="[^"]*"/', ' data-csrf="static"', $html);
 
     if (str_contains($html, $origin)) {
         info('  warning: '.$path.' still references '.$origin);

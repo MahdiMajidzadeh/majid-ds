@@ -102,7 +102,9 @@ class Persian
     {
         $date = static::toDateTime($date);
 
-        $diff = time() - $date->getTimestamp();
+        // now() rather than time(): identical on a live clock, but it honors
+        // Date::setTestNow() — the docs builder pins the clock through it.
+        $diff = now()->getTimestamp() - $date->getTimestamp();
 
         $future = $diff < 0;
         $diff = abs($diff);

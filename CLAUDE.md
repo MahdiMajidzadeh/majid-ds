@@ -71,8 +71,12 @@ Any change to a component's view, CSS, or docs content is not done until
   the builder hard-fails on missing pages and warns on orphans. The nav ships
   as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
   on `file://`) and pages render the sidebar client-side, so a nav change
-  rewrites one asset, not all 56 pages. Only `index`, `countdown` and
-  `jalali-date` churn on rebuild — they bake `now()` into their previews.
+  rewrites one asset, not all 56 pages.
+- Rebuilds are byte-identical: both builders pin the clock (`Date::setTestNow`
+  in `build-docs.php`; the `MDS_TEST_NOW` env var for the crawled demo server)
+  and the crawler pins the unused Livewire CSRF token. A rebuild that dirties
+  git means something actually changed. The pinned instant is 2026-08-24 10:00,
+  so countdown previews read as expired past it — static pages always did.
 
 ## Adding a component (the full checklist)
 

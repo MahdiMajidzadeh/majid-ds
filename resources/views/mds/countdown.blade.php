@@ -14,8 +14,9 @@ $fa ??= config('mds.persian_digits', true);
 
 $until = Persian::toDateTime($until);
 
-// Server-side initial values so the countdown isn't blank before Alpine boots...
-$total = max(0, $until->getTimestamp() - time());
+// Server-side initial values so the countdown isn't blank before Alpine boots.
+// now() rather than time() so Date::setTestNow() (the docs builder) reaches it...
+$total = max(0, $until->getTimestamp() - now()->getTimestamp());
 $initial = [
     'd' => intdiv($total, 86400),
     'h' => $days ? intdiv($total % 86400, 3600) : intdiv($total, 3600),

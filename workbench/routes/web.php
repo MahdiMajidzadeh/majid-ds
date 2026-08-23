@@ -8,6 +8,15 @@ use MajidDs\Support\Persian;
 use function Orchestra\Testbench\workbench_path;
 
 /*
+| bin/build-pages.php freezes the clock so the crawled static pages are
+| byte-identical across rebuilds. Live serving (npm run demo:serve) never sets
+| this, so the demo keeps a real clock there.
+*/
+if (($testNow = env('MDS_TEST_NOW')) !== null) {
+    Illuminate\Support\Facades\Date::setTestNow($testNow);
+}
+
+/*
 |--------------------------------------------------------------------------
 | Layout gallery
 |--------------------------------------------------------------------------
