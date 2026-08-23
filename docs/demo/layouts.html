@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>چیدمان‌ها — مجید دیزاین سیستم</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/site.css">
+
+    <!-- Livewire Styles --><style >[wire\:loading][wire\:loading], [wire\:loading\.delay][wire\:loading\.delay], [wire\:loading\.list-item][wire\:loading\.list-item], [wire\:loading\.inline-block][wire\:loading\.inline-block], [wire\:loading\.inline][wire\:loading\.inline], [wire\:loading\.block][wire\:loading\.block], [wire\:loading\.flex][wire\:loading\.flex], [wire\:loading\.table][wire\:loading\.table], [wire\:loading\.grid][wire\:loading\.grid], [wire\:loading\.inline-flex][wire\:loading\.inline-flex] {display: none;}[wire\:loading\.delay\.none][wire\:loading\.delay\.none], [wire\:loading\.delay\.shortest][wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter][wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short][wire\:loading\.delay\.short], [wire\:loading\.delay\.default][wire\:loading\.delay\.default], [wire\:loading\.delay\.long][wire\:loading\.delay\.long], [wire\:loading\.delay\.longer][wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest][wire\:loading\.delay\.longest] {display: none;}[wire\:offline][wire\:offline] {display: none;}[wire\:dirty]:not(textarea):not(input):not(select) {display: none;}:root {--livewire-progress-bar-color: #2299dd;}[x-cloak] {display: none !important;}[wire\:cloak] {display: none !important;}dialog#livewire-error::backdrop {background-color: rgba(0, 0, 0, .6);}</style>
+    <style>
+    :root.dark {
+        color-scheme: dark;
+    }
+</style>
+<script>
+    window.Flux = {
+        applyAppearance (appearance) {
+            let applyDark = () => document.documentElement.classList.add('dark')
+            let applyLight = () => document.documentElement.classList.remove('dark')
+
+            if (appearance === 'system') {
+                let media = window.matchMedia('(prefers-color-scheme: dark)')
+
+                window.localStorage.removeItem('flux.appearance')
+
+                media.matches ? applyDark() : applyLight()
+            } else if (appearance === 'dark') {
+                window.localStorage.setItem('flux.appearance', 'dark')
+
+                applyDark()
+            } else if (appearance === 'light') {
+                window.localStorage.setItem('flux.appearance', 'light')
+
+                applyLight()
+            }
+        }
+    }
+
+    window.Flux.applyAppearance(window.localStorage.getItem('flux.appearance') || 'system')
+</script>
+</head>
+
+
+<body class="min-h-dvh bg-zinc-50 font-sans text-zinc-800 antialiased dark:bg-zinc-900 dark:text-white">
+
+    <div class="mx-auto max-w-6xl space-y-10 px-6 py-12">
+
+        <header class="flex flex-wrap items-center justify-between gap-4">
+            <a href="layouts.html" class="h-10 flex items-center me-4 gap-2" data-flux-brand>
+                    <div class="flex items-center justify-center [:where(&amp;)]:h-6 [:where(&amp;)]:min-w-6 [:where(&amp;)]:rounded-sm overflow-hidden shrink-0">
+                <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-bold text-accent-foreground">م</div>
+            </div>
+        
+        <div class="text-sm font-medium truncate [:where(&amp;)]:text-zinc-800 dark:[:where(&amp;)]:text-zinc-100">مجید دیزاین سیستم</div>
+    </a>
+
+            <div class="flex items-center gap-2">
+                <a href="../index.html" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-2 pe-3 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M7.25 3.688a8.035 8.035 0 0 0-4.872-.523A.48.48 0 0 0 2 3.64v7.994c0 .345.342.588.679.512a6.02 6.02 0 0 1 4.571.81V3.688ZM8.75 12.956a6.02 6.02 0 0 1 4.571-.81c.337.075.679-.167.679-.512V3.64a.48.48 0 0 0-.378-.475 8.034 8.034 0 0 0-4.872.523v9.268Z"/>
+</svg>
+
+                
+                    
+            
+            <span>مستندات</span>
+    </a>
+
+                <a href="demo.html" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-2 pe-3 inline-flex  bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20 text-zinc-800 dark:text-white   [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-zinc-200/80 dark:[[data-flux-button-group]_&amp;]:border-zinc-900/50" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M2 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v8.5a2.5 2.5 0 0 1-5 0V3Zm3.25 8.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" clip-rule="evenodd"/>
+  <path d="m8.5 11.035 3.778-3.778a1 1 0 0 0 0-1.414l-2.122-2.121a1 1 0 0 0-1.414 0l-.242.242v7.07ZM7.656 14H13a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-.344l-5 5Z"/>
+</svg>
+
+                
+                    
+            
+            <span>نمایشگاه اجزا</span>
+    </a>
+
+                <a href="layouts-en.html" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-2 pe-3 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M11 5a.75.75 0 0 1 .688.452l3.25 7.5a.75.75 0 1 1-1.376.596L12.89 12H9.109l-.67 1.548a.75.75 0 1 1-1.377-.596l3.25-7.5A.75.75 0 0 1 11 5Zm-1.24 5.5h2.48L11 7.636 9.76 10.5ZM5 1a.75.75 0 0 1 .75.75v1.261a25.27 25.27 0 0 1 2.598.211.75.75 0 1 1-.2 1.487c-.22-.03-.44-.056-.662-.08A12.939 12.939 0 0 1 5.92 8.058c.237.304.488.595.752.873a.75.75 0 0 1-1.086 1.035A13.075 13.075 0 0 1 5 9.307a13.068 13.068 0 0 1-2.841 2.546.75.75 0 0 1-.827-1.252A11.566 11.566 0 0 0 4.08 8.057a12.991 12.991 0 0 1-.554-.938.75.75 0 1 1 1.323-.707c.049.09.099.181.15.271.388-.68.708-1.405.952-2.164a23.941 23.941 0 0 0-4.1.19.75.75 0 0 1-.2-1.487c.853-.114 1.72-.185 2.598-.211V1.75A.75.75 0 0 1 5 1Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>English</span>
+    </a>
+
+                <ui-tooltip position="top center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 w-10 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white" data-flux-button="data-flux-button" aria-label="حالت تاریک" x-data="" x-on:click="$flux.dark = ! $flux.dark">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 9.958 7.967.75.75 0 0 1 1.067.853A8.5 8.5 0 1 1 6.647 1.921a.75.75 0 0 1 .808.083Z" clip-rule="evenodd"/>
+</svg>
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    حالت تاریک / روشن
+
+    </div>
+            </ui-tooltip>
+            </div>
+        </header>
+
+        <div class="space-y-3">
+            <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-2xl [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>چیدمان‌های صفحه</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >همه‌ی حالت‌هایی که شبکه‌ی چیدمان Flux پشتیبانی می‌کند، راست‌چین و با ناوبری فارسی. عنصری که مستقیماً <code dir="ltr">flux:main</code> را در بر می‌گیرد به یک شبکه‌ی ۳×۳ با نواحی <code dir="ltr">header / sidebar / main / aside / footer</code> تبدیل می‌شود؛ ترتیب فرزندان است که چیدمان را تعیین می‌کند.</p>        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                            <a href="layouts-header.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;header&quot; &quot;main&quot; &quot;footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            <div class="mx-auto flex h-full w-[62%] items-center justify-center rounded-sm border border-dashed border-accent/50">
+                    هدر
+                </div>
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            <div class="mx-auto flex h-full w-[62%] items-center justify-center rounded-sm border border-dashed border-accent/50">
+                    محتوا
+                </div>
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>هدر افقی</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >ناوبری در بالای صفحه و بدون سایدبار؛ مناسب صفحه‌های عمومی فروشگاه.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/header
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-sidebar.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 22% 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;sidebar header&quot; &quot;sidebar main&quot; &quot;sidebar footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-accent/15 text-accent-content dark:bg-accent/25"
+            style="grid-area: sidebar;"
+        >
+            
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>سایدبار تمام‌قد</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >سایدبار پیش از هدر می‌آید، پس تمام ارتفاع صفحه را می‌گیرد و هدر کنارش می‌نشیند.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/sidebar
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-sidebar-header.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 22% 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;header header&quot; &quot;sidebar main&quot; &quot;sidebar footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-accent/15 text-accent-content dark:bg-accent/25"
+            style="grid-area: sidebar;"
+        >
+            
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25V18a2.25 2.25 0 0 0 2.25 2.25h13.5A2.25 2.25 0 0 0 21 18V8.25m-18 0V6a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 6v2.25m-18 0h18M5.25 6h.008v.008H5.25V6ZM7.5 6h.008v.008H7.5V6Zm2.25 0h.008v.008H9.75V6Z"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>هدر سراسری + سایدبار</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >همان اجزا با ترتیب برعکس: هدر اول می‌آید و کل عرض صفحه را می‌گیرد.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/sidebar-header
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-collapsible.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 10% 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;sidebar header&quot; &quot;sidebar main&quot; &quot;sidebar footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-accent/15 text-accent-content dark:bg-accent/25"
+            style="grid-area: sidebar;"
+        >
+            
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>سایدبار جمع‌شو</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >سایدبار روی دسکتاپ تا عرض یک ریل آیکونی جمع می‌شود و با هاور باز می‌ماند.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/collapsible
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-mobile.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 22% 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;sidebar header&quot; &quot;sidebar main&quot; &quot;sidebar footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium border border-dashed border-accent/60 text-accent-content"
+            style="grid-area: sidebar;"
+        >
+            
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>سایدبار موبایلی</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >روی دسکتاپ ثابت، روی موبایل کشویی با پس‌زمینه تار — چیدمان استاندارد پنل کاربری.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/mobile
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-aside.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 22% 1fr 22%; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;sidebar header header&quot; &quot;sidebar main aside&quot; &quot;sidebar footer aside&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-accent/15 text-accent-content dark:bg-accent/25"
+            style="grid-area: sidebar;"
+        >
+            
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-100 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: aside;"
+        >
+            
+                            کنار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>ستون کناری (aside)</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >سه ستون: سایدبار ناوبری، محتوای اصلی و یک ستون کناری چسبان برای خلاصه سفارش.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/aside
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-sticky.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 22% 1fr 22%; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;sidebar header header&quot; &quot;sidebar main aside&quot; &quot;sidebar footer aside&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-accent/15 text-accent-content dark:bg-accent/25"
+            style="grid-area: sidebar;"
+        >
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 absolute end-1 top-1 size-2.5 opacity-60" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
+</svg>
+
+                    
+                            سایدبار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 absolute end-1 top-1 size-2.5 opacity-60" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
+</svg>
+
+                    
+                            هدر
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            محتوا
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-100 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: aside;"
+        >
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 absolute end-1 top-1 size-2.5 opacity-60" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
+</svg>
+
+                    
+                            کنار
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>چسبان و اسکرول</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >هدر، سایدبار و ستون کناری همه چسبانند و فقط محتوای اصلی اسکرول می‌شود.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/sticky
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                            <a href="layouts-container.html" class="group block">
+                    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl h-full space-y-4 transition group-hover:border-accent/50 group-hover:shadow-md" data-flux-card>
+    <div
+    class="grid gap-1 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800 h-32"
+    style="grid-template-columns: 1fr; grid-template-rows: 1.25rem 1fr 0.9rem; grid-template-areas: &quot;header&quot; &quot;main&quot; &quot;footer&quot;;"
+>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-200"
+            style="grid-area: header;"
+        >
+            
+                            <div class="mx-auto flex h-full w-[62%] items-center justify-center rounded-sm border border-dashed border-accent/50">
+                    هدر
+                </div>
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-50 text-zinc-500 dark:bg-zinc-700/60 dark:text-zinc-300"
+            style="grid-area: main;"
+        >
+            
+                            <div class="mx-auto flex h-full w-[62%] items-center justify-center rounded-sm border border-dashed border-accent/50">
+                    محتوا
+                </div>
+                    </div>
+            <div
+            class="relative flex items-center justify-center rounded-sm text-[10px] font-medium bg-zinc-200/70 text-zinc-500 dark:bg-zinc-600/60 dark:text-zinc-300"
+            style="grid-area: footer;"
+        >
+            
+                            فوتر
+                    </div>
+    </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3"/>
+</svg>
+
+                                        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>عرض محدود</div>
+                            </div>
+
+                            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >بخش‌های تمام‌عرض با &lt;flux:container&gt; و prop «container» کنار هم مقایسه می‌شوند.</p>                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50 font-mono" dir="ltr">
+        /layouts/container
+    </div>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 text-zinc-400 transition rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+</svg>
+
+                                </div>
+</div>
+                </a>
+                    </div>
+
+        <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>قاعده‌ی کار</div>
+
+            <div class="grid gap-4 lg:grid-cols-2">
+                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >نواحی شبکه از خود <code dir="ltr">flux.css</code> می‌آیند و با ترتیب عناصر عوض می‌شوند: اگر <code dir="ltr">flux:sidebar</code> پیش از <code dir="ltr">flux:header</code> بیاید، سایدبار تمام ارتفاع را می‌گیرد؛ اگر هدر اول بیاید، تمام عرض را می‌گیرد. در حالت راست‌چین هم سایدبار به‌طور خودکار سمت راست می‌نشیند، چون Flux از ویژگی‌های منطقی (<code dir="ltr">start</code> / <code dir="ltr">end</code>) استفاده می‌کند.</p>
+                <pre dir="ltr" class="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-left font-mono text-xs leading-6 text-zinc-100 dark:bg-black/40"><code>grid-template-areas:
+    "header  header  header"
+    "sidebar main    aside"
+    "sidebar footer  aside";
+
+/* sidebar before header: */
+    "sidebar header  header"
+    "sidebar main    aside"
+    "sidebar footer  aside";</code></pre>
+            </div>
+</div>
+
+        <footer class="pb-4 text-center">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >مجید دیزاین سیستم — ساخته‌شده روی Flux UI و Tailwind CSS</p>        </footer>
+    </div>
+
+    <!-- Livewire Scripts -->
+<script src="../assets/livewire.js"   data-csrf="tinagNzobKcbFvYD0gAWeXCDal51ChLYr0EUzDVC" data-module-url="livewire-5d8e1895" data-update-uri="livewire-5d8e1895/update" data-navigate-once="true"></script>
+    <script src="../assets/flux.js" data-navigate-once></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navmenu — Majid DS</title>
+<meta name="description" content="Navmenu — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html" aria-current="page">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Navmenu</h1>
+        <p class="docs-lede">A dropdown panel whose items are links, not actions.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Same shape as <code>flux:menu</code>, but the items render as anchors — right for a mobile nav or a page switcher.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-dropdown position="bottom start"  data-flux-dropdown>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 w-10 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" aria-label="Menu">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M2 6.75A.75.75 0 0 1 2.75 6h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 6.75Zm0 6.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+</svg>
+    </button>
+
+    <nav class="[:where(&amp;)]:min-w-48 p-[.3125rem] rounded-lg shadow-xs border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700" popover="manual" data-flux-navmenu>
+    <a href="#" class="group flex items-center px-2 py-2 lg:py-1.5 w-full rounded-md text-start text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-600 **:data-navmenu-icon:text-zinc-400 dark:**:data-navmenu-icon:text-white/60 [&amp;:hover_[data-navmenu-icon]]:text-current" data-flux-navmenu-item="data-flux-navmenu-item">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-navmenu-icon="data-navmenu-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Home
+    </a>
+        <a href="#" class="group flex items-center px-2 py-2 lg:py-1.5 w-full rounded-md text-start text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-600 **:data-navmenu-icon:text-zinc-400 dark:**:data-navmenu-icon:text-white/60 [&amp;:hover_[data-navmenu-icon]]:text-current" data-flux-navmenu-item="data-flux-navmenu-item">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-navmenu-icon="data-navmenu-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M13.5 4.938a7 7 0 1 1-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 0 1 .572-2.759 6.026 6.026 0 0 1 2.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0 0 13.5 4.938ZM14 12a4 4 0 0 1-4 4c-1.913 0-3.52-1.398-3.91-3.182-.093-.429.44-.643.814-.413a4.043 4.043 0 0 0 1.601.564c.303.038.531-.24.51-.544a5.975 5.975 0 0 1 1.315-4.192.447.447 0 0 1 .431-.16A4.001 4.001 0 0 1 14 12Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Flash deals
+    </a>
+        <a href="#" class="group flex items-center px-2 py-2 lg:py-1.5 w-full rounded-md text-start text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-600 **:data-navmenu-icon:text-zinc-400 dark:**:data-navmenu-icon:text-white/60 [&amp;:hover_[data-navmenu-icon]]:text-current" data-flux-navmenu-item="data-flux-navmenu-item">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-navmenu-icon="data-navmenu-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Categories
+    </a>
+        <div class="-mx-[.3125rem] my-[.3125rem] h-px"  data-flux-navmenu-separator>
+    <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full dark:bg-zinc-600!" data-flux-separator></div>
+</div>
+        <a href="#" class="group flex items-center px-2 py-2 lg:py-1.5 w-full rounded-md text-start text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-600 **:data-navmenu-icon:text-zinc-400 dark:**:data-navmenu-icon:text-white/60 [&amp;:hover_[data-navmenu-icon]]:text-current" data-flux-navmenu-item="data-flux-navmenu-item">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-navmenu-icon="data-navmenu-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3.505 2.365A41.369 41.369 0 0 1 9 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 0 0-.577-.069 43.141 43.141 0 0 0-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 0 1 5 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914Z"/>
+  <path d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 0 0 1.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.915V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0 0 14 6Z"/>
+</svg>
+
+            
+    Support
+    </a>
+</nav>
+</ui-dropdown></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:dropdown</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bars-2&quot;</span> <span class="t-attr">square</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Menu&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;home&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Home</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:navmenu.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;fire&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Flash deals</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:navmenu.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;squares-2x2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Categories</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:navmenu.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu.separator</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:navmenu.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;chat-bubble-left-right&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Support</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:navmenu.item</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:navmenu</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:dropdown</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-navmenu" class="docs-ref-block"><h3>flux:navmenu</h3><p class="docs-text">The panel. Takes no props.</p></div><div id="flux-navmenu-item" class="docs-ref-block"><h3>flux:navmenu.item</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">href</span></td><td>Link target.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Leading icon name.</td></tr></tbody>
+</table></div><div id="flux-navmenu-separator" class="docs-ref-block"><h3>flux:navmenu.separator</h3><p class="docs-text">A dividing line between items.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/dropdown.html"><span class="docs-related-name">Dropdown</span><span class="docs-related-lede">A menu of actions or options, anchored to a trigger.</span></a><a class="docs-related-card" href="../components/navbar.html"><span class="docs-related-name">Navbar</span><span class="docs-related-lede">Horizontal navigation, usually inside a header.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#reference">Reference</a><a href="#flux-navmenu" class="docs-toc-sub">flux:navmenu</a><a href="#flux-navmenu-item" class="docs-toc-sub">flux:navmenu.item</a><a href="#flux-navmenu-separator" class="docs-toc-sub">flux:navmenu.separator</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Callout — Majid DS</title>
+<meta name="description" content="Callout — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html" aria-current="page">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Callout</h1>
+        <p class="docs-lede">Highlight important information or guide users toward key actions.</p>
+        <section id="introduction" class="docs-section"><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-white)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+            
+            
+            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Payment is awaiting confirmation
+</div>
+
+    <div class="text-sm" data-slot="text">
+    The bank will report the result in a moment.
+        <a class="inline font-medium underline underline-offset-[6px] hover:decoration-current decoration-zinc-800/20 dark:decoration-white/20" href="#" >Learn more</a>
+</div>
+        </div>
+
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;clock&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">Payment is awaiting confirmation</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.text</span><span class="t-punct">&gt;</span><span class="t-text">
+        The bank will report the result in a moment.
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.link</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Learn more</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.link</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.text</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="shorthand" class="docs-section"><h2>Shorthand</h2><p class="docs-text">For a plain callout, <code>heading</code> and <code>text</code> save you the child components.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-green-300)] dark:[--callout-border:color-mix(in_oklab,var(--color-green-400),transparent_50%)] [--callout-background:var(--color-green-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-green-400),transparent_90%)] [--callout-heading:var(--color-green-600)] dark:[--callout-heading:var(--color-green-200)] [--callout-text:var(--color-green-600)] dark:[--callout-text:var(--color-green-300)] [--callout-icon:var(--color-green-500)] dark:[--callout-icon:var(--color-green-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Order placed successfully
+</div>
+            
+                            <div class="text-sm" data-slot="text">
+    Tracking code: MDS-140529
+</div>
+            
+            
+        </div>
+
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;check-circle&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;success&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Order placed successfully&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Tracking code: MDS-140529&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="icon-inside-heading" class="docs-section"><h2>Icon inside heading</h2><p class="docs-text">For a more compact layout, move the icon onto the heading instead of the callout root.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-white)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+            
+            
+            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Only 2 left in stock
+</div>
+        </div>
+
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.heading</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;exclamation-triangle&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Only 2 left in stock</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="variants" class="docs-section"><h2>Variants</h2><p class="docs-text">Four semantic variants, each mapping to a color.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="space-y-3">
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-zinc-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Heads up
+</div>
+            
+                            <div class="text-sm" data-slot="text">
+    Your address has not been verified yet.
+</div>
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-green-300)] dark:[--callout-border:color-mix(in_oklab,var(--color-green-400),transparent_50%)] [--callout-background:var(--color-green-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-green-400),transparent_90%)] [--callout-heading:var(--color-green-600)] dark:[--callout-heading:var(--color-green-200)] [--callout-text:var(--color-green-600)] dark:[--callout-text:var(--color-green-300)] [--callout-icon:var(--color-green-500)] dark:[--callout-icon:var(--color-green-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Payment received
+</div>
+            
+                            <div class="text-sm" data-slot="text">
+    Your order is being packed.
+</div>
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-yellow-400)] dark:[--callout-border:color-mix(in_oklab,var(--color-yellow-400),transparent_50%)] [--callout-background:var(--color-yellow-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-yellow-400),transparent_90%)] [--callout-heading:var(--color-yellow-600)] dark:[--callout-heading:var(--color-yellow-200)] [--callout-text:var(--color-yellow-700)] dark:[--callout-text:var(--color-yellow-300)] [--callout-icon:var(--color-yellow-500)] dark:[--callout-icon:var(--color-yellow-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Low stock
+</div>
+            
+                            <div class="text-sm" data-slot="text">
+    Only 2 items left at this price.
+</div>
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-red-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-red-400),transparent_50%)] [--callout-background:var(--color-red-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-red-400),transparent_90%)] [--callout-heading:var(--color-red-700)] dark:[--callout-heading:var(--color-red-200)] [--callout-text:var(--color-red-700)] dark:[--callout-text:var(--color-red-300)] [--callout-icon:var(--color-red-400)] dark:[--callout-icon:var(--color-red-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Payment failed
+</div>
+            
+                            <div class="text-sm" data-slot="text">
+    Any amount charged is returned within 72 hours.
+</div>
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;secondary&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;information-circle&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Heads up&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Your address has not been verified yet.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;success&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;check-circle&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Payment received&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Your order is being packed.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;warning&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;exclamation-triangle&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Low stock&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Only 2 items left at this price.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;danger&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;x-circle&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Payment failed&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Any amount charged is returned within 72 hours.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="colors" class="docs-section"><h2>Colors</h2><p class="docs-text">Any Tailwind color, when the semantic variants do not fit.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="space-y-3">
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-blue-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-blue-400),transparent_50%)] [--callout-background:var(--color-blue-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-blue-400),transparent_90%)] [--callout-heading:var(--color-blue-600)] dark:[--callout-heading:var(--color-blue-200)] [--callout-text:var(--color-blue-600)] dark:[--callout-text:var(--color-blue-300)] [--callout-icon:var(--color-blue-500)] dark:[--callout-icon:var(--color-blue-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.5h9V4.606c0-.771-.59-1.43-1.375-1.489A41.568 41.568 0 0 0 6.5 3ZM2 12v2.5A1.5 1.5 0 0 0 3.5 16h.041a3 3 0 0 1 5.918 0h.791a.75.75 0 0 0 .75-.75V12H2Z"/>
+  <path d="M6.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM13.25 5a.75.75 0 0 0-.75.75v8.514a3.001 3.001 0 0 1 4.893 1.44c.37-.275.61-.719.595-1.227a24.905 24.905 0 0 0-1.784-8.549A1.486 1.486 0 0 0 14.823 5H13.25ZM14.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Free shipping over 1,000,000 Toman
+</div>
+            
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-purple-300)] dark:[--callout-border:color-mix(in_oklab,var(--color-purple-400),transparent_50%)] [--callout-background:var(--color-purple-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-purple-400),transparent_90%)] [--callout-heading:var(--color-purple-800)] dark:[--callout-heading:var(--color-purple-200)] [--callout-text:var(--color-purple-700)] dark:[--callout-text:var(--color-purple-300)] [--callout-icon:var(--color-purple-500)] dark:[--callout-icon:var(--color-purple-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.785l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .785.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.785l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684ZM13.949 13.684a1 1 0 0 0-1.898 0l-.184.551a1 1 0 0 1-.632.633l-.551.183a1 1 0 0 0 0 1.898l.551.183a1 1 0 0 1 .633.633l.183.551a1 1 0 0 0 1.898 0l.184-.551a1 1 0 0 1 .632-.633l.551-.183a1 1 0 0 0 0-1.898l-.551-.184a1 1 0 0 1-.633-.632l-.183-.551Z"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    You have 3 gift cards to spend
+</div>
+            
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-teal-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-teal-400),transparent_50%)] [--callout-background:var(--color-teal-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-teal-400),transparent_90%)] [--callout-heading:var(--color-teal-600)] dark:[--callout-heading:var(--color-teal-200)] [--callout-text:var(--color-teal-600)] dark:[--callout-text:var(--color-teal-300)] [--callout-icon:var(--color-teal-500)] dark:[--callout-icon:var(--color-teal-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9.661 2.237a.531.531 0 0 1 .678 0 11.947 11.947 0 0 0 7.078 2.749.5.5 0 0 1 .479.425c.069.52.104 1.05.104 1.59 0 5.162-3.26 9.563-7.834 11.256a.48.48 0 0 1-.332 0C5.26 16.564 2 12.163 2 7c0-.538.035-1.069.104-1.589a.5.5 0 0 1 .48-.425 11.947 11.947 0 0 0 7.077-2.75Zm4.196 5.954a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    7-day returns on every order
+</div>
+            
+            
+            
+        </div>
+
+            </div>
+
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;blue&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;truck&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Free shipping over 1,000,000 Toman&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;purple&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;sparkles&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;You have 3 gift cards to spend&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;teal&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shield-check&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;7-day returns on every order&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="with-actions" class="docs-section"><h2>With actions</h2><p class="docs-text">The <code>actions</code> slot puts buttons under the text.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-zinc-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM1.49 15.326a.78.78 0 0 1-.358-.442 3 3 0 0 1 4.308-3.516 6.484 6.484 0 0 0-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 0 1-2.07-.655ZM16.44 15.98a4.97 4.97 0 0 0 2.07-.654.78.78 0 0 0 .357-.442 3 3 0 0 0-4.308-3.517 6.484 6.484 0 0 1 1.907 3.96 2.32 2.32 0 0 1-.026.654ZM18 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM5.304 16.19a.844.844 0 0 1-.277-.71 5 5 0 0 1 9.947 0 .843.843 0 0 1-.277.71A6.975 6.975 0 0 1 10 18a6.974 6.974 0 0 1-4.696-1.81Z"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+            
+            
+            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Team collaboration
+</div>
+
+    <div class="text-sm" data-slot="text">
+    Share projects, manage permissions, and collaborate in real time.
+</div>
+        </div>
+
+                    <div class="py-2 self-start flex items-center gap-2" data-slot="actions">
+                <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Invite member
+    </button>
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button">
+        Manage team
+    </button>
+            </div>
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;secondary&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;user-group&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">Team collaboration</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.text</span><span class="t-punct">&gt;</span><span class="t-text">Share projects, manage permissions, and collaborate in real time.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.text</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">x-slot</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;actions&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">Invite member</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;ghost&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Manage team</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">x-slot</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="inline-actions" class="docs-section"><h2>Inline actions</h2><p class="docs-text">With <code>inline</code>, the actions sit beside the text instead of below it.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-white)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm-.75-4.75a.75.75 0 0 0 1.5 0V8.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L6.2 9.74a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 @md:flex @md:[&amp;&gt;[data-slot=&quot;content&quot;]:has([data-slot=&quot;heading&quot;]):has([data-slot=&quot;text&quot;])+[data-slot=&quot;actions&quot;]]:p-2">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+                            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    A new version is available
+</div>
+            
+            
+            
+        </div>
+
+                    <div class="@max-md:py-2 @md:m-[-2px] @md:ps-4 @md:justify-end @md:flex-row-reverse self-start flex items-center gap-2" data-slot="actions">
+                <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Update
+    </button>
+            </div>
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">inline</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;arrow-up-circle&quot;</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;A new version is available&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">x-slot</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;actions&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Update</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">x-slot</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="dismissible" class="docs-section"><h2>Dismissible</h2><p class="docs-text">The <code>controls</code> slot holds anything that belongs in the top corner — usually a close button.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-zinc-50)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" x-data="{ shown: true }" x-show="shown" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M13.92 3.845a19.362 19.362 0 0 1-6.3 1.98C6.765 5.942 5.89 6 5 6a4 4 0 0 0-.504 7.969 15.97 15.97 0 0 0 1.271 3.34c.397.771 1.342 1 2.05.59l.867-.5c.726-.419.94-1.32.588-2.02-.166-.331-.315-.666-.448-1.004 1.8.357 3.511.963 5.096 1.78A17.964 17.964 0 0 0 15 10c0-2.162-.381-4.235-1.08-6.155ZM15.243 3.097A19.456 19.456 0 0 1 16.5 10c0 2.43-.445 4.758-1.257 6.904l-.03.077a.75.75 0 0 0 1.401.537 20.903 20.903 0 0 0 1.312-5.745 2 2 0 0 0 0-3.546 20.902 20.902 0 0 0-1.312-5.745.75.75 0 0 0-1.4.537l.029.078Z"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+            
+            
+            <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
+    
+    Nowruz sale starts tomorrow
+</div>
+        </div>
+
+            </div>
+
+            <div class="ps-2">
+            <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button" aria-label="Dismiss" x-on:click="shown = false">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+        </div>
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:callout</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;secondary&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;megaphone&quot;</span> <span class="t-attr">x-data</span><span class="t-equals">=</span><span class="t-string">&quot;{ shown: true }&quot;</span> <span class="t-attr">x-show</span><span class="t-equals">=</span><span class="t-string">&quot;shown&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">Nowruz sale starts tomorrow</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">x-slot</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;controls&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;x-mark&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;ghost&quot;</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">square</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Dismiss&quot;</span> <span class="t-attr">x-on:click</span><span class="t-equals">=</span><span class="t-string">&quot;shown = false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">x-slot</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:callout</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-callout" class="docs-ref-block"><h3>flux:callout</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">icon</span></td><td>Name of the icon displayed next to the heading (e.g. <code>clock</code>).</td></tr><tr><td><span class="docs-prop">icon:variant</span></td><td>Variant of that icon. Default: <code>mini</code>.</td></tr><tr><td><span class="docs-prop">variant</span></td><td>Options: <code>secondary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>.</td></tr><tr><td><span class="docs-prop">color</span></td><td>Any Tailwind color (e.g. <code>blue</code>, <code>purple</code>). Default: <code>white</code>.</td></tr><tr><td><span class="docs-prop">inline</span></td><td>If <code>true</code>, actions appear inline. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">heading</span></td><td>Shorthand for <code>flux:callout.heading</code>.</td></tr><tr><td><span class="docs-prop">text</span></td><td>Shorthand for <code>flux:callout.text</code>.</td></tr></tbody>
+</table><table class="docs-table">
+    <thead><tr><th>Slot</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">icon</span></td><td>Custom icon markup next to the heading.</td></tr><tr><td><span class="docs-prop">actions</span></td><td>Buttons or links inside the callout.</td></tr><tr><td><span class="docs-prop">controls</span></td><td>Extra UI in the top corner (e.g. a close button).</td></tr></tbody>
+</table></div><div id="flux-callout-heading" class="docs-ref-block"><h3>flux:callout.heading</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">icon</span></td><td>Moves the icon inside the heading instead of the callout root.</td></tr><tr><td><span class="docs-prop">icon:variant</span></td><td>Variant of that icon. Default: <code>mini</code>.</td></tr></tbody>
+</table></div><div id="flux-callout-text" class="docs-ref-block"><h3>flux:callout.text</h3><p class="docs-text">The body copy. Takes no props.</p></div><div id="flux-callout-link" class="docs-ref-block"><h3>flux:callout.link</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">external</span></td><td>If <code>true</code>, opens in a new tab and shows an external-link icon.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/toast.html"><span class="docs-related-name">Toast</span><span class="docs-related-lede">A short, temporary notification.</span></a><a class="docs-related-card" href="../components/card.html"><span class="docs-related-name">Card</span><span class="docs-related-lede">A bordered surface for grouping related content.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#shorthand">Shorthand</a><a href="#icon-inside-heading">Icon inside heading</a><a href="#variants">Variants</a><a href="#colors">Colors</a><a href="#with-actions">With actions</a><a href="#inline-actions">Inline actions</a><a href="#dismissible">Dismissible</a><a href="#reference">Reference</a><a href="#flux-callout" class="docs-toc-sub">flux:callout</a><a href="#flux-callout-heading" class="docs-toc-sub">flux:callout.heading</a><a href="#flux-callout-text" class="docs-toc-sub">flux:callout.text</a><a href="#flux-callout-link" class="docs-toc-sub">flux:callout.link</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

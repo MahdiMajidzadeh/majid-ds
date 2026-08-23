@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon — Majid DS</title>
+<meta name="description" content="Icon — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html" aria-current="page">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Icon</h1>
+        <p class="docs-lede">Flux ships the full heroicons set; this kit adds Hugeicons on top.</p>
+        <section id="introduction" class="docs-section"><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-4 text-zinc-600 dark:text-zinc-300">
+    <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/>
+</svg>
+
+        </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-4 text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-cart&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;truck&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;credit-card&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;gift&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="variants" class="docs-section"><h2>Variants</h2><p class="docs-text">Four sizes of the same glyph set. <code>outline</code> is 24px, <code>solid</code> is filled 24px, <code>mini</code> is 20px and <code>micro</code> is 16px.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-4 text-zinc-600 dark:text-zinc-300">
+    <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6 text-amber-400" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8 1.75a.75.75 0 0 1 .692.462l1.41 3.393 3.664.293a.75.75 0 0 1 .428 1.317l-2.791 2.39.853 3.575a.75.75 0 0 1-1.12.814L7.998 12.08l-3.135 1.915a.75.75 0 0 1-1.12-.814l.852-3.574-2.79-2.39a.75.75 0 0 1 .427-1.318l3.663-.293 1.41-3.393A.75.75 0 0 1 8 1.75Z" clip-rule="evenodd"/>
+</svg>
+
+        </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-4 text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;outline&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;solid&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-amber-400&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;mini&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="sizing" class="docs-section"><h2>Sizing</h2><p class="docs-text">Size with Tailwind classes; the icon inherits <code>currentColor</code>.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-end gap-3 text-zinc-600 dark:text-zinc-300">
+    <svg class="shrink-0 [:where(&amp;)]:size-6 size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6 size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6 size-8" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6 size-10 text-accent" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
+</svg>
+
+        </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-end gap-3 text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bell&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-4&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bell&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-6&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bell&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-8&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bell&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-10 text-accent&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="shorthand" class="docs-section"><h2>Shorthand</h2><p class="docs-text">Every icon is also a component of its own.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-4 text-zinc-600 dark:text-zinc-300">
+    <svg class="shrink-0 [:where(&amp;)]:size-6 text-red-500" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-6 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+        </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-4 text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon.heart</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;solid&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-red-500&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon.map-pin</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon.loading</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="hugeicons" class="docs-section"><h2>Hugeicons</h2><p class="docs-text">This kit replaces heroicons with <a href="https://hugeicons.com">Hugeicons</a> across every <code>mds:*</code> component, and gives you <code>mds:icon</code> to use them directly. heroicon names still work through an alias map.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-4 text-zinc-600 dark:text-zinc-300">
+    <svg aria-hidden="true" data-mds-icon="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M10.5 20.25C10.5 20.6642 10.1642 21 9.75 21C9.33579 21 9 20.6642 9 20.25C9 19.8358 9.33579 19.5 9.75 19.5C10.1642 19.5 10.5 19.8358 10.5 20.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M19 20.25C19 20.6642 18.6642 21 18.25 21C17.8358 21 17.5 20.6642 17.5 20.25C17.5 19.8358 17.8358 19.5 18.25 19.5C18.6642 19.5 19 19.8358 19 20.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2 3H2.20664C3.53124 3 4.19354 3 4.6255 3.40221C5.05746 3.80441 5.10464 4.46503 5.19902 5.78626L5.45035 9.30496C5.5924 11.2936 5.66342 12.2879 5.96476 13.0961C6.62531 14.8677 8.08229 16.2244 9.89648 16.757C10.7241 17 11.7267 17 13.7317 17C15.8373 17 16.89 17 17.7417 16.7416C19.6593 16.1599 21.1599 14.6593 21.7416 12.7417C22 11.89 22 10.8433 22 8.75C22 8.05222 22 7.70333 21.9139 7.41943C21.72 6.78023 21.2198 6.28002 20.5806 6.08612C20.2967 6 19.9478 6 19.25 6H5.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M16 10V13M11 10V13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    <svg aria-hidden="true" data-mds-icon="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><path d="M5 17.9724C3.90328 17.9178 3.2191 17.7546 2.73223 17.2678C2.24536 16.7809 2.08222 16.0967 2.02755 15M9 18H15M19 17.9724C20.0967 17.9178 20.7809 17.7546 21.2678 17.2678C22 16.5355 22 15.357 22 13V11H17.3C16.5555 11 16.1832 11 15.882 10.9021C15.2731 10.7043 14.7957 10.2269 14.5979 9.61803C14.5 9.31677 14.5 8.94451 14.5 8.2C14.5 7.08323 14.5 6.52485 14.3532 6.07295C14.0564 5.15964 13.3404 4.44358 12.4271 4.14683C11.9752 4 11.4168 4 10.3 4H2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2 8H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2 11H6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M14.5 6H16.3212C17.7766 6 18.5042 6 19.0964 6.35371C19.6886 6.70742 20.0336 7.34811 20.7236 8.6295L22 11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    <svg aria-hidden="true" data-mds-icon="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7.72852 15.2861H12.7285M10.2271 12.7861H10.2364M10.2294 17.7861H10.2388" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M6.5 3.69682C9.53332 6.78172 14.5357 0.123719 17.4957 2.53998C19.1989 3.93028 18.6605 7 16.4494 9" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M18.664 6.57831C19.6473 6.75667 19.8679 7.34313 20.1615 8.97048C20.4259 10.4361 20.5 12.1949 20.5 12.9436C20.4731 13.2195 20.3532 13.477 20.1615 13.687C18.1054 15.722 14.0251 19.565 11.9657 21.474C11.1575 22.1555 9.93819 22.1702 9.08045 21.5447C7.32407 20.0526 5.63654 18.366 3.98343 16.8429C3.3193 16.035 3.33487 14.8866 4.0585 14.1255C6.23711 11.9909 10.1793 8.33731 12.4047 6.31887C12.6278 6.1383 12.9012 6.02536 13.1942 6C13.6935 5.99988 14.5501 6.06327 15.3845 6.10896" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    <svg aria-hidden="true" data-mds-icon="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 3H5C3.89543 3 3 3.89543 3 5C3 6.10457 3.89543 7 5 7H18C18 6.07003 18 5.60504 17.8978 5.22354C17.6204 4.18827 16.8117 3.37962 15.7765 3.10222C15.395 3 14.93 3 14 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3 5V15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15V13C21 10.1716 21 8.75736 20.1213 7.87868C19.2426 7 17.8284 7 15 7H7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M21 12H19C18.535 12 18.3025 12 18.1118 12.0511C17.5941 12.1898 17.1898 12.5941 17.0511 13.1118C17 13.3025 17 13.535 17 14C17 14.465 17 14.6975 17.0511 14.8882C17.1898 15.4059 17.5941 15.8102 18.1118 15.9489C18.3025 16 18.535 16 19 16H21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-4 text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-cart-01&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;truck-delivery&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;discount-tag-01&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;wallet-01&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">See <a href="../mds/mds-icon.html">mds:icon</a> for stroke widths, the alias map and registering Pro styles.</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-icon" class="docs-ref-block"><h3>flux:icon</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">icon</span></td><td>Icon name, e.g. <code>shopping-cart</code>.</td></tr><tr><td><span class="docs-prop">variant</span></td><td>Options: <code>outline</code>, <code>solid</code>, <code>mini</code>, <code>micro</code>. Default: <code>outline</code>.</td></tr></tbody>
+</table></div><div id="flux-icon-name" class="docs-ref-block"><h3>flux:icon.{name}</h3><p class="docs-text">Shorthand for a specific icon, e.g. <code>flux:icon.heart</code>.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/button.html"><span class="docs-related-name">Button</span><span class="docs-related-lede">Trigger an action or navigate somewhere.</span></a><a class="docs-related-card" href="../components/badge.html"><span class="docs-related-name">Badge</span><span class="docs-related-lede">Label a status, a count, or a category.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#variants">Variants</a><a href="#sizing">Sizing</a><a href="#shorthand">Shorthand</a><a href="#hugeicons">Hugeicons</a><a href="#reference">Reference</a><a href="#flux-icon" class="docs-toc-sub">flux:icon</a><a href="#flux-icon-name" class="docs-toc-sub">flux:icon.{name}</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tooltip — Majid DS</title>
+<meta name="description" content="Tooltip — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html" aria-current="page">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Tooltip</h1>
+        <p class="docs-lede">A short hint on hover or focus.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Hover the button — the previews here are live.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-tooltip position="top center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 w-10 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button" aria-label="Favorite">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 0 1-.69.001l-.002-.001Z"/>
+</svg>
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Add to favorites
+
+    </div>
+            </ui-tooltip></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Add to favorites&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;heart&quot;</span> <span class="t-attr">square</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;ghost&quot;</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Favorite&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="position" class="docs-section"><h2>Position</h2><p class="docs-text">Positions are logical, so <code>start</code> and <code>end</code> follow the reading direction.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-3">
+    <ui-tooltip position="top center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Top
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Above
+
+    </div>
+            </ui-tooltip>
+
+    <ui-tooltip position="bottom center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Bottom
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Below
+
+    </div>
+            </ui-tooltip>
+
+    <ui-tooltip position="right center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        End
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Trailing edge
+
+    </div>
+            </ui-tooltip>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Above&quot;</span> <span class="t-attr">position</span><span class="t-equals">=</span><span class="t-string">&quot;top&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Top</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Below&quot;</span> <span class="t-attr">position</span><span class="t-equals">=</span><span class="t-string">&quot;bottom&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Bottom</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Trailing edge&quot;</span> <span class="t-attr">position</span><span class="t-equals">=</span><span class="t-string">&quot;right&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">End</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="keyboard-shortcut" class="docs-section"><h2>Keyboard shortcut</h2><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-tooltip position="top center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 w-10 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" aria-label="Search">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+</svg>
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Quick search
+
+            <span class="ps-1 text-zinc-300">⌘K</span>
+    </div>
+            </ui-tooltip></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Quick search&quot;</span> <span class="t-attr">kbd</span><span class="t-equals">=</span><span class="t-string">&quot;⌘K&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;magnifying-glass&quot;</span> <span class="t-attr">square</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Search&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="rich-content" class="docs-section"><h2>Rich content</h2><p class="docs-text">Use <code>flux:tooltip.content</code> when the hint needs markup, and <code>interactive</code> when it holds a link.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-tooltip position="top center"  data-flux-tooltip  interactive >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-2 pe-3 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0ZM9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6.75 8a.75.75 0 0 0 0 1.5h.75v1.75a.75.75 0 0 0 1.5 0v-2.5A.75.75 0 0 0 8.25 8h-1.5Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>Shipping</span>
+    </button>
+
+    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible max-w-64" data-flux-tooltip-content>
+    <p>Free over 1,000,000 Toman.</p>
+        <p class="mt-1">Tehran only for same-day delivery.</p>
+
+    </div>
+
+            </ui-tooltip></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">interactive</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;information-circle&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Shipping</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip.content</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-64&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">Free over 1,000,000 Toman.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">p</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;mt-1&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Tehran only for same-day delivery.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip.content</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="on-a-disabled-control" class="docs-section"><h2>On a disabled control</h2><p class="docs-text">A disabled button does not fire pointer events, so wrap it and explain why it is disabled.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-tooltip position="top center"  data-flux-tooltip >
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" disabled="disabled">
+        Checkout
+    </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Add an address first
+
+    </div>
+            </ui-tooltip></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:tooltip</span> <span class="t-attr">content</span><span class="t-equals">=</span><span class="t-string">&quot;Add an address first&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;primary&quot;</span> <span class="t-attr">disabled</span><span class="t-punct">&gt;</span><span class="t-text">Checkout</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:tooltip</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-tooltip" class="docs-ref-block"><h3>flux:tooltip</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">content</span></td><td>Tooltip text. Use the <code>flux:tooltip.content</code> child for markup.</td></tr><tr><td><span class="docs-prop">position</span></td><td>Options: <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>. Default: <code>top</code>.</td></tr><tr><td><span class="docs-prop">align</span></td><td>Options: <code>start</code>, <code>center</code>, <code>end</code>. Default: <code>center</code>.</td></tr><tr><td><span class="docs-prop">kbd</span></td><td>Keyboard shortcut shown inside the tooltip.</td></tr><tr><td><span class="docs-prop">interactive</span></td><td>Keeps the tooltip open while the pointer is inside it.</td></tr><tr><td><span class="docs-prop">toggleable</span></td><td>Opens on click instead of hover.</td></tr></tbody>
+</table></div><div id="flux-tooltip-content" class="docs-ref-block"><h3>flux:tooltip.content</h3><p class="docs-text">Rich tooltip body, in place of the <code>content</code> prop.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/button.html"><span class="docs-related-name">Button</span><span class="docs-related-lede">Trigger an action or navigate somewhere.</span></a><a class="docs-related-card" href="../components/dropdown.html"><span class="docs-related-name">Dropdown</span><span class="docs-related-lede">A menu of actions or options, anchored to a trigger.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#position">Position</a><a href="#keyboard-shortcut">Keyboard shortcut</a><a href="#rich-content">Rich content</a><a href="#on-a-disabled-control">On a disabled control</a><a href="#reference">Reference</a><a href="#flux-tooltip" class="docs-toc-sub">flux:tooltip</a><a href="#flux-tooltip-content" class="docs-toc-sub">flux:tooltip.content</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

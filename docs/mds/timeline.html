@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:timeline — Majid DS</title>
+<meta name="description" content="mds:timeline — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html" aria-current="page">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:timeline</h1>
+        <p class="docs-lede">An event timeline — an open version of a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">The rail runs down the leading edge, so it sits on the right in RTL and the left in LTR.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><ol
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline
+>
+    <li
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5 4a3 3 0 0 1 6 0v1h.643a1.5 1.5 0 0 1 1.492 1.35l.7 7A1.5 1.5 0 0 1 12.342 15H3.657a1.5 1.5 0 0 1-1.492-1.65l.7-7A1.5 1.5 0 0 1 4.357 5H5V4Zm4.5 0v1h-3V4a1.5 1.5 0 0 1 3 0Zm-3 3.75a.75.75 0 0 0-1.5 0v1a3 3 0 1 0 6 0v-1a.75.75 0 0 0-1.5 0v1a1.5 1.5 0 1 1-3 0v-1Z" clip-rule="evenodd"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Order placed</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3Zm9 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-6.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM11.5 6A.75.75 0 1 1 13 6a.75.75 0 0 1-1.5 0Z" clip-rule="evenodd"/>
+  <path d="M13 11.75a.75.75 0 0 0-1.5 0v.179c0 .15-.138.28-.306.255A65.277 65.277 0 0 0 1.75 11.5a.75.75 0 0 0 0 1.5c3.135 0 6.215.228 9.227.668A1.764 1.764 0 0 0 13 11.928v-.178Z"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Payment confirmed <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-lime-800 [&amp;_button]:text-lime-800! dark:text-lime-200 dark:[&amp;_button]:text-lime-200! bg-lime-400/25 dark:bg-lime-400/40 [&amp;:is(button)]:hover:bg-lime-400/35 dark:[button]:hover:bg-lime-400/50">
+        Online
+    </div></div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums bg-green-500 text-white dark:bg-green-400 dark:text-green-950"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Delivered</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+</ol></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-bag&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Order placed</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;banknotes&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Payment confirmed </span><span class="t-punct">&lt;</span><span class="t-tag">flux:badge</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;lime&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Online</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:badge</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;green&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;check&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Delivered</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="numbered-steps" class="docs-section"><h2>Numbered steps</h2><p class="docs-text"><code>status</code> marks each item <code>complete</code>, <code>current</code> or <code>incomplete</code>.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><ol
+    
+    data-mds-timeline-align="start"
+     data-mds-timeline-size="lg"         data-mds-timeline
+>
+    <li
+    
+    data-mds-timeline-align="start"
+     data-mds-timeline-status="complete"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    1
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Cart</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Review the items and finalize quantities.</p>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="start"
+     data-mds-timeline-status="current"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    2
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Shipping</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Pick the address and a delivery window.</p>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="start"
+     data-mds-timeline-status="incomplete"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    3
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Payment</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+</ol></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;lg&quot;</span> <span class="t-attr">align</span><span class="t-equals">=</span><span class="t-string">&quot;start&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;complete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">1</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Cart</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Review the items and finalize quantities.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;current&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">2</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Shipping</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Pick the address and a delivery window.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;incomplete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">3</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Payment</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="horizontal" class="docs-section"><h2>Horizontal</h2><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><ol
+    
+    data-mds-timeline-align="center"
+         data-mds-timeline-horizontal     data-mds-timeline
+>
+    <li
+    
+    data-mds-timeline-align="center"
+     data-mds-timeline-status="complete"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5V5h14v-.5A1.5 1.5 0 0 0 13.5 3h-11Z"/>
+  <path fill-rule="evenodd" d="M15 7H1v4.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V7ZM3 10.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Zm3.75-.75a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Z" clip-rule="evenodd"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Paid</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+     data-mds-timeline-status="complete"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3Z"/>
+  <path fill-rule="evenodd" d="M3 6h10v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Zm3 2.75A.75.75 0 0 1 6.75 8h2.5a.75.75 0 0 1 0 1.5h-2.5A.75.75 0 0 1 6 8.75Z" clip-rule="evenodd"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Packed</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+     data-mds-timeline-status="current"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M2.908 2.067A.978.978 0 0 0 2 3.05V8h6V3.05a.978.978 0 0 0-.908-.983 32.481 32.481 0 0 0-4.184 0ZM12.919 4.722A.98.98 0 0 0 11.968 4H10a1 1 0 0 0-1 1v6.268A2 2 0 0 1 12 13h1a.977.977 0 0 0 .985-1 31.99 31.99 0 0 0-1.066-7.278Z"/>
+  <path d="M11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 12V9h6v3a1 1 0 0 1-1 1 2 2 0 1 0-4 0 1 1 0 0 1-1-1Z"/>
+  <path d="M6 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Shipping</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+     data-mds-timeline-status="incomplete"         data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M8.543 2.232a.75.75 0 0 0-1.085 0l-5.25 5.5A.75.75 0 0 0 2.75 9H4v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1.25a.75.75 0 0 0 .543-1.268l-5.25-5.5Z"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Delivered</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+</ol></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline</span> <span class="t-attr">horizontal</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;complete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;credit-card&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Paid</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;complete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;archive-box&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Packed</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;current&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;truck&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Shipping</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span> <span class="t-attr">status</span><span class="t-equals">=</span><span class="t-string">&quot;incomplete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;home&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Delivered</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="indicator-alignment" class="docs-section"><h2>Indicator alignment</h2><p class="docs-text">With long content, <code>align</code> decides where the dot sits: <code>start</code>, <code>baseline</code>, <code>center</code> (the default) or <code>end</code>.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><ol
+    
+    data-mds-timeline-align="baseline"
+            data-mds-timeline
+>
+    <li
+    
+    data-mds-timeline-align="baseline"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    1
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Submit documents</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Upload a photo of your ID and your latest certificate so our team can review your file.</p>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+</ol></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline</span> <span class="t-attr">align</span><span class="t-equals">=</span><span class="t-string">&quot;baseline&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">1</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Submit documents</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Upload a photo of your ID and your latest certificate so our team can review your file.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="full-width-blocks" class="docs-section"><h2>Full-width blocks</h2><p class="docs-text">A <code>block</code> spans the whole row instead of sitting beside an indicator — for a quoted reply or an embedded card.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><ol
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline
+>
+    <li
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div
+    class="grid shrink-0 place-items-center rounded-full text-sm font-semibold tabular-nums"
+            data-mds-timeline-indicator
+>
+    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M1 8.849c0 1 .738 1.851 1.734 1.947L3 10.82v2.429a.75.75 0 0 0 1.28.53l1.82-1.82A3.484 3.484 0 0 1 5.5 10V9A3.5 3.5 0 0 1 9 5.5h4V4.151c0-1-.739-1.851-1.734-1.947a44.539 44.539 0 0 0-8.532 0C1.738 2.3 1 3.151 1 4.151V8.85Z"/>
+  <path d="M7 9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-.25v1.25a.75.75 0 0 1-1.28.53L9.69 12H9a2 2 0 0 1-2-2V9Z"/>
+</svg>
+</div>
+        <div class="min-w-0" data-mds-timeline-content>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Mahdi <span class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >left a comment</span></div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+
+    <li
+    
+    data-mds-timeline-align="center"
+            data-mds-timeline-item
+>
+    <div data-mds-timeline-line="leading"><span></span></div>
+
+    <div class="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5" data-mds-timeline-block>
+    <div class="p-3" data-mds-timeline-subgrid>
+    <div data-flux-avatar="data-flux-avatar" data-slot="avatar" data-size="xs" class="[:where(&amp;)]:size-6 [:where(&amp;)]:text-xs [--avatar-radius:calc(infinity*1px)] relative flex-none isolate flex items-center justify-center [:where(&amp;)]:font-medium rounded-[var(--avatar-radius)] [:where(&amp;)]:bg-zinc-200 [:where(&amp;)]:dark:bg-zinc-600 [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white  after:absolute after:inset-0 after:inset-ring-[1px] after:inset-ring-black/7 dark:after:inset-ring-white/10 after:rounded-full" data-circle="true">
+        <img src="https://picsum.photos/seed/user/64/64" alt="" class="rounded-[var(--avatar-radius)] size-full object-cover">
+    </div>
+                <div class="space-y-1">
+                    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Support <span class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >replied</span></div>
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Your parcel ships from the Tehran warehouse today.</p>                </div>
+</div>
+</div>
+
+    <div data-mds-timeline-line="trailing"><span></span></div>
+</li>
+</ol></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">flux:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;chat-bubble-left-right&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.indicator</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Mahdi </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span> <span class="t-attr">inline</span><span class="t-punct">&gt;</span><span class="t-text">left a comment</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.block</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:timeline.subgrid</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;p-3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:avatar</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;xs&quot;</span> <span class="t-attr">circle</span> <span class="t-attr">src</span><span class="t-equals">=</span><span class="t-string">&quot;https://picsum.photos/seed/user/64/64&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-1&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">Support </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span> <span class="t-attr">inline</span><span class="t-punct">&gt;</span><span class="t-text">replied</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+                    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Your parcel ships from the Tehran warehouse today.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.subgrid</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.block</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:timeline</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-timeline" class="docs-ref-block"><h3>mds:timeline</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">horizontal</span></td><td>Lays the timeline out along the inline axis. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">align</span></td><td>Indicator alignment: <code>start</code>, <code>baseline</code>, <code>center</code>, <code>end</code>. Default: <code>center</code>.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>lg</code>.</td></tr></tbody>
+</table></div><div id="mds-timeline-item" class="docs-ref-block"><h3>mds:timeline.item</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">status</span></td><td>Options: <code>complete</code>, <code>current</code>, <code>incomplete</code>.</td></tr><tr><td><span class="docs-prop">align</span></td><td>Overrides the timeline's alignment for this item.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Overrides the timeline's size for this item.</td></tr></tbody>
+</table></div><div id="mds-timeline-indicator" class="docs-ref-block"><h3>mds:timeline.indicator</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">color</span></td><td>Any Tailwind color.</td></tr><tr><td><span class="docs-prop">variant</span></td><td>Options: <code>bare</code> for no chrome around the glyph.</td></tr><tr><td><span class="docs-prop">status</span></td><td>Overrides the item's status for this indicator.</td></tr></tbody>
+</table></div><div id="mds-timeline-content" class="docs-ref-block"><h3>mds:timeline.content</h3><p class="docs-text">The text beside an indicator.</p></div><div id="mds-timeline-block" class="docs-ref-block"><h3>mds:timeline.block</h3><p class="docs-text">A row that spans the full width, with no indicator.</p></div><div id="mds-timeline-subgrid" class="docs-ref-block"><h3>mds:timeline.subgrid</h3><p class="docs-text">Aligns nested content with the timeline's own columns.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/stepper.html"><span class="docs-related-name">mds:stepper</span><span class="docs-related-lede">Checkout steps, with the completed ones ticked.</span></a><a class="docs-related-card" href="../mds/jalali-date.html"><span class="docs-related-name">mds:jalali-date</span><span class="docs-related-lede">Jalali (Shamsi) dates, with no external calendar dependency.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#numbered-steps">Numbered steps</a><a href="#horizontal">Horizontal</a><a href="#indicator-alignment">Indicator alignment</a><a href="#full-width-blocks">Full-width blocks</a><a href="#reference">Reference</a><a href="#mds-timeline" class="docs-toc-sub">mds:timeline</a><a href="#mds-timeline-item" class="docs-toc-sub">mds:timeline.item</a><a href="#mds-timeline-indicator" class="docs-toc-sub">mds:timeline.indicator</a><a href="#mds-timeline-content" class="docs-toc-sub">mds:timeline.content</a><a href="#mds-timeline-block" class="docs-toc-sub">mds:timeline.block</a><a href="#mds-timeline-subgrid" class="docs-toc-sub">mds:timeline.subgrid</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

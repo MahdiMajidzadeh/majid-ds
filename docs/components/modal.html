@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modal — Majid DS</title>
+<meta name="description" content="Modal — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html" aria-current="page">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Modal</h1>
+        <p class="docs-lede">A dialog or flyout panel, opened from a trigger.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">A trigger and a modal share a <code>name</code>. The previews here are live — click them.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div
+    class="contents"
+    x-data
+    x-on:click="$el.querySelector('button[disabled]') || $dispatch('modal-show', { name: 'confirm-delete' })"
+        data-flux-modal-trigger
+>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>Delete order</span>
+    </button>
+</div>
+
+<ui-modal  data-flux-modal>
+    
+    <dialog
+        wire:ignore.self 
+        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl md:w-96"
+         data-modal="confirm-delete"                                 x-data="fluxModal('confirm-delete', null)"
+                x-on:modal-show.document="handleShow($event)"
+        x-on:modal-close.document="handleClose($event)"
+    >
+                    <div class="space-y-6">
+        <div>
+            <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Delete this order?</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 mt-2" data-flux-text >This cannot be undone and the order is cancelled entirely.</p>        </div>
+
+        <div class="flex gap-2">
+            <div class="flex-1" data-flux-spacer></div>
+
+            <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button">
+        Cancel
+    </button>
+</ui-close>
+
+            <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Delete order
+    </button>
+        </div>
+    </div>
+
+                            <div class="absolute top-0 end-0 mt-4 me-4">
+                    <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+</ui-close>
+                </div>
+                        </dialog>
+</ui-modal></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.trigger</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;confirm-delete&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;danger&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;trash&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Delete order</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;confirm-delete&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;md:w-96&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Delete this order?</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;mt-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">This cannot be undone and the order is cancelled entirely.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex gap-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:spacer</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.close</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;ghost&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Cancel</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.close</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;danger&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Delete order</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="flyout" class="docs-section"><h2>Flyout</h2><p class="docs-text"><code>variant="flyout"</code> slides in from the trailing edge — the leading edge in RTL, with no extra classes.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div
+    class="contents"
+    x-data
+    x-on:click="$el.querySelector('button[disabled]') || $dispatch('modal-show', { name: 'cart' })"
+        data-flux-modal-trigger
+>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M1.75 1.002a.75.75 0 1 0 0 1.5h1.835l1.24 5.113A3.752 3.752 0 0 0 2 11.25c0 .414.336.75.75.75h10.5a.75.75 0 0 0 0-1.5H3.628A2.25 2.25 0 0 1 5.75 9h6.5a.75.75 0 0 0 .73-.578l.846-3.595a.75.75 0 0 0-.578-.906 44.118 44.118 0 0 0-7.996-.91l-.348-1.436a.75.75 0 0 0-.73-.573H1.75ZM5 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM13 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
+</svg>
+
+                
+                    
+            
+            <span>Cart</span>
+    </button>
+</div>
+
+<ui-modal  data-flux-modal>
+    
+    <dialog
+        wire:ignore.self 
+        class="fixed m-0 p-8 max-h-dvh min-h-dvh md:[:where(&amp;)]:min-w-[25rem] overflow-y-auto ml-auto [--flux-flyout-translate:translateX(50px)] border-s rtl:ml-0 rtl:mr-auto rtl:[--flux-flyout-translate:translateX(-50px)] bg-white dark:bg-zinc-800 border-transparent dark:border-zinc-700 md:w-96"
+         data-modal="cart"          data-flux-flyout                         x-data="fluxModal('cart', null)"
+                x-on:modal-show.document="handleShow($event)"
+        x-on:modal-close.document="handleClose($event)"
+    >
+                    <div class="space-y-6">
+        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Cart</div>
+
+        <div class="flex items-center justify-between gap-3">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >AirSound Pro</p>            <div
+    class="inline-flex items-center rounded-lg border border-zinc-200 bg-white shadow-xs dark:border-white/10 dark:bg-white/10"
+    x-data="{
+        value: 1,
+        min: 1,
+        max: 3,
+        step: 1,
+        fa: true,
+        display() {
+            const s = String(this.value)
+            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+        },
+        set(n) {
+            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+            if (n === this.value) return
+            this.value = n
+            this.$refs.input.value = n
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }"
+    data-mds-quantity
+>
+    <input
+        type="hidden"
+        x-ref="input"
+        value="1"
+                
+    >
+
+    <button
+        type="button"
+        class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
+        x-on:click="set(value + step)"
+        x-bind:disabled="max !== null && value >= max"
+        aria-label="افزایش تعداد"
+    >
+        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
+    </button>
+
+    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۱</span>
+
+    <button
+        type="button"
+        class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
+        x-on:click="set(value - step)"
+        x-bind:disabled="value <= min"
+        aria-label="کاهش تعداد"
+    >
+        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
+    </button>
+</div>
+        </div>
+
+        <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full" data-flux-separator></div>
+
+        <div class="flex items-center justify-between">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Total</p>            <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">۱٬۸۹۰٬۰۰۰</span>
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">تومان</span>
+                    </div>
+    </div>
+</div>
+        </div>
+
+        <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Checkout
+    </button>
+    </div>
+
+                            <div class="absolute top-0 end-0 mt-4 me-4">
+                    <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+</ui-close>
+                </div>
+                        </dialog>
+</ui-modal></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.trigger</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;cart&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-cart&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Cart</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;cart&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;flyout&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;md:w-96&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Cart</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center justify-between gap-3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">AirSound Pro</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:quantity</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:separator</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center justify-between&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Total</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:price</span> <span class="t-attr">:amount</span><span class="t-equals">=</span><span class="t-string">&quot;1890000&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;primary&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Checkout</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="keyboard-shortcut" class="docs-section"><h2>Keyboard shortcut</h2><p class="docs-text">A trigger can open on a shortcut instead of a click.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div
+    class="contents"
+    x-data
+    x-on:click="$el.querySelector('button[disabled]') || $dispatch('modal-show', { name: 'quick-search' })"
+            x-on:keydown.cmd.k.document="$event.preventDefault(); $dispatch('modal-show', { name: 'quick-search' })"
+        data-flux-modal-trigger
+>
+    <button class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-10 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500  w-full relative flex" type="button" placeholder="Press ⌘K">
+                    <div class="absolute top-0 bottom-0 flex items-center justify-center text-xs text-zinc-400/75 ps-3 start-0">
+                <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+</svg>
+
+                    </div>
+        
+                    <div class="block self-center text-start flex-1 font-medium text-zinc-400 dark:text-white/40">
+                Press ⌘K
+            </div>
+        
+                    <div class="absolute top-0 bottom-0 flex items-center justify-center text-xs text-zinc-400/75 pe-4 end-0">
+                ⌘K
+            </div>
+        
+            </button>
+</div>
+
+<ui-modal  data-flux-modal>
+    
+    <dialog
+        wire:ignore.self 
+        class="bg-transparent w-full max-w-md"
+         data-modal="quick-search"                                 x-data="fluxModal('quick-search', null)"
+                x-on:modal-show.document="handleShow($event)"
+        x-on:modal-close.document="handleClose($event)"
+    >
+                    <div
+    class="flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800"
+    x-data="{
+        query: '',
+        active: 0,
+        normalize(s) {
+            return s
+                .toLowerCase()
+                .replace(/[يى]/g, 'ی')
+                .replace(/ك/g, 'ک')
+                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+                .trim()
+        },
+        matches(el) {
+            return this.normalize(el.textContent).includes(this.normalize(this.query))
+        },
+        items() {
+            return [...this.$root.querySelectorAll('[data-mds-command-item]')].filter(el => this.matches(el))
+        },
+        get empty() {
+            return this.items().length === 0
+        },
+        move(delta) {
+            const count = this.items().length
+            if (! count) return
+            this.active = Math.max(0, Math.min(this.active + delta, count - 1))
+            this.$nextTick(() => this.items()[this.active]?.scrollIntoView({ block: 'nearest' }))
+        },
+        select() {
+            this.items()[this.active]?.click()
+        },
+        isActive(el) {
+            return this.items()[this.active] === el
+        },
+    }"
+    x-effect="query; active = 0"
+    data-mds-command
+>
+    <div class="flex items-center gap-2 border-b border-zinc-200 px-3 dark:border-white/10" data-mds-command-input>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 17L21 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <input
+        type="text"
+        x-model="query"
+        x-on:keydown.down.prevent="move(1)"
+        x-on:keydown.up.prevent="move(-1)"
+        x-on:keydown.enter.prevent="select()"
+        class="w-full flex-1 bg-transparent py-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500" placeholder="Search everything..." autofocus="autofocus"
+    >
+
+    
+            <button
+            type="button"
+            class="shrink-0 rounded p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+            x-on:click="$el.closest('dialog')?.close()"
+            aria-label="بستن"
+        >
+            <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
+        </button>
+    </div>
+
+        <div class="max-h-72 overflow-y-auto p-1.5" role="listbox" data-mds-command-items>
+    <div
+    class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
+    x-show="query === ''"
+    data-mds-command-heading
+>
+    Account
+</div>
+            <button
+    class="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-sm text-zinc-700 dark:text-zinc-200" type="button"
+    x-show="matches($el)"
+    x-bind:class="isActive($el) && 'bg-zinc-100 dark:bg-white/10'"
+    x-on:mouseenter="active = items().indexOf($el)"
+    x-bind:aria-selected="isActive($el) ? 'true' : 'false'"
+    role="option"
+    data-mds-command-item
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.32352 13.0113C3.6739 10.009 4.18586 7.75784 4.66063 6.15851C5.04994 4.84711 5.24459 4.19141 6.04283 3.5957C6.84107 3 7.65697 3 9.28876 3H14.7113C16.3431 3 17.159 3 17.9572 3.5957C18.7554 4.19141 18.9501 4.84711 19.3394 6.15851C19.8142 7.75784 20.3261 10.009 20.6765 13.0113C21.0895 16.5497 21.2959 18.3189 20.1027 19.6594C18.9095 21 16.9758 21 13.1084 21H10.8916C7.02422 21 5.09052 21 3.89731 19.6594C2.70411 18.3189 2.91058 16.5497 3.32352 13.0113Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M9 7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span class="flex-1 truncate">My orders</span>
+
+            <kbd class="ms-auto shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-sans text-[11px] text-zinc-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500" dir="ltr">⌘O</kbd>
+    </button>
+            <button
+    class="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-sm text-zinc-700 dark:text-zinc-200" type="button"
+    x-show="matches($el)"
+    x-bind:class="isActive($el) && 'bg-zinc-100 dark:bg-white/10'"
+    x-on:mouseenter="active = items().indexOf($el)"
+    x-bind:aria-selected="isActive($el) ? 'true' : 'false'"
+    role="option"
+    data-mds-command-item
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 dark:text-zinc-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 3H5C3.89543 3 3 3.89543 3 5C3 6.10457 3.89543 7 5 7H18C18 6.07003 18 5.60504 17.8978 5.22354C17.6204 4.18827 16.8117 3.37962 15.7765 3.10222C15.395 3 14.93 3 14 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3 5V15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15V13C21 10.1716 21 8.75736 20.1213 7.87868C19.2426 7 17.8284 7 15 7H7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M21 12H19C18.535 12 18.3025 12 18.1118 12.0511C17.5941 12.1898 17.1898 12.5941 17.0511 13.1118C17 13.3025 17 13.535 17 14C17 14.465 17 14.6975 17.0511 14.8882C17.1898 15.4059 17.5941 15.8102 18.1118 15.9489C18.3025 16 18.535 16 19 16H21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span class="flex-1 truncate">Wallet</span>
+
+            <kbd class="ms-auto shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-sans text-[11px] text-zinc-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500" dir="ltr">⌘W</kbd>
+    </button>
+
+    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" x-show="empty" x-cloak data-mds-command-empty>
+        No results found.
+    </div>
+</div>
+</div>
+
+                        </dialog>
+</ui-modal></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.trigger</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;quick-search&quot;</span> <span class="t-attr">shortcut</span><span class="t-equals">=</span><span class="t-string">&quot;cmd.k&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:input</span> <span class="t-attr">as</span><span class="t-equals">=</span><span class="t-string">&quot;button&quot;</span> <span class="t-attr">placeholder</span><span class="t-equals">=</span><span class="t-string">&quot;Press ⌘K&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;magnifying-glass&quot;</span> <span class="t-attr">kbd</span><span class="t-equals">=</span><span class="t-string">&quot;⌘K&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;quick-search&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;bare&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command.input</span> <span class="t-attr">placeholder</span><span class="t-equals">=</span><span class="t-string">&quot;Search everything...&quot;</span> <span class="t-attr">closable</span> <span class="t-attr">autofocus</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command.items</span> <span class="t-attr">empty</span><span class="t-equals">=</span><span class="t-string">&quot;No results found.&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command.heading</span><span class="t-punct">&gt;</span><span class="t-text">Account</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:command.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command.item</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-bag&quot;</span> <span class="t-attr">kbd</span><span class="t-equals">=</span><span class="t-string">&quot;⌘O&quot;</span><span class="t-punct">&gt;</span><span class="t-text">My orders</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:command.item</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:command.item</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;wallet&quot;</span> <span class="t-attr">kbd</span><span class="t-equals">=</span><span class="t-string">&quot;⌘W&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Wallet</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:command.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:command.items</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:command</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="not-dismissible" class="docs-section"><h2>Not dismissible</h2><p class="docs-text">Force a decision by disabling the backdrop click and the escape key.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div
+    class="contents"
+    x-data
+    x-on:click="$el.querySelector('button[disabled]') || $dispatch('modal-show', { name: 'terms' })"
+        data-flux-modal-trigger
+>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Accept terms
+    </button>
+</div>
+
+<ui-modal disable-escape="" disable-click-outside="" data-flux-modal>
+    
+    <dialog
+        wire:ignore.self 
+        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl md:w-96"
+         data-modal="terms"                                 x-data="fluxModal('terms', null)"
+                x-on:modal-show.document="handleShow($event)"
+        x-on:modal-close.document="handleClose($event)"
+    >
+                    <div class="space-y-6">
+        <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Accept the terms</div>
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >You need to accept the terms before checking out.</p>
+        <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        I accept
+    </button>
+</ui-close>
+    </div>
+
+                            <div class="absolute top-0 end-0 mt-4 me-4">
+                    <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+</ui-close>
+                </div>
+                        </dialog>
+</ui-modal></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.trigger</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;terms&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">Accept terms</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;terms&quot;</span> <span class="t-attr">:dismissible</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">:escapable</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;md:w-96&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Accept the terms</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">You need to accept the terms before checking out.</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:modal.close</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;primary&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full&quot;</span><span class="t-punct">&gt;</span><span class="t-text">I accept</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal.close</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-modal" class="docs-ref-block"><h3>flux:modal</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">name</span></td><td>Identifier shared with its trigger.</td></tr><tr><td><span class="docs-prop">variant</span></td><td>Options: <code>flyout</code>, <code>bare</code>. Default: a centred dialog.</td></tr><tr><td><span class="docs-prop">position</span></td><td>For flyouts: which edge it slides from.</td></tr><tr><td><span class="docs-prop">dismissible</span></td><td>If <code>false</code>, clicking the backdrop does not close it.</td></tr><tr><td><span class="docs-prop">escapable</span></td><td>If <code>false</code>, Escape does not close it.</td></tr><tr><td><span class="docs-prop">closable</span></td><td>Shows or hides the built-in close button.</td></tr><tr><td><span class="docs-prop">scroll</span></td><td>Which part scrolls when the content is tall.</td></tr></tbody>
+</table></div><div id="flux-modal-trigger" class="docs-ref-block"><h3>flux:modal.trigger</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">name</span></td><td>The modal to open.</td></tr><tr><td><span class="docs-prop">shortcut</span></td><td>Keyboard shortcut that opens it, e.g. <code>cmd.k</code>.</td></tr></tbody>
+</table></div><div id="flux-modal-close" class="docs-ref-block"><h3>flux:modal.close</h3><p class="docs-text">Wraps any element so that clicking it closes the modal.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/dropdown.html"><span class="docs-related-name">Dropdown</span><span class="docs-related-lede">A menu of actions or options, anchored to a trigger.</span></a><a class="docs-related-card" href="../components/toast.html"><span class="docs-related-name">Toast</span><span class="docs-related-lede">A short, temporary notification.</span></a><a class="docs-related-card" href="../mds/command.html"><span class="docs-related-name">mds:command</span><span class="docs-related-lede">A ⌘K command palette — an open version of a Flux Pro component.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#flyout">Flyout</a><a href="#keyboard-shortcut">Keyboard shortcut</a><a href="#not-dismissible">Not dismissible</a><a href="#reference">Reference</a><a href="#flux-modal" class="docs-toc-sub">flux:modal</a><a href="#flux-modal-trigger" class="docs-toc-sub">flux:modal.trigger</a><a href="#flux-modal-close" class="docs-toc-sub">flux:modal.close</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

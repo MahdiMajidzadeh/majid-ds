@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sidebar — Majid DS</title>
+<meta name="description" content="Sidebar — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html" aria-current="page">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Layouts</p>
+        <h1>Sidebar</h1>
+        <p class="docs-lede">A navigation column, collapsible on desktop and off-canvas on mobile.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">A sidebar placed before the header owns the full page height. In RTL it sits on the right automatically.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-xs space-y-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900">
+    <a href="#" class="h-10 flex items-center me-4 gap-2" data-flux-brand>
+                    <div class="flex items-center justify-center [:where(&amp;)]:h-6 [:where(&amp;)]:min-w-6 [:where(&amp;)]:rounded-sm overflow-hidden shrink-0">
+                <div class="flex size-6 shrink-0 items-center justify-center rounded-md bg-accent text-xs font-bold text-accent-foreground">M</div>
+            </div>
+        
+        <div class="text-sm font-medium truncate [:where(&amp;)]:text-zinc-800 dark:[:where(&amp;)]:text-zinc-100">Majid DS</div>
+    </a>
+
+    <nav class="flex flex-col overflow-visible min-h-auto" data-flux-navlist>
+    <a href="#" data-current="data-current" wire:current.ignore="" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg  py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) data-current:bg-zinc-800/[4%] dark:data-current:bg-white/[7%] hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/[7%]" data-flux-navlist-item="data-flux-navlist-item">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4!" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Dashboard</div>
+    </a>
+        <a href="#" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg  py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) data-current:bg-zinc-800/[4%] dark:data-current:bg-white/[7%] hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/[7%]" data-flux-navlist-item="data-flux-navlist-item">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4!" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>My orders</div>
+    
+    
+                    <span class="text-xs font-medium rounded-sm px-1 py-0.5 min-w-5 text-center text-zinc-700 dark:text-zinc-200 bg-zinc-400/15 dark:bg-zinc-400/40" data-flux-navlist-badge>3</span>
+    </a>
+        <a href="#" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg  py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) data-current:bg-zinc-800/[4%] dark:data-current:bg-white/[7%] hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/[7%]" data-flux-navlist-item="data-flux-navlist-item">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-4!" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Favorites</div>
+    </a>
+
+        <ui-disclosure class="group/disclosure"  open  data-flux-navlist-group>
+        <button type="button" class="w-full h-10 lg:h-8 flex items-center group/disclosure-button mb-[2px] rounded-lg hover:bg-zinc-800/5 dark:hover:bg-white/[7%] text-zinc-500 hover:text-zinc-800 dark:text-white/80 dark:hover:text-white">
+            <div class="ps-3 pe-4">
+                <svg class="shrink-0 [:where(&amp;)]:size-6 size-3! hidden group-data-open/disclosure-button:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 size-3! block group-data-open/disclosure-button:hidden rtl:rotate-180" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+</svg>
+
+                    </div>
+
+            <span class="text-sm font-medium leading-none">Categories</span>
+        </button>
+
+        <div class="relative hidden data-open:block space-y-[2px] ps-7"  data-open >
+            <div class="absolute inset-y-[3px] w-px bg-zinc-200 dark:bg-white/30 start-0 ms-4"></div>
+
+            <a href="#" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg  py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) data-current:bg-zinc-800/[4%] dark:data-current:bg-white/[7%] hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/[7%]" data-flux-navlist-item="data-flux-navlist-item">
+        <div class="flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Phones &amp; tablets</div>
+    </a>
+        </div>
+    </ui-disclosure>
+</nav>
+
+    <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/5 dark:bg-white/10 h-px w-full" data-flux-separator></div>
+
+    <button type="button" class="group flex items-center rounded-lg has-data-[circle=true]:rounded-full [ui-dropdown&gt;&amp;]:w-full p-1 hover:bg-zinc-800/5 dark:hover:bg-white/15" data-flux-profile>
+    <div class="shrink-0">
+                                <div data-flux-avatar="data-flux-avatar" data-slot="avatar" data-size="sm" class="[:where(&amp;)]:size-8 [:where(&amp;)]:text-sm [--avatar-radius:var(--radius-md)] relative flex-none isolate flex items-center justify-center [:where(&amp;)]:font-medium rounded-[var(--avatar-radius)] [:where(&amp;)]:bg-zinc-200 [:where(&amp;)]:dark:bg-zinc-600 [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white  after:absolute after:inset-0 after:inset-ring-[1px] after:inset-ring-black/7 dark:after:inset-ring-white/10 after:rounded-md">
+        <img src="https://picsum.photos/seed/user/64/64" alt="Sara Rezaei" class="rounded-[var(--avatar-radius)] size-full object-cover">
+    </div>
+            </div>
+
+            <span class="mx-2 text-sm text-zinc-500 dark:text-white/80 group-hover:text-zinc-800 dark:group-hover:text-white font-medium truncate">
+            Sara Rezaei
+        </span>
+    
+            <div class="shrink-0 ms-auto size-8 flex justify-center items-center">
+            <svg class="shrink-0 [:where(&amp;)]:size-4 text-zinc-400 dark:text-white/80 group-hover:text-zinc-800 dark:group-hover:text-white" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    </button>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar</span> <span class="t-attr">sticky</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.header</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.brand</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;/&quot;</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;Majid DS&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.header</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.search</span> <span class="t-attr">placeholder</span><span class="t-equals">=</span><span class="t-string">&quot;Search products...&quot;</span> <span class="t-attr">kbd</span><span class="t-equals">=</span><span class="t-string">&quot;⌘K&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;home&quot;</span> <span class="t-attr">current</span><span class="t-punct">&gt;</span><span class="t-text">Dashboard</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;shopping-bag&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span><span class="t-punct">&gt;</span><span class="t-text">My orders</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;heart&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Favorites</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.group</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Categories&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;squares-2x2&quot;</span> <span class="t-attr">expandable</span> <span class="t-attr">:expanded</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Phones &amp;amp; tablets</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Home appliances</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.group</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.spacer</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;cog-6-tooth&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Settings</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.profile</span> <span class="t-attr">avatar</span><span class="t-equals">=</span><span class="t-string">&quot;/me.jpg&quot;</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;Sara Rezaei&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">This preview is a still of the sidebar's contents. For the real thing — collapsing to an icon rail, sliding in over a backdrop on mobile — open the <a href="../demo/layouts-en.html">layout gallery</a>.</div></section><section id="collapsible" class="docs-section"><h2>Collapsible</h2><p class="docs-text"><code>collapsible</code> collapses the sidebar to an icon rail on desktop; <code>collapsible="mobile"</code> keeps it in the grid on desktop and turns it into an off-canvas panel below <code>lg</code>. Items fall back to their tooltips once the labels are hidden.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-sidebar-toggle class="z-20 fixed inset-0 bg-black/10 hidden data-flux-sidebar-on-mobile:not-data-flux-sidebar-collapsed-mobile:block" data-flux-sidebar-backdrop></ui-sidebar-toggle>
+
+<ui-sidebar
+    class="[grid-area:sidebar] z-1 flex flex-col gap-4 [:where(&amp;)]:w-64 p-4 data-flux-sidebar-collapsed-desktop:w-14 data-flux-sidebar-collapsed-desktop:px-2 data-flux-sidebar-collapsed-desktop:cursor-e-resize rtl:data-flux-sidebar-collapsed-desktop:cursor-w-resize max-lg:data-flux-sidebar-cloak:hidden data-flux-sidebar-on-mobile:data-flux-sidebar-collapsed-mobile:-translate-x-full data-flux-sidebar-on-mobile:data-flux-sidebar-collapsed-mobile:rtl:translate-x-full z-20! data-flux-sidebar-on-mobile:start-0! data-flux-sidebar-on-mobile:fixed! data-flux-sidebar-on-mobile:top-0! data-flux-sidebar-on-mobile:min-h-dvh! data-flux-sidebar-on-mobile:max-h-dvh! max-h-dvh overflow-y-auto overscroll-contain" x-init="$el.classList.add(&#039;transition-transform&#039;)"
+     collapsible="true"          sticky     x-data
+    data-flux-sidebar-cloak
+    data-flux-sidebar
+>
+    <div class="flex items-center justify-between gap-2 min-h-10" data-flux-sidebar-header>
+    <a href="/" data-flux-sidebar-brand="data-flux-sidebar-brand" class="h-10 min-w-0 flex items-center px-2 in-data-flux-sidebar-collapsed-desktop:w-10 in-data-flux-sidebar-collapsed-desktop:px-0 in-data-flux-sidebar-collapsed-desktop:justify-center in-data-flux-sidebar-collapsed-desktop:in-data-flux-sidebar-active:absolute in-data-flux-sidebar-collapsed-desktop:in-data-flux-sidebar-active:opacity-0  gap-2">
+        <div class="flex items-center justify-center h-6 min-w-6 rounded-sm overflow-hidden shrink-0">
+                                    
+                            </div>
+        
+        <div class="min-w-0 text-sm font-medium truncate [:where(&amp;)]:text-zinc-800 dark:[:where(&amp;)]:text-zinc-100 in-data-flux-sidebar-collapsed-desktop:hidden">Majid DS</div>
+    </a>
+        <ui-sidebar-toggle class="w-10 h-8 shrink-0 flex items-center justify-center in-data-flux-sidebar-collapsed-desktop:opacity-0 in-data-flux-sidebar-collapsed-desktop:absolute in-data-flux-sidebar-collapsed-desktop:in-data-flux-sidebar-active:opacity-100" data-flux-sidebar-collapse>
+    <ui-tooltip position="right center"  data-flux-tooltip >
+        <button type="button" class="size-10 relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none text-sm rounded-lg inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white in-data-flux-sidebar-collapsed-desktop:cursor-e-resize rtl:in-data-flux-sidebar-collapsed-desktop:cursor-w-resize [&amp;[collapsible=&quot;mobile&quot;]]:in-data-flux-sidebar-on-desktop:hidden rtl:rotate-180">
+            <svg class="text-zinc-500 dark:text-zinc-400" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.5 3.75V16.25M3.4375 16.25H16.5625C17.08 16.25 17.5 15.83 17.5 15.3125V4.6875C17.5 4.17 17.08 3.75 16.5625 3.75H3.4375C2.92 3.75 2.5 4.17 2.5 4.6875V15.3125C2.5 15.83 2.92 16.25 3.4375 16.25Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Collapse sidebar
+
+    </div>
+            </ui-tooltip>
+</ui-sidebar-toggle>
+</div>
+    <nav class="flex flex-col overflow-visible min-h-auto" data-flux-sidebar-nav>
+    <ui-tooltip position="right center"  data-flux-tooltip >
+        <a href="#" data-current="data-current" wire:current.ignore="" class="h-8 in-data-flux-sidebar-on-mobile:h-10 relative flex items-center gap-3 rounded-lg in-data-flux-sidebar-collapsed-desktop:w-10 in-data-flux-sidebar-collapsed-desktop:justify-center py-0 text-start w-full px-3 has-data-flux-navlist-badge:not-in-data-flux-sidebar-collapsed-desktop:pe-1.5 my-px text-zinc-500 dark:text-white/80 data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) data-current:bg-white dark:data-current:bg-white/[7%] data-current:border data-current:border-zinc-200 dark:data-current:border-transparent hover:text-zinc-800 dark:hover:text-white dark:hover:bg-white/[7%] hover:bg-zinc-800/5  border border-transparent in-data-flux-sidebar-group-dropdown:w-auto! in-data-flux-sidebar-group-dropdown:px-2! in-data-flux-sidebar-group-dropdown:focus:outline-hidden! in-data-flux-sidebar-group-dropdown:text-zinc-800! in-data-flux-sidebar-group-dropdown:bg-white! in-data-flux-sidebar-group-dropdown:hover:bg-zinc-50! in-data-flux-sidebar-group-dropdown:data-active:bg-zinc-50! dark:in-data-flux-sidebar-group-dropdown:text-white! dark:in-data-flux-sidebar-group-dropdown:bg-transparent! dark:in-data-flux-sidebar-group-dropdown:hover:bg-zinc-600! dark:in-data-flux-sidebar-group-dropdown:data-active:bg-zinc-600!" data-flux-sidebar-item="data-flux-sidebar-item">
+        <div class="relative">
+                                    <svg class="shrink-0 [:where(&amp;)]:size-6 size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current! [[data-flux-sidebar-item][data-active]_&]:text-current!" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+</svg>
+
+                        
+                            </div>
+        
+                    <div class="
+                in-data-flux-sidebar-collapsed-desktop:not-in-data-flux-sidebar-group-dropdown:hidden
+                flex-1 text-sm font-medium truncate [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Dashboard</div>
+    </a>
+
+    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible not-in-data-flux-sidebar-collapsed-desktop:hidden in-data-flux-sidebar-group-dropdown:hidden cursor-default" data-flux-tooltip-content>
+    Dashboard
+
+    </div>
+
+            </ui-tooltip>
+</nav>
+</ui-sidebar>
+
+
+<button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 w-10 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white      shrink-0 lg:hidden" data-flux-button="data-flux-button" x-data="" x-on:click="$dispatch('flux-sidebar-toggle')" aria-label="Open menu" data-flux-sidebar-toggle="data-flux-sidebar-toggle">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M2 6.75A.75.75 0 0 1 2.75 6h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 6.75Zm0 6.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+</svg>
+    </button></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar</span> <span class="t-attr">sticky</span> <span class="t-attr">collapsible</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.header</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.brand</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;/&quot;</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;Majid DS&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.collapse</span> <span class="t-attr">tooltip</span><span class="t-equals">=</span><span class="t-string">&quot;Collapse sidebar&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.header</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.item</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;home&quot;</span> <span class="t-attr">tooltip</span><span class="t-equals">=</span><span class="t-string">&quot;Dashboard&quot;</span> <span class="t-attr">current</span><span class="t-punct">&gt;</span><span class="t-text">Dashboard</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.item</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar.nav</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:sidebar</span><span class="t-punct">&gt;</span><span class="t-text">
+
+</span><span class="t-comment">{{-- In the header, for mobile --}}</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:sidebar.toggle</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;lg:hidden&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bars-2&quot;</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Open menu&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-sidebar" class="docs-ref-block"><h3>flux:sidebar</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">sticky</span></td><td>Pins the sidebar and caps its height to the viewport.</td></tr><tr><td><span class="docs-prop">collapsible</span></td><td><code>true</code> for an icon rail on desktop, or <code>"mobile"</code> for off-canvas below <code>lg</code>.</td></tr></tbody>
+</table></div><div id="flux-sidebar-header" class="docs-ref-block"><h3>flux:sidebar.header</h3><p class="docs-text">Top block, usually the brand and the collapse button.</p></div><div id="flux-sidebar-brand" class="docs-ref-block"><h3>flux:sidebar.brand</h3><p class="docs-text">Brand that collapses to the logo mark. Same props as <code>flux:brand</code>.</p></div><div id="flux-sidebar-collapse" class="docs-ref-block"><h3>flux:sidebar.collapse</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">tooltip</span></td><td>Tooltip on the collapse button.</td></tr></tbody>
+</table></div><div id="flux-sidebar-toggle" class="docs-ref-block"><h3>flux:sidebar.toggle</h3><p class="docs-text">Opens the off-canvas sidebar. Put it in the header.</p></div><div id="flux-sidebar-search" class="docs-ref-block"><h3>flux:sidebar.search</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">placeholder</span></td><td>Placeholder text.</td></tr><tr><td><span class="docs-prop">kbd</span></td><td>Keyboard shortcut hint.</td></tr></tbody>
+</table></div><div id="flux-sidebar-nav" class="docs-ref-block"><h3>flux:sidebar.nav</h3><p class="docs-text">Wraps a run of sidebar items.</p></div><div id="flux-sidebar-item" class="docs-ref-block"><h3>flux:sidebar.item</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">href</span></td><td>Link target.</td></tr><tr><td><span class="docs-prop">current</span></td><td>Marks the active page.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Leading icon name.</td></tr><tr><td><span class="docs-prop">badge</span></td><td>Badge content on the trailing edge.</td></tr><tr><td><span class="docs-prop">badge-color</span></td><td>Badge color.</td></tr><tr><td><span class="docs-prop">tooltip</span></td><td>Tooltip shown while the sidebar is collapsed.</td></tr><tr><td><span class="docs-prop">tooltip:position</span></td><td>Tooltip side. Default: <code>right</code>.</td></tr></tbody>
+</table></div><div id="flux-sidebar-group" class="docs-ref-block"><h3>flux:sidebar.group</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">heading</span></td><td>Group label.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Leading icon name.</td></tr><tr><td><span class="docs-prop">expandable</span></td><td>Makes the group collapsible.</td></tr><tr><td><span class="docs-prop">expanded</span></td><td>Initial state.</td></tr></tbody>
+</table></div><div id="flux-sidebar-spacer" class="docs-ref-block"><h3>flux:sidebar.spacer</h3><p class="docs-text">Pushes everything after it to the bottom.</p></div><div id="flux-sidebar-profile" class="docs-ref-block"><h3>flux:sidebar.profile</h3><p class="docs-text">The user block at the bottom. Same props as <code>flux:profile</code>.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/navlist.html"><span class="docs-related-name">Navlist</span><span class="docs-related-lede">Vertical navigation for a sidebar or a page rail.</span></a><a class="docs-related-card" href="../layouts/grid.html"><span class="docs-related-name">The layout grid</span><span class="docs-related-lede">How Flux turns the order of your markup into a page layout.</span></a><a class="docs-related-card" href="../layouts/header.html"><span class="docs-related-name">Header</span><span class="docs-related-lede">A top bar with navigation and actions.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#collapsible">Collapsible</a><a href="#reference">Reference</a><a href="#flux-sidebar" class="docs-toc-sub">flux:sidebar</a><a href="#flux-sidebar-header" class="docs-toc-sub">flux:sidebar.header</a><a href="#flux-sidebar-brand" class="docs-toc-sub">flux:sidebar.brand</a><a href="#flux-sidebar-collapse" class="docs-toc-sub">flux:sidebar.collapse</a><a href="#flux-sidebar-toggle" class="docs-toc-sub">flux:sidebar.toggle</a><a href="#flux-sidebar-search" class="docs-toc-sub">flux:sidebar.search</a><a href="#flux-sidebar-nav" class="docs-toc-sub">flux:sidebar.nav</a><a href="#flux-sidebar-item" class="docs-toc-sub">flux:sidebar.item</a><a href="#flux-sidebar-group" class="docs-toc-sub">flux:sidebar.group</a><a href="#flux-sidebar-spacer" class="docs-toc-sub">flux:sidebar.spacer</a><a href="#flux-sidebar-profile" class="docs-toc-sub">flux:sidebar.profile</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

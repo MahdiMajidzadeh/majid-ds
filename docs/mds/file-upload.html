@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:file-upload — Majid DS</title>
+<meta name="description" content="mds:file-upload — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html" aria-current="page">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:file-upload</h1>
+        <p class="docs-lede">Drag-and-drop uploads — an open version of a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsFileUpload', (config = {}) => ({
+        dragging: false,
+        loading: false,
+        focused: false,
+        progress: 0,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+
+        init() {
+            const input = this.$refs.input
+
+            // Livewire dispatches these on the input bound with wire:model...
+            input.addEventListener('livewire-upload-start', () => { this.loading = true; this.progress = 0 })
+            input.addEventListener('livewire-upload-progress', (e) => { this.progress = e.detail.progress })
+            input.addEventListener('livewire-upload-finish', () => { this.loading = false; this.progress = 100 })
+            input.addEventListener('livewire-upload-cancel', () => { this.loading = false; this.progress = 0 })
+            input.addEventListener('livewire-upload-error', () => { this.loading = false; this.progress = 0 })
+        },
+
+        // Display percent — Persian digits and ٪ when fa is on...
+        get percent() {
+            const n = String(Math.round(this.progress))
+
+            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+        },
+
+        // Exposed as CSS custom properties for custom progress UIs...
+        get styles() {
+            return {
+                '--mds-file-upload-progress': Math.round(this.progress) + '%',
+                '--mds-file-upload-progress-as-string': "'" + this.percent + "'",
+            }
+        },
+
+        enter() {
+            if (! this.disabled) this.dragging = true
+        },
+
+        leave(event) {
+            if (! this.$root.contains(event.relatedTarget)) this.dragging = false
+        },
+
+        drop(event) {
+            this.dragging = false
+
+            if (this.disabled) return
+
+            const input = this.$refs.input
+            const dropped = [...(event.dataTransfer?.files ?? [])]
+
+            if (! dropped.length) return
+
+            // Assigning a DataTransfer list is the only way to write input.files...
+            const transfer = new DataTransfer()
+
+            ;(input.multiple ? dropped : dropped.slice(0, 1)).forEach(file => transfer.items.add(file))
+
+            input.files = transfer.files
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    بارگذاری تصاویر
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative max-w-md"
+        x-data="mdsFileUpload({ disabled: false, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-pointer">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                 name="photos[]"                  multiple                  accept="image/*"                                                 data-flux-control
+                
+            >
+
+            <div
+    class="rounded-xl border border-dashed border-zinc-200 transition-colors dark:border-white/15 flex flex-col items-center justify-center gap-2 px-6 py-8 text-center"
+    x-bind:class="{
+        'border-accent bg-accent/5': dragging,
+        'ring-2 ring-accent': focused,
+    }"
+    data-mds-file-upload-dropzone
+>
+    <div class="flex shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400 size-12">
+        <span x-show="loading" x-cloak>
+            <svg class="animate-spin size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </span>
+
+        <span x-show="! loading">
+            <svg aria-hidden="true" data-mds-icon="" class="size-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.4776 9.01106C17.485 9.01102 17.4925 9.01101 17.5 9.01101C19.9853 9.01101 22 11.0294 22 13.5193C22 15.8398 20.25 17.7508 18 18M17.4776 9.01106C17.4924 8.84606 17.5 8.67896 17.5 8.51009C17.5 5.46695 15.0376 3 12 3C9.12324 3 6.76233 5.21267 6.52042 8.03192M17.4776 9.01106C17.3753 10.1476 16.9286 11.1846 16.2428 12.0165M6.52042 8.03192C3.98398 8.27373 2 10.4139 2 13.0183C2 15.4417 3.71776 17.4632 6 17.9273M6.52042 8.03192C6.67826 8.01687 6.83823 8.00917 7 8.00917C8.12582 8.00917 9.16474 8.38194 10.0005 9.01101" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 13L12 21M12 13C11.2998 13 9.99153 14.9943 9.5 15.5M12 13C12.7002 13 14.0085 14.9943 14.5 15.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </span>
+    </div>
+
+    <div class="min-w-0 flex flex-col items-center gap-1">
+        <div class="text-sm font-medium text-zinc-800 dark:text-white">فایل‌ها را اینجا رها کنید یا کلیک کنید</div>
+
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400">JPG، PNG یا GIF تا ۱۰ مگابایت</div>
+        
+        
+    </div>
+</div>
+        </label>
+    </div>
+
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60" data-flux-description>
+    می‌توانید چند فایل را همزمان انتخاب کنید.
+</ui-description>
+</ui-field></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;photos&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;بارگذاری تصاویر&quot;</span> <span class="t-attr">description</span><span class="t-equals">=</span><span class="t-string">&quot;می‌توانید چند فایل را همزمان انتخاب کنید.&quot;</span> <span class="t-attr">accept</span><span class="t-equals">=</span><span class="t-string">&quot;image/*&quot;</span> <span class="t-attr">multiple</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload.dropzone</span>
+        <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;فایل‌ها را اینجا رها کنید یا کلیک کنید&quot;</span>
+        <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;JPG، PNG یا GIF تا ۱۰ مگابایت&quot;</span>
+    <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="inline" class="docs-section"><h2>Inline</h2><p class="docs-text">A compact single-row dropzone, with an optional upload progress bar.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-4">
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsFileUpload', (config = {}) => ({
+        dragging: false,
+        loading: false,
+        focused: false,
+        progress: 0,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+
+        init() {
+            const input = this.$refs.input
+
+            // Livewire dispatches these on the input bound with wire:model...
+            input.addEventListener('livewire-upload-start', () => { this.loading = true; this.progress = 0 })
+            input.addEventListener('livewire-upload-progress', (e) => { this.progress = e.detail.progress })
+            input.addEventListener('livewire-upload-finish', () => { this.loading = false; this.progress = 100 })
+            input.addEventListener('livewire-upload-cancel', () => { this.loading = false; this.progress = 0 })
+            input.addEventListener('livewire-upload-error', () => { this.loading = false; this.progress = 0 })
+        },
+
+        // Display percent — Persian digits and ٪ when fa is on...
+        get percent() {
+            const n = String(Math.round(this.progress))
+
+            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+        },
+
+        // Exposed as CSS custom properties for custom progress UIs...
+        get styles() {
+            return {
+                '--mds-file-upload-progress': Math.round(this.progress) + '%',
+                '--mds-file-upload-progress-as-string': "'" + this.percent + "'",
+            }
+        },
+
+        enter() {
+            if (! this.disabled) this.dragging = true
+        },
+
+        leave(event) {
+            if (! this.$root.contains(event.relatedTarget)) this.dragging = false
+        },
+
+        drop(event) {
+            this.dragging = false
+
+            if (this.disabled) return
+
+            const input = this.$refs.input
+            const dropped = [...(event.dataTransfer?.files ?? [])]
+
+            if (! dropped.length) return
+
+            // Assigning a DataTransfer list is the only way to write input.files...
+            const transfer = new DataTransfer()
+
+            ;(input.multiple ? dropped : dropped.slice(0, 1)).forEach(file => transfer.items.add(file))
+
+            input.files = transfer.files
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Compact
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-data="mdsFileUpload({ disabled: false, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-pointer">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                 name="invoice"                                  accept="application/pdf"                                                 data-flux-control
+                
+            >
+
+            <div
+    class="rounded-xl border border-dashed border-zinc-200 transition-colors dark:border-white/15 flex items-center gap-3 px-4 py-3"
+    x-bind:class="{
+        'border-accent bg-accent/5': dragging,
+        'ring-2 ring-accent': focused,
+    }"
+    data-mds-file-upload-dropzone
+>
+    <div class="flex shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400 size-9">
+        <span x-show="loading" x-cloak>
+            <svg class="animate-spin size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </span>
+
+        <span x-show="! loading">
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.4776 9.01106C17.485 9.01102 17.4925 9.01101 17.5 9.01101C19.9853 9.01101 22 11.0294 22 13.5193C22 15.8398 20.25 17.7508 18 18M17.4776 9.01106C17.4924 8.84606 17.5 8.67896 17.5 8.51009C17.5 5.46695 15.0376 3 12 3C9.12324 3 6.76233 5.21267 6.52042 8.03192M17.4776 9.01106C17.3753 10.1476 16.9286 11.1846 16.2428 12.0165M6.52042 8.03192C3.98398 8.27373 2 10.4139 2 13.0183C2 15.4417 3.71776 17.4632 6 17.9273M6.52042 8.03192C6.67826 8.01687 6.83823 8.00917 7 8.00917C8.12582 8.00917 9.16474 8.38194 10.0005 9.01101" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 13L12 21M12 13C11.2998 13 9.99153 14.9943 9.5 15.5M12 13C12.7002 13 14.0085 14.9943 14.5 15.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </span>
+    </div>
+
+    <div class="min-w-0 flex-1">
+        <div class="text-sm font-medium text-zinc-800 dark:text-white truncate">Drop a file, or click to choose</div>
+
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400 truncate">PDF only, up to 5 MB</div>
+        
+        
+    </div>
+</div>
+        </label>
+    </div>
+</ui-field>
+
+    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    With a progress bar
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-data="mdsFileUpload({ disabled: false, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-pointer">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                 name="attachment"                                                                                 data-flux-control
+                
+            >
+
+            <div
+    class="rounded-xl border border-dashed border-zinc-200 transition-colors dark:border-white/15 flex items-center gap-3 px-4 py-3"
+    x-bind:class="{
+        'border-accent bg-accent/5': dragging,
+        'ring-2 ring-accent': focused,
+    }"
+    data-mds-file-upload-dropzone
+>
+    <div class="flex shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400 size-9">
+        <span x-show="loading" x-cloak>
+            <svg class="animate-spin size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </span>
+
+        <span x-show="! loading">
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.4776 9.01106C17.485 9.01102 17.4925 9.01101 17.5 9.01101C19.9853 9.01101 22 11.0294 22 13.5193C22 15.8398 20.25 17.7508 18 18M17.4776 9.01106C17.4924 8.84606 17.5 8.67896 17.5 8.51009C17.5 5.46695 15.0376 3 12 3C9.12324 3 6.76233 5.21267 6.52042 8.03192M17.4776 9.01106C17.3753 10.1476 16.9286 11.1846 16.2428 12.0165M6.52042 8.03192C3.98398 8.27373 2 10.4139 2 13.0183C2 15.4417 3.71776 17.4632 6 17.9273M6.52042 8.03192C6.67826 8.01687 6.83823 8.00917 7 8.00917C8.12582 8.00917 9.16474 8.38194 10.0005 9.01101" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 13L12 21M12 13C11.2998 13 9.99153 14.9943 9.5 15.5M12 13C12.7002 13 14.0085 14.9943 14.5 15.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </span>
+    </div>
+
+    <div class="min-w-0 flex-1">
+        <div class="text-sm font-medium text-zinc-800 dark:text-white truncate">Add an attachment</div>
+
+                    <div class="flex w-full items-center gap-2 mt-1.5" x-show="loading" x-cloak>
+                <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-200 dark:bg-white/10">
+                    <div
+                        class="h-full rounded-full bg-accent transition-[width] duration-150"
+                        x-bind:style="{ width: Math.round(progress) + '%' }"
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        x-bind:aria-valuenow="Math.round(progress)"
+                    ></div>
+                </div>
+
+                <span class="shrink-0 text-xs tabular-nums text-zinc-500 dark:text-zinc-400" x-text="percent"></span>
+            </div>
+
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400 truncate" x-show="! loading">Any format up to 20 MB</div>
+                    
+        
+    </div>
+</div>
+        </label>
+    </div>
+</ui-field>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-4&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;invoice&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Compact&quot;</span> <span class="t-attr">accept</span><span class="t-equals">=</span><span class="t-string">&quot;application/pdf&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload.dropzone</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Drop a file, or click to choose&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;PDF only, up to 5 MB&quot;</span> <span class="t-attr">inline</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;attachment&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;With a progress bar&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload.dropzone</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Add an attachment&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Any format up to 20 MB&quot;</span> <span class="t-attr">inline</span> <span class="t-attr">with-progress</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="file-list" class="docs-section"><h2>File list</h2><p class="docs-text"><code>mds:file-item</code> renders the chosen files. Give it a byte count and it formats the size in Persian units.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><div class="w-full max-w-md space-y-2">
+    <div
+    class="flex items-center gap-3 rounded-xl border bg-white px-3 py-2.5 dark:bg-white/5 border-zinc-200 dark:border-white/10"
+    data-mds-file-item
+>
+            <img src="https://picsum.photos/seed/phone/80/80" alt="" class="size-10 shrink-0 rounded-lg object-cover">
+    
+    <div class="min-w-0 flex-1">
+                    
+            <div class="truncate text-sm font-medium text-zinc-800 dark:text-white" dir="auto" title="Profile_pic.jpg">Profile_pic.jpg</div>
+        
+                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">۱۵۹ کیلوبایت</div>
+        
+            </div>
+
+            <div class="ms-auto flex shrink-0 items-center gap-1"><button
+    type="button"
+    class="flex size-7 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200" aria-label="حذف Profile_pic.jpg"
+    data-mds-file-item-remove
+>
+    <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</button></div>
+    </div>
+
+    <div
+    class="flex items-center gap-3 rounded-xl border bg-white px-3 py-2.5 dark:bg-white/5 border-red-500 dark:border-red-400"
+    data-mds-file-item
+>
+            <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500 dark:bg-red-400/10 dark:text-red-400">
+            <svg aria-hidden="true" data-mds-icon="" class="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+        </div>
+    
+    <div class="min-w-0 flex-1">
+                    
+            <div class="truncate text-sm font-medium text-zinc-800 dark:text-white" dir="auto" title="archive.zip">archive.zip</div>
+        
+                    <div class="truncate text-xs text-red-500 dark:text-red-400">حجم فایل بیش از ۱۰ مگابایت است.</div>
+        
+            </div>
+
+            <div class="ms-auto flex shrink-0 items-center gap-1"><button
+    type="button"
+    class="flex size-7 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-white/10 dark:hover:text-zinc-200" aria-label="حذف archive.zip"
+    data-mds-file-item-remove
+>
+    <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</button></div>
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Profile_pic.jpg&quot;</span> <span class="t-attr">image</span><span class="t-equals">=</span><span class="t-string">&quot;https://picsum.photos/seed/phone/80/80&quot;</span> <span class="t-attr">:size</span><span class="t-equals">=</span><span class="t-string">&quot;162400&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">x-slot</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;actions&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-item.remove</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;حذف Profile_pic.jpg&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">x-slot</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;archive.zip&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;حجم فایل بیش از ۱۰ مگابایت است.&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;exclamation-triangle&quot;</span> <span class="t-attr">invalid</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">x-slot</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;actions&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-item.remove</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;حذف archive.zip&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">x-slot</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="error-and-disabled" class="docs-section"><h2>Error and disabled</h2><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-4">
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsFileUpload', (config = {}) => ({
+        dragging: false,
+        loading: false,
+        focused: false,
+        progress: 0,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+
+        init() {
+            const input = this.$refs.input
+
+            // Livewire dispatches these on the input bound with wire:model...
+            input.addEventListener('livewire-upload-start', () => { this.loading = true; this.progress = 0 })
+            input.addEventListener('livewire-upload-progress', (e) => { this.progress = e.detail.progress })
+            input.addEventListener('livewire-upload-finish', () => { this.loading = false; this.progress = 100 })
+            input.addEventListener('livewire-upload-cancel', () => { this.loading = false; this.progress = 0 })
+            input.addEventListener('livewire-upload-error', () => { this.loading = false; this.progress = 0 })
+        },
+
+        // Display percent — Persian digits and ٪ when fa is on...
+        get percent() {
+            const n = String(Math.round(this.progress))
+
+            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+        },
+
+        // Exposed as CSS custom properties for custom progress UIs...
+        get styles() {
+            return {
+                '--mds-file-upload-progress': Math.round(this.progress) + '%',
+                '--mds-file-upload-progress-as-string': "'" + this.percent + "'",
+            }
+        },
+
+        enter() {
+            if (! this.disabled) this.dragging = true
+        },
+
+        leave(event) {
+            if (! this.$root.contains(event.relatedTarget)) this.dragging = false
+        },
+
+        drop(event) {
+            this.dragging = false
+
+            if (this.disabled) return
+
+            const input = this.$refs.input
+            const dropped = [...(event.dataTransfer?.files ?? [])]
+
+            if (! dropped.length) return
+
+            // Assigning a DataTransfer list is the only way to write input.files...
+            const transfer = new DataTransfer()
+
+            ;(input.multiple ? dropped : dropped.slice(0, 1)).forEach(file => transfer.items.add(file))
+
+            input.files = transfer.files
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    With a validation error
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-data="mdsFileUpload({ disabled: false, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-pointer">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                 name="broken"                                                                  aria-invalid="true"                 data-flux-control
+                
+            >
+
+            <div
+    class="rounded-xl border border-dashed border-zinc-200 transition-colors dark:border-white/15 flex items-center gap-3 px-4 py-3"
+    x-bind:class="{
+        'border-accent bg-accent/5': dragging,
+        'ring-2 ring-accent': focused,
+    }"
+    data-mds-file-upload-dropzone
+>
+    <div class="flex shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400 size-9">
+        <span x-show="loading" x-cloak>
+            <svg class="animate-spin size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </span>
+
+        <span x-show="! loading">
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.4776 9.01106C17.485 9.01102 17.4925 9.01101 17.5 9.01101C19.9853 9.01101 22 11.0294 22 13.5193C22 15.8398 20.25 17.7508 18 18M17.4776 9.01106C17.4924 8.84606 17.5 8.67896 17.5 8.51009C17.5 5.46695 15.0376 3 12 3C9.12324 3 6.76233 5.21267 6.52042 8.03192M17.4776 9.01106C17.3753 10.1476 16.9286 11.1846 16.2428 12.0165M6.52042 8.03192C3.98398 8.27373 2 10.4139 2 13.0183C2 15.4417 3.71776 17.4632 6 17.9273M6.52042 8.03192C6.67826 8.01687 6.83823 8.00917 7 8.00917C8.12582 8.00917 9.16474 8.38194 10.0005 9.01101" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 13L12 21M12 13C11.2998 13 9.99153 14.9943 9.5 15.5M12 13C12.7002 13 14.0085 14.9943 14.5 15.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </span>
+    </div>
+
+    <div class="min-w-0 flex-1">
+        <div class="text-sm font-medium text-zinc-800 dark:text-white truncate">Product image</div>
+
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400 truncate">JPG or PNG up to 2 MB</div>
+        
+        
+    </div>
+</div>
+        </label>
+    </div>
+
+    
+            
+        <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400" data-flux-error>
+            <svg aria-hidden="true" data-mds-icon="" class="inline size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+            The selected file is over the size limit.
+        </div>
+</ui-field>
+
+    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Disabled
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-data="mdsFileUpload({ disabled: true, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-not-allowed opacity-50">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                                                                 disabled                                 data-flux-control
+                
+            >
+
+            <div
+    class="rounded-xl border border-dashed border-zinc-200 transition-colors dark:border-white/15 flex items-center gap-3 px-4 py-3"
+    x-bind:class="{
+        'border-accent bg-accent/5': dragging,
+        'ring-2 ring-accent': focused,
+    }"
+    data-mds-file-upload-dropzone
+>
+    <div class="flex shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-white/10 dark:text-zinc-400 size-9">
+        <span x-show="loading" x-cloak>
+            <svg class="animate-spin size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </span>
+
+        <span x-show="! loading">
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.4776 9.01106C17.485 9.01102 17.4925 9.01101 17.5 9.01101C19.9853 9.01101 22 11.0294 22 13.5193C22 15.8398 20.25 17.7508 18 18M17.4776 9.01106C17.4924 8.84606 17.5 8.67896 17.5 8.51009C17.5 5.46695 15.0376 3 12 3C9.12324 3 6.76233 5.21267 6.52042 8.03192M17.4776 9.01106C17.3753 10.1476 16.9286 11.1846 16.2428 12.0165M6.52042 8.03192C3.98398 8.27373 2 10.4139 2 13.0183C2 15.4417 3.71776 17.4632 6 17.9273M6.52042 8.03192C6.67826 8.01687 6.83823 8.00917 7 8.00917C8.12582 8.00917 9.16474 8.38194 10.0005 9.01101" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 13L12 21M12 13C11.2998 13 9.99153 14.9943 9.5 15.5M12 13C12.7002 13 14.0085 14.9943 14.5 15.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </span>
+    </div>
+
+    <div class="min-w-0 flex-1">
+        <div class="text-sm font-medium text-zinc-800 dark:text-white truncate">Uploading is unavailable</div>
+
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400 truncate">Place the order first</div>
+        
+        
+    </div>
+</div>
+        </label>
+    </div>
+</ui-field>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-4&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;broken&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;With a validation error&quot;</span> <span class="t-attr">error</span><span class="t-equals">=</span><span class="t-string">&quot;The selected file is over the size limit.&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload.dropzone</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Product image&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;JPG or PNG up to 2 MB&quot;</span> <span class="t-attr">inline</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Disabled&quot;</span> <span class="t-attr">disabled</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload.dropzone</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Uploading is unavailable&quot;</span> <span class="t-attr">text</span><span class="t-equals">=</span><span class="t-string">&quot;Place the order first&quot;</span> <span class="t-attr">inline</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="custom-uploader" class="docs-section"><h2>Custom uploader</h2><p class="docs-text">Any markup inside <code>mds:file-upload</code> gets the full upload behaviour. Style the states with the <code>in-data-dragging:</code> and <code>in-data-loading:</code> variants.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsFileUpload', (config = {}) => ({
+        dragging: false,
+        loading: false,
+        focused: false,
+        progress: 0,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+
+        init() {
+            const input = this.$refs.input
+
+            // Livewire dispatches these on the input bound with wire:model...
+            input.addEventListener('livewire-upload-start', () => { this.loading = true; this.progress = 0 })
+            input.addEventListener('livewire-upload-progress', (e) => { this.progress = e.detail.progress })
+            input.addEventListener('livewire-upload-finish', () => { this.loading = false; this.progress = 100 })
+            input.addEventListener('livewire-upload-cancel', () => { this.loading = false; this.progress = 0 })
+            input.addEventListener('livewire-upload-error', () => { this.loading = false; this.progress = 0 })
+        },
+
+        // Display percent — Persian digits and ٪ when fa is on...
+        get percent() {
+            const n = String(Math.round(this.progress))
+
+            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+        },
+
+        // Exposed as CSS custom properties for custom progress UIs...
+        get styles() {
+            return {
+                '--mds-file-upload-progress': Math.round(this.progress) + '%',
+                '--mds-file-upload-progress-as-string': "'" + this.percent + "'",
+            }
+        },
+
+        enter() {
+            if (! this.disabled) this.dragging = true
+        },
+
+        leave(event) {
+            if (! this.$root.contains(event.relatedTarget)) this.dragging = false
+        },
+
+        drop(event) {
+            this.dragging = false
+
+            if (this.disabled) return
+
+            const input = this.$refs.input
+            const dropped = [...(event.dataTransfer?.files ?? [])]
+
+            if (! dropped.length) return
+
+            // Assigning a DataTransfer list is the only way to write input.files...
+            const transfer = new DataTransfer()
+
+            ;(input.multiple ? dropped : dropped.slice(0, 1)).forEach(file => transfer.items.add(file))
+
+            input.files = transfer.files
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <div
+        class="relative"
+        x-data="mdsFileUpload({ disabled: false, fa: true })"
+        x-bind:style="styles"
+        x-bind:data-dragging="dragging ? '' : false"
+        x-bind:data-loading="loading ? '' : false"
+        x-on:dragenter.prevent="enter()"
+        x-on:dragover.prevent="enter()"
+        x-on:dragleave="leave($event)"
+        x-on:drop.prevent="drop($event)"
+        x-on:focusin="focused = $event.target.matches(':focus-visible')"
+        x-on:focusout="focused = false"
+        data-mds-file-upload
+    >
+        <label class="block cursor-pointer">
+            <input
+                type="file"
+                class="sr-only"
+                x-ref="input"
+                 name="avatar"                                  accept="image/*"                                                 data-flux-control
+                
+            >
+
+            <div class="relative flex size-20 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 transition-colors hover:bg-zinc-200 in-data-dragging:border-accent dark:border-white/10 dark:bg-white/10">
+        <svg aria-hidden="true" data-mds-icon="" class="text-zinc-500 dark:text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+
+        <div class="absolute bottom-0 end-0 rounded-full bg-white dark:bg-zinc-800">
+            <svg aria-hidden="true" data-mds-icon="" class="size-5 text-zinc-500 dark:text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9.00014V16.0002M15.5 11.5C15.5 11.5 12.9223 8.00001 12 8C11.0777 7.99999 8.50003 11.5 8.50003 11.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </div>
+    </div>
+        </label>
+    </div>
+</ui-field></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:file-upload</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;avatar&quot;</span> <span class="t-attr">accept</span><span class="t-equals">=</span><span class="t-string">&quot;image/*&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;relative flex size-20 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 transition-colors hover:bg-zinc-200 in-data-dragging:border-accent dark:border-white/10 dark:bg-white/10&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;user&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-zinc-500 dark:text-zinc-400&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;absolute bottom-0 end-0 rounded-full bg-white dark:bg-zinc-800&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;arrow-up-circle&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-5 text-zinc-500 dark:text-zinc-400&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:file-upload</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-file-upload" class="docs-ref-block"><h3>mds:file-upload</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">name</span></td><td>Field name, or the Livewire property to upload into.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Field label.</td></tr><tr><td><span class="docs-prop">description</span></td><td>Smaller text under the label.</td></tr><tr><td><span class="docs-prop">accept</span></td><td>Accepted MIME types or extensions.</td></tr><tr><td><span class="docs-prop">multiple</span></td><td>Allows several files. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">error</span></td><td>Validation message shown under the control.</td></tr><tr><td><span class="docs-prop">invalid</span></td><td>Marks the control as invalid.</td></tr><tr><td><span class="docs-prop">disabled</span></td><td>Disables the control.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits in the progress bar and sizes.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property for real uploads.</td></tr></tbody>
+</table></div><div id="mds-file-upload-dropzone" class="docs-ref-block"><h3>mds:file-upload.dropzone</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">heading</span></td><td>Main line inside the dropzone.</td></tr><tr><td><span class="docs-prop">text</span></td><td>Supporting line, usually the accepted types and size.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Icon name. Default: <code>cloud-arrow-up</code>.</td></tr><tr><td><span class="docs-prop">inline</span></td><td>Compact single-row layout. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">with-progress</span></td><td>Shows the Livewire upload progress bar. Default: <code>false</code>.</td></tr></tbody>
+</table></div><div id="mds-file-item" class="docs-ref-block"><h3>mds:file-item</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">heading</span></td><td>File name.</td></tr><tr><td><span class="docs-prop">text</span></td><td>Secondary line. Derived from <code>size</code> when absent.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Byte count, formatted into Persian units.</td></tr><tr><td><span class="docs-prop">image</span></td><td>Thumbnail URL.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Icon when there is no thumbnail. Default: <code>document</code>.</td></tr><tr><td><span class="docs-prop">invalid</span></td><td>Marks the file as rejected.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
+</table><table class="docs-table">
+    <thead><tr><th>Slot</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">actions</span></td><td>Buttons on the trailing edge, e.g. remove.</td></tr></tbody>
+</table></div><div id="mds-file-item-remove" class="docs-ref-block"><h3>mds:file-item.remove</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">label</span></td><td>Accessible label. Default: حذف فایل.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Icon name. Default: <code>x-mark</code>.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/input.html"><span class="docs-related-name">Input</span><span class="docs-related-lede">A single-line text field, with the affordances forms usually need.</span></a><a class="docs-related-card" href="../components/field.html"><span class="docs-related-name">Field</span><span class="docs-related-lede">Wire a label, description and validation error to an input.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#inline">Inline</a><a href="#file-list">File list</a><a href="#error-and-disabled">Error and disabled</a><a href="#custom-uploader">Custom uploader</a><a href="#reference">Reference</a><a href="#mds-file-upload" class="docs-toc-sub">mds:file-upload</a><a href="#mds-file-upload-dropzone" class="docs-toc-sub">mds:file-upload.dropzone</a><a href="#mds-file-item" class="docs-toc-sub">mds:file-item</a><a href="#mds-file-item-remove" class="docs-toc-sub">mds:file-item.remove</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

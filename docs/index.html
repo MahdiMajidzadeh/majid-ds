@@ -1,1042 +1,369 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="docs">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Majid DS Docs</title>
-<meta name="description" content="Documentation for Majid DS — an RTL/Persian-first UI kit for Laravel Livewire, built on top of Flux UI.">
+<title>Majid DS — Majid DS</title>
+<meta name="description" content="Majid DS — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
 </head>
 <body>
-<!--CONTENT-START-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Vazirmatn:wght@400;600;700&display=swap">
-<style>
-:root {
-  --bg: #f7f8f8;
-  --surface: #ffffff;
-  --surface2: #eff3f2;
-  --ink: #1f2426;
-  --muted: #687275;
-  --line: #e2e7e6;
-  --accent: #0e8074;
-  --accent-soft: #0e807414;
-  --rose: #e11d48;
-  --rose-soft: #e11d4814;
-  --amber: #d97706;
-  --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
-  --body: 'Figtree', 'Vazirmatn', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', 'Vazirmatn', ui-monospace, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1212;
-    --surface: #161a1a;
-    --surface2: #1d2323;
-    --ink: #e8ecec;
-    --muted: #9aa5a4;
-    --line: #262d2d;
-    --accent: #35b8ab;
-    --accent-soft: #35b8ab1c;
-    --rose: #fb7185;
-    --rose-soft: #fb718522;
-    --amber: #fbbf24;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1212;
-  --surface: #161a1a;
-  --surface2: #1d2323;
-  --ink: #e8ecec;
-  --muted: #9aa5a4;
-  --line: #262d2d;
-  --accent: #35b8ab;
-  --accent-soft: #35b8ab1c;
-  --rose: #fb7185;
-  --rose-soft: #fb718522;
-  --amber: #fbbf24;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--body);
-  font-size: 15.5px;
-  line-height: 1.65;
-}
-.wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  gap: 48px;
-}
-header.site {
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-}
-header.site .bar {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 18px 24px;
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.brand {
-  font-family: var(--display);
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.brand .fa { color: var(--accent); font-family: 'Vazirmatn', var(--body); font-weight: 700; }
-.version {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 999px;
-  padding: 2px 10px;
-}
-.bar .links { margin-inline-start: auto; display: flex; gap: 18px; font-size: 14px; }
-.bar .links a { color: var(--muted); text-decoration: none; }
-.bar .links a:hover { color: var(--accent); }
-nav.side {
-  position: sticky;
-  top: 0;
-  align-self: start;
-  max-height: 100vh;
-  overflow-y: auto;
-  padding: 28px 0 48px;
-  font-size: 13.5px;
-}
-nav.side .group { margin-bottom: 22px; }
-nav.side .eyebrow {
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--muted);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-nav.side a {
-  display: block;
-  color: var(--ink);
-  text-decoration: none;
-  padding: 3px 10px;
-  border-inline-start: 2px solid transparent;
-  border-radius: 0 6px 6px 0;
-}
-nav.side a:hover { color: var(--accent); border-inline-start-color: var(--accent); background: var(--accent-soft); }
-nav.side a code { font-family: var(--mono); font-size: 12px; background: none; padding: 0; }
-main { padding: 36px 0 90px; min-width: 0; }
-h1 {
-  font-family: var(--display);
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  line-height: 1.15;
-  margin: 0 0 10px;
-  text-wrap: balance;
-}
-.lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0 0 8px; }
-h2 {
-  font-family: var(--display);
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0 0 12px;
-  padding-top: 56px;
-  text-wrap: balance;
-}
-h2 code, h3 code { font-family: var(--mono); font-size: 0.86em; color: var(--accent); background: none; padding: 0; }
-h3 { font-family: var(--display); font-size: 16.5px; font-weight: 600; margin: 30px 0 8px; }
-section > p, section > ul { max-width: 68ch; }
-p { margin: 0 0 14px; }
-ul { margin: 0 0 14px; padding-inline-start: 22px; }
-li { margin-bottom: 4px; }
-a { color: var(--accent); }
-a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-code {
-  font-family: var(--mono);
-  font-size: 0.86em;
-  background: var(--surface2);
-  border-radius: 5px;
-  padding: 1.5px 5px;
-}
-pre {
-  background: var(--surface2);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 14px 16px;
-  overflow-x: auto;
-  margin: 0 0 16px;
-  line-height: 1.6;
-}
-pre code { background: none; padding: 0; font-size: 12.8px; }
-pre .c { color: var(--muted); }
-.section-rule { border: 0; border-top: 1px solid var(--line); margin: 56px 0 0; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-  margin: 6px 0 20px;
-  display: block;
-  overflow-x: auto;
-}
-th, td { text-align: start; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-th {
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  font-weight: 600;
-}
-td:first-child code { color: var(--accent); background: none; padding: 0; }
-td .fa-text { font-family: 'Vazirmatn', var(--body); }
-.pill {
-  display: inline-block;
-  font-family: var(--body);
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 999px;
-  padding: 2px 10px;
-  vertical-align: 2px;
-  margin-inline-start: 8px;
-}
-.pill.pro { background: var(--rose-soft); color: var(--rose); }
-.pill.fa-first { background: var(--accent-soft); color: var(--accent); }
-.note {
-  border-inline-start: 3px solid var(--accent);
-  background: var(--accent-soft);
-  border-radius: 0 10px 10px 0;
-  padding: 12px 16px;
-  margin: 0 0 16px;
-  font-size: 14px;
-  max-width: 68ch;
-}
-.note strong { color: var(--accent); }
-.preview {
-  direction: rtl;
-  font-family: 'Vazirmatn', var(--body);
-  background: var(--surface);
-  border: 1px dashed var(--line);
-  border-radius: 12px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  margin: 0 0 16px;
-}
-.preview .cap {
-  direction: ltr;
-  font-family: var(--body);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  width: 100%;
-}
-.stars { color: #f59e0b; letter-spacing: 2px; }
-.stars .off { color: var(--line); }
-.pv-num { font-weight: 600; font-variant-numeric: tabular-nums; }
-.pv-muted { color: var(--muted); font-size: 13px; }
-.pv-badge {
-  background: var(--rose);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 2px 9px;
-}
-.pv-del { color: var(--muted); text-decoration: line-through; font-size: 12px; display: block; }
-.pv-price { font-weight: 700; font-size: 17px; }
-.pv-unit { font-size: 12px; color: var(--muted); }
-.pv-qty {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 10px;
-  padding: 7px 14px;
-  font-weight: 600;
-}
-.pv-qty .op { color: var(--accent); font-weight: 700; }
-kbd {
-  font-family: var(--mono);
-  font-size: 11px;
-  border: 1px solid var(--line);
-  border-bottom-width: 2px;
-  border-radius: 5px;
-  padding: 1px 5px;
-  background: var(--surface);
-}
-footer.site {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 13px;
-  padding: 24px;
-  text-align: center;
-}
-@media (max-width: 860px) {
-  .wrap { grid-template-columns: 1fr; gap: 0; }
-  nav.side { position: static; max-height: none; padding-bottom: 0; }
-  nav.side .group { display: inline-block; vertical-align: top; margin-inline-end: 28px; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
-}
-</style>
 
-<header class="site">
-  <div class="bar">
-    <span class="brand">Majid DS <span class="fa">· مجید</span></span>
-    <span class="version">v0.1.0</span>
-    <span class="links">
-      <a href="https://github.com/MahdiMajidzadeh/majid-ds">GitHub</a>
-      <a href="https://github.com/MahdiMajidzadeh/majid-ds/blob/main/llms.txt">llms.txt — docs for AI agents</a>
-    </span>
-  </div>
+<header class="docs-topbar">
+    <a class="docs-brand" href="index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="index.html">Docs</a>
+        <a href="demo/demo-en.html">Demo</a>
+        <a href="demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
 </header>
 
-<div class="wrap">
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="index.html" aria-current="page">Overview</a><a href="guides/installation.html">Installation</a><a href="guides/theming.html">Theming</a><a href="guides/directives.html">Directives &amp; helpers</a><a href="guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="layouts/grid.html">The layout grid</a><a href="layouts/header.html">Header</a><a href="layouts/sidebar.html">Sidebar</a><a href="layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="components/avatar.html">Avatar</a><a href="components/badge.html">Badge</a><a href="components/brand.html">Brand</a><a href="components/breadcrumbs.html">Breadcrumbs</a><a href="components/button.html">Button</a><a href="components/callout.html">Callout</a><a href="components/card.html">Card</a><a href="components/checkbox.html">Checkbox</a><a href="components/dropdown.html">Dropdown</a><a href="components/field.html">Field</a><a href="components/heading.html">Heading</a><a href="components/icon.html">Icon</a><a href="components/input.html">Input</a><a href="components/modal.html">Modal</a><a href="components/navbar.html">Navbar</a><a href="components/navlist.html">Navlist</a><a href="components/navmenu.html">Navmenu</a><a href="components/otp-input.html">OTP input</a><a href="components/pagination.html">Pagination</a><a href="components/profile.html">Profile</a><a href="components/progress.html">Progress</a><a href="components/radio.html">Radio</a><a href="components/select.html">Select</a><a href="components/separator.html">Separator</a><a href="components/skeleton.html">Skeleton</a><a href="components/switch.html">Switch</a><a href="components/table.html">Table</a><a href="components/text.html">Text</a><a href="components/textarea.html">Textarea</a><a href="components/toast.html">Toast</a><a href="components/toggle.html">Toggle</a><a href="components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="mds/mds-icon.html">mds:icon</a><a href="mds/price.html">mds:price</a><a href="mds/discount-badge.html">mds:discount-badge</a><a href="mds/quantity.html">mds:quantity</a><a href="mds/rating.html">mds:rating</a><a href="mds/product-card.html">mds:product-card</a><a href="mds/stepper.html">mds:stepper</a><a href="mds/countdown.html">mds:countdown</a><a href="mds/jalali-date.html">mds:jalali-date</a><a href="mds/empty-state.html">mds:empty-state</a><a href="mds/command.html">mds:command</a><a href="mds/color-picker.html">mds:color-picker</a><a href="mds/file-upload.html">mds:file-upload</a><a href="mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
 
-<nav class="side" aria-label="Documentation sections">
-  <div class="group">
-    <div class="eyebrow">Getting started</div>
-    <a href="#install">Installation</a>
-    <a href="#stylesheet">Stylesheet</a>
-    <a href="#layout">Layout</a>
-    <a href="#config">Configuration</a>
-    <a href="#customizing">Customizing views</a>
-  </div>
-  <div class="group">
-    <div class="eyebrow">Reference</div>
-    <a href="#directives">Blade directives</a>
-    <a href="#helpers">PHP helpers</a>
-    <a href="#css-layer">CSS layer</a>
-  </div>
-  <div class="group">
-    <div class="eyebrow">Components</div>
-    <a href="#icons"><code>mds:icon</code></a>
-    <a href="#rating"><code>mds:rating</code></a>
-    <a href="#rating-input"><code>mds:rating.input</code></a>
-    <a href="#price"><code>mds:price</code></a>
-    <a href="#discount-badge"><code>mds:discount-badge</code></a>
-    <a href="#quantity"><code>mds:quantity</code></a>
-    <a href="#product-card"><code>mds:product-card</code></a>
-    <a href="#stepper"><code>mds:stepper</code></a>
-    <a href="#countdown"><code>mds:countdown</code></a>
-    <a href="#jalali-date"><code>mds:jalali-date</code></a>
-    <a href="#empty-state"><code>mds:empty-state</code></a>
-    <a href="#command"><code>mds:command</code></a>
-    <a href="#color-picker"><code>mds:color-picker</code></a>
-    <a href="#file-upload"><code>mds:file-upload</code></a>
-    <a href="#file-item"><code>mds:file-item</code></a>
-    <a href="#timeline"><code>mds:timeline</code></a>
-  </div>
-  <div class="group">
-    <div class="eyebrow">Meta</div>
-    <a href="#ai-agents">For AI agents</a>
-  </div>
-</nav>
+    <main class="docs-main">
+        <p class="docs-eyebrow">Guides</p>
+        <h1>Majid DS</h1>
+        <p class="docs-lede">An RTL / Persian-first UI kit for Laravel Livewire, built on top of Flux UI.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Majid DS does not replace Flux — it extends it. Every <code>flux:*</code> component keeps working exactly as it does upstream, and an <code>mds:*</code> namespace adds the pieces Flux does not have: Persian typography and digits, Jalali dates, Toman and Rial prices, and the e-commerce components a Persian storefront needs.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner" dir="rtl"><div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-4 [:where(&amp;)]:rounded-lg group relative flex flex-col gap-3 max-w-56" data-mds-product-card="data-mds-product-card" data-flux-card>
+    <div class="relative">
+                    <div class="absolute start-0 top-0 z-10">
+                <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-lime-800 [&amp;_button]:text-lime-800! dark:text-lime-200 dark:[&amp;_button]:text-lime-200! bg-lime-400/25 dark:bg-lime-400/40 [&amp;:is(button)]:hover:bg-lime-400/35 dark:[button]:hover:bg-lime-400/50">
+        ارسال امروز
+    </div>
+            </div>
+        
+        <a  href="#"  class="block">
+                            <img
+                    src="https://picsum.photos/seed/phone/400/400"
+                    alt="گوشی موبایل سامسونگ مدل Galaxy S25"
+                    loading="lazy"
+                    class="aspect-square w-full rounded-lg object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+                >
+                    </a>
+    </div>
 
-<main>
+    <a  href="#"  class="block">
+        <h3 class="line-clamp-2 min-h-10 text-sm/5 font-medium text-zinc-800 dark:text-white">گوشی موبایل سامسونگ مدل Galaxy S25</h3>
+    </a>
 
-<h1>An RTL, Persian-first layer on top of Flux UI</h1>
-<p class="lede">Majid DS extends <a href="https://fluxui.dev">Flux UI</a> for Laravel Livewire. Every <code>&lt;flux:*&gt;</code> component keeps working untouched; an <code>&lt;mds:*&gt;</code> namespace adds Persian typography and digits, Jalali dates, Toman/Rial money, e-commerce components, and open implementations of two Flux Pro components.</p>
-<p class="lede">Requires PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. <code>livewire/flux</code> (free tier) installs automatically.</p>
+            <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="۴٫۶ / ۵"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+                            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
 
-<hr class="section-rule">
-<section id="install">
-<h2>Installation</h2>
-<pre><code>composer require mahdimajidzadeh/ds</code></pre>
-<p>The service provider is auto-discovered. Both tag syntaxes work everywhere: <code>&lt;mds:rating /&gt;</code> and the standard <code>&lt;x-mds::rating /&gt;</code>.</p>
-<p><em>While the repo is private</em>, add it as a composer repository first — <code>{"type": "vcs", "url": "git@github.com:MahdiMajidzadeh/majid-ds.git"}</code> — or use a path repository during local development.</p>
-</section>
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 92.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
 
-<section id="stylesheet">
-<h2>Stylesheet</h2>
-<p>In <code>resources/css/app.css</code>, import the Majid DS layer after Tailwind and Flux:</p>
-<pre><code>@import 'tailwindcss';
-@import '../../vendor/livewire/flux/dist/flux.css';
-@import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">۴٫۶</span>
+    
+            <span class="text-xs text-zinc-400 dark:text-zinc-500">(۳۴۲)</span>
+    </div>
+    
+    <div class="mt-auto flex items-center justify-between gap-2">
+                                    <span
+    class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
+    aria-label="۱۳ درصد تخفیف"
+    data-mds-discount-badge
+>۱۳٪</span>
+            
+            <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">۴۸٬۹۰۰٬۰۰۰</del>
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">۴۲٬۵۰۰٬۰۰۰</span>
 
-<span class="c">/* Tailwind v4 skips gitignored paths — without this the utility classes
-   inside the kit's Blade views are never generated. */</span>
-@source '../../vendor/mahdimajidzadeh/ds/resources/views';
-
-@custom-variant dark (&amp;:where(.dark, .dark *));</code></pre>
-<p>The layer sets Vazirmatn as <code>--font-sans</code>, ships the <code>[x-cloak]</code> rule, keeps <code>type="tel"</code> and <code>[data-ltr]</code> inputs left-to-right inside RTL forms, and provides the checkerboard/range-slider styles used by <code>mds:color-picker</code>.</p>
-</section>
-
-<section id="layout">
-<h2>Layout</h2>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="fa" dir="rtl"&gt;
-&lt;head&gt;
-    @mdsFonts          <span class="c">{{-- Vazirmatn &lt;link&gt; tags --}}</span>
-    @vite('resources/css/app.css')
-    @fluxAppearance    <span class="c">{{-- dark-mode handling --}}</span>
-&lt;/head&gt;
-&lt;body class="min-h-screen bg-zinc-50 font-sans antialiased dark:bg-zinc-900"&gt;
-    {{ $slot }}
-    @fluxScripts
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<div class="note"><strong>Alpine requirement.</strong> The interactive components (<code>quantity</code>, <code>countdown</code>, <code>rating.input</code>, <code>command</code>, <code>color-picker</code>) need Alpine. Livewire injects it on any page that renders a Livewire component; on purely static pages add <code>@livewireScripts</code>.</div>
-<p>For production traffic from Iran, self-host Vazirmatn instead of using <code>@mdsFonts</code> (Google Fonts can be slow or blocked).</p>
-</section>
-
-<section id="config">
-<h2>Configuration</h2>
-<pre><code>php artisan vendor:publish --tag=mds-config</code></pre>
-<table>
-<thead><tr><th>Key</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>mds.currency</code></td><td><code>'toman'</code></td><td>Default currency for <code>mds:price</code>, <code>@toman</code>-style directives, and <code>Persian::money()</code>. Accepts <code>toman</code>, <code>rial</code>, <code>none</code>, or any literal label (e.g. <span class="fa-text">«درهم»</span>).</td></tr>
-<tr><td><code>mds.persian_digits</code></td><td><code>true</code></td><td>Global default for rendering numbers with Persian digits (۰۱۲۳). Every component that displays numbers overrides this per-instance with <code>:fa="true|false"</code>.</td></tr>
-</tbody>
-</table>
-</section>
-
-<section id="customizing">
-<h2>Customizing views</h2>
-<pre><code>php artisan vendor:publish --tag=mds-views   <span class="c"># copies to resources/views/mds/</span>
-php artisan vendor:publish --tag=mds-assets  <span class="c"># copies mds.css to resources/css/vendor/</span></code></pre>
-<p>App-level views in <code>resources/views/mds/</code> take precedence over the package's, exactly like Flux's own publish flow. Components use Flux's <code>--color-accent</code> tokens, so a single Flux theme customization restyles both libraries.</p>
-</section>
-
-<hr class="section-rule">
-<section id="directives">
-<h2>Blade directives</h2>
-<table>
-<thead><tr><th>Directive</th><th>Output</th></tr></thead>
-<tbody>
-<tr><td><code>@fa(123)</code></td><td><span class="fa-text">۱۲۳</span> — digits only (Latin and Arabic-Indic → Persian)</td></tr>
-<tr><td><code>@faNum(2500000)</code></td><td><span class="fa-text">۲٬۵۰۰٬۰۰۰</span> — formatted with Persian separators <span class="fa-text">٬</span> / <span class="fa-text">٫</span></td></tr>
-<tr><td><code>@toman(2500000)</code></td><td><span class="fa-text">۲٬۵۰۰٬۰۰۰ تومان</span></td></tr>
-<tr><td><code>@rial(990)</code></td><td><span class="fa-text">۹۹۰ ریال</span></td></tr>
-<tr><td><code>@jalali('2026-08-20')</code></td><td><span class="fa-text">۲۹ مرداد ۱۴۰۵</span> — fixed <code>j F Y</code> format; use the facade for custom formats</td></tr>
-<tr><td><code>@mdsFonts</code></td><td>Vazirmatn <code>&lt;link&gt;</code> tags (preconnect + stylesheet) for the page head</td></tr>
-</tbody>
-</table>
-</section>
-
-<section id="helpers">
-<h2>PHP helpers</h2>
-<h3>The <code>Mds</code> facade</h3>
-<pre><code>use MajidDs\Mds;
-
-Mds::fa('order 123');            <span class="c">// order ۱۲۳</span>
-Mds::number(4.3, 1);             <span class="c">// ۴٫۳</span>
-Mds::money(2500000);             <span class="c">// ۲٬۵۰۰٬۰۰۰ تومان (config currency)</span>
-Mds::money(990, 'rial');         <span class="c">// ۹۹۰ ریال</span>
-Mds::toman(2500000);             <span class="c">// ۲٬۵۰۰٬۰۰۰ تومان</span>
-Mds::rial(990);                  <span class="c">// ۹۹۰ ریال</span>
-Mds::jalali(now(), 'Y/m/d');     <span class="c">// ۱۴۰۵/۰۵/۲۹</span>
-Mds::ago(now()->subHours(3));    <span class="c">// ۳ ساعت پیش</span>
-Mds::fileSize(162400);           <span class="c">// ۱۵۹ کیلوبایت</span></code></pre>
-<h3><code>MajidDs\Support\Persian</code></h3>
-<table>
-<thead><tr><th>Method</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>Persian::digits($value)</code></td><td>Latin/Arabic-Indic digits → Persian digits; other characters untouched.</td></tr>
-<tr><td><code>Persian::latinDigits($value)</code></td><td>Persian/Arabic-Indic digits → Latin. Useful for normalizing form input.</td></tr>
-<tr><td><code>Persian::number($value, $decimals = 0)</code></td><td>Number formatted with <span class="fa-text">٬</span> thousands and <span class="fa-text">٫</span> decimal separators, Persian digits.</td></tr>
-<tr><td><code>Persian::money($amount, $currency = null, $decimals = 0)</code></td><td>Formatted amount + currency label. <code>$currency</code>: <code>toman</code> | <code>rial</code> | <code>none</code> | literal | <code>null</code> → config.</td></tr>
-<tr><td><code>Persian::currencyLabel($currency)</code></td><td>The display label for a currency id (<span class="fa-text">تومان</span>, <span class="fa-text">ریال</span>, …).</td></tr>
-<tr><td><code>Persian::ago($date)</code></td><td>Relative phrase: <span class="fa-text">لحظاتی پیش، ۵ دقیقه پیش، ۲ روز دیگر</span>. Accepts DateTime, string, or timestamp.</td></tr>
-<tr><td><code>Persian::fileSize($bytes, $persianDigits = null)</code></td><td>1024-based byte count with Persian units: <span class="fa-text">۹۰۰ بایت، ۱۵۹ کیلوبایت، ۱٫۵ مگابایت</span>. One decimal below 100, none for whole numbers.</td></tr>
-<tr><td><code>Persian::toDateTime($date)</code></td><td>Normalizes DateTime | string | int timestamp → <code>DateTimeImmutable</code>.</td></tr>
-</tbody>
-</table>
-<h3><code>MajidDs\Support\Jalali</code></h3>
-<p>Dependency-free Jalali (Shamsi) calendar, tested against PHP's <code>intl</code> Persian calendar across a 110-year range.</p>
-<table>
-<thead><tr><th>Method</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>Jalali::fromGregorian($gy, $gm, $gd)</code></td><td>→ <code>[$jy, $jm, $jd]</code>, e.g. <code>(2026, 8, 20)</code> → <code>[1405, 5, 29]</code>.</td></tr>
-<tr><td><code>Jalali::toGregorian($jy, $jm, $jd)</code></td><td>→ <code>[$gy, $gm, $gd]</code> — exact inverse.</td></tr>
-<tr><td><code>Jalali::format($date, $format = 'j F Y', $persianDigits = null)</code></td><td>Formats any date-ish value in the Jalali calendar. Tokens below.</td></tr>
-<tr><td><code>Jalali::MONTHS</code> / <code>Jalali::WEEKDAYS</code></td><td>Persian month names (1-indexed) and weekday names (keyed by PHP's <code>w</code>).</td></tr>
-</tbody>
-</table>
-<p><strong>Format tokens</strong>: <code>Y</code> year, <code>y</code> 2-digit year, <code>n</code>/<code>m</code> month, <code>j</code>/<code>d</code> day, <code>F</code> month name, <code>l</code>/<code>D</code> weekday name — plus time passthroughs <code>H G h g i s v</code> and <code>A</code>/<code>a</code> (<span class="fa-text">قبل‌ازظهر / بعدازظهر</span>). Escape a token with a backslash.</p>
-</section>
-
-<section id="css-layer">
-<h2>CSS layer</h2>
-<table>
-<thead><tr><th>Piece</th><th>What it does</th></tr></thead>
-<tbody>
-<tr><td><code>@theme --font-sans</code></td><td>Vazirmatn first in Tailwind's sans stack — <code>font-sans</code> becomes Persian-ready everywhere.</td></tr>
-<tr><td><code>[x-cloak]</code></td><td>Hidden until Alpine boots — used by mds components' conditional UI.</td></tr>
-<tr><td><code>[dir='rtl'] input[type='tel'], [data-ltr]</code></td><td>Keeps phone numbers and codes left-to-right inside RTL forms, aligned to the inline end.</td></tr>
-<tr><td><code>.mds-checker</code></td><td>Checkerboard backdrop for transparent colors.</td></tr>
-<tr><td><code>.mds-range</code></td><td>Gradient range-slider styling (hue/alpha sliders).</td></tr>
-</tbody>
-</table>
-</section>
-
-<hr class="section-rule">
-<section id="icons">
-<h2><code>&lt;mds:icon&gt;</code></h2>
-<p>Majid DS uses <a href="https://hugeicons.com">Hugeicons</a> rather than the heroicons Flux ships. Every <code>mds:*</code> component's <code>icon</code> prop routes through this component, so the whole kit shares one icon language. The free <strong>Stroke Rounded</strong> set — 6,200 icons — comes with the <code>afatmustafa/blade-hugeicons</code> dependency and works out of the box.</p>
-<pre><code>&lt;mds:icon icon="shopping-cart-01" /&gt;                        <span class="c">{{-- a Hugeicons name --}}</span>
-&lt;mds:icon icon="magnifying-glass" /&gt;                        <span class="c">{{-- a heroicon name, aliased --}}</span>
-&lt;mds:icon icon="truck-delivery" class="size-4 text-accent" /&gt;
-&lt;mds:icon icon="notification-01" :stroke="2" /&gt;             <span class="c">{{-- thicker strokes --}}</span>
-&lt;mds:icon icon="alert-02" label="هشدار" /&gt;                  <span class="c">{{-- role="img" + aria-label --}}</span></code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>icon</code> / <code>name</code></td><td>string|null</td><td><code>null</code></td><td>Interchangeable, matching <code>flux:icon</code>. Takes a Hugeicons name or a heroicon name.</td></tr>
-<tr><td><code>variant</code></td><td>string|null</td><td>config</td><td>Either a Flux variant (<code>outline</code>, <code>solid</code>, <code>mini</code>, <code>micro</code>) or a Hugeicons style (<code>stroke-rounded</code> … <code>solid-sharp</code>). One prop takes both vocabularies, so markup written against <code>flux:icon</code> keeps rendering.</td></tr>
-<tr><td><code>stroke</code></td><td>int|float|null</td><td><code>null</code></td><td>Stroke-width override. Opt-in on purpose — 453 of the free icons vary their stroke weight deliberately, and forcing one width flattens them.</td></tr>
-<tr><td><code>label</code></td><td>string|null</td><td><code>null</code></td><td>Gives the icon <code>role="img"</code> and an <code>aria-label</code>. Without it the icon is <code>aria-hidden</code>, which is right for decoration.</td></tr>
-</tbody>
-</table>
-<p>Size and colour are plain Tailwind classes. The 1.5rem default comes from <code>mds.css</code> at zero specificity, so any <code>size-*</code> utility wins.</p>
-<h3>Heroicon names keep working</h3>
-<p>Two maps in <code>MajidDs\Support\Icons</code> bridge the vocabularies, and a name resolves in this order:</p>
-<pre><code>Icons::OVERRIDES  →  the literal Hugeicons name  →  Icons::ALIASES  →  flux:icon</code></pre>
-<table>
-<thead><tr><th>Map</th><th>Holds</th><th>Examples</th></tr></thead>
-<tbody>
-<tr><td><code>ALIASES</code></td><td>47 heroicon names with no Hugeicons icon of the same name. Consulted <em>after</em> the literal lookup, so a real Hugeicons name always wins — <code>icon="heart"</code> gets you Hugeicons' own heart.</td><td><code>magnifying-glass</code> → <code>search-01</code>, <code>x-mark</code> → <code>cancel-01</code>, <code>cloud-arrow-up</code> → <code>cloud-upload</code>, <code>document</code> → <code>file-01</code>, <code>exclamation-triangle</code> → <code>alert-02</code>, <code>trash</code> → <code>delete-02</code></td></tr>
-<tr><td><code>OVERRIDES</code></td><td>The six names Hugeicons <em>also</em> has but draws differently. Consulted <em>before</em> the literal lookup so the heroicon meaning wins.</td><td>Hugeicons' <code>arrow-up</code>/<code>down</code>/<code>left</code>/<code>right</code> are chevrons, its <code>moon</code> is full rather than crescent, and its <code>map-pin</code> is a pin on a map instead of the bare teardrop</td></tr>
-</tbody>
-</table>
-<p>A name neither map covers falls through to <code>flux:icon</code>, which still renders heroicons — so no existing <code>icon="..."</code> prop breaks. Note that <code>&lt;flux:*&gt;</code> components (button, badge, navbar, callout, …) resolve their own <code>icon</code> prop internally and keep using heroicons; only <code>mds:*</code> components follow this setting.</p>
-<h3>Pro styles</h3>
-<p>Only Stroke Rounded is free, and no Pro file is ever bundled with this package. Register your own licensed export and the other eight styles resolve by name:</p>
-<pre><code><span class="c">// config/mds.php</span>
-'icons' =&gt; [
-    'default' =&gt; 'hugeicons',    <span class="c">// 'flux' reverts the whole kit to heroicons</span>
-    'style' =&gt; 'stroke-rounded',
-    'fallback_style' =&gt; true,    <span class="c">// use the free set when a Pro style isn't registered</span>
-    'sets' =&gt; [
-        'solid-rounded' =&gt; resource_path('svg/hugeicons/solid-rounded'),
-    ],
-],</code></pre>
-<p>Each entry becomes a Blade Icons set named <code>mds-hugeicons-{style}</code>, read from your app's own directory.</p>
-<p>On licensing: the free set is published to npm as MIT and redistributed by <code>afatmustafa/blade-hugeicons</code>, while Hugeicons' own <a href="https://hugeicons.com/license-agreement">licence agreement</a> claims to cover the free versions too. Read both if it matters to your project. Pro files stay in your app either way.</p>
-</section>
-
-<hr class="section-rule">
-<section id="rating">
-<h2><code>&lt;mds:rating&gt;</code></h2>
-<p>Star rating display with fractional fill (half stars render correctly in both directions).</p>
-<div class="preview">
-  <span class="cap">static preview</span>
-  <span><span class="stars">★★★★<span class="off">★</span></span> <span class="pv-num">۴٫۳</span> <span class="pv-muted">(۱۲۶)</span></span>
-  <span><span class="stars">★★★<span class="off">★★</span></span> <span class="pv-num">۳</span></span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">تومان</span>
+                    </div>
+    </div>
 </div>
-<pre><code>&lt;mds:rating :value="4.3" :count="126" /&gt;
-&lt;mds:rating :value="2.5" size="lg" /&gt;
-&lt;mds:rating :value="3.7" :fa="false" /&gt;   <span class="c">{{-- Latin digits --}}</span></code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>value</code></td><td>float</td><td><code>0</code></td><td>Rating value; clamped to <code>0..max</code>. Fractions render as partial star fill.</td></tr>
-<tr><td><code>max</code></td><td>int</td><td><code>5</code></td><td>Number of stars.</td></tr>
-<tr><td><code>count</code></td><td>int|null</td><td><code>null</code></td><td>Review count shown in parentheses.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>show-value</code></td><td>bool</td><td><code>true</code></td><td>Show the numeric value next to the stars.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
-</tbody>
-</table>
-</section>
+            </div>
+</div></div>
+    </div>
 
-<section id="rating-input">
-<h2><code>&lt;mds:rating.input&gt;</code></h2>
-<p>Interactive star input (integer stars) with hover preview. Renders <code>role="radiogroup"</code>; the value lives in a hidden input that emits <code>input</code> events, so <code>wire:model</code> and plain form posts both work.</p>
-<pre><code>&lt;mds:rating.input wire:model="score" /&gt;
-&lt;mds:rating.input name="score" :value="3" size="lg" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>value</code></td><td>int</td><td><code>0</code></td><td>Initial value.</td></tr>
-<tr><td><code>max</code></td><td>int</td><td><code>5</code></td><td>Number of stars.</td></tr>
-<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name for form submission.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>label</code></td><td>string</td><td><span class="fa-text">امتیاز</span></td><td>Accessible group label.</td></tr>
-</tbody>
-</table>
-</section>
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:product-card</span>
+    <span class="t-attr">title</span><span class="t-equals">=</span><span class="t-string">&quot;گوشی موبایل سامسونگ مدل Galaxy S25&quot;</span>
+    <span class="t-attr">image</span><span class="t-equals">=</span><span class="t-string">&quot;https://picsum.photos/seed/phone/400/400&quot;</span>
+    <span class="t-attr">:amount</span><span class="t-equals">=</span><span class="t-string">&quot;42500000&quot;</span>
+    <span class="t-attr">:original</span><span class="t-equals">=</span><span class="t-string">&quot;48900000&quot;</span>
+    <span class="t-attr">:rating</span><span class="t-equals">=</span><span class="t-string">&quot;4.6&quot;</span>
+    <span class="t-attr">:reviews</span><span class="t-equals">=</span><span class="t-string">&quot;342&quot;</span>
+    <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;ارسال امروز&quot;</span>
+    <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#&quot;</span>
+    <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-56&quot;</span>
+<span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="what-this-adds-on-top-of-flux" class="docs-section"><h2>What this adds on top of Flux</h2><p class="docs-text">Everything below is additive. Nothing here changes how a <code>flux:*</code> component behaves.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div dir="rtl" class="w-full max-w-md space-y-4">
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>سفارش‌های من</div>
+    <div class="inline-flex items-center gap-2" data-mds-price>
+            <span
+    class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
+    aria-label="۲۲ درصد تخفیف"
+    data-mds-discount-badge
+>۲۲٪</span>
+    
+    <div class="flex flex-col items-end">
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">۳٬۲۰۰٬۰۰۰</del>
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">۲٬۵۰۰٬۰۰۰</span>
 
-<section id="price">
-<h2><code>&lt;mds:price&gt;</code></h2>
-<p>Price display with currency label, optional compare-at strikethrough, and an automatic discount badge — <code>percent = round((1 − amount/original) × 100)</code>.</p>
-<div class="preview">
-  <span class="cap">static preview</span>
-  <span style="display:flex;align-items:center;gap:10px">
-    <span class="pv-badge">۲۲٪</span>
-    <span><span class="pv-del">۳٬۲۰۰٬۰۰۰</span><span class="pv-price">۲٬۵۰۰٬۰۰۰</span> <span class="pv-unit">تومان</span></span>
-  </span>
-  <span><span class="pv-price">۸۹۰٬۰۰۰</span> <span class="pv-unit">تومان</span></span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">تومان</span>
+                    </div>
+    </div>
 </div>
-<pre><code>&lt;mds:price :amount="2500000" /&gt;
-&lt;mds:price :amount="2500000" :original="3200000" size="lg" /&gt;
-&lt;mds:price :amount="14500000" currency="rial" size="sm" /&gt;
-&lt;mds:price :amount="1200000" :fa="false" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>amount</code></td><td>number</td><td><code>0</code></td><td>Current price.</td></tr>
-<tr><td><code>original</code></td><td>number|null</td><td><code>null</code></td><td>Compare-at price. When higher than <code>amount</code>, renders strikethrough + discount badge.</td></tr>
-<tr><td><code>currency</code></td><td>string|null</td><td>config</td><td><code>toman</code> | <code>rial</code> | <code>none</code> | literal label.</td></tr>
-<tr><td><code>decimals</code></td><td>int</td><td><code>0</code></td><td>Decimal places.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
-<tr><td><code>badge</code></td><td>bool</td><td><code>true</code></td><td>Show the auto discount badge when <code>original</code> is present.</td></tr>
-</tbody>
-</table>
-</section>
-
-<section id="discount-badge">
-<h2><code>&lt;mds:discount-badge&gt;</code></h2>
-<p>Red percentage pill. Pass <code>percent</code> directly, or <code>amount</code> + <code>original</code> and it computes.</p>
-<pre><code>&lt;mds:discount-badge :percent="20" /&gt;
-&lt;mds:discount-badge :amount="80000" :original="100000" size="lg" /&gt;   <span class="c">{{-- ۲۰٪ --}}</span></code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>percent</code></td><td>int|null</td><td><code>null</code></td><td>Discount percent. Computed from amounts when omitted.</td></tr>
-<tr><td><code>amount</code> / <code>original</code></td><td>number|null</td><td><code>null</code></td><td>Price pair used to compute the percent.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off.</td></tr>
-</tbody>
-</table>
-</section>
-
-<section id="quantity">
-<h2><code>&lt;mds:quantity&gt;</code></h2>
-<p>Cart quantity stepper. The <code>+</code> sits at the inline start (right in RTL). Buttons disable at the bounds. The hidden input always holds <em>Latin</em> digits and dispatches <code>input</code> events, so <code>wire:model</code> and form posts are safe regardless of the Persian display.</p>
-<div class="preview">
-  <span class="cap">static preview</span>
-  <span class="pv-qty"><span class="op">+</span> ۲ <span class="op">−</span></span>
+    <div class="text-sm"><time
+    datetime="2026-08-23T15:33:56+00:00"
+        
+    data-mds-jalali-date
+>یکشنبه ۱ شهریور ۱۴۰۵</time>
 </div>
-<pre><code>&lt;mds:quantity wire:model.live="qty" :min="1" :max="5" /&gt;
-&lt;mds:quantity name="quantity" :value="2" size="lg" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>value</code></td><td>int|null</td><td><code>min</code></td><td>Initial value.</td></tr>
-<tr><td><code>min</code></td><td>int</td><td><code>1</code></td><td>Lower bound.</td></tr>
-<tr><td><code>max</code></td><td>int|null</td><td><code>null</code></td><td>Upper bound; <code>null</code> = unlimited.</td></tr>
-<tr><td><code>step</code></td><td>int</td><td><code>1</code></td><td>Increment step.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits for the display.</td></tr>
-<tr><td><code>increment-label</code> / <code>decrement-label</code></td><td>string</td><td><span class="fa-text">افزایش/کاهش تعداد</span></td><td>Accessible button labels.</td></tr>
-</tbody>
-</table>
-</section>
+    <div class="flex items-center gap-4">
+        <div
+    class="inline-flex items-center rounded-lg border border-zinc-200 bg-white shadow-xs dark:border-white/10 dark:bg-white/10"
+    x-data="{
+        value: 2,
+        min: 1,
+        max: 5,
+        step: 1,
+        fa: true,
+        display() {
+            const s = String(this.value)
+            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+        },
+        set(n) {
+            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+            if (n === this.value) return
+            this.value = n
+            this.$refs.input.value = n
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }"
+    data-mds-quantity
+>
+    <input
+        type="hidden"
+        x-ref="input"
+        value="2"
+                
+    >
 
-<section id="product-card">
-<h2><code>&lt;mds:product-card&gt;</code></h2>
-<p>Marketplace-style product card composing <code>flux:card</code>, <code>mds:rating</code>, <code>mds:price</code>, and <code>mds:discount-badge</code>. The slot renders an actions area (add-to-cart button, etc.).</p>
-<pre><code>&lt;mds:product-card
-    title="گوشی موبایل سامسونگ مدل Galaxy S25"
-    image="/images/phone.jpg"
-    :amount="42500000"
-    :original="48900000"
-    :rating="4.6"
-    :reviews="342"
-    badge="ارسال امروز"
-    href="/products/galaxy-s25"
-&gt;
-    &lt;flux:button variant="primary" size="sm" class="w-full"&gt;افزودن به سبد&lt;/flux:button&gt;
-&lt;/mds:product-card&gt;
+    <button
+        type="button"
+        class="size-9 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
+        x-on:click="set(value + step)"
+        x-bind:disabled="max !== null && value >= max"
+        aria-label="افزایش تعداد"
+    >
+        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
+    </button>
 
-&lt;mds:product-card title="..." image="..." unavailable /&gt;   <span class="c">{{-- grayscale + ناموجود --}}</span></code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>title</code></td><td>string</td><td><code>''</code></td><td>Product title; clamps to two lines.</td></tr>
-<tr><td><code>image</code></td><td>string|null</td><td><code>null</code></td><td>Square product image URL. Placeholder icon when omitted.</td></tr>
-<tr><td><code>href</code></td><td>string|null</td><td><code>null</code></td><td>Link for image and title.</td></tr>
-<tr><td><code>amount</code> / <code>original</code></td><td>number|null</td><td><code>null</code></td><td>Price pair; discount badge renders when <code>original &gt; amount</code>.</td></tr>
-<tr><td><code>currency</code></td><td>string|null</td><td>config</td><td>Currency id or label.</td></tr>
-<tr><td><code>rating</code> / <code>reviews</code></td><td>number|null</td><td><code>null</code></td><td>Rating row (hidden when <code>rating</code> is null).</td></tr>
-<tr><td><code>badge</code></td><td>string|null</td><td><code>null</code></td><td>Corner badge text (top inline-start over the image).</td></tr>
-<tr><td><code>badge-color</code></td><td>string</td><td><code>lime</code></td><td>Any Flux badge color.</td></tr>
-<tr><td><code>unavailable</code></td><td>bool</td><td><code>false</code></td><td>Grayscale image, <span class="fa-text">«ناموجود»</span> instead of price.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits on/off (cascades to rating/price).</td></tr>
-</tbody>
-</table>
-</section>
+    <span class="text-sm min-w-8 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۲</span>
 
-<section id="stepper">
-<h2><code>&lt;mds:stepper&gt;</code></h2>
-<p>Horizontal checkout-flow steps. Steps before <code>current</code> render completed (check icon, accent), the current step is emphasized (<code>aria-current="step"</code>), later steps are muted. Connector lines fill with the accent as steps complete.</p>
-<pre><code>&lt;mds:stepper :steps="['سبد خرید', 'آدرس و زمان ارسال', 'پرداخت', 'تأیید نهایی']" :current="2" class="w-full" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>steps</code></td><td>array</td><td><code>[]</code></td><td>Step labels, in order.</td></tr>
-<tr><td><code>current</code></td><td>int</td><td><code>1</code></td><td>1-based index of the active step.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits for step numbers.</td></tr>
-</tbody>
-</table>
-</section>
+    <button
+        type="button"
+        class="size-9 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
+        x-on:click="set(value - step)"
+        x-bind:disabled="value <= min"
+        aria-label="کاهش تعداد"
+    >
+        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
+    </button>
+</div>
+        <div
+    class="inline-flex items-center"
+    x-data="{
+        end: 1787526956 * 1000,
+        now: Date.now(),
+        fa: true,
+        withDays: false,
+        get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
+        get expired() { return this.total <= 0 },
+        get d() { return Math.floor(this.total / 86400) },
+        get h() { return this.withDays ? Math.floor((this.total % 86400) / 3600) : Math.floor(this.total / 3600) },
+        get m() { return Math.floor((this.total % 3600) / 60) },
+        get s() { return this.total % 60 },
+        seg(n) {
+            const s = String(n).padStart(2, '0')
+            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+        },
+    }"
+    x-init="setInterval(() => now = Date.now(), 1000)"
+    role="timer"
+    data-mds-countdown
+>
+    
+    <div class="flex items-center gap-1"  dir="ltr"   x-show="!expired">
+                    
+            <div class="flex flex-col items-center gap-1">
+                <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">۰۷</span>
 
-<section id="countdown">
-<h2><code>&lt;mds:countdown&gt;</code></h2>
-<p>Deal countdown, server-rendered with real initial values (no blank flash) and ticking via Alpine. Two display conventions, both deliberate: the plain variant is a wall-clock time and is forced <abbr title="left-to-right">LTR</abbr> (<span class="fa-text">۰۷:۴۱:۵۵</span>, hours first); the labeled variant follows the Iranian e-commerce convention — boxes right-to-left with <span class="fa-text">روز / ساعت / دقیقه / ثانیه</span> labels underneath.</p>
-<pre><code>&lt;mds:countdown :until="$deal->ends_at" :days="false" /&gt;
-&lt;mds:countdown :until="$deal->ends_at" labels size="lg" /&gt;
-&lt;mds:countdown :until="$deal->ends_at" expired-text="این پیشنهاد به پایان رسید" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>until</code></td><td>DateTime|string</td><td>required</td><td>Deadline.</td></tr>
-<tr><td><code>days</code></td><td>bool</td><td><code>true</code></td><td>Include a days segment; when <code>false</code>, hours accumulate (e.g. 50 hours).</td></tr>
-<tr><td><code>labels</code></td><td>bool</td><td><code>false</code></td><td>Labeled-boxes variant.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> | <code>lg</code> | default.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits.</td></tr>
-<tr><td><code>expired-text</code></td><td>string</td><td><span class="fa-text">به پایان رسید</span></td><td>Shown when the deadline passes.</td></tr>
-</tbody>
-</table>
-</section>
+                            </div>
+                                    <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
+            
+            <div class="flex flex-col items-center gap-1">
+                <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">۴۲</span>
 
-<section id="jalali-date">
-<h2><code>&lt;mds:jalali-date&gt;</code></h2>
-<p>Renders a date in the Jalali calendar inside a semantic <code>&lt;time datetime="…"&gt;</code> element (the machine-readable attribute stays Gregorian ISO-8601).</p>
-<pre><code>&lt;mds:jalali-date :date="now()" /&gt;                        <span class="c">{{-- ۲۹ مرداد ۱۴۰۵ --}}</span>
-&lt;mds:jalali-date :date="now()" format="l j F Y" /&gt;       <span class="c">{{-- پنجشنبه ۲۹ مرداد ۱۴۰۵ --}}</span>
-&lt;mds:jalali-date :date="now()" format="Y/m/d" /&gt;         <span class="c">{{-- ۱۴۰۵/۰۵/۲۹ --}}</span>
-&lt;mds:jalali-date :date="$order->created_at" ago /&gt;       <span class="c">{{-- ۳ ساعت پیش --}}</span></code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>date</code></td><td>DateTime|string|int</td><td>required</td><td>The date (DateTime, parseable string, or Unix timestamp).</td></tr>
-<tr><td><code>format</code></td><td>string</td><td><code>'j F Y'</code></td><td>Jalali format string (tokens in <a href="#helpers">PHP helpers</a>).</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits.</td></tr>
-<tr><td><code>ago</code></td><td>bool</td><td><code>false</code></td><td>Relative mode (<span class="fa-text">۳ ساعت پیش</span>); the full Jalali date moves to the <code>title</code> tooltip.</td></tr>
-</tbody>
-</table>
-</section>
+                            </div>
+                                    <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
+            
+            <div class="flex flex-col items-center gap-1">
+                <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">۰۰</span>
 
-<section id="empty-state">
-<h2><code>&lt;mds:empty-state&gt;</code></h2>
-<p>Centered icon + heading + description with an actions slot. Composes <code>flux:icon</code>, <code>flux:heading</code>, <code>flux:text</code>.</p>
-<pre><code>&lt;mds:empty-state
-    icon="shopping-cart"
-    title="سبد خرید شما خالی است"
-    description="هنوز کالایی اضافه نکرده‌اید."
-&gt;
-    &lt;flux:button variant="primary"&gt;مشاهده پیشنهادها&lt;/flux:button&gt;
-&lt;/mds:empty-state&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>icon</code></td><td>string|null</td><td><code>null</code></td><td>Any Heroicon name (via <code>flux:icon</code>).</td></tr>
-<tr><td><code>title</code></td><td>string|null</td><td><code>null</code></td><td>Heading.</td></tr>
-<tr><td><code>description</code></td><td>string|null</td><td><code>null</code></td><td>Muted body text.</td></tr>
-</tbody>
-</table>
-</section>
+                            </div>
+            </div>
 
-<section id="command">
-<h2><code>&lt;mds:command&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
-<p>An open, API-compatible implementation of Flux Pro's command palette. Client-side filtering with Persian normalization (Arabic <span class="fa-text">ي/ك</span> and Arabic-Indic digits match their Persian forms), arrow-key navigation, Enter to select, hover synced with keyboard state, and group headings that hide while searching.</p>
-<pre><code>&lt;mds:command&gt;
-    &lt;mds:command.input placeholder="جستجوی فرمان..." clearable /&gt;
+    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"  style="display: none"  x-show="expired">به پایان رسید</span>
+</div>
+    </div>
+</div></div>
+    </div>
 
-    &lt;mds:command.items&gt;
-        &lt;mds:command.heading&gt;ناوبری&lt;/mds:command.heading&gt;
-        &lt;mds:command.item icon="shopping-bag" kbd="⌘O" wire:click="..."&gt;سفارش‌های من&lt;/mds:command.item&gt;
-        &lt;mds:command.item icon="heart" href="/wishlist"&gt;علاقه‌مندی‌ها&lt;/mds:command.item&gt;
-    &lt;/mds:command.items&gt;
-&lt;/mds:command&gt;</code></pre>
-<p>Global <kbd>⌘K</kbd> palette — pair with Flux's modal (the <code>shortcut</code> prop and <code>bare</code> variant are free):</p>
-<pre><code>&lt;flux:modal.trigger name="search" shortcut="cmd.k"&gt;
-    &lt;flux:input as="button" placeholder="جستجو..." icon="magnifying-glass" kbd="⌘K" /&gt;
-&lt;/flux:modal.trigger&gt;
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-comment">{{-- Persian typography and digits --}}</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">سفارش‌های من</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:heading</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-directive">@fa</span><span class="t-text">(1405)
 
-&lt;flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"&gt;
-    &lt;mds:command&gt;
-        &lt;mds:command.input placeholder="جستجو در همه‌جا..." closable autofocus /&gt;
-        &lt;mds:command.items&gt;...&lt;/mds:command.items&gt;
-    &lt;/mds:command&gt;
-&lt;/flux:modal&gt;</code></pre>
-<h3>Subcomponents</h3>
-<table>
-<thead><tr><th>Component</th><th>Props</th><th>Notes</th></tr></thead>
-<tbody>
-<tr><td><code>command.input</code></td><td><code>icon</code> = <code>magnifying-glass</code>, <code>clearable</code>, <code>closable</code>, <code>clear-label</code>, <code>close-label</code></td><td><code>closable</code> closes the containing <code>&lt;dialog&gt;</code> (Flux modal). Arrow keys / Enter drive the list.</td></tr>
-<tr><td><code>command.items</code></td><td><code>empty</code> = <span class="fa-text">«نتیجه‌ای یافت نشد.»</span></td><td>Scrollable listbox with a built-in no-results state.</td></tr>
-<tr><td><code>command.item</code></td><td><code>icon</code>, <code>icon-variant</code> = <code>micro</code>, <code>kbd</code>, <code>href</code></td><td><code>href</code> renders <code>&lt;a&gt;</code>; otherwise <code>&lt;button type="button"&gt;</code>. Your <code>wire:click</code> / <code>x-on:click</code> pass through. <code>kbd</code> renders LTR at the inline end.</td></tr>
-<tr><td><code>command.heading</code></td><td>—</td><td>Group label; hides automatically while a query is typed.</td></tr>
-</tbody>
-</table>
-</section>
+</span><span class="t-comment">{{-- Money --}}</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">mds:price</span> <span class="t-attr">:amount</span><span class="t-equals">=</span><span class="t-string">&quot;2500000&quot;</span> <span class="t-attr">:original</span><span class="t-equals">=</span><span class="t-string">&quot;3200000&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
 
-<section id="color-picker">
-<h2><code>&lt;mds:color-picker&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
-<p>An open, API-compatible implementation of Flux Pro's color picker: saturation/value canvas, hue slider, alpha slider (for alpha formats), hex input, swatch palette, and an EyeDropper button. The canvas and sliders stay physically left-to-right on RTL pages — the universal convention for color controls — while labels and field layout follow the page direction.</p>
-<pre><code>&lt;mds:color-picker label="رنگ اصلی" wire:model="color" clearable dropper /&gt;
+</span><span class="t-comment">{{-- Jalali dates --}}</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;l j F Y&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
 
-&lt;mds:color-picker type="button" value="#8b5cf6" /&gt;                 <span class="c">{{-- chip-only trigger --}}</span>
-&lt;mds:color-picker format="rgba" value="rgba(59, 130, 246, 0.5)" /&gt; <span class="c">{{-- adds alpha slider --}}</span>
-&lt;mds:color-picker :swatches="[['#ef4444', 'قرمز'], '#3b82f6']" /&gt;
-&lt;mds:color-picker :swatches="false" /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>value</code></td><td>string|null</td><td><code>null</code></td><td>Initial color in any supported form; normalized to <code>format</code>.</td></tr>
-<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Hidden input name. <code>wire:model</code> is forwarded to the same input, which emits <code>input</code> events.</td></tr>
-<tr><td><code>format</code></td><td>string</td><td><code>hex</code></td><td><code>hex</code> | <code>hexa</code> | <code>rgb</code> | <code>rgba</code> | <code>hsl</code> | <code>hsla</code>. Alpha formats add the alpha slider. Pasted colors in any of these forms parse (3-digit hex included).</td></tr>
-<tr><td><code>type</code></td><td>string</td><td><code>input</code></td><td><code>input</code> (chip + editable text field) | <code>button</code> (chip only).</td></tr>
-<tr><td><code>label</code> / <code>description</code></td><td>string|null</td><td><code>null</code></td><td>Field chrome via <code>flux:field</code>.</td></tr>
-<tr><td><code>placeholder</code></td><td>string|null</td><td><code>null</code></td><td>Trigger text-input placeholder.</td></tr>
-<tr><td><code>swatches</code></td><td>array|false|null</td><td>20-color palette</td><td>Hex strings or <code>[value, label]</code> pairs; <code>false</code> hides the grid.</td></tr>
-<tr><td><code>dropper</code></td><td>bool</td><td><code>false</code></td><td>EyeDropper button; hides itself where the browser API is unsupported.</td></tr>
-<tr><td><code>clearable</code></td><td>bool</td><td><code>false</code></td><td>X button to clear the value (input trigger).</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>sm</code> for a tighter trigger.</td></tr>
-<tr><td><code>disabled</code> / <code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Disabled state / red border.</td></tr>
-</tbody>
-</table>
-<h3>Custom popover layout</h3>
-<p>Pass a slot to replace the default panel; subcomponents share the picker's state:</p>
-<pre><code>&lt;mds:color-picker type="button"&gt;
-    &lt;div class="flex flex-col gap-3"&gt;
-        &lt;mds:color-picker.input placeholder="#000000" /&gt;
-        &lt;mds:color-picker.area /&gt;
-        &lt;mds:color-picker.slider channel="hue" /&gt;
-        &lt;mds:color-picker.slider channel="alpha" /&gt;
-        &lt;mds:color-picker.swatches&gt;
-            &lt;mds:color-picker.swatch value="#ef4444" label="قرمز" /&gt;
-        &lt;/mds:color-picker.swatches&gt;
-        &lt;mds:color-picker.dropper /&gt;
-    &lt;/div&gt;
-&lt;/mds:color-picker&gt;</code></pre>
-<table>
-<thead><tr><th>Subcomponent</th><th>Props</th><th>Notes</th></tr></thead>
-<tbody>
-<tr><td><code>color-picker.area</code></td><td>—</td><td>Saturation/value canvas; pointer-drag, always LTR.</td></tr>
-<tr><td><code>color-picker.slider</code></td><td><code>channel</code> = <code>hue</code></td><td><code>hue</code> (0–360) or <code>alpha</code> (0–100%, checkerboard track). Native range inputs — keyboard accessible.</td></tr>
-<tr><td><code>color-picker.input</code></td><td><code>placeholder</code> = <code>#000000</code></td><td>Text input; parses hex/rgb/hsl strings on change.</td></tr>
-<tr><td><code>color-picker.swatches</code> / <code>.swatch</code></td><td>swatch: <code>value</code>, <code>label</code></td><td>Grid container + individual color buttons.</td></tr>
-<tr><td><code>color-picker.dropper</code></td><td><code>label</code> = <span class="fa-text">قطره‌چکان</span></td><td>Screen EyeDropper; auto-hidden without browser support.</td></tr>
-</tbody>
-</table>
-</section>
+</span><span class="t-comment">{{-- E-commerce --}}</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">mds:quantity</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;2&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;</span><span class="t-tag">mds:countdown</span> <span class="t-attr">:until</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;addHours(7)&quot;</span> <span class="t-attr">:days</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="what-is-documented-here" class="docs-section"><h2>What is documented here</h2><p class="docs-text">The <strong>Components</strong> group covers every free Flux component that ships with this package — 30 of them, each with live previews. The <strong>mds</strong> group covers this kit's own components, including open alternatives to four Flux Pro components: Command, Color picker, File upload and Timeline.</p><div class="docs-note"><p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> — Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker, Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code in the free tier, so there is nothing to preview or reference. Four of them have <code>mds:*</code> replacements; for the others, see Flux's own docs.</p></div></section><section id="try-it" class="docs-section"><h2>Try it</h2><p class="docs-text">The demo is the fastest way to see the whole kit at once. It is rendered twice — Persian right-to-left and English left-to-right — from the same Blade.</p><div class="docs-note"><p><a href="demo/demo-en.html">Component gallery</a> · <a href="demo/layouts-en.html">Layout gallery</a> · <a href="demo/demo.html">نمایشگاه اجزا (فارسی)</a></p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="guides/installation.html"><span class="docs-related-name">Installation</span><span class="docs-related-lede">Composer, one CSS import, and two lines in your layout.</span></a><a class="docs-related-card" href="guides/directives.html"><span class="docs-related-name">Directives &amp; helpers</span><span class="docs-related-lede">The Blade directives and PHP helpers behind the components.</span></a><a class="docs-related-card" href="layouts/grid.html"><span class="docs-related-name">The layout grid</span><span class="docs-related-lede">How Flux turns the order of your markup into a page layout.</span></a></div></section>
+    </main>
 
-<hr class="section-rule">
-<section id="file-upload">
-<h2><code>&lt;mds:file-upload&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
-<p>An open implementation of Flux Pro's file upload: drag-and-drop, click-to-browse, a dashed dropzone with a compact <code>inline</code> variant, and a live progress bar wired to Livewire's upload events. The wrapper is just chrome around a real <code>&lt;input type="file"&gt;</code>, so <code>wire:model</code>, plain form posts, and native keyboard access all work.</p>
-<pre><code>&lt;mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple&gt;
-    &lt;mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" /&gt;
-&lt;/mds:file-upload&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>name</code></td><td>string|null</td><td><code>null</code></td><td>Input name for plain form posts. <code>[]</code> is appended automatically when <code>multiple</code> is set.</td></tr>
-<tr><td><code>multiple</code></td><td>bool</td><td><code>false</code></td><td>Allow selecting/dropping more than one file. A multi-file drop on a single-file input keeps the first file only.</td></tr>
-<tr><td><code>accept</code></td><td>string|null</td><td><code>null</code></td><td>Native <code>accept</code> list, e.g. <code>image/*</code> or <code>application/pdf</code>.</td></tr>
-<tr><td><code>label</code> / <code>description</code></td><td>string|null</td><td><code>null</code></td><td>Field chrome via <code>flux:field</code>.</td></tr>
-<tr><td><code>error</code></td><td>string|null</td><td><code>null</code></td><td>Error message. When omitted and <code>name</code> is set, falls back to <code>$errors-&gt;first($name)</code>, then <code>$errors-&gt;first("$name.*")</code> — so Livewire validation shows up with no extra wiring.</td></tr>
-<tr><td><code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Marks the input <code>aria-invalid</code> without printing a message. Implied by <code>error</code>.</td></tr>
-<tr><td><code>disabled</code></td><td>bool</td><td><code>false</code></td><td>Blocks clicking and dropping, dims the zone, and dims the label.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits in the progress percentage.</td></tr>
-</tbody>
-</table>
-<p><code>wire:model</code> is forwarded to the file input itself; every other attribute lands on the wrapper.</p>
-<h3>Dropzone</h3>
-<pre><code>&lt;mds:file-upload label="حالت فشرده"&gt;
-    &lt;mds:file-upload.dropzone heading="فایل را رها کنید" text="فقط PDF تا ۵ مگابایت" inline /&gt;
-&lt;/mds:file-upload&gt;
-
-&lt;mds:file-upload wire:model="attachment"&gt;
-    &lt;mds:file-upload.dropzone text="هر فرمتی تا ۲۰ مگابایت" inline with-progress /&gt;
-&lt;/mds:file-upload&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>heading</code></td><td>string</td><td><span class="fa-text">فایل را اینجا رها کنید یا برای انتخاب کلیک کنید</span></td><td>Main line of text.</td></tr>
-<tr><td><code>text</code></td><td>string|null</td><td><code>null</code></td><td>Supporting hint (accepted formats, size cap).</td></tr>
-<tr><td><code>icon</code></td><td>string</td><td><code>cloud-arrow-up</code></td><td>Any Flux/heroicon name. Swapped for a spinner while uploading.</td></tr>
-<tr><td><code>inline</code></td><td>bool</td><td><code>false</code></td><td>Compact horizontal layout instead of the tall centered one.</td></tr>
-<tr><td><code>with-progress</code></td><td>bool</td><td><code>false</code></td><td>Show a progress bar and percentage during upload, in place of <code>text</code>. Pair it with <code>text</code> so the idle state still reads.</td></tr>
-</tbody>
-</table>
-<h3>Custom uploaders</h3>
-<p>Anything you put in the slot inherits the full upload behavior — the dropzone is only the default look. The wrapper exposes two state attributes you can target with Tailwind's <code>in-*</code> variants:</p>
-<pre><code>&lt;mds:file-upload wire:model="avatar" accept="image/*"&gt;
-    &lt;div class="size-20 rounded-full bg-zinc-100 in-data-dragging:border-accent in-data-loading:opacity-50 ..."&gt;
-        &lt;flux:icon icon="user" variant="solid" /&gt;
-    &lt;/div&gt;
-&lt;/mds:file-upload&gt;</code></pre>
-<table>
-<thead><tr><th>Hook</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>data-dragging</code></td><td>On the wrapper while files hover the zone. Use <code>in-data-dragging:</code>.</td></tr>
-<tr><td><code>data-loading</code></td><td>On the wrapper while an upload is in flight. Use <code>in-data-loading:</code>.</td></tr>
-<tr><td><code>--mds-file-upload-progress</code></td><td>Progress as a Latin percentage (<code>42%</code>) — use it for widths, transforms, conic gradients.</td></tr>
-<tr><td><code>--mds-file-upload-progress-as-string</code></td><td>Same value quoted and <code>fa</code>-aware (<code>'۴۲٪'</code>) — drop it straight into <code>content:</code>.</td></tr>
-</tbody>
-</table>
-</section>
-
-<hr class="section-rule">
-<section id="file-item">
-<h2><code>&lt;mds:file-item&gt;</code></h2>
-<p>One row per uploaded file: thumbnail or type icon, name, and a size that is formatted in Persian units. File items sit <em>outside</em> <code>&lt;mds:file-upload&gt;</code> — you render one per file, which is what makes per-file removal and error states possible.</p>
-<pre><code>&lt;mds:file-item heading="Profile_pic.jpg" image="/img/user.png" :size="162400"&gt;
-    &lt;x-slot name="actions"&gt;
-        &lt;mds:file-item.remove wire:click="removePhoto(0)" label="حذف Profile_pic.jpg" /&gt;
-    &lt;/x-slot&gt;
-&lt;/mds:file-item&gt;
-
-&lt;mds:file-item heading="archive.zip" text="حجم فایل بیش از ۱۰ مگابایت است." icon="exclamation-triangle" invalid /&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>heading</code></td><td>string|null</td><td><code>null</code></td><td>File name. Rendered with <code>dir="auto"</code> so Latin names stay readable in an RTL list.</td></tr>
-<tr><td><code>text</code></td><td>string|null</td><td>formatted <code>size</code></td><td>Secondary line. Defaults to the formatted byte count.</td></tr>
-<tr><td><code>image</code></td><td>string|null</td><td><code>null</code></td><td>Thumbnail URL (e.g. <code>$photo-&gt;temporaryUrl()</code>).</td></tr>
-<tr><td><code>size</code></td><td>int|null</td><td><code>null</code></td><td>Bytes. Formatted through <code>Persian::fileSize()</code> — <span class="fa-text">۱۵۹ کیلوبایت</span>, <span class="fa-text">۱٫۵ مگابایت</span>.</td></tr>
-<tr><td><code>icon</code></td><td>string</td><td><code>document</code></td><td>Shown when there is no <code>image</code>.</td></tr>
-<tr><td><code>invalid</code></td><td>bool</td><td><code>false</code></td><td>Red border, icon, and text — for rejected files.</td></tr>
-<tr><td><code>fa</code></td><td>bool|null</td><td>config</td><td>Persian digits in the formatted size.</td></tr>
-</tbody>
-</table>
-<p>Named slot <code>actions</code> renders at the inline end. <code>&lt;mds:file-item.remove&gt;</code> is the pre-styled button for it: props <code>icon</code> (<code>x-mark</code>) and <code>label</code> (<span class="fa-text">حذف فایل</span>, used as the <code>aria-label</code>); <code>wire:click</code> passes through.</p>
-<h3>Livewire</h3>
-<pre><code>use Livewire\WithFileUploads;
-use Livewire\Attributes\Validate;
-
-#[Validate(['photos.*' =&gt; 'image|max:10240'])]
-public $photos = [];
-
-public function removePhoto($index)
-{
-    $this-&gt;photos[$index]-&gt;delete();
-
-    unset($this-&gt;photos[$index]);
-
-    $this-&gt;photos = array_values($this-&gt;photos);
-}</code></pre>
-<pre><code>&lt;mds:file-upload wire:model="photos" label="بارگذاری تصاویر" multiple&gt;
-    &lt;mds:file-upload.dropzone text="JPG، PNG یا GIF تا ۱۰ مگابایت" with-progress /&gt;
-&lt;/mds:file-upload&gt;
-
-&lt;div class="mt-3 flex flex-col gap-2"&gt;
-    @foreach ($photos as $index =&gt; $photo)
-        &lt;mds:file-item
-            :heading="$photo-&gt;getClientOriginalName()"
-            :image="$photo-&gt;temporaryUrl()"
-            :size="$photo-&gt;getSize()"
-        &gt;
-            &lt;x-slot name="actions"&gt;
-                &lt;mds:file-item.remove wire:click="removePhoto({{ $index }})" /&gt;
-            &lt;/x-slot&gt;
-        &lt;/mds:file-item&gt;
-    @endforeach
-&lt;/div&gt;</code></pre>
-</section>
-
-<hr class="section-rule">
-<section id="timeline">
-<h2><code>&lt;mds:timeline&gt;</code> <span class="pill pro">Flux Pro alternative</span></h2>
-<p>An open implementation of Flux Pro's timeline: a CSS-grid rail with connector lines, step statuses, coloured indicators, and full-width blocks. Vertically the tracks are <code>[indicator] [gap] [content]</code>; <code>horizontal</code> transposes them to rows. Every offset is a logical property, so the rail sits on the <strong>right</strong> in RTL and a horizontal timeline flows right-to-left — which is what an Iranian order-tracking strip wants.</p>
-<pre><code>&lt;mds:timeline&gt;
-    &lt;mds:timeline.item&gt;
-        &lt;mds:timeline.indicator&gt;&lt;flux:icon icon="shopping-bag" variant="micro" /&gt;&lt;/mds:timeline.indicator&gt;
-        &lt;mds:timeline.content&gt;
-            &lt;flux:heading&gt;سفارش ثبت شد &lt;flux:text inline&gt;· &lt;mds:jalali-date :date="$order-&gt;created_at" ago /&gt;&lt;/flux:text&gt;&lt;/flux:heading&gt;
-        &lt;/mds:timeline.content&gt;
-    &lt;/mds:timeline.item&gt;
-
-    &lt;mds:timeline.item&gt;
-        &lt;mds:timeline.indicator color="green"&gt;&lt;flux:icon icon="check" variant="micro" /&gt;&lt;/mds:timeline.indicator&gt;
-        &lt;mds:timeline.content&gt;&lt;flux:heading&gt;تحویل داده شد&lt;/flux:heading&gt;&lt;/mds:timeline.content&gt;
-    &lt;/mds:timeline.item&gt;
-&lt;/mds:timeline&gt;</code></pre>
-<table>
-<thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>horizontal</code></td><td>bool</td><td><code>false</code></td><td>Indicators run along a row with content underneath. Columns are equal width (Flux sizes them to their content) so a progress strip reads evenly.</td></tr>
-<tr><td><code>align</code></td><td>string</td><td><code>center</code></td><td><code>start</code> | <code>baseline</code> | <code>center</code> | <code>end</code> — where the indicator sits against its content. Inherited by every item unless the item overrides it.</td></tr>
-<tr><td><code>size</code></td><td>string</td><td>—</td><td><code>lg</code> bumps indicators from 2rem to 3rem (and the content gap to 1rem). Good for numbered steps.</td></tr>
-</tbody>
-</table>
-<h3>Steps and statuses</h3>
-<p><code>status</code> drives both the indicator and the rail: a <code>complete</code> item paints the connector up to the next indicator in your accent colour, <code>current</code> gets an accent ring, and <code>incomplete</code> is muted and dims its content to 75%.</p>
-<pre><code>&lt;mds:timeline horizontal&gt;
-    &lt;mds:timeline.item status="complete"&gt;...&lt;/mds:timeline.item&gt;
-    &lt;mds:timeline.item status="current"&gt;...&lt;/mds:timeline.item&gt;
-    &lt;mds:timeline.item status="incomplete"&gt;...&lt;/mds:timeline.item&gt;
-&lt;/mds:timeline&gt;
-
-&lt;mds:timeline size="lg" align="start"&gt;
-    &lt;mds:timeline.item status="complete"&gt;
-        &lt;mds:timeline.indicator&gt;@fa(1)&lt;/mds:timeline.indicator&gt;
-        &lt;mds:timeline.content&gt;
-            &lt;flux:heading&gt;سبد خرید&lt;/flux:heading&gt;
-            &lt;flux:text&gt;کالاها را بررسی کنید.&lt;/flux:text&gt;
-        &lt;/mds:timeline.content&gt;
-    &lt;/mds:timeline.item&gt;
-&lt;/mds:timeline&gt;</code></pre>
-<table>
-<thead><tr><th>Subcomponent</th><th>Props</th><th>Notes</th></tr></thead>
-<tbody>
-<tr><td><code>timeline.item</code></td><td><code>status</code>, <code>align</code>, <code>size</code></td><td>Renders an <code>&lt;li&gt;</code> and draws its own connector lines. <code>align</code> and <code>size</code> override the timeline per item; the first item's leading line and the last item's trailing line are hidden automatically.</td></tr>
-<tr><td><code>timeline.indicator</code></td><td><code>variant</code>, <code>status</code>, <code>color</code></td><td>Put an icon, number, or text in the slot. <code>variant="bare"</code> strips the circle so a standalone icon can be the marker. <code>color</code> takes any of the 17 Tailwind hues plus <code>zinc</code>, and outranks <code>status</code>.</td></tr>
-<tr><td><code>timeline.content</code></td><td>—</td><td>The cell beside the indicator.</td></tr>
-<tr><td><code>timeline.block</code></td><td>—</td><td>Full-width item body with no indicator column — callouts, cards, comment threads. Direct children span every track.</td></tr>
-<tr><td><code>timeline.subgrid</code></td><td>—</td><td>Inside a block, re-aligns to the timeline's tracks: first child in the indicator track, later children in the content track. Vertical only.</td></tr>
-</tbody>
-</table>
-<pre><code>&lt;mds:timeline.item&gt;
-    &lt;mds:timeline.block class="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5"&gt;
-        &lt;mds:timeline.subgrid class="p-3"&gt;
-            &lt;flux:avatar size="xs" circle src="..." /&gt;
-            &lt;div class="space-y-1"&gt;
-                &lt;flux:heading&gt;پشتیبانی &lt;flux:text inline&gt;پاسخ داد&lt;/flux:text&gt;&lt;/flux:heading&gt;
-                &lt;flux:text&gt;مرسوله شما امروز ارسال می‌شود.&lt;/flux:text&gt;
-            &lt;/div&gt;
-        &lt;/mds:timeline.subgrid&gt;
-    &lt;/mds:timeline.block&gt;
-&lt;/mds:timeline.item&gt;</code></pre>
-<h3>Spacing and baseline</h3>
-<p>Four CSS custom properties tune the geometry. Set them on the timeline with an arbitrary class:</p>
-<pre><code>&lt;mds:timeline class="[--mds-timeline-item-gap:3rem] [--mds-timeline-content-gap:1rem]"&gt;...&lt;/mds:timeline&gt;</code></pre>
-<table>
-<thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>--mds-timeline-item-gap</code></td><td><code>1rem</code></td><td>Space between items — vertical or horizontal, whichever the timeline is.</td></tr>
-<tr><td><code>--mds-timeline-content-gap</code></td><td><code>0.75rem</code></td><td>Space between the indicator and its content (<code>1rem</code> at <code>size="lg"</code>).</td></tr>
-<tr><td><code>--mds-timeline-indicator-size</code></td><td><code>2rem</code></td><td>Indicator diameter (<code>3rem</code> at <code>size="lg"</code>).</td></tr>
-<tr><td><code>--mds-timeline-baseline</code></td><td><code>1.25rem</code></td><td>The first line's line-height, used by <code>align="baseline"</code> to centre the indicator on it. Raise it for large headings: <code>class="[--mds-timeline-baseline:1.75rem]"</code>. This replaces Flux's <code>[data-flux-timeline-baseline]</code> font-size trick.</td></tr>
-</tbody>
-</table>
-<p>The timeline's CSS lives in <code>@layer components</code> on purpose. Cascade layers outrank specificity, so an unlayered rule would beat Tailwind's <code>@layer utilities</code> and swallow any class you put on an indicator.</p>
-</section>
-
-<hr class="section-rule">
-<section id="ai-agents">
-<h2>For AI agents <span class="pill fa-first">llms.txt</span></h2>
-<p>The repo ships a machine-oriented version of this documentation at <a href="https://github.com/MahdiMajidzadeh/majid-ds/blob/main/llms.txt"><code>llms.txt</code></a> — the complete API surface (every component, prop, default, and behavioral contract) in compact markdown, written for coding agents rather than people.</p>
-<p>To make an agent use the kit correctly in your app, point it there from your project's agent instructions:</p>
-<pre><code><span class="c"># CLAUDE.md / AGENTS.md</span>
-UI components: this app uses Majid DS (mds: namespace) on top of Flux UI.
-Full component reference: vendor/mahdimajidzadeh/ds/llms.txt — read it before
-writing any Blade view. Prefer &lt;mds:*&gt; and &lt;flux:*&gt; components over raw HTML.</code></pre>
-</section>
-
-</main>
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#what-this-adds-on-top-of-flux">What this adds on top of Flux</a><a href="#what-is-documented-here">What is documented here</a><a href="#try-it">Try it</a></nav>
+    </aside>
 </div>
 
-<footer class="site">Majid DS · MIT · built on Flux UI &amp; Tailwind CSS — <span style="font-family:'Vazirmatn',sans-serif">ساخته‌شده برای وب فارسی</span></footer>
-<!--CONTENT-END-->
+<script src="assets/livewire.js"></script>
+<script src="assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
 </body>
 </html>

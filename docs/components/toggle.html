@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toggle — Majid DS</title>
+<meta name="description" content="Toggle — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+// Set the theme before first paint so the page never flashes the wrong one.
+// The storage key is Flux's own ('flux.appearance': dark / light, absent =
+// system), so the docs, the demo and the layout gallery share one setting.
+(function () {
+    var stored = localStorage.getItem('flux.appearance');
+    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
+            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
+            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
+        </button>
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open>
+            <summary>Menu</summary>
+            <div class="docs-nav-group"><p class="docs-nav-title">Guides</p><div class="docs-nav-items"><a href="../index.html">Overview</a><a href="../guides/installation.html">Installation</a><a href="../guides/theming.html">Theming</a><a href="../guides/directives.html">Directives &amp; helpers</a><a href="../guides/ai-agents.html">AI agents</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Layouts</p><div class="docs-nav-items"><a href="../layouts/grid.html">The layout grid</a><a href="../layouts/header.html">Header</a><a href="../layouts/sidebar.html">Sidebar</a><a href="../layouts/aside.html">Aside</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">Components</p><div class="docs-nav-items"><a href="../components/avatar.html">Avatar</a><a href="../components/badge.html">Badge</a><a href="../components/brand.html">Brand</a><a href="../components/breadcrumbs.html">Breadcrumbs</a><a href="../components/button.html">Button</a><a href="../components/callout.html">Callout</a><a href="../components/card.html">Card</a><a href="../components/checkbox.html">Checkbox</a><a href="../components/dropdown.html">Dropdown</a><a href="../components/field.html">Field</a><a href="../components/heading.html">Heading</a><a href="../components/icon.html">Icon</a><a href="../components/input.html">Input</a><a href="../components/modal.html">Modal</a><a href="../components/navbar.html">Navbar</a><a href="../components/navlist.html">Navlist</a><a href="../components/navmenu.html">Navmenu</a><a href="../components/otp-input.html">OTP input</a><a href="../components/pagination.html">Pagination</a><a href="../components/profile.html">Profile</a><a href="../components/progress.html">Progress</a><a href="../components/radio.html">Radio</a><a href="../components/select.html">Select</a><a href="../components/separator.html">Separator</a><a href="../components/skeleton.html">Skeleton</a><a href="../components/switch.html">Switch</a><a href="../components/table.html">Table</a><a href="../components/text.html">Text</a><a href="../components/textarea.html">Textarea</a><a href="../components/toast.html">Toast</a><a href="../components/toggle.html" aria-current="page">Toggle</a><a href="../components/tooltip.html">Tooltip</a></div></div><div class="docs-nav-group"><p class="docs-nav-title">mds components</p><div class="docs-nav-items"><a href="../mds/mds-icon.html">mds:icon</a><a href="../mds/price.html">mds:price</a><a href="../mds/discount-badge.html">mds:discount-badge</a><a href="../mds/quantity.html">mds:quantity</a><a href="../mds/rating.html">mds:rating</a><a href="../mds/product-card.html">mds:product-card</a><a href="../mds/stepper.html">mds:stepper</a><a href="../mds/countdown.html">mds:countdown</a><a href="../mds/jalali-date.html">mds:jalali-date</a><a href="../mds/empty-state.html">mds:empty-state</a><a href="../mds/command.html">mds:command</a><a href="../mds/color-picker.html">mds:color-picker</a><a href="../mds/file-upload.html">mds:file-upload</a><a href="../mds/timeline.html">mds:timeline</a></div></div>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">Flux components</p>
+        <h1>Toggle</h1>
+        <p class="docs-lede">A button that holds an on/off state.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Where a switch is a form control, a toggle is a button that stays pressed — a bold button in an editor, a favorite star, a filter pill.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5.246 3.744a.75.75 0 0 1 .75-.75h7.125a4.875 4.875 0 0 1 3.346 8.422 5.25 5.25 0 0 1-2.97 9.58h-7.5a.75.75 0 0 1-.75-.75V3.744Zm7.125 6.75a2.625 2.625 0 0 0 0-5.25H8.246v5.25h4.125Zm-4.125 2.251v6h4.5a3 3 0 0 0 0-6h-4.5Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linejoin="round" d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 0 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Bold</span>
+                <span class="hidden group-data-checked:block">Bold</span>
+                    </ui-switch>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Bold&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bold&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="checked-and-icons" class="docs-section"><h2>Checked and icons</h2><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-2">
+    <div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   checked data-checked  data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5.246 3.744a.75.75 0 0 1 .75-.75h7.125a4.875 4.875 0 0 1 3.346 8.422 5.25 5.25 0 0 1-2.97 9.58h-7.5a.75.75 0 0 1-.75-.75V3.744Zm7.125 6.75a2.625 2.625 0 0 0 0-5.25H8.246v5.25h4.125Zm-4.125 2.251v6h4.5a3 3 0 0 0 0-6h-4.5Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linejoin="round" d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 0 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Bold</span>
+                <span class="hidden group-data-checked:block">Bold</span>
+                    </ui-switch>
+</div>
+    <div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.497 3.744a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-3.275l-5.357 15.002h2.632a.75.75 0 1 1 0 1.5h-7.5a.75.75 0 1 1 0-1.5h3.275l5.357-15.002h-2.632a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M5.248 20.246H9.05m0 0h3.696m-3.696 0 5.893-16.502m0 0h-3.697m3.697 0h3.803"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Italic</span>
+                <span class="hidden group-data-checked:block">Italic</span>
+                    </ui-switch>
+</div>
+    <div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5.995 2.994a.75.75 0 0 1 .75.75v7.5a5.25 5.25 0 1 0 10.5 0v-7.5a.75.75 0 0 1 1.5 0v7.5a6.75 6.75 0 1 1-13.5 0v-7.5a.75.75 0 0 1 .75-.75Zm-3 17.252a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5h-16.5a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.995 3.744v7.5a6 6 0 1 1-12 0v-7.5m-2.25 16.502h16.5"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Underline</span>
+                <span class="hidden group-data-checked:block">Underline</span>
+                    </ui-switch>
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;bold&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Bold&quot;</span> <span class="t-attr">checked</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;italic&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Italic&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;underline&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Underline&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="on-and-off-states" class="docs-section"><h2>On and off states</h2><p class="docs-text">Give each state its own label or icon.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="[--color-accent:var(--color-rose-500)] [--color-accent-content:var(--color-rose-500)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-rose-500)] dark:[--color-accent-content:var(--color-rose-400)] dark:[--color-accent-foreground:var(--color-white)] contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Save</span>
+                <span class="hidden group-data-checked:block">Saved</span>
+                    </ui-switch>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">on-icon</span><span class="t-equals">=</span><span class="t-string">&quot;heart&quot;</span> <span class="t-attr">off-icon</span><span class="t-equals">=</span><span class="t-string">&quot;heart&quot;</span> <span class="t-attr">on-label</span><span class="t-equals">=</span><span class="t-string">&quot;Saved&quot;</span> <span class="t-attr">off-label</span><span class="t-equals">=</span><span class="t-string">&quot;Save&quot;</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;rose&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="sizes" class="docs-section"><h2>Sizes</h2><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex items-center gap-2">
+    <div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-8 text-sm rounded-md gap-2 ps-2 pe-3  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Small</span>
+                <span class="hidden group-data-checked:block">Small</span>
+                    </ui-switch>
+</div>
+    <div class="contents">
+    <ui-switch class="group relative inline-flex items-center font-medium justify-center whitespace-nowrap outline-offset-2 transition touch-manipulation [&amp;[disabled]]:opacity-50 dark:[&amp;[disabled]]:opacity-50 [&amp;[disabled]]:shadow-none [&amp;[disabled]]:cursor-default [&amp;[disabled]]:pointer-events-none h-10 text-sm rounded-lg gap-2 ps-3 pe-4  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-600/85 data-checked:text-zinc-800 dark:text-zinc-300/95 dark:data-checked:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs"   data-flux-control data-flux-toggle>
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  hidden group-data-checked:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"/>
+</svg>
+
+                        <svg class="shrink-0 [:where(&amp;)]:size-6 text-zinc-500/85 dark:text-zinc-300/80 in-data-checked:text-(--color-accent-content) dark:in-data-checked:text-(--color-accent-content) size-4  group-data-checked:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+</svg>
+
+                    
+                            
+                <span class="group-data-checked:hidden">Base</span>
+                <span class="hidden group-data-checked:block">Base</span>
+                    </ui-switch>
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Small&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:toggle</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Base&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="flux-toggle" class="docs-ref-block"><h3>flux:toggle</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">label</span></td><td>Button text.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Icon name.</td></tr><tr><td><span class="docs-prop">checked</span></td><td>Pressed state.</td></tr><tr><td><span class="docs-prop">on-label</span></td><td>Label used while on.</td></tr><tr><td><span class="docs-prop">off-label</span></td><td>Label used while off.</td></tr><tr><td><span class="docs-prop">on-icon</span></td><td>Icon used while on.</td></tr><tr><td><span class="docs-prop">off-icon</span></td><td>Icon used while off.</td></tr><tr><td><span class="docs-prop">variant</span></td><td>Options: <code>outline</code>, <code>ghost</code>, <code>subtle</code>. Default: <code>outline</code>.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>base</code>. Default: <code>base</code>.</td></tr><tr><td><span class="docs-prop">color</span></td><td>Any Tailwind color for the pressed state.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Submitted field name.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/switch.html"><span class="docs-related-name">Switch</span><span class="docs-related-lede">Turn a single setting on or off.</span></a><a class="docs-related-card" href="../components/button.html"><span class="docs-related-name">Button</span><span class="docs-related-lede">Trigger an action or navigate somewhere.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#checked-and-icons">Checked and icons</a><a href="#on-and-off-states">On and off states</a><a href="#sizes">Sizes</a><a href="#reference">Reference</a><a href="#flux-toggle" class="docs-toc-sub">flux:toggle</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+
+<script>
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Theme toggle — written to Flux's key, the same way the demo's own
+// toggle (flux.dark) writes it.
+document.querySelector('.docs-theme').addEventListener('click', function () {
+    var dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
+});
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>
