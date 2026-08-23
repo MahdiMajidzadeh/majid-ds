@@ -747,6 +747,252 @@ $pages['command'] = [
     'related' => ['modal', 'input'],
 ];
 
+// -------------------------------------------------------------- mds:composer
+
+$pages['composer'] = [
+    'group' => 'mds',
+    'title' => 'mds:composer',
+    'lede' => 'A chat / prompt input with an action bar — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'rtl' => true,
+            'lead' => true,
+            'text' => 'A textarea that grows with what you type, an action bar around it, and <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> to submit the surrounding form. The preview is live — type a few lines into it.',
+            'code' => <<<'BLADE'
+            <form wire:submit="send">
+                <mds:composer wire:model="prompt" label="پیام" label:sr-only placeholder="چطور می‌توانم کمکتان کنم؟">
+                    <x-slot name="actionsLeading">
+                        <flux:button size="sm" variant="subtle" square><mds:icon icon="paper-clip" class="size-4" /></flux:button>
+                        <flux:button size="sm" variant="subtle" square><mds:icon icon="adjustments-horizontal" class="size-4" /></flux:button>
+                    </x-slot>
+
+                    <x-slot name="actionsTrailing">
+                        <flux:button size="sm" variant="filled" square><mds:icon icon="microphone" class="size-4" /></flux:button>
+                        <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                    </x-slot>
+                </mds:composer>
+            </form>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The action bar is plain <code>flux:button</code>s, so they follow your accent colour. <code>square</code> plus an <code>mds:icon</code> slot keeps the buttons icon-only while drawing Hugeicons rather than heroicons.',
+        ],
+        [
+            'name' => 'With a header',
+            'rtl' => true,
+            'text' => 'The <code>header</code> slot sits above the input — attachments, a reply-to line, a model picker.',
+            'code' => <<<'BLADE'
+            <mds:composer placeholder="توضیحی برای این تصویر بنویسید...">
+                <x-slot name="header">
+                    <mds:file-item heading="گوشی-گلکسی.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400" class="w-full max-w-64">
+                        <x-slot name="actions">
+                            <mds:file-item.remove label="حذف تصویر" />
+                        </x-slot>
+                    </mds:file-item>
+                </x-slot>
+
+                <x-slot name="actionsTrailing">
+                    <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                </x-slot>
+            </mds:composer>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Inline',
+            'rtl' => true,
+            'text' => 'One row: the actions sit beside the input instead of under it. Pair it with <code>rows="1"</code>.',
+            'code' => <<<'BLADE'
+            <mds:composer rows="1" inline placeholder="پیام خود را بنویسید...">
+                <x-slot name="actionsLeading">
+                    <flux:button size="sm" variant="ghost" square><mds:icon icon="plus" class="size-4" /></flux:button>
+                </x-slot>
+
+                <x-slot name="actionsTrailing">
+                    <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                </x-slot>
+            </mds:composer>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Input variant',
+            'text' => '<code>variant="input"</code> trades the pill radius for the same corners as the rest of your form controls, so a composer can sit in a field stack without looking like a visitor.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-4">
+                <flux:input label="Name" placeholder="Your name" />
+
+                <mds:composer variant="input" label="Message" placeholder="What's on your mind?">
+                    <x-slot name="actionsTrailing">
+                        <flux:button type="submit" size="sm" variant="primary">Send</flux:button>
+                    </x-slot>
+                </mds:composer>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Height',
+            'text' => '<code>rows</code> is the height it starts at, <code>max-rows</code> the height it stops growing at — past that the input scrolls.',
+            'code' => <<<'BLADE'
+            <mds:composer rows="4" max-rows="8" placeholder="Four rows to start, eight at most..." class="max-w-md" />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Submit behavior',
+            'text' => 'By default <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> submits and <code>Enter</code> makes a new line. <code>submit="enter"</code> promotes the bare <code>Enter</code> to sending, and <code>Shift</code> + <code>Enter</code> takes over the new line. <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> sends either way.',
+            'code' => <<<'BLADE'
+            <form wire:submit="send">
+                <mds:composer wire:model="prompt" submit="enter" rows="1" inline placeholder="Enter sends this one...">
+                    <x-slot name="actionsTrailing">
+                        <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                    </x-slot>
+                </mds:composer>
+            </form>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Either way the key press calls <code>form.requestSubmit()</code>, so <code>wire:submit</code> and native validation behave exactly as they would on a click. An open IME candidate window keeps its <code>Enter</code>.',
+        ],
+        [
+            'name' => 'Character counter',
+            'rtl' => true,
+            'text' => 'Not in Flux: <code>maxlength</code> caps the message and <code>counter</code> shows how much of it is used, in Persian digits.',
+            'code' => <<<'BLADE'
+            <mds:composer :maxlength="280" counter rows="2" placeholder="حداکثر ۲۸۰ نویسه..." value="سلام! این پیام شمرده می‌شود.">
+                <x-slot name="actionsTrailing">
+                    <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                </x-slot>
+            </mds:composer>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The count is in characters, not bytes — «سلام» is ۴, not ۸. Pass <code>:fa="false"</code> for Latin digits.',
+        ],
+        [
+            'name' => 'Footer',
+            'rtl' => true,
+            'text' => 'The <code>footer</code> slot runs under the action bar, sharing its row with the counter.',
+            'code' => <<<'BLADE'
+            <mds:composer :maxlength="280" counter rows="2" placeholder="پیام...">
+                <x-slot name="footer">
+                    <span>پاسخ‌ها ممکن است اشتباه باشند.</span>
+                </x-slot>
+
+                <x-slot name="actionsTrailing">
+                    <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                </x-slot>
+            </mds:composer>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'A different input',
+            'text' => 'The <code>input</code> slot replaces the textarea. Flux fills it with its Pro editor; anything that collects text works — here a plain <code>flux:textarea</code> keeps its own resize handle.',
+            'code' => <<<'BLADE'
+            <mds:composer class="max-w-md">
+                <x-slot name="input">
+                    <flux:textarea rows="3" resize="none" placeholder="Your own control goes here..." class="border-0! bg-transparent! px-2! py-1.5! shadow-none!" />
+                </x-slot>
+
+                <x-slot name="actionsTrailing">
+                    <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                </x-slot>
+            </mds:composer>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Auto-growing, the counter and <code>submit="enter"</code> all belong to the built-in textarea, so a replacement brings its own. <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> keeps working either way.',
+        ],
+        [
+            'name' => 'Disabled and invalid',
+            'rtl' => true,
+            'text' => 'A disabled composer is <code>inert</code> — the whole box, action buttons included, stops taking input. Validation errors come from the error bag for <code>name</code>, or from an explicit <code>error</code>.',
+            'code' => <<<'BLADE'
+            <div class="w-full space-y-4">
+                <mds:composer disabled rows="1" inline placeholder="ابتدا وارد حساب خود شوید">
+                    <x-slot name="actionsTrailing">
+                        <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                    </x-slot>
+                </mds:composer>
+
+                <mds:composer name="prompt" label="پیام" error="نوشتن پیام الزامی است." rows="1" inline>
+                    <x-slot name="actionsTrailing">
+                        <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                    </x-slot>
+                </mds:composer>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'A whole chat panel',
+            'rtl' => true,
+            'text' => 'The composer only handles the input; the transcript above it is your markup. This is the shape most Livewire chat pages end up with.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-lg space-y-4">
+                <div class="space-y-3">
+                    <div class="flex justify-start">
+                        <div class="max-w-[80%] rounded-2xl rounded-ss-sm bg-zinc-100 px-3 py-2 text-sm dark:bg-white/10">
+                            سلام! سفارش من کِی می‌رسد؟
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <div class="max-w-[80%] rounded-2xl rounded-se-sm bg-accent px-3 py-2 text-sm text-accent-foreground">
+                            مرسوله شما @jalali('2026-08-25') به دستتان می‌رسد.
+                        </div>
+                    </div>
+                </div>
+
+                <form wire:submit="send">
+                    <mds:composer wire:model="message" label="پیام" label:sr-only rows="1" max-rows="6" submit="enter" inline placeholder="پیام خود را بنویسید...">
+                        <x-slot name="actionsLeading">
+                            <flux:button size="sm" variant="ghost" square><mds:icon icon="paper-clip" class="size-4" /></flux:button>
+                        </x-slot>
+
+                        <x-slot name="actionsTrailing">
+                            <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                        </x-slot>
+                    </mds:composer>
+                </form>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:composer', 'props' => [
+            ['name', 'Field name for a plain form post, and the key the error bag is read with.'],
+            ['value', 'Initial text. The default slot works too.'],
+            ['placeholder', 'Placeholder for the input.'],
+            ['label', 'Label text. Wraps the composer in a <code>flux:field</code>.'],
+            ['label:sr-only', 'Keeps the label for screen readers only. <code>label-sr-only</code> also works.'],
+            ['description', 'Help text under the composer.'],
+            ['description:sr-only', 'Same, for screen readers only.'],
+            ['rows', 'Height the input starts at, in lines. Default: <code>2</code>.'],
+            ['max-rows', 'Height it stops growing at. Unbounded when absent.'],
+            ['maxlength', 'Character cap on the input.'],
+            ['counter', 'Shows the character count. Default: <code>false</code>.'],
+            ['inline', 'Puts the actions beside the input instead of under it. Default: <code>false</code>.'],
+            ['variant', '<code>input</code> matches the corner radius of other form controls.'],
+            ['submit', 'Key that submits: <code>cmd+enter</code> (default) or <code>enter</code>.'],
+            ['autofocus', 'Focuses the input on load.'],
+            ['dir', 'Direction of the input. <code>auto</code> follows what is being typed.'],
+            ['disabled', 'Makes the whole composer <code>inert</code>.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code>.'],
+            ['fa', 'Persian digits in the counter. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds the input to a Livewire property.'],
+        ], 'slots' => [
+            ['input', 'Replaces the built-in textarea.'],
+            ['header', 'Above the input — attachments, a reply-to line.'],
+            ['footer', 'Under the action bar, sharing its row with the counter.'],
+            ['actionsLeading', 'Actions at the start of the action bar.'],
+            ['actionsTrailing', 'Actions at the end, usually the submit button.'],
+        ]],
+    ],
+    'related' => ['textarea', 'field'],
+];
+
 // ---------------------------------------------------------- mds:color-picker
 
 $pages['color-picker'] = [

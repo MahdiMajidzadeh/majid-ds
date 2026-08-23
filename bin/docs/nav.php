@@ -81,6 +81,7 @@ return [
             'jalali-date' => 'mds:jalali-date',
             'empty-state' => 'mds:empty-state',
             'command' => 'mds:command',
+            'composer' => 'mds:composer',
             'color-picker' => 'mds:color-picker',
             'file-upload' => 'mds:file-upload',
             'timeline' => 'mds:timeline',

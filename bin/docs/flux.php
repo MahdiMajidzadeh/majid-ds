@@ -2275,7 +2275,7 @@ $pages['textarea'] = [
             ['wire:model', 'Binds to a Livewire property.'],
         ]],
     ],
-    'related' => ['input', 'field'],
+    'related' => ['input', 'field', 'composer'],
 ];
 
 // -------------------------------------------------------------------- toast

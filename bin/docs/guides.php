@@ -64,8 +64,8 @@ return [
             ],
             [
                 'name' => 'What is documented here',
-                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 30 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to four Flux Pro components: Command, Color picker, File upload and Timeline.',
-                'note' => '<p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> — Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker, Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code in the free tier, so there is nothing to preview or reference. Four of them have <code>mds:*</code> replacements; for the others, see Flux\'s own docs.</p>',
+                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 30 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to five Flux Pro components: Command, Composer, Color picker, File upload and Timeline.',
+                'note' => '<p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> — Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker, Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code in the free tier, so there is nothing to preview or reference. Five of them have <code>mds:*</code> replacements — Command, Composer, Color picker, File upload and Timeline; for the others, see Flux\'s own docs.</p>',
             ],
             [
                 'name' => 'Try it',
