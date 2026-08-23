@@ -4,12 +4,12 @@
         <div class="space-y-1">
             <div class="flex items-center gap-2">
                 <flux:icon :icon="$layout['icon']" class="size-5 text-zinc-400" />
-                <flux:heading size="lg">{{ $layout['title'] }}</flux:heading>
+                <flux:heading size="lg">{{ __($layout['title']) }}</flux:heading>
             </div>
-            <flux:subheading>{{ $layout['tagline'] }}</flux:subheading>
+            <flux:subheading>{{ __($layout['tagline']) }}</flux:subheading>
         </div>
 
-        <flux:badge color="zinc" size="sm" class="font-mono" dir="ltr">/layouts/{{ $layout['slug'] }}</flux:badge>
+        <flux:badge color="zinc" size="sm" class="font-mono" dir="ltr">{{ $mdsUrl($layout['path']) }}</flux:badge>
     </div>
 
     <flux:separator />
@@ -19,7 +19,7 @@
 
         <div class="space-y-2">
             @include('layouts.partials.preview', ['grid' => $layout['grid']])
-            <flux:text class="text-xs">{{ $layout['note'] }}</flux:text>
+            <flux:text class="text-xs">{{ __($layout['note']) }}</flux:text>
         </div>
     </div>
 </flux:card>

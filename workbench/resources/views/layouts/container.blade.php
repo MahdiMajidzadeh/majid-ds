@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--
@@ -28,25 +28,25 @@
         <div class="grid gap-4 lg:grid-cols-3">
             <flux:card class="space-y-2">
                 <flux:badge size="sm" color="lime" dir="ltr" class="font-mono">container</flux:badge>
-                <flux:heading>ناحیه محدودشده</flux:heading>
+                <flux:heading>{{ __('ناحیه محدودشده') }}</flux:heading>
                 <flux:text class="text-sm">
-                    prop روی <code dir="ltr">flux:header</code>، <code dir="ltr">flux:main</code> و <code dir="ltr">flux:footer</code>؛ محتوا را در <code dir="ltr">max-w-7xl</code> وسط‌چین می‌کند. همین صفحه از آن استفاده می‌کند.
+                {!! __('prop روی <code dir="ltr">flux:header</code>، <code dir="ltr">flux:main</code> و <code dir="ltr">flux:footer</code>؛ محتوا را در <code dir="ltr">max-w-7xl</code> وسط‌چین می‌کند. همین صفحه از آن استفاده می‌کند.') !!}
                 </flux:text>
             </flux:card>
 
             <flux:card class="space-y-2">
                 <flux:badge size="sm" color="blue" dir="ltr" class="font-mono">flux:container</flux:badge>
-                <flux:heading>محدودسازی دستی</flux:heading>
+                <flux:heading>{{ __('محدودسازی دستی') }}</flux:heading>
                 <flux:text class="text-sm">
-                    برای بخش‌هایی که پس‌زمینه‌شان تمام‌عرض است ولی محتوایشان باید وسط بماند — مثل نوار سبز پایین همین صفحه.
+                {{ __('برای بخش‌هایی که پس‌زمینه‌شان تمام‌عرض است ولی محتوایشان باید وسط بماند — مثل نوار سبز پایین همین صفحه.') }}
                 </flux:text>
             </flux:card>
 
             <flux:card class="space-y-2">
                 <flux:badge size="sm" color="zinc" dir="ltr" class="font-mono">—</flux:badge>
-                <flux:heading>تمام‌عرض</flux:heading>
+                <flux:heading>{{ __('تمام‌عرض') }}</flux:heading>
                 <flux:text class="text-sm">
-                    حالت پیش‌فرض: ناحیه فقط padding می‌گیرد و تا لبه‌های صفحه کشیده می‌شود؛ همان چیزی که چیدمان‌های سایدباری استفاده می‌کنند.
+                {{ __('حالت پیش‌فرض: ناحیه فقط padding می‌گیرد و تا لبه‌های صفحه کشیده می‌شود؛ همان چیزی که چیدمان‌های سایدباری استفاده می‌کنند.') }}
                 </flux:text>
             </flux:card>
         </div>
@@ -62,13 +62,13 @@
         <div class="border-y border-lime-200 bg-lime-50 py-10 dark:border-lime-400/30 dark:bg-lime-400/10">
             <flux:container class="flex flex-wrap items-center justify-between gap-6">
                 <div class="space-y-1">
-                    <flux:heading size="lg">عضویت در خبرنامه</flux:heading>
-                    <flux:subheading>این نوار تمام‌عرض است، ولی محتوایش با <code dir="ltr">flux:container</code> وسط نگه داشته شده.</flux:subheading>
+                    <flux:heading size="lg">{{ __('عضویت در خبرنامه') }}</flux:heading>
+                    <flux:subheading>{!! __('این نوار تمام‌عرض است، ولی محتوایش با <code dir="ltr">flux:container</code> وسط نگه داشته شده.') !!}</flux:subheading>
                 </div>
 
                 <div class="flex w-full max-w-sm items-center gap-2">
-                    <flux:input placeholder="ایمیل شما" icon="envelope" class="flex-1" />
-                    <flux:button variant="primary">عضویت</flux:button>
+                    <flux:input :placeholder="__('ایمیل شما')" icon="envelope" class="flex-1" />
+                    <flux:button variant="primary">{{ __('عضویت') }}</flux:button>
                 </div>
             </flux:container>
         </div>

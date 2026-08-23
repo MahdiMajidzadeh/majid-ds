@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--
@@ -12,18 +12,18 @@
         <flux:sidebar.header>
             @include('layouts.partials.sidebar-brand')
 
-            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" aria-label="بستن منو" />
+            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" aria-label="{{ __('بستن منو') }}" />
         </flux:sidebar.header>
 
         @include('layouts.partials.sidebar-nav')
     </flux:sidebar>
 
     <flux:header sticky class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" aria-label="نمایش منو" />
+        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" aria-label="{{ __('نمایش منو') }}" />
 
         <flux:breadcrumbs class="max-lg:hidden">
-            <flux:breadcrumbs.item href="/layouts">چیدمان‌ها</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>{{ $layout['title'] }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item :href="$mdsUrl('/layouts')">{{ __('چیدمان‌ها') }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>{{ __($layout['title']) }}</flux:breadcrumbs.item>
         </flux:breadcrumbs>
 
         <flux:spacer />
@@ -32,7 +32,7 @@
             @include('layouts.partials.header-actions')
 
             <flux:modal.trigger name="cart">
-                <flux:button size="sm" variant="primary" icon="shopping-cart" class="xl:hidden">سبد خرید</flux:button>
+                <flux:button size="sm" variant="primary" icon="shopping-cart" class="xl:hidden">{{ __('سبد خرید') }}</flux:button>
             </flux:modal.trigger>
         </div>
     </flux:header>

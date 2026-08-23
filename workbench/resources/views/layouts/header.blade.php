@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--
@@ -20,7 +20,7 @@
             @include('layouts.partials.header-actions')
 
             <flux:dropdown position="bottom" align="end" class="lg:hidden">
-                <flux:button variant="subtle" icon="bars-2" square aria-label="منوی اصلی" />
+                <flux:button variant="subtle" icon="bars-2" square aria-label="{{ __('منوی اصلی') }}" />
 
                 <flux:navmenu>
                     @include('layouts.partials.navmenu-items')

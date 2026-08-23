@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--
@@ -12,18 +12,18 @@
         <flux:sidebar.header>
             @include('layouts.partials.sidebar-brand')
 
-            <flux:sidebar.collapse tooltip="جمع/باز کردن سایدبار" />
+            <flux:sidebar.collapse :tooltip="__('جمع/باز کردن سایدبار')" />
         </flux:sidebar.header>
 
         @include('layouts.partials.sidebar-nav')
     </flux:sidebar>
 
     <flux:header sticky class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" aria-label="نمایش منو" />
+        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" aria-label="{{ __('نمایش منو') }}" />
 
         <flux:breadcrumbs class="max-lg:hidden">
-            <flux:breadcrumbs.item href="/layouts">چیدمان‌ها</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>{{ $layout['title'] }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item :href="$mdsUrl('/layouts')">{{ __('چیدمان‌ها') }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>{{ __($layout['title']) }}</flux:breadcrumbs.item>
         </flux:breadcrumbs>
 
         <flux:spacer />
@@ -36,9 +36,9 @@
     <flux:main class="space-y-8 pb-24">
         @include('layouts.partials.notes')
 
-        <flux:callout icon="cursor-arrow-rays" heading="امتحان کنید">
+        <flux:callout icon="cursor-arrow-rays" :heading="__('امتحان کنید')">
             <flux:callout.text>
-                دکمه‌ی جمع‌کردن کنار لوگو را بزنید: سایدبار به یک ریل آیکونی تبدیل می‌شود و برچسب‌ها جای خود را به تولتیپ می‌دهند.
+                {{ __('دکمه‌ی جمع‌کردن کنار لوگو را بزنید: سایدبار به یک ریل آیکونی تبدیل می‌شود و برچسب‌ها جای خود را به تولتیپ می‌دهند.') }}
             </flux:callout.text>
         </flux:callout>
 

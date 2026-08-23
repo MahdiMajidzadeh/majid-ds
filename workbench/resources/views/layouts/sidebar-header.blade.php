@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--

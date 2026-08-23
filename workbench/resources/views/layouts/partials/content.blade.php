@@ -9,24 +9,24 @@ $showTable = $showTable ?? true;
 $showStats = $showStats ?? true;
 
 $stats = [
-    ['label' => 'سفارش‌های امروز', 'value' => 128, 'trend' => '+۱۲٪', 'color' => 'green', 'icon' => 'shopping-bag'],
-    ['label' => 'فروش امروز', 'value' => null, 'amount' => 184500000, 'trend' => '+۸٪', 'color' => 'green', 'icon' => 'banknotes'],
-    ['label' => 'مرجوعی‌ها', 'value' => 7, 'trend' => '−۳٪', 'color' => 'red', 'icon' => 'arrow-uturn-left'],
-    ['label' => 'میانگین رضایت', 'value' => null, 'rating' => 4.6, 'trend' => 'ثابت', 'color' => 'zinc', 'icon' => 'star'],
+    ['label' => __('سفارش‌های امروز'), 'value' => 128, 'trend' => __('+۱۲٪'), 'color' => 'green', 'icon' => 'shopping-bag'],
+    ['label' => __('فروش امروز'), 'value' => null, 'amount' => 184500000, 'trend' => __('+۸٪'), 'color' => 'green', 'icon' => 'banknotes'],
+    ['label' => __('مرجوعی‌ها'), 'value' => 7, 'trend' => __('−۳٪'), 'color' => 'red', 'icon' => 'arrow-uturn-left'],
+    ['label' => __('میانگین رضایت'), 'value' => null, 'rating' => 4.6, 'trend' => __('ثابت'), 'color' => 'zinc', 'icon' => 'star'],
 ];
 
 $orders = [
-    ['name' => 'گوشی موبایل سامسونگ Galaxy S25', 'seed' => 'phone', 'status' => 'تحویل شده', 'color' => 'green', 'date' => now()->subDays(2), 'amount' => 42500000, 'original' => 48900000],
-    ['name' => 'هدفون بی‌سیم AirSound Pro', 'seed' => 'headphone', 'status' => 'در حال ارسال', 'color' => 'blue', 'date' => now()->subDay(), 'amount' => 1890000, 'original' => null],
-    ['name' => 'کتاب صد سال تنهایی', 'seed' => 'book', 'status' => 'در انتظار پرداخت', 'color' => 'amber', 'date' => now()->subHours(6), 'amount' => 245000, 'original' => 350000],
-    ['name' => 'ساعت هوشمند Fit Band 8', 'seed' => 'watch', 'status' => 'لغو شده', 'color' => 'red', 'date' => now()->subHours(2), 'amount' => 3200000, 'original' => null],
+    ['name' => __('گوشی موبایل سامسونگ Galaxy S25'), 'seed' => 'phone', 'status' => __('تحویل شده'), 'color' => 'green', 'date' => now()->subDays(2), 'amount' => 42500000, 'original' => 48900000],
+    ['name' => __('هدفون بی‌سیم AirSound Pro'), 'seed' => 'headphone', 'status' => __('در حال ارسال'), 'color' => 'blue', 'date' => now()->subDay(), 'amount' => 1890000, 'original' => null],
+    ['name' => __('کتاب صد سال تنهایی'), 'seed' => 'book', 'status' => __('در انتظار پرداخت'), 'color' => 'amber', 'date' => now()->subHours(6), 'amount' => 245000, 'original' => 350000],
+    ['name' => __('ساعت هوشمند Fit Band 8'), 'seed' => 'watch', 'status' => __('لغو شده'), 'color' => 'red', 'date' => now()->subHours(2), 'amount' => 3200000, 'original' => null],
 ];
 
 $products = [
-    ['title' => 'گوشی موبایل سامسونگ مدل Galaxy S25 ظرفیت ۲۵۶ گیگابایت', 'seed' => 'phone', 'amount' => 42500000, 'original' => 48900000, 'rating' => 4.6, 'reviews' => 342, 'badge' => 'ارسال امروز'],
-    ['title' => 'هدفون بی‌سیم مدل AirSound Pro', 'seed' => 'headphone', 'amount' => 1890000, 'original' => null, 'rating' => 4.1, 'reviews' => 87, 'badge' => null],
-    ['title' => 'کتاب صد سال تنهایی اثر گابریل گارسیا مارکز', 'seed' => 'book', 'amount' => 245000, 'original' => 350000, 'rating' => 4.9, 'reviews' => 1205, 'badge' => 'پرفروش'],
-    ['title' => 'ساعت هوشمند مدل Fit Band 8', 'seed' => 'watch', 'amount' => 3200000, 'original' => null, 'rating' => 4.3, 'reviews' => 54, 'badge' => null],
+    ['title' => __('گوشی موبایل سامسونگ مدل Galaxy S25 ظرفیت ۲۵۶ گیگابایت'), 'seed' => 'phone', 'amount' => 42500000, 'original' => 48900000, 'rating' => 4.6, 'reviews' => 342, 'badge' => __('ارسال امروز')],
+    ['title' => __('هدفون بی‌سیم مدل AirSound Pro'), 'seed' => 'headphone', 'amount' => 1890000, 'original' => null, 'rating' => 4.1, 'reviews' => 87, 'badge' => null],
+    ['title' => __('کتاب صد سال تنهایی اثر گابریل گارسیا مارکز'), 'seed' => 'book', 'amount' => 245000, 'original' => 350000, 'rating' => 4.9, 'reviews' => 1205, 'badge' => __('پرفروش')],
+    ['title' => __('ساعت هوشمند مدل Fit Band 8'), 'seed' => 'watch', 'amount' => 3200000, 'original' => null, 'rating' => 4.3, 'reviews' => 54, 'badge' => null],
 ];
 @endphp
 
@@ -46,7 +46,7 @@ $products = [
                         @elseif (isset($stat['rating']))
                             <mds:rating :value="$stat['rating']" size="sm" :count="912" />
                         @else
-                            @fa($stat['value'])
+                            {{ $mdsNum($stat['value']) }}
                         @endif
                     </flux:heading>
 
@@ -60,20 +60,20 @@ $products = [
 @if ($showTable)
     <flux:card class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <flux:heading size="lg">آخرین سفارش‌ها</flux:heading>
+            <flux:heading size="lg">{{ __('آخرین سفارش‌ها') }}</flux:heading>
 
             <div class="flex items-center gap-2">
-                <flux:button size="sm" variant="filled" icon="funnel">فیلترها</flux:button>
-                <flux:button size="sm" icon="arrow-down-tray">خروجی اکسل</flux:button>
+                <flux:button size="sm" variant="filled" icon="funnel">{{ __('فیلترها') }}</flux:button>
+                <flux:button size="sm" icon="arrow-down-tray">{{ __('خروجی اکسل') }}</flux:button>
             </div>
         </div>
 
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>کالا</flux:table.column>
-                <flux:table.column>وضعیت</flux:table.column>
-                <flux:table.column sortable sorted direction="desc">تاریخ ثبت</flux:table.column>
-                <flux:table.column align="end">مبلغ</flux:table.column>
+                <flux:table.column>{{ __('کالا') }}</flux:table.column>
+                <flux:table.column>{{ __('وضعیت') }}</flux:table.column>
+                <flux:table.column sortable sorted direction="desc">{{ __('تاریخ ثبت') }}</flux:table.column>
+                <flux:table.column align="end">{{ __('مبلغ') }}</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
@@ -87,7 +87,11 @@ $products = [
                             <flux:badge size="sm" :color="$order['color']">{{ $order['status'] }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>
-                            <mds:jalali-date :date="$order['date']" ago />
+                            @if ($mdsFa)
+                                <mds:jalali-date :date="$order['date']" ago />
+                            @else
+                                {{ $order['date']->diffForHumans() }}
+                            @endif
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <mds:price :amount="$order['amount']" :original="$order['original']" size="sm" />
@@ -104,15 +108,15 @@ $products = [
         <div class="flex flex-wrap items-center justify-between gap-3">
             <flux:heading size="lg">
                 @if ($section === 1)
-                    پیشنهاد شگفت‌انگیز
+                    {{ __('پیشنهاد شگفت‌انگیز') }}
                 @else
-                    ادامه پیشنهادها ({{ Mds::fa($section) }})
+                    {{ __('ادامه پیشنهادها') }} ({{ $mdsNum($section) }})
                 @endif
             </flux:heading>
 
             @if ($section === 1)
                 <div class="flex items-center gap-2">
-                    <flux:text class="text-sm">پایان تا:</flux:text>
+                    <flux:text class="text-sm">{{ __('پایان تا:') }}</flux:text>
                     <mds:countdown :until="now()->addHours(7)->addMinutes(42)" :days="false" />
                 </div>
             @endif

@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title', $layout['title'])
+@section('title', __($layout['title']))
 
 @section('layout')
     {{--
@@ -17,8 +17,8 @@
 
     <flux:header sticky class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
         <flux:breadcrumbs>
-            <flux:breadcrumbs.item href="/layouts">چیدمان‌ها</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>{{ $layout['title'] }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item :href="$mdsUrl('/layouts')">{{ __('چیدمان‌ها') }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>{{ __($layout['title']) }}</flux:breadcrumbs.item>
         </flux:breadcrumbs>
 
         <flux:spacer />

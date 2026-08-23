@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="{{ $mdsLocale }}" dir="{{ $mdsDir }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'چیدمان‌ها') — مجید دیزاین سیستم</title>
+    <title>@yield('title', __('چیدمان‌ها')) — {{ __('مجید دیزاین سیستم') }}</title>
 
     @mdsFonts
 

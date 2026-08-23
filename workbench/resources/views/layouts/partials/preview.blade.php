@@ -7,18 +7,18 @@
         dashed — areas to outline instead of fill (an off-canvas sidebar)
         pins   — areas to mark as sticky
 
-    Because the page is RTL the first column lands on the right — the same side
-    the sidebar shows up on in the live layout.
+    In Persian (RTL) the first column lands on the right — the same side the
+    sidebar shows up on in the live layout; in English it lands on the left.
 --}}
 @php
 $height = $height ?? 'h-28';
 
 $labels = [
-    'header'  => 'هدر',
-    'sidebar' => 'سایدبار',
-    'main'    => 'محتوا',
-    'aside'   => 'کنار',
-    'footer'  => 'فوتر',
+    'header'  => __('هدر'),
+    'sidebar' => __('سایدبار'),
+    'main'    => __('محتوا'),
+    'aside'   => __('کنار'),
+    'footer'  => __('فوتر'),
 ];
 
 $styles = [

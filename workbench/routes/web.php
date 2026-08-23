@@ -2,14 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Number;
+use MajidDs\Support\Persian;
+
+use function Orchestra\Testbench\workbench_path;
 
 /*
 |--------------------------------------------------------------------------
 | Layout gallery
 |--------------------------------------------------------------------------
 |
-| Every layout arrangement Flux's grid supports, rendered right-to-left with
-| Persian navigation. The grid itself comes from flux.css: the element that
+| Every layout arrangement Flux's grid supports, rendered both right-to-left in
+| Persian and left-to-right in English. The grid itself comes from flux.css: the element that
 | directly wraps <flux:main> becomes a 3x3 grid whose areas are named
 | header / sidebar / main / aside / footer. The ORDER of the children is what
 | picks the arrangement — a sidebar placed before the header claims the full
@@ -181,16 +185,109 @@ $grids = [
 
 foreach ($layouts as $slug => $meta) {
     $layouts[$slug]['slug'] = $slug;
-    $layouts[$slug]['url'] = '/layouts/'.$slug;
+    // Unprefixed: $mdsUrl() adds the locale prefix at render time.
+    $layouts[$slug]['path'] = '/layouts/'.$slug;
     $layouts[$slug]['grid'] = $grids[$slug];
 }
 
 View::share('mdsLayouts', $layouts);
 
-Route::view('/demo', 'demo');
+/*
+|--------------------------------------------------------------------------
+| Locales
+|--------------------------------------------------------------------------
+|
+| Both demos render twice: Persian RTL at /demo and /layouts, English LTR at
+| /en/demo and /en/layouts. The Persian copy in the views IS the translation
+| key — workbench/lang/en.json maps each Persian string to English, and an
+| unmapped key falls through to itself, so `fa` needs no translation file and
+| the Blade stays readable in the language the kit is designed for.
+|
+| Locale also drives the kit's own formatting. Every mds:* component reads
+| mds.persian_digits and mds.currency at render time, so setting them per
+| locale switches digits (۲٬۵۰۰٬۰۰۰ → 2,500,000), separators and the currency
+| label across the whole page without touching a single component call.
+|
+*/
 
-Route::view('/layouts', 'layouts.index');
+$locales = [
+    'fa' => ['prefix' => '', 'dir' => 'rtl', 'digits' => true, 'currency' => 'toman', 'other' => 'English'],
+    'en' => ['prefix' => 'en', 'dir' => 'ltr', 'digits' => false, 'currency' => 'Toman', 'other' => 'فارسی'],
+];
 
-foreach ($layouts as $slug => $meta) {
-    Route::view('/layouts/'.$slug, 'layouts.'.$slug, ['layout' => $meta]);
+// Persian-keyed JSON translations. addJsonPath is how a non-standard lang
+// directory joins the ones __() already searches.
+app('translation.loader')->addJsonPath(workbench_path('lang'));
+
+View::composer(['demo', 'layouts.*'], function ($view) use ($locales) {
+    $locale = app()->getLocale();
+    $prefix = $locales[$locale]['prefix'];
+
+    $view->with([
+        'mdsLocale' => $locale,
+        'mdsDir' => $locales[$locale]['dir'],
+        'mdsFa' => $locales[$locale]['digits'],
+
+        // A page in the current locale, and the same page in the other one.
+        'mdsUrl' => fn (string $path) => $prefix === '' ? $path : '/'.$prefix.$path,
+        'mdsAlt' => fn (string $path) => $locale === 'fa' ? '/en'.$path : $path,
+        'mdsAltLabel' => $locales[$locale]['other'],
+
+        // "Forward" follows the reading direction, so the arrow flips with it.
+        'mdsForward' => $locale === 'fa' ? 'arrow-left' : 'arrow-right',
+
+        // Plain numbers that are page chrome rather than a component's output:
+        // Persian digits and separators in fa, Latin in en.
+        'mdsNum' => fn (mixed $value, int $decimals = 0) => $locales[$locale]['digits']
+            ? Persian::number($value, $decimals)
+            : number_format((float) $value, $decimals),
+
+        // mds:file-item formats a byte count in Persian on its own; in English
+        // it needs the text handed to it, since the units are not translatable.
+        'mdsBytes' => fn (int $bytes) => $locales[$locale]['digits'] ? null : Number::fileSize($bytes, 1),
+
+        /*
+        | Where the "docs" link points. The docs page is a static file with no
+        | route here, so it defaults to the published copy; bin/build-pages.php
+        | sets this to the sibling file it writes next to the demo pages.
+        */
+        'mdsDocsHref' => env('MDS_DOCS_HREF', 'https://mahdimajidzadeh.github.io/majid-ds/'),
+    ]);
+});
+
+/*
+| Locale is set in the route action rather than by middleware so that a plain
+| `php bin/build-pages.php` crawl needs nothing but the route table.
+*/
+$enter = function (string $locale) use ($locales) {
+    app()->setLocale($locale);
+
+    config([
+        'mds.persian_digits' => $locales[$locale]['digits'],
+        'mds.currency' => $locales[$locale]['currency'],
+    ]);
+};
+
+foreach ($locales as $locale => $config) {
+    Route::prefix($config['prefix'])->group(function () use ($layouts, $locale, $enter) {
+        Route::get('/demo', function () use ($locale, $enter) {
+            $enter($locale);
+
+            return view('demo');
+        });
+
+        Route::get('/layouts', function () use ($locale, $enter) {
+            $enter($locale);
+
+            return view('layouts.index');
+        });
+
+        foreach ($layouts as $slug => $layout) {
+            Route::get('/layouts/'.$slug, function () use ($slug, $layout, $locale, $enter) {
+                $enter($locale);
+
+                return view('layouts.'.$slug, ['layout' => $layout]);
+            });
+        }
+    });
 }
