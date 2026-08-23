@@ -1,8 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "demo:css": "tailwindcss -i workbench/resources/css/demo-input.css -o workbench/public/demo.css --minify",
-    "demo:serve": "vendor/bin/testbench serve --port=8720 --no-reload"
+    "css": "tailwindcss -i workbench/resources/css/site-input.css -o docs/assets/site.css --minify",
+    "demo:css": "tailwindcss -i workbench/resources/css/site-input.css -o workbench/public/demo.css --minify",
+    "demo:serve": "vendor/bin/testbench serve --port=8720 --no-reload",
+    "pages": "php bin/build-pages.php",
+    "docs": "php bin/build-docs.php"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
