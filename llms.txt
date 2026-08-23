@@ -3,7 +3,7 @@
 > RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
 > Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
 > Hugeicons in place of heroicons, e-commerce components, and open implementations of Flux Pro's command
-> palette, color picker, file upload and timeline.
+> palette, composer, color picker, file upload and timeline.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
 Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, color-picker, file-upload).
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -125,6 +125,47 @@ ArrowUp/ArrowDown move active item; Enter clicks it; hover syncs active state; b
 Global ⌘K pattern (Flux free modal): `<flux:modal.trigger name="search" shortcut="cmd.k"><flux:input as="button" .../></flux:modal.trigger>`
 + `<flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"><mds:command>...</mds:command></flux:modal>`.
 
+### <mds:composer> — chat/prompt input (open version of Flux Pro's flux:composer)
+A textarea plus an action bar in one grid: `[leading actions][input][input][trailing actions]`.
+Props: `name` string|null (plain form post + the key `$errors` is read with) · `value` string|null (initial text; the default
+slot works too) · `placeholder` · `label`/`description` (flux:field chrome) · `label:sr-only` / `description:sr-only`
+(Flux's colon syntax; `label-sr-only` / `description-sr-only` are equivalent) · `rows` int=2 (starting height in lines) ·
+`max-rows` int|null (growth ceiling; unbounded when absent, never below `rows`) · `maxlength` int|null · `counter` bool=false ·
+`inline` bool=false (actions beside the input instead of under it) · `variant` input|null (input = form-control corner radius) ·
+`submit` cmd+enter|enter='cmd+enter' · `autofocus` bool=false · `dir` string|null (`auto` follows what is being typed) ·
+`disabled` bool=false · `invalid` bool=false · `error` string|null (explicit message; when omitted and `name` is set, falls back
+to `$errors->first($name)`) · `fa` bool|null=config.
+Slots: `input` (replaces the built-in textarea — this is where Flux puts its Pro editor) · `header` (above the input:
+attachment previews, a reply-to line) · `footer` (under the action bar, sharing its row with the counter) ·
+`actionsLeading` · `actionsTrailing` (usually the submit button).
+`wire:model` is forwarded to the textarea; everything else lands on the root `[data-mds-composer]` div.
+Behavior (Alpine): the textarea grows from `rows` to `max-rows` and then scrolls; Ctrl/Cmd+Enter calls
+`form.requestSubmit()` on the enclosing form in both modes; `submit="enter"` additionally sends on a bare Enter, leaving
+Shift+Enter as the newline; an open IME composition keeps its Enter. Auto-growing, the counter and bare-Enter submit all
+belong to the built-in textarea, so an `input` slot brings its own (Ctrl/Cmd+Enter still works). Livewire clearing the
+bound property from the server re-syncs the height and counter through a `morph.updated` hook.
+Counter renders `mb_strlen` characters (not bytes) as «۱۲ / ۵۰۰», `dir="ltr"` so current-then-limit reads the same either way.
+Disabled applies `inert` + `aria-disabled` to the whole box (action buttons included) and dims the slots.
+Focus: the root shows an accent ring via `has-[:focus-visible]`, so typing in the textarea rings the box, a mouse click on
+an action button does not.
+
+Livewire contract:
+```php
+public string $message = '';
+public function send() { /* persist $this->message ... */ $this->message = ''; }
+```
+```blade
+<form wire:submit="send">
+    <mds:composer wire:model="message" label="پیام" label:sr-only rows="1" max-rows="6" submit="enter" inline
+                  placeholder="پیام خود را بنویسید..." name="message">
+        <x-slot name="actionsTrailing">
+            <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+        </x-slot>
+    </mds:composer>
+</form>
+```
+`wire:model.live` is wasteful here — the default deferred binding sends the text with the submit.
+
 ### <mds:color-picker> — color picker (open version of Flux Pro's flux:color-picker)
 Props: `value` string|null (any supported color string; normalized to `format`) · `name` · `format` hex|hexa|rgb|rgba|hsl|hsla='hex'
 (alpha formats add an alpha slider) · `type` input|button='input' · `label`/`description` (flux:field chrome) · `placeholder` ·
@@ -211,10 +252,10 @@ Source: the free Stroke Rounded set (6,200 icons) via the `afatmustafa/blade-hug
 resolve only from `mds.icons.sets`.
 Resolution order for a name: `Icons::OVERRIDES` -> the literal Hugeicons name -> `Icons::ALIASES` -> `flux:icon`.
 So a real Hugeicons name always wins, heroicon names still work, and an unknown name still renders as a heroicon.
-`MajidDs\Support\Icons` (static): `ALIASES` (47 heroicon names with no Hugeicons counterpart, e.g.
+`MajidDs\Support\Icons` (static): `ALIASES` (49 heroicon names with no Hugeicons counterpart, e.g.
 `magnifying-glass` -> `search-01`, `x-mark` -> `cancel-01`, `cloud-arrow-up` -> `cloud-upload`, `document` -> `file-01`,
 `exclamation-triangle` -> `alert-02`, `photo` -> `image-01`, `trash` -> `delete-02`, `users` -> `user-multiple`,
-`banknotes` -> `banknote`) · `OVERRIDES` (6 names Hugeicons also has but draws differently: `arrow-up|down|left|right`
+`banknotes` -> `banknote`, `paper-airplane` -> `sent`, `microphone` -> `mic-01`) · `OVERRIDES` (6 names Hugeicons also has but draws differently: `arrow-up|down|left|right`
 are chevrons there, `moon` is full not crescent, `map-pin` is a pin on a map) · `STYLES` · `VARIANTS` ·
 `style(?string $variant): string` · `prefixes(string $style): array` · `svg(string $name, ?string $variant, array $attributes): ?Svg`.
 NOTE: `stroke` is opt-in because 453 free icons vary stroke weight on purpose — do not force a global width.

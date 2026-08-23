@@ -28,13 +28,13 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>` |
-| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:color-picker>`, `<mds:file-upload>`, and `<mds:timeline>` — open versions of Flux Pro-only components |
+| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:composer>` (chat/prompt input), `<mds:color-picker>`, `<mds:file-upload>`, and `<mds:timeline>` — open versions of Flux Pro-only components |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 55 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 56 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the workbench demos, pre-rendered to static HTML so they run without PHP, in both directions — Persian RTL at [docs/demo/demo.html](docs/demo/demo.html) / [docs/demo/layouts.html](docs/demo/layouts.html), English LTR at [docs/demo/demo-en.html](docs/demo/demo-en.html) / [docs/demo/layouts-en.html](docs/demo/layouts-en.html). Every page has a language switcher.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -43,7 +43,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 55 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 56 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 20 demo pages in docs/demo/
 ```
 
@@ -59,14 +59,14 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
 | Components | The 30 free Flux components bundled with this package |
-| mds components | All 14 `mds:*` components, including the four Flux Pro alternatives |
+| mds components | All 15 `mds:*` components, including the five Flux Pro alternatives |
 
 **Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
 Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker,
 Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code
-in the free tier, so there is nothing to preview or reference. Four of them have `mds:*`
-replacements (Command, Color picker, File upload, Timeline); for the others, see Flux's
-own docs.
+in the free tier, so there is nothing to preview or reference. Five of them have `mds:*`
+replacements (Command, Composer, Color picker, File upload, Timeline); for the others, see
+Flux's own docs.
 
 ### How the docs are built
 
@@ -235,6 +235,38 @@ For a global ⌘K palette, pair it with Flux's modal (the `shortcut` prop and `b
 ```
 
 Props — `command.input`: `icon` (default `magnifying-glass`), `clearable`, `closable` (closes the containing modal); `command.item`: `icon`, `icon-variant`, `kbd`, `href` (renders `<a>` instead of `<button>`); `command.items`: `empty` (no-results text, default «نتیجه‌ای یافت نشد.»).
+
+### `<mds:composer>`
+
+An open implementation of Flux Pro's composer, API-compatible with `flux:composer`. A textarea that grows with the text, an action bar around it, and `Ctrl`/`⌘` + `Enter` to submit the enclosing form — the input every chat and AI-prompt screen needs:
+
+```blade
+<form wire:submit="send">
+    <mds:composer wire:model="message" label="پیام" label:sr-only placeholder="پیام خود را بنویسید...">
+        <x-slot name="actionsLeading">
+            <flux:button size="sm" variant="subtle" square><mds:icon icon="paper-clip" class="size-4" /></flux:button>
+        </x-slot>
+
+        <x-slot name="actionsTrailing">
+            <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+        </x-slot>
+    </mds:composer>
+</form>
+```
+
+Four slots wrap the input: `header` (attachment previews, a reply-to line), `footer`, `actionsLeading` and `actionsTrailing`. A fifth, `input`, replaces the textarea itself — that is where Flux drops its Pro editor, and where any rich-text control goes.
+
+```blade
+<mds:composer rows="1" max-rows="6" inline submit="enter" ... />   {{-- one row, actions beside it, Enter sends --}}
+<mds:composer variant="input" label="پیام پشتیبانی" ... />          {{-- form-control corner radius --}}
+<mds:composer :maxlength="500" counter ... />                       {{-- «۱۲ / ۵۰۰» under the action bar --}}
+```
+
+`rows` is the height it starts at and `max-rows` the height it stops growing at; past that the input scrolls. `submit="enter"` promotes the bare `Enter` to sending and leaves `Shift` + `Enter` as the newline — `Ctrl`/`⌘` + `Enter` sends either way, and an open IME composition keeps its `Enter`. Sending calls `form.requestSubmit()`, so `wire:submit` and native validation behave exactly as they do on a click.
+
+The counter counts characters rather than bytes — «سلام» is ۴ — and renders in Persian digits unless you pass `:fa="false"`. `disabled` makes the whole box `inert`, action buttons included, and validation errors come from the bag for `name` (or from an explicit `error`), the same as every other field in the kit.
+
+Props: `name`, `value`, `placeholder`, `label` (+ `label:sr-only`), `description` (+ `description:sr-only`), `rows`, `max-rows`, `maxlength`, `counter`, `inline`, `variant`, `submit`, `autofocus`, `dir` (`auto` follows what is being typed), `disabled`, `invalid`, `error`, `fa`. `wire:model` lands on the textarea; everything else lands on the wrapper.
 
 ### `<mds:color-picker>`
 
