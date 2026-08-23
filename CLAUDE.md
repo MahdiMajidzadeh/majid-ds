@@ -93,9 +93,11 @@ Any change to a component's view, CSS, or docs content is not done until
 
 The generated pages run without PHP — open `docs/mds/<name>.html` or
 `docs/demo/demo.html` straight from disk (`file://`), screenshot the
-`.docs-preview` elements, and toggle dark mode with
-`document.documentElement.classList.add('dark')`. Alpine is live on these pages,
-so keyboard/submit behavior is testable there too.
+`.docs-preview` elements. The reference docs are light-only (no toggle,
+`color-scheme: light`); to check a component's dark styles, add the class by
+hand — `document.documentElement.classList.add('dark')` — or use the demo,
+which keeps its own toggle. Alpine is live on these pages, so keyboard/submit
+behavior is testable there too.
 
 ## Don'ts
 

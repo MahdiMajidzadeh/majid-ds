@@ -80,6 +80,9 @@
 /* ------------------------------------------------------------------ layout */
 
 html.docs {
+    /* The reference docs are light-only — the demo keeps its own dark toggle.
+       color-scheme pins native UI (scrollbars, form controls) to light too. */
+    color-scheme: light;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
@@ -160,25 +163,6 @@ html.docs body {
     align-items: center;
     gap: 0.75rem;
 }
-
-.docs-theme {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    border: 0;
-    border-radius: 0.5rem;
-    background: transparent;
-    color: var(--docs-muted);
-    cursor: pointer;
-}
-
-.docs-theme:hover { background: var(--docs-line-soft); color: var(--docs-fg); }
-.docs-theme svg { width: 1.125rem; height: 1.125rem; }
-.docs-theme-moon { display: none; }
-.dark .docs-theme-sun { display: none; }
-.dark .docs-theme-moon { display: block; }
 
 .docs-github {
     padding: 0.375rem 0.75rem;

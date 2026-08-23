@@ -9,16 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/site.css">
-<script>
-// Set the theme before first paint so the page never flashes the wrong one.
-// The storage key is Flux's own ('flux.appearance': dark / light, absent =
-// system), so the docs, the demo and the layout gallery share one setting.
-(function () {
-    var stored = localStorage.getItem('flux.appearance');
-    var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    if (dark) document.documentElement.classList.add('dark');
-})();
-</script>
 </head>
 <body>
 
@@ -36,10 +26,6 @@
     </nav>
 
     <div class="docs-topbar-end">
-        <button type="button" class="docs-theme" aria-label="Toggle dark mode">
-            <svg class="docs-theme-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 10 2Zm0 12.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 1.75a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM3.5 10a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1a.75.75 0 0 1 .75.75Zm14.75.75a.75.75 0 0 0 0-1.5h-1a.75.75 0 0 0 0 1.5h1ZM5.05 5.05a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.07l-.7-.71a.75.75 0 0 1 0-1.06Zm9.13 9.14a.75.75 0 0 1 1.07 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm1.77-8.08a.75.75 0 1 0-1.06-1.06l-.7.7a.75.75 0 1 0 1.06 1.07l.7-.71ZM6.81 14.19a.75.75 0 0 1 0 1.06l-.7.7a.75.75 0 1 1-1.07-1.06l.71-.7a.75.75 0 0 1 1.06 0Z"/></svg>
-            <svg class="docs-theme-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.5 2.6A7.5 7.5 0 1 0 17.4 12.5 6 6 0 0 1 7.5 2.6Z"/></svg>
-        </button>
         <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
     </div>
 </header>
@@ -61,7 +47,7 @@
         <div class="docs-preview-inner" dir="rtl"><div
     class="inline-flex items-center"
     x-data="{
-        end: 1787548468 * 1000,
+        end: 1787548967 * 1000,
         now: Date.now(),
         fa: true,
         withDays: false,
@@ -119,7 +105,7 @@
         <div class="docs-preview-inner" dir="rtl"><div
     class="inline-flex items-center"
     x-data="{
-        end: 1787711548 * 1000,
+        end: 1787712047 * 1000,
         now: Date.now(),
         fa: true,
         withDays: true,
@@ -187,7 +173,7 @@
         <div class="docs-preview-inner" dir="rtl"><div
     class="inline-flex items-center"
     x-data="{
-        end: 1787520688 * 1000,
+        end: 1787521187 * 1000,
         now: Date.now(),
         fa: true,
         withDays: true,
@@ -251,7 +237,7 @@
         <div class="docs-preview-inner"><div
     class="inline-flex items-center"
     x-data="{
-        end: 1787531548 * 1000,
+        end: 1787532047 * 1000,
         now: Date.now(),
         fa: false,
         withDays: true,
@@ -378,13 +364,6 @@
 if (matchMedia('(max-width: 860px)').matches) {
     document.querySelector('.docs-nav').removeAttribute('open');
 }
-
-// Theme toggle — written to Flux's key, the same way the demo's own
-// toggle (flux.dark) writes it.
-document.querySelector('.docs-theme').addEventListener('click', function () {
-    var dark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('flux.appearance', dark ? 'dark' : 'light');
-});
 
 // Copy a snippet to the clipboard.
 document.querySelectorAll('.docs-copy').forEach(function (button) {
