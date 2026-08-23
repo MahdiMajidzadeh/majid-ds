@@ -34,8 +34,59 @@ All components are RTL-first (built with logical properties, so they also work L
 
 ## Documentation
 
-- **Human docs**: [docs/index.html](docs/index.html) — the full reference (setup, every component, every prop) as a single self-contained page. Enable GitHub Pages on `/docs` to host it.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 55 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Live demo**: the workbench demos, pre-rendered to static HTML so they run without PHP, in both directions — Persian RTL at [docs/demo/demo.html](docs/demo/demo.html) / [docs/demo/layouts.html](docs/demo/layouts.html), English LTR at [docs/demo/demo-en.html](docs/demo/demo-en.html) / [docs/demo/layouts-en.html](docs/demo/layouts-en.html). Every page has a language switcher.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
+
+The whole `docs/` folder is a static site: **Settings → Pages → Source: `main` / `/docs`**
+publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo alike. No
+build step runs on GitHub — the pages are committed, so regenerate them when things change:
+
+```bash
+npm run docs            # rebuilds the 55 reference pages + docs/assets/site.css
+npm run pages           # rebuilds the 20 demo pages in docs/demo/
+```
+
+Both sites share one stylesheet, `docs/assets/site.css`, built from
+[workbench/resources/css/site-input.css](workbench/resources/css/site-input.css) — so a
+component CSS change can never ship to the docs but not the demo. The same input also
+compiles to `workbench/public/demo.css` for `npm run demo:serve`.
+
+### What the docs cover
+
+| Group | Pages |
+|---|---|
+| Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
+| Layouts | The layout grid, Header, Sidebar, Aside |
+| Components | The 30 free Flux components bundled with this package |
+| mds components | All 14 `mds:*` components, including the four Flux Pro alternatives |
+
+**Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
+Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker,
+Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code
+in the free tier, so there is nothing to preview or reference. Four of them have `mds:*`
+replacements (Command, Color picker, File upload, Timeline); for the others, see Flux's
+own docs.
+
+### How the docs are built
+
+[bin/build-docs.php](bin/build-docs.php) assembles the pages from the content in
+[bin/docs/](bin/docs) — one PHP file per group, holding each page's prose, examples and
+prop tables. The output is plain static HTML: nothing at read time needs PHP, Blade or a
+server.
+
+Each example's preview is its own snippet, rendered once through Blade at build time.
+That is deliberate: Flux computes its class strings at render time (a `match` over
+colour, size and variant), so transcribing that markup by hand would give previews that
+only resemble the components. Rendering it means the snippet you copy and the preview
+above it are provably the same thing — and because the real `flux.js` is loaded, the
+dropdowns, modals, tooltips and countdowns in the docs actually work.
+
+`bin/build-pages.php` is the equivalent tool for the demo: it boots the workbench app
+on a throwaway port, crawls `/demo`, `/layouts` and their `/en` counterparts, and writes
+flat `.html` files into `docs/demo/` with every link and asset rewritten to a relative
+path — so the site works from a project subpath, a custom domain, or straight off the
+file system.
 
 ## Requirements
 
@@ -434,6 +485,37 @@ npm run demo:serve      # then open http://127.0.0.1:8720/demo
 | `/layouts/aside` | Three columns: sidebar, main and a sticky `flux:aside` |
 | `/layouts/sticky` | Sticky header, sidebar and aside with a long scrolling main |
 | `/layouts/container` | `container` prop and `flux:container` width control |
+
+Every route above also exists under `/en` — `/en/demo`, `/en/layouts/aside` and so
+on — rendered left-to-right in English. Both locales are what `npm run pages`
+snapshots into `docs/` (20 pages); see [Documentation](#documentation) for
+publishing them.
+
+### How the two locales work
+
+The Persian copy in the workbench views **is** the translation key, so the Blade
+stays readable in the language the kit is designed for:
+
+```blade
+<flux:button :href="$mdsUrl('/layouts')" icon="squares-2x2">{{ __('چیدمان‌های صفحه') }}</flux:button>
+```
+
+[`workbench/lang/en.json`](workbench/lang/en.json) maps each Persian string to
+English via Laravel's JSON translations. An unmapped key falls through to itself,
+so `fa` needs no translation file at all.
+
+Locale also drives the kit's own formatting. Every `mds:*` component reads
+`config('mds.persian_digits')` and `config('mds.currency')` at render time, so the
+route sets them once per locale and digits, separators and the currency label
+switch across the whole page — `۲٬۵۰۰٬۰۰۰ تومان` becomes `2,500,000 Toman` without
+touching a single component call.
+
+A few strings are hardcoded Persian inside the kit with no prop to override them,
+so they stay Persian on the English pages: the `٪` sign on `<mds:discount-badge>`,
+the unit labels and expiry text on `<mds:countdown>`, `ناموجود` on
+`<mds:product-card>`, the Jalali month names, and `Persian::ago()`. The English
+demo carries a callout naming them, and the build script counts what is left on
+each English page so a new untranslated string shows up in the build output.
 
 Every layout page carries a floating switcher, so you can jump between them (and
 toggle dark mode) without going back to the gallery. Layout arrangement is decided
