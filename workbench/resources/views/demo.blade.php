@@ -95,6 +95,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:navbar.item href="#command" icon="command-line">{{ __('کامند') }}</flux:navbar.item>
                 <flux:navbar.item href="#color-picker" icon="swatch">{{ __('انتخاب رنگ') }}</flux:navbar.item>
                 <flux:navbar.item href="#file-upload" icon="cloud-arrow-up">{{ __('بارگذاری فایل') }}</flux:navbar.item>
+                <flux:navbar.item href="#composer" icon="chat-bubble-oval-left">{{ __('گفتگو') }}</flux:navbar.item>
                 <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
                 <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
                 <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
@@ -537,6 +538,102 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 </mds:file-upload>
 
                 <flux:text>{!! __('هر HTML دلخواهی داخل <code>&lt;mds:file-upload&gt;</code> رفتار کامل بارگذاری را می‌گیرد؛ با <code>in-data-dragging:</code> و <code>in-data-loading:</code> می‌توانید حالت‌ها را استایل بدهید.') !!}</flux:text>
+            </div>
+        </flux:card>
+
+        {{-- ============================== Composer ============================== --}}
+        <flux:card id="composer" class="space-y-6">
+            <flux:heading size="lg">{{ __('گفتگو و پرامپت — mds:composer') }}</flux:heading>
+            <flux:text>{{ __('نسخه آزاد از کامپوننت Composer (در Flux فقط Pro) — ورودی چندخطی که با متن رشد می‌کند، نوار عملیات، ارسال با Ctrl/⌘ + Enter و شمارشگر نویسه با ارقام فارسی.') }}</flux:text>
+
+            <div class="grid gap-6 lg:grid-cols-2">
+                <div class="space-y-3">
+                    <flux:subheading>{{ __('پرامپت با نوار عملیات') }}</flux:subheading>
+
+                    <form wire:submit="send">
+                        <mds:composer :label="__('پیام')" label:sr-only :placeholder="__('چطور می‌توانم کمکتان کنم؟')" :maxlength="500" counter>
+                            <x-slot name="footer">
+                                <span>{{ __('برای ارسال Ctrl + Enter بزنید.') }}</span>
+                            </x-slot>
+
+                            <x-slot name="actionsLeading">
+                                <flux:button size="sm" variant="subtle" square :aria-label="__('پیوست فایل')"><mds:icon icon="paper-clip" class="size-4" /></flux:button>
+                                <flux:button size="sm" variant="subtle" square :aria-label="__('تنظیمات')"><mds:icon icon="adjustments-horizontal" class="size-4" /></flux:button>
+                            </x-slot>
+
+                            <x-slot name="actionsTrailing">
+                                <flux:button size="sm" variant="filled" square :aria-label="__('ضبط صدا')"><mds:icon icon="microphone" class="size-4" /></flux:button>
+                                <flux:button type="submit" size="sm" variant="primary" square :aria-label="__('ارسال پیام')"><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                            </x-slot>
+                        </mds:composer>
+                    </form>
+
+                    <flux:subheading>{{ __('با پیش‌نمایش پیوست (اسلات header)') }}</flux:subheading>
+
+                    <mds:composer :placeholder="__('توضیحی برای این تصویر بنویسید...')" rows="2">
+                        <x-slot name="header">
+                            <mds:file-item :heading="__('گوشی-گلکسی.jpg')" image="https://picsum.photos/seed/phone/80/80" :size="162400" :text="$mdsBytes(162400)" class="w-full max-w-64">
+                                <x-slot name="actions">
+                                    <mds:file-item.remove :label="__('حذف تصویر')" />
+                                </x-slot>
+                            </mds:file-item>
+                        </x-slot>
+
+                        <x-slot name="actionsTrailing">
+                            <flux:button type="submit" size="sm" variant="primary" square :aria-label="__('ارسال پیام')"><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                        </x-slot>
+                    </mds:composer>
+                </div>
+
+                <div class="space-y-3">
+                    <flux:subheading>{{ __('گفتگو با ارسال روی Enter') }}</flux:subheading>
+
+                    <div class="space-y-3 rounded-xl border border-zinc-200 p-4 dark:border-white/10">
+                        <div class="flex justify-start">
+                            <div class="max-w-[80%] rounded-2xl rounded-ss-sm bg-zinc-100 px-3 py-2 text-sm dark:bg-white/10">
+                                {{ __('سلام! سفارش من کِی می‌رسد؟') }}
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <div class="max-w-[80%] rounded-2xl rounded-se-sm bg-accent px-3 py-2 text-sm text-accent-foreground">
+                                {{ __('مرسوله شما در این تاریخ به دستتان می‌رسد:') }} <mds:jalali-date :date="now()->addDays(2)" dir="auto" />
+                            </div>
+                        </div>
+
+                        <form wire:submit="send">
+                            <mds:composer :label="__('پیام')" label:sr-only rows="1" max-rows="6" submit="enter" inline :placeholder="__('پیام خود را بنویسید...')">
+                                <x-slot name="actionsLeading">
+                                    <flux:button size="sm" variant="ghost" square :aria-label="__('پیوست فایل')"><mds:icon icon="paper-clip" class="size-4" /></flux:button>
+                                </x-slot>
+
+                                <x-slot name="actionsTrailing">
+                                    <flux:button type="submit" size="sm" variant="primary" square :aria-label="__('ارسال پیام')"><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                                </x-slot>
+                            </mds:composer>
+                        </form>
+                    </div>
+
+                    <flux:subheading>{{ __('حالت فرم (variant="input") و حالت‌های خطا') }}</flux:subheading>
+
+                    <mds:composer variant="input" :label="__('پیام پشتیبانی')" :description="__('پاسخ حداکثر تا ۲۴ ساعت آینده ارسال می‌شود.')" :placeholder="__('مشکل را توضیح دهید...')" rows="3" max-rows="6">
+                        <x-slot name="actionsTrailing">
+                            <flux:button type="submit" size="sm" variant="primary">{{ __('ارسال پیام') }}</flux:button>
+                        </x-slot>
+                    </mds:composer>
+
+                    <mds:composer name="prompt" :label="__('با خطای اعتبارسنجی')" :error="__('نوشتن پیام الزامی است.')" rows="1" inline>
+                        <x-slot name="actionsTrailing">
+                            <flux:button type="submit" size="sm" variant="primary" square :aria-label="__('ارسال پیام')"><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                        </x-slot>
+                    </mds:composer>
+
+                    <mds:composer :label="__('غیرفعال')" disabled rows="1" inline :placeholder="__('ابتدا وارد حساب خود شوید')">
+                        <x-slot name="actionsTrailing">
+                            <flux:button type="submit" size="sm" variant="primary" square :aria-label="__('ارسال پیام')"><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
+                        </x-slot>
+                    </mds:composer>
+                </div>
             </div>
         </flux:card>
 
