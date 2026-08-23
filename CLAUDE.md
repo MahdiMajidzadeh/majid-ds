@@ -68,7 +68,11 @@ Any change to a component's view, CSS, or docs content is not done until
   entry, and keys are global — check for collisions first (`ارسال` already means
   "Shipping", which is why send buttons use `ارسال پیام`).
 - `bin/docs/nav.php` must list every page and every page must be in the nav —
-  the builder hard-fails on missing pages and warns on orphans.
+  the builder hard-fails on missing pages and warns on orphans. The nav ships
+  as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
+  on `file://`) and pages render the sidebar client-side, so a nav change
+  rewrites one asset, not all 56 pages. Only `index`, `countdown` and
+  `jalali-date` churn on rebuild — they bake `now()` into their previews.
 
 ## Adding a component (the full checklist)
 

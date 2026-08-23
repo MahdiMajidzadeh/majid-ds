@@ -5,6 +5,11 @@
 | order they should appear. Every slug here must resolve to a page — the
 | builder fails the run otherwise, so the sidebar can never link into the void.
 |
+| This is data, not markup: build-docs.php exports it to docs/assets/nav.js
+| (+ nav.json) and every page renders its sidebar from that at load time. So
+| adding a page here changes ONE asset — the other generated pages stay
+| byte-identical and never need recommitting.
+|
 | The Components group lists only the Flux components whose views actually ship
 | in the free tier. Flux's Pro-only components are absent on purpose; the
 | overview page says so, and names the four that have mds replacements.

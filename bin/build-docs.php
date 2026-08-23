@@ -109,6 +109,29 @@ if ($orphans !== []) {
     info('  warning: pages missing from the nav: '.implode(', ', $orphans));
 }
 
+/*
+| The nav ships as data, not markup. Pages render the sidebar client-side from
+| docs/assets/nav.js, so adding a page changes this one asset instead of every
+| generated file. The .js wrapper (window.__mdsNav = ...) exists because
+| browsers block fetch() of JSON on file:// — and the pages must keep working
+| straight off disk. nav.json is the same data for anything else that wants it.
+*/
+$navData = array_map(fn ($group) => [
+    'title' => $group['title'],
+    'items' => array_map(fn ($slug, $label) => [
+        'slug' => $slug,
+        'label' => $label,
+        'path' => docsPath($slug, $pages),
+        'tag' => $pages[$slug]['tag'] ?? null,
+    ], array_keys($group['items']), $group['items']),
+], $nav);
+
+$navJson = json_encode($navData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+file_put_contents($root.'/docs/assets/nav.js', 'window.__mdsNav = '.$navJson.";\n");
+file_put_contents($root.'/docs/assets/nav.json', $navJson."\n");
+info('  wrote assets/nav.js ('.count($pages).' pages in '.count($nav).' groups)');
+
 // -------------------------------------------------------------- 3. write them
 
 $written = 0;
@@ -125,7 +148,7 @@ foreach ($pages as $slug => $page) {
         mkdir($dir, 0755, true);
     }
 
-    file_put_contents($path, renderPage($slug, $page, $pages, $nav));
+    file_put_contents($path, renderPage($slug, $page, $pages));
     $written++;
     info('  wrote '.substr($path, strlen($root) + 6).' ('.round(filesize($path) / 1024).' KB)');
 }

@@ -97,29 +97,17 @@ function referenceTable(string $heading, array $rows): string
     HTML;
 }
 
-function renderPage(string $slug, array $page, array $pages, array $nav): string
+function renderPage(string $slug, array $page, array $pages): string
 {
     $group = $page['group'] ?? 'components';
     $prefix = str_repeat('../', substr_count(docsPath($slug, $pages), '/'));
 
-    // ---------------------------------------------------------------- nav
-    $navHtml = '';
-
-    foreach ($nav as $navGroup) {
-        $items = '';
-
-        foreach ($navGroup['items'] as $itemSlug => $label) {
-            $current = $itemSlug === $slug ? ' aria-current="page"' : '';
-            $href = docsLink($slug, $itemSlug, $pages);
-            $tag = ($pages[$itemSlug]['tag'] ?? null)
-                ? ' <span class="docs-nav-tag">'.htmlspecialchars($pages[$itemSlug]['tag'], ENT_QUOTES).'</span>'
-                : '';
-
-            $items .= '<a href="'.$href.'"'.$current.'>'.htmlspecialchars($label, ENT_QUOTES).$tag.'</a>';
-        }
-
-        $navHtml .= '<div class="docs-nav-group"><p class="docs-nav-title">'.htmlspecialchars($navGroup['title'], ENT_QUOTES).'</p><div class="docs-nav-items">'.$items.'</div></div>';
-    }
+    /*
+    | The sidebar is NOT baked into the page. It renders client-side from
+    | assets/nav.js (written by build-docs.php), so a nav change — a new
+    | component, say — leaves every existing page byte-identical. The page
+    | only carries its own slug and depth prefix, both stable for its lifetime.
+    */
 
     // ------------------------------------------------------ sections + toc
     $body = '';
@@ -270,9 +258,9 @@ function renderPage(string $slug, array $page, array $pages, array $nav): string
 
     <div class="docs-shell">
         <aside class="docs-sidebar" aria-label="Documentation">
-            <details class="docs-nav" open>
+            <details class="docs-nav" open data-docs-slug="{$slug}" data-docs-prefix="{$prefix}">
                 <summary>Menu</summary>
-                {$navHtml}
+                <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="{$prefix}index.html">overview</a>.</p></noscript>
             </details>
         </aside>
 
@@ -291,8 +279,51 @@ function renderPage(string $slug, array $page, array $pages, array $nav): string
 
     <script src="{$prefix}assets/livewire.js"></script>
     <script src="{$prefix}assets/flux.js"></script>
+    <script src="{$prefix}assets/nav.js"></script>
 
     <script>
+    // Build the sidebar from the nav data. textContent throughout — labels and
+    // tags are data, never markup.
+    (function () {
+        var details = document.querySelector('.docs-nav');
+        var slug = details.getAttribute('data-docs-slug');
+        var prefix = details.getAttribute('data-docs-prefix');
+
+        (window.__mdsNav || []).forEach(function (group) {
+            var wrap = document.createElement('div');
+            wrap.className = 'docs-nav-group';
+
+            var title = document.createElement('p');
+            title.className = 'docs-nav-title';
+            title.textContent = group.title;
+            wrap.appendChild(title);
+
+            var items = document.createElement('div');
+            items.className = 'docs-nav-items';
+
+            group.items.forEach(function (item) {
+                var link = document.createElement('a');
+                link.href = prefix + item.path;
+                link.textContent = item.label;
+
+                if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+                if (item.tag) {
+                    var tag = document.createElement('span');
+                    tag.className = 'docs-nav-tag';
+                    tag.textContent = item.tag;
+                    link.appendChild(document.createTextNode(' '));
+                    link.appendChild(tag);
+                }
+
+                items.appendChild(link);
+            });
+
+            wrap.appendChild(items);
+            details.appendChild(wrap);
+        });
+    })();
+
     // On a phone the full nav is ~2000px tall, so it starts collapsed there.
     // Without JS it stays open — the pre-fix behaviour, never worse.
     if (matchMedia('(max-width: 860px)').matches) {
