@@ -2472,7 +2472,7 @@ $pages['tooltip'] = [
         ]],
         ['name' => 'flux:tooltip.content', 'text' => 'Rich tooltip body, in place of the <code>content</code> prop.'],
     ],
-    'related' => ['button', 'dropdown'],
+    'related' => ['button', 'dropdown', 'preview-card'],
 ];
 
 return $pages;

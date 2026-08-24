@@ -655,6 +655,170 @@ $pages['empty-state'] = [
     'related' => ['skeleton', 'callout'],
 ];
 
+// ---------------------------------------------------------- mds:preview-card
+
+$pages['preview-card'] = [
+    'group' => 'mds',
+    'title' => 'mds:preview-card',
+    'lede' => 'A hover preview of a link\'s destination, shown beside it.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'rtl' => true,
+            'lead' => true,
+            'text' => 'The trigger is a real <code>&lt;a&gt;</code> — it still navigates on click. Hovering or focusing it reveals a card previewing where the link goes: the profile behind an @mention, the product behind a link. Hover the mention below.',
+            'code' => <<<'BLADE'
+            <p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
+                این کیت توسط تیم
+                <mds:preview-card>
+                    <mds:preview-card.trigger href="#!">@majid_ds</mds:preview-card.trigger>
+
+                    <mds:preview-card.content>
+                        <div class="flex items-center justify-between">
+                            <flux:avatar src="https://i.pravatar.cc/48?img=12" />
+                            <flux:button size="sm" variant="primary">دنبال کردن</flux:button>
+                        </div>
+
+                        <div>
+                            <div class="font-semibold text-zinc-800 dark:text-white">مجید دیزاین سیستم</div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
+                        </div>
+
+                        <p>کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</p>
+
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            <span class="font-medium text-zinc-800 dark:text-white">@faNum(2481)</span> دنبال‌کننده
+                        </div>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                نگه‌داری می‌شود.
+            </p>
+            BLADE,
+            'note' => '<p><strong>Keep the preview supplementary.</strong> The card only appears on hover or keyboard focus — it never opens on touch, and screen readers do not announce it. It previews where the link goes; anything essential belongs on the linked page itself.</p>',
+        ],
+        [
+            'name' => 'Media preview',
+            'rtl' => true,
+            'text' => 'The content is just a styled container, so a card can lead with a cover image: cancel the padding with <code>!p-0</code>, clip with <code>overflow-hidden</code>, pad the text back in.',
+            'code' => <<<'BLADE'
+            <p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
+                جلسه بعدی تیم در
+                <mds:preview-card>
+                    <mds:preview-card.trigger href="#!">خانه ساحلی</mds:preview-card.trigger>
+
+                    <mds:preview-card.content :arrow="false" class="overflow-hidden !p-0">
+                        <img src="https://picsum.photos/seed/coast/288/140" alt="" class="h-32 w-full object-cover">
+
+                        <div class="flex flex-col gap-1 p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="font-semibold text-zinc-800 dark:text-white">خانه ساحلی</div>
+                                <span class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                    <mds:icon icon="star" class="size-4 text-amber-500" />
+                                    @faNum(4.9, 1)
+                                </span>
+                            </div>
+                            <p>فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.</p>
+                        </div>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                برگزار می‌شود.
+            </p>
+            BLADE,
+        ],
+        [
+            'name' => 'Side and alignment',
+            'text' => 'Position with <code>side</code> (<code>top</code> / <code>bottom</code> / <code>start</code> / <code>end</code>) and <code>align</code> (<code>start</code> / <code>center</code> / <code>end</code>). Logical sides on purpose: <code>start</code>/<code>end</code> and the alignment axis mirror on RTL pages by themselves. The card flips and shifts automatically to stay in view.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+                <mds:preview-card delay="200">
+                    <mds:preview-card.trigger href="#!">top / start</mds:preview-card.trigger>
+                    <mds:preview-card.content side="top" align="start" class="w-56">
+                        <p>The card flips and shifts automatically to stay in view.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+
+                <mds:preview-card delay="200">
+                    <mds:preview-card.trigger href="#!">end / center</mds:preview-card.trigger>
+                    <mds:preview-card.content side="end" class="w-56">
+                        <p>The card flips and shifts automatically to stay in view.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+
+                <mds:preview-card delay="200">
+                    <mds:preview-card.trigger href="#!">bottom / end</mds:preview-card.trigger>
+                    <mds:preview-card.content side="bottom" align="end" class="w-56">
+                        <p>The card flips and shifts automatically to stay in view.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+
+                <mds:preview-card delay="200">
+                    <mds:preview-card.trigger href="#!">start / center</mds:preview-card.trigger>
+                    <mds:preview-card.content side="start" class="w-56">
+                        <p>The card flips and shifts automatically to stay in view.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Without an arrow',
+            'text' => 'Pass <code>:arrow="false"</code> to drop the pointer for a flatter card that sits a little closer to the link (offset 6 instead of 10).',
+            'code' => <<<'BLADE'
+            <p class="text-sm text-zinc-600 dark:text-zinc-300">
+                Read more in the
+                <mds:preview-card>
+                    <mds:preview-card.trigger href="#!">getting started</mds:preview-card.trigger>
+                    <mds:preview-card.content :arrow="false" class="w-64">
+                        <div class="font-semibold text-zinc-800 dark:text-white">Getting started</div>
+                        <p>Install the package, import the styles, and drop your first component in.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                guide.
+            </p>
+            BLADE,
+        ],
+        [
+            'name' => 'Delays',
+            'text' => 'Hover waits <code>delay</code> before opening and <code>close-delay</code> before closing, so the card neither flickers on a passing cursor nor vanishes on the way to it. Keyboard focus opens immediately — focusing a link is intentional — and <code>Escape</code> always closes.',
+            'code' => <<<'BLADE'
+            <p class="text-sm text-zinc-600 dark:text-zinc-300">
+                An
+                <mds:preview-card delay="0" close-delay="100">
+                    <mds:preview-card.trigger href="#!">impatient</mds:preview-card.trigger>
+                    <mds:preview-card.content :arrow="false" class="w-52">
+                        <p>Opened with no delay at all.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                preview next to a
+                <mds:preview-card delay="1500">
+                    <mds:preview-card.trigger href="#!">patient</mds:preview-card.trigger>
+                    <mds:preview-card.content :arrow="false" class="w-52">
+                        <p>Waited a second and a half.</p>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                one.
+            </p>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:preview-card', 'text' => 'The root. Holds the open state; renders an inline wrapper.', 'props' => [
+            ['delay', 'Hover-open delay in milliseconds. Default: <code>600</code>.'],
+            ['close-delay', 'Hover-close delay in milliseconds. Default: <code>300</code>.'],
+        ]],
+        ['name' => 'mds:preview-card.trigger', 'text' => 'The inline anchor that owns the link — it navigates on click like any <code>&lt;a&gt;</code>.', 'props' => [
+            ['href', 'Navigation target. Any other anchor attribute (<code>target</code>, <code>rel</code>, …) passes through.'],
+        ]],
+        ['name' => 'mds:preview-card.content', 'text' => 'The auto-positioned popup — teleported to <code>&lt;body&gt;</code> (so a block-level card can legally live inside a paragraph) and <code>position: fixed</code>.', 'props' => [
+            ['side', 'Preferred side: <code>top</code>, <code>bottom</code>, <code>start</code>, <code>end</code>. Flips when out of room. Default: <code>bottom</code>.'],
+            ['align', 'Alignment along that side: <code>start</code>, <code>center</code>, <code>end</code>. Default: <code>center</code>.'],
+            ['side-offset', 'Gap between the link and the card. Default: <code>10</code>, or <code>6</code> without the arrow.'],
+            ['arrow', 'The pointer toward the link. Default: <code>true</code>.'],
+        ]],
+    ],
+    'related' => ['tooltip', 'dropdown'],
+];
+
 // --------------------------------------------------------------- mds:command
 
 $pages['command'] = [

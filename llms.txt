@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload).
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -113,6 +113,36 @@ Renders `<time datetime="<gregorian ISO>">`; `ago` mode shows relative text with
 
 ### <mds:empty-state>
 Props: `icon` string|null (heroicon name) · `title` string|null · `description` string|null. Slot = action buttons.
+
+### <mds:preview-card> — hover preview of a link's destination
+Compound: `<mds:preview-card>` (root) + `<mds:preview-card.trigger>` + `<mds:preview-card.content>`.
+Root props: `delay` int=600 (hover-open ms) · `close-delay` int=300 (hover-close ms). Renders an inline wrapper holding state.
+Trigger: a REAL `<a>` — pass `href` (+ any anchor attr); it navigates on click. Default styling `text-accent hover:underline`,
+override with classes. Opens after `delay` on hover, immediately on keyboard focus; Escape closes.
+Content props: `side` top|bottom|start|end='bottom' (logical: start/end follow the component's direction, so placement
+mirrors on RTL pages — including RTL islands inside LTR pages) · `align` start|center|end='center' · `side-offset`
+int=10 (6 when `arrow` is false) · `arrow` bool=true. Width via class (default `w-72`); `!p-0 overflow-hidden` for
+image-led cards.
+Behavior (Alpine): the popup is wrapped in `<template x-teleport="body">` — the template keeps a block-level card legal
+inside a `<p>` (the parser would otherwise close the paragraph and reparent the popup out of scope) and teleports it to
+body. Positioned `fixed` from measured rects; flips to the opposite side when out of room, clamps to the viewport
+(5px padding), repositions on scroll/resize, and the arrow tracks the middle of the link. Transitions are skipped
+under prefers-reduced-motion.
+Accessibility: the preview is supplementary — it never opens on touch and is not announced to screen readers.
+Do not put unique or essential content in it; keep that on the linked page.
+```blade
+<p>
+    این کیت توسط
+    <mds:preview-card>
+        <mds:preview-card.trigger href="/team">@majid_ds</mds:preview-card.trigger>
+        <mds:preview-card.content side="top" align="start">
+            <div class="font-semibold">مجید دیزاین سیستم</div>
+            <p>کیت رابط کاربری راست‌چین برای Laravel Livewire.</p>
+        </mds:preview-card.content>
+    </mds:preview-card>
+    نگه‌داری می‌شود.
+</p>
+```
 
 ### <mds:command> — command palette (open version of Flux Pro's flux:command)
 Wrapper holds state. Compose:

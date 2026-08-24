@@ -479,6 +479,56 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('پیام نمی‌تواند خالی باشد.', $html);
     }
 
+    public function test_preview_card_renders_a_real_link_with_hidden_content(): void
+    {
+        $html = $this->render('<mds:preview-card><mds:preview-card.trigger href="/profile">@majid</mds:preview-card.trigger><mds:preview-card.content>پروفایل</mds:preview-card.content></mds:preview-card>');
+
+        $this->assertStringContainsString('data-mds-preview-card', $html);
+        $this->assertMatchesRegularExpression('/<a\s[^>]*href="\/profile"[^>]*data-mds-preview-card-trigger/s', $html);
+        $this->assertStringContainsString('data-mds-preview-card-content', $html);
+        // Teleported so a block popup can sit inside a <p> without the parser
+        // reparenting it out of the Alpine scope...
+        $this->assertStringContainsString('x-teleport="body"', $html);
+        $this->assertStringContainsString('x-cloak', $html);
+        $this->assertStringContainsString('data-side="bottom"', $html);
+        $this->assertStringContainsString('data-align="center"', $html);
+        $this->assertStringContainsString('data-side-offset="10"', $html);
+        $this->assertStringContainsString('data-mds-preview-card-arrow', $html);
+    }
+
+    public function test_preview_card_content_accepts_side_align_and_offset(): void
+    {
+        $html = $this->render('<mds:preview-card><mds:preview-card.content side="end" align="start" side-offset="24" /></mds:preview-card>');
+
+        $this->assertStringContainsString('data-side="end"', $html);
+        $this->assertStringContainsString('data-align="start"', $html);
+        $this->assertStringContainsString('data-side-offset="24"', $html);
+    }
+
+    public function test_preview_card_rejects_unknown_placements(): void
+    {
+        $html = $this->render('<mds:preview-card><mds:preview-card.content side="diagonal" align="middle" /></mds:preview-card>');
+
+        $this->assertStringContainsString('data-side="bottom"', $html);
+        $this->assertStringContainsString('data-align="center"', $html);
+    }
+
+    public function test_preview_card_without_arrow_sits_closer(): void
+    {
+        $html = $this->render('<mds:preview-card><mds:preview-card.content :arrow="false" /></mds:preview-card>');
+
+        $this->assertStringNotContainsString('data-mds-preview-card-arrow', $html);
+        $this->assertStringContainsString('data-side-offset="6"', $html);
+    }
+
+    public function test_preview_card_delays_flow_into_alpine(): void
+    {
+        $html = $this->render('<mds:preview-card delay="100" close-delay="50" />');
+
+        $this->assertStringContainsString('delay: 100', $html);
+        $this->assertStringContainsString('closeDelay: 50', $html);
+    }
+
     public function test_timeline_renders_an_ordered_list_with_state_attributes(): void
     {
         $html = $this->render('<mds:timeline horizontal size="lg" align="start"><mds:timeline.item /></mds:timeline>');

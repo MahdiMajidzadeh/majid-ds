@@ -14,7 +14,7 @@ only covers what llms.txt doesn't: how to work on the package itself.
 ```bash
 vendor/bin/phpunit                        # full suite (~2s, keep it green)
 vendor/bin/phpunit --filter composer      # one component's tests
-npm run docs                              # regenerate the 56 reference pages + docs/assets/site.css
+npm run docs                              # regenerate the 57 reference pages + docs/assets/site.css
 npm run pages                             # regenerate the 20 static demo pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
@@ -71,7 +71,7 @@ Any change to a component's view, CSS, or docs content is not done until
   the builder hard-fails on missing pages and warns on orphans. The nav ships
   as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
   on `file://`) and pages render the sidebar client-side, so a nav change
-  rewrites one asset, not all 56 pages.
+  rewrites one asset, not all 57 pages.
 - Rebuilds are byte-identical: both builders pin the clock (`Date::setTestNow`
   in `build-docs.php`; the `MDS_TEST_NOW` env var for the crawled demo server)
   and the crawler pins the unused Livewire CSRF token. A rebuild that dirties

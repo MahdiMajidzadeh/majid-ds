@@ -85,6 +85,7 @@ return [
             'countdown' => 'mds:countdown',
             'jalali-date' => 'mds:jalali-date',
             'empty-state' => 'mds:empty-state',
+            'preview-card' => 'mds:preview-card',
             'command' => 'mds:command',
             'composer' => 'mds:composer',
             'color-picker' => 'mds:color-picker',

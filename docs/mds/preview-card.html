@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:preview-card — Majid DS</title>
+<meta name="description" content="mds:preview-card — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../demo/demo-en.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open data-docs-slug="preview-card" data-docs-prefix="../">
+            <summary>Menu</summary>
+            <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="../index.html">overview</a>.</p></noscript>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:preview-card</h1>
+        <p class="docs-lede">A hover preview of a link's destination, shown beside it.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">The trigger is a real <code>&lt;a&gt;</code> — it still navigates on click. Hovering or focusing it reveals a card previewing where the link goes: the profile behind an @mention, the product behind a link. Hover the mention below.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner" dir="rtl"><p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
+    این کیت توسط تیم
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 600, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>@majid_ds</a>
+
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><div class="flex items-center justify-between">
+                <div data-flux-avatar="data-flux-avatar" data-slot="avatar" data-size="md" class="[:where(&amp;)]:size-10 [:where(&amp;)]:text-sm [--avatar-radius:var(--radius-lg)] relative flex-none isolate flex items-center justify-center [:where(&amp;)]:font-medium rounded-[var(--avatar-radius)] [:where(&amp;)]:bg-zinc-200 [:where(&amp;)]:dark:bg-zinc-600 [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white  after:absolute after:inset-0 after:inset-ring-[1px] after:inset-ring-black/7 dark:after:inset-ring-white/10 after:rounded-lg">
+        <img src="https://i.pravatar.cc/48?img=12" alt="" class="rounded-[var(--avatar-radius)] size-full object-cover">
+    </div>
+                <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        دنبال کردن
+    </button>
+            </div>
+
+            <div>
+                <div class="font-semibold text-zinc-800 dark:text-white">مجید دیزاین سیستم</div>
+                <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
+            </div>
+
+            <p>کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</p>
+
+            <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                <span class="font-medium text-zinc-800 dark:text-white">۲٬۴۸۱</span> دنبال‌کننده
+            </div></div>
+</div>
+</template></span>
+    نگه‌داری می‌شود.
+</p></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">p</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    این کیت توسط تیم
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-directive">@majid</span><span class="t-text">_ds</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center justify-between&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:avatar</span> <span class="t-attr">src</span><span class="t-equals">=</span><span class="t-string">&quot;https://i.pravatar.cc/48?img=12&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;primary&quot;</span><span class="t-punct">&gt;</span><span class="t-text">دنبال کردن</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;font-semibold text-zinc-800 dark:text-white&quot;</span><span class="t-punct">&gt;</span><span class="t-text">مجید دیزاین سیستم</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-xs text-zinc-500 dark:text-zinc-400&quot;</span><span class="t-punct">&gt;</span><span class="t-directive">@majid</span><span class="t-text">_ds</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-xs text-zinc-500 dark:text-zinc-400&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">span</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;font-medium text-zinc-800 dark:text-white&quot;</span><span class="t-punct">&gt;</span><span class="t-directive">@faNum</span><span class="t-text">(2481)</span><span class="t-punct">&lt;/</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text"> دنبال‌کننده
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+    نگه‌داری می‌شود.
+</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note"><p><strong>Keep the preview supplementary.</strong> The card only appears on hover or keyboard focus — it never opens on touch, and screen readers do not announce it. It previews where the link goes; anything essential belongs on the linked page itself.</p></div></section><section id="media-preview" class="docs-section"><h2>Media preview</h2><p class="docs-text">The content is just a styled container, so a card can lead with a cover image: cancel the padding with <code>!p-0</code>, clip with <code>overflow-hidden</code>, pad the text back in.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner" dir="rtl"><p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
+    جلسه بعدی تیم در
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 600, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>خانه ساحلی</a>
+
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 overflow-hidden !p-0"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="6"
+    data-mds-preview-card-content
+>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><img src="https://picsum.photos/seed/coast/288/140" alt="" class="h-32 w-full object-cover">
+
+            <div class="flex flex-col gap-1 p-4">
+                <div class="flex items-center justify-between">
+                    <div class="font-semibold text-zinc-800 dark:text-white">خانه ساحلی</div>
+                    <span class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <svg aria-hidden="true" data-mds-icon="" class="size-4 text-amber-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                        ۴٫۹                    </span>
+                </div>
+                <p>فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.</p>
+            </div></div>
+</div>
+</template></span>
+    برگزار می‌شود.
+</p></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">p</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    جلسه بعدی تیم در
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">خانه ساحلی</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">:arrow</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;overflow-hidden !p-0&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">img</span> <span class="t-attr">src</span><span class="t-equals">=</span><span class="t-string">&quot;https://picsum.photos/seed/coast/288/140&quot;</span> <span class="t-attr">alt</span><span class="t-equals">=</span><span class="t-string">&quot;&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;h-32 w-full object-cover&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex flex-col gap-1 p-4&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center justify-between&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;font-semibold text-zinc-800 dark:text-white&quot;</span><span class="t-punct">&gt;</span><span class="t-text">خانه ساحلی</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+                    </span><span class="t-punct">&lt;</span><span class="t-tag">span</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-4 text-amber-500&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+                        </span><span class="t-directive">@faNum</span><span class="t-text">(4.9, 1)
+                    </span><span class="t-punct">&lt;/</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+    برگزار می‌شود.
+</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="side-and-alignment" class="docs-section"><h2>Side and alignment</h2><p class="docs-text">Position with <code>side</code> (<code>top</code> / <code>bottom</code> / <code>start</code> / <code>end</code>) and <code>align</code> (<code>start</code> / <code>center</code> / <code>end</code>). Logical sides on purpose: <code>start</code>/<code>end</code> and the alignment axis mirror on RTL pages by themselves. The card flips and shifts automatically to stay in view.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 200, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>top / start</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-56"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="top"
+    data-align="start"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>The card flips and shifts automatically to stay in view.</p></div>
+</div>
+</template></span>
+
+    <span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 200, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>end / center</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-56"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="end"
+    data-align="center"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>The card flips and shifts automatically to stay in view.</p></div>
+</div>
+</template></span>
+
+    <span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 200, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>bottom / end</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-56"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="end"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>The card flips and shifts automatically to stay in view.</p></div>
+</div>
+</template></span>
+
+    <span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 200, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>start / center</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-56"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="start"
+    data-align="center"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>The card flips and shifts automatically to stay in view.</p></div>
+</div>
+</template></span>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;200&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">top / start</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">side</span><span class="t-equals">=</span><span class="t-string">&quot;top&quot;</span> <span class="t-attr">align</span><span class="t-equals">=</span><span class="t-string">&quot;start&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-56&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">The card flips and shifts automatically to stay in view.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;200&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">end / center</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">side</span><span class="t-equals">=</span><span class="t-string">&quot;end&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-56&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">The card flips and shifts automatically to stay in view.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;200&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">bottom / end</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">side</span><span class="t-equals">=</span><span class="t-string">&quot;bottom&quot;</span> <span class="t-attr">align</span><span class="t-equals">=</span><span class="t-string">&quot;end&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-56&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">The card flips and shifts automatically to stay in view.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;200&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">start / center</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">side</span><span class="t-equals">=</span><span class="t-string">&quot;start&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-56&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">The card flips and shifts automatically to stay in view.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="without-an-arrow" class="docs-section"><h2>Without an arrow</h2><p class="docs-text">Pass <code>:arrow="false"</code> to drop the pointer for a flatter card that sits a little closer to the link (offset 6 instead of 10).</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><p class="text-sm text-zinc-600 dark:text-zinc-300">
+    Read more in the
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 600, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>getting started</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-64"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="6"
+    data-mds-preview-card-content
+>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><div class="font-semibold text-zinc-800 dark:text-white">Getting started</div>
+            <p>Install the package, import the styles, and drop your first component in.</p></div>
+</div>
+</template></span>
+    guide.
+</p></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">p</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-sm text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    Read more in the
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">getting started</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">:arrow</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-64&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;font-semibold text-zinc-800 dark:text-white&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Getting started</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">Install the package, import the styles, and drop your first component in.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+    guide.
+</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="delays" class="docs-section"><h2>Delays</h2><p class="docs-text">Hover waits <code>delay</code> before opening and <code>close-delay</code> before closing, so the card neither flickers on a passing cursor nor vanishes on the way to it. Keyboard focus opens immediately — focusing a link is intentional — and <code>Escape</code> always closes.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><p class="text-sm text-zinc-600 dark:text-zinc-300">
+    An
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 0, closeDelay: 100 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>impatient</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-52"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="6"
+    data-mds-preview-card-content
+>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>Opened with no delay at all.</p></div>
+</div>
+</template></span>
+    preview next to a
+    <span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 1500, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>patient</a>
+        <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 w-52"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="6"
+    data-mds-preview-card-content
+>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><p>Waited a second and a half.</p></div>
+</div>
+</template></span>
+    one.
+</p></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">p</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-sm text-zinc-600 dark:text-zinc-300&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    An
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;0&quot;</span> <span class="t-attr">close-delay</span><span class="t-equals">=</span><span class="t-string">&quot;100&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">impatient</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">:arrow</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-52&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">Opened with no delay at all.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+    preview next to a
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card</span> <span class="t-attr">delay</span><span class="t-equals">=</span><span class="t-string">&quot;1500&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.trigger</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;#!&quot;</span><span class="t-punct">&gt;</span><span class="t-text">patient</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.trigger</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:preview-card.content</span> <span class="t-attr">:arrow</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-52&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">Waited a second and a half.</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:preview-card</span><span class="t-punct">&gt;</span><span class="t-text">
+    one.
+</span><span class="t-punct">&lt;/</span><span class="t-tag">p</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-preview-card" class="docs-ref-block"><h3>mds:preview-card</h3><p class="docs-text">The root. Holds the open state; renders an inline wrapper.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">delay</span></td><td>Hover-open delay in milliseconds. Default: <code>600</code>.</td></tr><tr><td><span class="docs-prop">close-delay</span></td><td>Hover-close delay in milliseconds. Default: <code>300</code>.</td></tr></tbody>
+</table></div><div id="mds-preview-card-trigger" class="docs-ref-block"><h3>mds:preview-card.trigger</h3><p class="docs-text">The inline anchor that owns the link — it navigates on click like any <code>&lt;a&gt;</code>.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">href</span></td><td>Navigation target. Any other anchor attribute (<code>target</code>, <code>rel</code>, …) passes through.</td></tr></tbody>
+</table></div><div id="mds-preview-card-content" class="docs-ref-block"><h3>mds:preview-card.content</h3><p class="docs-text">The auto-positioned popup — teleported to <code>&lt;body&gt;</code> (so a block-level card can legally live inside a paragraph) and <code>position: fixed</code>.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">side</span></td><td>Preferred side: <code>top</code>, <code>bottom</code>, <code>start</code>, <code>end</code>. Flips when out of room. Default: <code>bottom</code>.</td></tr><tr><td><span class="docs-prop">align</span></td><td>Alignment along that side: <code>start</code>, <code>center</code>, <code>end</code>. Default: <code>center</code>.</td></tr><tr><td><span class="docs-prop">side-offset</span></td><td>Gap between the link and the card. Default: <code>10</code>, or <code>6</code> without the arrow.</td></tr><tr><td><span class="docs-prop">arrow</span></td><td>The pointer toward the link. Default: <code>true</code>.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/tooltip.html"><span class="docs-related-name">Tooltip</span><span class="docs-related-lede">A short hint on hover or focus.</span></a><a class="docs-related-card" href="../components/dropdown.html"><span class="docs-related-name">Dropdown</span><span class="docs-related-lede">A menu of actions or options, anchored to a trigger.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#media-preview">Media preview</a><a href="#side-and-alignment">Side and alignment</a><a href="#without-an-arrow">Without an arrow</a><a href="#delays">Delays</a><a href="#reference">Reference</a><a href="#mds-preview-card" class="docs-toc-sub">mds:preview-card</a><a href="#mds-preview-card-trigger" class="docs-toc-sub">mds:preview-card.trigger</a><a href="#mds-preview-card-content" class="docs-toc-sub">mds:preview-card.content</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+<script src="../assets/nav.js"></script>
+
+<script>
+// Build the sidebar from the nav data. textContent throughout — labels and
+// tags are data, never markup.
+(function () {
+    var details = document.querySelector('.docs-nav');
+    var slug = details.getAttribute('data-docs-slug');
+    var prefix = details.getAttribute('data-docs-prefix');
+
+    (window.__mdsNav || []).forEach(function (group) {
+        var wrap = document.createElement('div');
+        wrap.className = 'docs-nav-group';
+
+        var title = document.createElement('p');
+        title.className = 'docs-nav-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+
+        var items = document.createElement('div');
+        items.className = 'docs-nav-items';
+
+        group.items.forEach(function (item) {
+            var link = document.createElement('a');
+            link.href = prefix + item.path;
+            link.textContent = item.label;
+
+            if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+            if (item.tag) {
+                var tag = document.createElement('span');
+                tag.className = 'docs-nav-tag';
+                tag.textContent = item.tag;
+                link.appendChild(document.createTextNode(' '));
+                link.appendChild(tag);
+            }
+
+            items.appendChild(link);
+        });
+
+        wrap.appendChild(items);
+        details.appendChild(wrap);
+    });
+})();
+
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

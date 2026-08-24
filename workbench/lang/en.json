@@ -417,5 +417,20 @@
     "پاسخ حداکثر تا ۲۴ ساعت آینده ارسال می‌شود.": "You will get a reply within 24 hours.",
     "مشکل را توضیح دهید...": "Describe the problem...",
     "نوشتن پیام الزامی است.": "A message is required.",
-    "ابتدا وارد حساب خود شوید": "Sign in first"
+    "ابتدا وارد حساب خود شوید": "Sign in first",
+    "پیش‌نمایش پیوند": "Link preview",
+    "پیش‌نمایش پیوند — mds:preview-card": "Link preview — mds:preview-card",
+    "کارت پیش‌نمایش مقصد یک پیوند — با نگه داشتن نشانگر یا فوکوس صفحه‌کلید باز می‌شود، و خود پیوند همچنان با کلیک کار می‌کند.": "A card previewing a link's destination — it opens on hover or keyboard focus, and the link itself still navigates on click.",
+    "پروفایل پشت یک منشن": "The profile behind an @mention",
+    "این کیت توسط تیم": "This kit is maintained by the team at",
+    "دنبال کردن": "Follow",
+    "کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.": "An RTL-first UI kit for Laravel Livewire, on top of Flux UI.",
+    "دنبال‌کننده": "followers",
+    "نگه‌داری می‌شود.": ".",
+    "پیش‌نمایش با تصویر": "A media preview",
+    "جلسه بعدی تیم در": "Our next offsite is at the",
+    "خانه ساحلی": "Coastal House",
+    "فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.": "A bright, open workspace overlooking the bay — room for 24.",
+    "برگزار می‌شود.": "next month.",
+    "کارت فقط با هاور یا فوکوس باز می‌شود — روی لمس هرگز؛ پس محتوای ضروری را در خود صفحه مقصد بگذارید. جهت‌گیری با <code>side</code> و <code>align</code> منطقی است (start/end) و در صفحه‌های راست‌چین خودکار آینه می‌شود.": "The card only opens on hover or focus — never on touch — so keep anything essential on the linked page itself. Placement is logical (<code>side</code>/<code>align</code> take start/end) and mirrors automatically on RTL pages."
 }

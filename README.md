@@ -27,14 +27,14 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Money | `<mds:price>`, `@toman` / `@rial` directives, configurable default currency |
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
-| Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>` |
+| Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>`, `<mds:preview-card>` |
 | Pro alternatives | `<mds:command>` (⌘K palette), `<mds:composer>` (chat/prompt input), `<mds:color-picker>`, `<mds:file-upload>`, and `<mds:timeline>` — open versions of Flux Pro-only components |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 56 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 57 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the workbench demos, pre-rendered to static HTML so they run without PHP, in both directions — Persian RTL at [docs/demo/demo.html](docs/demo/demo.html) / [docs/demo/layouts.html](docs/demo/layouts.html), English LTR at [docs/demo/demo-en.html](docs/demo/demo-en.html) / [docs/demo/layouts-en.html](docs/demo/layouts-en.html). Every page has a language switcher.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -43,7 +43,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 56 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 57 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 20 demo pages in docs/demo/
 ```
 
@@ -59,7 +59,7 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
 | Components | The 30 free Flux components bundled with this package |
-| mds components | All 15 `mds:*` components, including the five Flux Pro alternatives |
+| mds components | All 16 `mds:*` components, including the five Flux Pro alternatives |
 
 **Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
 Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker,
@@ -336,6 +336,35 @@ Any markup in the slot inherits the upload behavior, so custom uploaders are jus
     </div>
 </mds:file-upload>
 ```
+
+### `<mds:preview-card>`
+
+A hover preview of a link's destination (inspired by [Appica UI's Preview Card](https://appica.dev/ui/components/react/preview-card)) — the profile behind an @mention, the venue behind a place name. The trigger is a real `<a>` that still navigates on click; hovering or focusing it opens a card beside it:
+
+```blade
+<p>
+    این کیت توسط
+    <mds:preview-card>
+        <mds:preview-card.trigger href="/team">@majid_ds</mds:preview-card.trigger>
+
+        <mds:preview-card.content>
+            <div class="flex items-center justify-between">
+                <flux:avatar src="/img/team.jpg" />
+                <flux:button size="sm" variant="primary">دنبال کردن</flux:button>
+            </div>
+            <div class="font-semibold">مجید دیزاین سیستم</div>
+            <p>کیت رابط کاربری راست‌چین برای Laravel Livewire.</p>
+        </mds:preview-card.content>
+    </mds:preview-card>
+    نگه‌داری می‌شود.
+</p>
+```
+
+Position with `side` (`top` / `bottom` / `start` / `end`) and `align` (`start` / `center` / `end`) — logical values, so placement mirrors automatically on RTL pages, including RTL islands inside LTR pages. The card flips when it runs out of room, clamps to the viewport, repositions on scroll, and its arrow keeps pointing at the link (`:arrow="false"` for a flatter card that sits closer). Hover waits `delay` (600ms) to open and `close-delay` (300ms) to close; keyboard focus opens immediately; `Escape` closes.
+
+The popup ships inside `<template x-teleport="body">` — the template keeps a block-level card legal inside a `<p>` (an HTML parser would otherwise split the paragraph and strand the popup outside the component), and the teleport plays the portal role, so `overflow: hidden` ancestors never clip it. The preview never opens on touch and is not announced to screen readers — it is supplementary by design, so keep anything essential on the linked page.
+
+Props — `preview-card`: `delay`, `close-delay`; `preview-card.trigger`: `href` plus any anchor attribute; `preview-card.content`: `side`, `align`, `side-offset` (default 10, or 6 without the arrow), `arrow`.
 
 ### `<mds:icon>`
 

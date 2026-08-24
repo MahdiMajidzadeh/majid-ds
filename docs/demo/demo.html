@@ -215,6 +215,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>گفتگو</div>
     </a>
+                <a href="#preview-card" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>پیش‌نمایش پیوند</div>
+    </a>
                 <a href="#timeline" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -4421,6 +4432,289 @@ document.addEventListener('livewire:init', () => {
 </ui-field>
                 </div>
             </div>
+</div>
+
+        
+        <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="preview-card" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>پیش‌نمایش پیوند — mds:preview-card</div>
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >کارت پیش‌نمایش مقصد یک پیوند — با نگه داشتن نشانگر یا فوکوس صفحه‌کلید باز می‌شود، و خود پیوند همچنان با کلیک کار می‌کند.</p>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-3">
+                    <div class="text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-subheading>
+    پروفایل پشت یک منشن
+</div>
+
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >این کیت توسط تیم
+                        <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsPreviewCard', (config = {}) => ({
+        open: false,
+        delay: config.delay ?? 600,
+        closeDelay: config.closeDelay ?? 300,
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — $refs cannot reach through x-teleport...
+        triggerEl: null,
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the card tracks its link through
+            // scrolling and resizes — there is no portal to re-anchor it.
+            this.reposition = () => { if (this.open) this.place() }
+
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        destroy() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // Hover waits `delay`; keyboard focus is intentional, so it opens now...
+        enter(immediate = false) {
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+
+            immediate
+                ? this.show()
+                : this.openTimer = setTimeout(() => this.show(), this.delay)
+        },
+
+        leave(immediate = false) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            immediate
+                ? this.open = false
+                : this.closeTimer = setTimeout(() => this.open = false, this.closeDelay)
+        },
+
+        show() {
+            this.open = true
+            this.$nextTick(() => this.place())
+        },
+
+        /*
+        | position: fixed + measured placement, because the popup stays in the
+        | tree (no portal): fixed escapes overflow-hidden ancestors the same
+        | way a portal escapes them. `start`/`end` resolve against the page
+        | direction, so placement mirrors on RTL pages by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.triggerEl
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            // The component's own direction, not the document's — so an RTL
+            // island inside an LTR page (or the reverse) still mirrors correctly.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+
+            let side = content.dataset.side
+            let align = content.dataset.align
+            const offset = parseFloat(content.dataset.sideOffset)
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room...
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            // The alignment axis: start hugs the leading edge, which is the
+            // trigger's right edge on an RTL page...
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the link, wherever the card
+            // was clamped to...
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+})
+</script>
+
+<span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 600, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>@majid_ds</a>
+
+                            <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="10"
+    data-mds-preview-card-content
+>
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-preview-card-arrow
+        ></span>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><div class="flex items-center justify-between">
+                                    <div data-flux-avatar="data-flux-avatar" data-slot="avatar" data-size="md" class="[:where(&amp;)]:size-10 [:where(&amp;)]:text-sm [--avatar-radius:var(--radius-lg)] relative flex-none isolate flex items-center justify-center [:where(&amp;)]:font-medium rounded-[var(--avatar-radius)] [:where(&amp;)]:bg-zinc-200 [:where(&amp;)]:dark:bg-zinc-600 [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white  after:absolute after:inset-0 after:inset-ring-[1px] after:inset-ring-black/7 dark:after:inset-ring-white/10 after:rounded-lg">
+        <img src="https://i.pravatar.cc/48?img=12" alt="" class="rounded-[var(--avatar-radius)] size-full object-cover">
+    </div>
+                                    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        دنبال کردن
+    </button>
+                                </div>
+
+                                <div>
+                                    <div class="font-semibold text-zinc-800 dark:text-white">مجید دیزاین سیستم</div>
+                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
+                                </div>
+
+                                <p>کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</p>
+
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    <span class="font-medium text-zinc-800 dark:text-white">۲٬۴۸۱</span> دنبال‌کننده
+                                </div></div>
+</div>
+</template></span>
+                        نگه‌داری می‌شود.</p>                </div>
+
+                <div class="space-y-3">
+                    <div class="text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-subheading>
+    پیش‌نمایش با تصویر
+</div>
+
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >جلسه بعدی تیم در
+                        <span
+    class="relative inline-block"
+    x-data="mdsPreviewCard({ delay: 600, closeDelay: 300 })"
+    x-on:keydown.escape="leave(true)"
+    data-mds-preview-card
+><a
+    class="font-medium text-accent underline-offset-4 hover:underline" href="#!"
+    x-init="triggerEl = $el"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focus="enter(true)"
+    x-on:blur="leave(true)"
+    data-mds-preview-card-trigger
+>خانه ساحلی</a>
+
+                            <template x-teleport="body">
+<div
+    class="fixed z-50 w-72 rounded-xl border border-zinc-200 bg-white p-4 text-start shadow-lg dark:border-white/10 dark:bg-zinc-800 overflow-hidden !p-0"
+    x-init="contentEl = $el"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-150 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="scale-95 opacity-0"
+    x-transition:enter-end="scale-100 opacity-100"
+    x-transition:leave="transition duration-100 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:mouseenter="enter(true)"
+    x-on:mouseleave="leave()"
+    x-on:keydown.escape="leave(true)"
+    style="top: -9999px; left: -9999px"
+    data-side="bottom"
+    data-align="center"
+    data-side-offset="6"
+    data-mds-preview-card-content
+>
+    
+    <div class="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-300"><img src="https://picsum.photos/seed/coast/288/140" alt="" class="h-32 w-full object-cover">
+
+                                <div class="flex flex-col gap-1 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="font-semibold text-zinc-800 dark:text-white">خانه ساحلی</div>
+                                        <span class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                            <svg aria-hidden="true" data-mds-icon="" class="size-4 text-amber-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                                            ۴٫۹
+                                        </span>
+                                    </div>
+                                    <p>فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.</p>
+                                </div></div>
+</div>
+</template></span>
+                        برگزار می‌شود.</p>                </div>
+            </div>
+
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >کارت فقط با هاور یا فوکوس باز می‌شود — روی لمس هرگز؛ پس محتوای ضروری را در خود صفحه مقصد بگذارید. جهت‌گیری با <code>side</code> و <code>align</code> منطقی است (start/end) و در صفحه‌های راست‌چین خودکار آینه می‌شود.</p>
 </div>
 
         

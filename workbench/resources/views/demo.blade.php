@@ -96,6 +96,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 <flux:navbar.item href="#color-picker" icon="swatch">{{ __('انتخاب رنگ') }}</flux:navbar.item>
                 <flux:navbar.item href="#file-upload" icon="cloud-arrow-up">{{ __('بارگذاری فایل') }}</flux:navbar.item>
                 <flux:navbar.item href="#composer" icon="chat-bubble-oval-left">{{ __('گفتگو') }}</flux:navbar.item>
+                <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
                 <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
                 <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
                 <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
@@ -635,6 +636,73 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                     </mds:composer>
                 </div>
             </div>
+        </flux:card>
+
+        {{-- ============================== Preview card ============================== --}}
+        <flux:card id="preview-card" class="space-y-6">
+            <flux:heading size="lg">{{ __('پیش‌نمایش پیوند — mds:preview-card') }}</flux:heading>
+            <flux:text>{{ __('کارت پیش‌نمایش مقصد یک پیوند — با نگه داشتن نشانگر یا فوکوس صفحه‌کلید باز می‌شود، و خود پیوند همچنان با کلیک کار می‌کند.') }}</flux:text>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-3">
+                    <flux:subheading>{{ __('پروفایل پشت یک منشن') }}</flux:subheading>
+
+                    <flux:text>
+                        {{ __('این کیت توسط تیم') }}
+                        <mds:preview-card>
+                            <mds:preview-card.trigger href="#!">@majid_ds</mds:preview-card.trigger>
+
+                            <mds:preview-card.content>
+                                <div class="flex items-center justify-between">
+                                    <flux:avatar src="https://i.pravatar.cc/48?img=12" />
+                                    <flux:button size="sm" variant="primary">{{ __('دنبال کردن') }}</flux:button>
+                                </div>
+
+                                <div>
+                                    <div class="font-semibold text-zinc-800 dark:text-white">{{ __('مجید دیزاین سیستم') }}</div>
+                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
+                                </div>
+
+                                <p>{{ __('کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.') }}</p>
+
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    <span class="font-medium text-zinc-800 dark:text-white">{{ $mdsNum(2481) }}</span> {{ __('دنبال‌کننده') }}
+                                </div>
+                            </mds:preview-card.content>
+                        </mds:preview-card>
+                        {{ __('نگه‌داری می‌شود.') }}
+                    </flux:text>
+                </div>
+
+                <div class="space-y-3">
+                    <flux:subheading>{{ __('پیش‌نمایش با تصویر') }}</flux:subheading>
+
+                    <flux:text>
+                        {{ __('جلسه بعدی تیم در') }}
+                        <mds:preview-card>
+                            <mds:preview-card.trigger href="#!">{{ __('خانه ساحلی') }}</mds:preview-card.trigger>
+
+                            <mds:preview-card.content :arrow="false" class="overflow-hidden !p-0">
+                                <img src="https://picsum.photos/seed/coast/288/140" alt="" class="h-32 w-full object-cover">
+
+                                <div class="flex flex-col gap-1 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="font-semibold text-zinc-800 dark:text-white">{{ __('خانه ساحلی') }}</div>
+                                        <span class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                            <mds:icon icon="star" class="size-4 text-amber-500" />
+                                            {{ $mdsNum(4.9, 1) }}
+                                        </span>
+                                    </div>
+                                    <p>{{ __('فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.') }}</p>
+                                </div>
+                            </mds:preview-card.content>
+                        </mds:preview-card>
+                        {{ __('برگزار می‌شود.') }}
+                    </flux:text>
+                </div>
+            </div>
+
+            <flux:text class="text-sm">{!! __('کارت فقط با هاور یا فوکوس باز می‌شود — روی لمس هرگز؛ پس محتوای ضروری را در خود صفحه مقصد بگذارید. جهت‌گیری با <code>side</code> و <code>align</code> منطقی است (start/end) و در صفحه‌های راست‌چین خودکار آینه می‌شود.') !!}</flux:text>
         </flux:card>
 
         {{-- ============================== Timeline ============================== --}}
