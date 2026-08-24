@@ -80,7 +80,7 @@ return [
             ],
             [
                 'name' => 'RTL comes free',
-                'text' => 'Flux builds the grid from logical properties, so on a page with <code>dir="rtl"</code> the sidebar lands on the right and the aside on the left. There is no RTL variant of any of these components, and no direction-specific classes to write.',
+                'text' => 'CSS grid columns follow the page\'s writing direction, so on a page with <code>dir="rtl"</code> the same grid puts the sidebar on the right and the aside on the left. There is no RTL variant of any of these components, and no direction-specific classes to write.',
                 'code' => '<html lang="fa" dir="rtl">',
                 'render' => <<<'BLADE'
                 <div class="grid w-full max-w-md grid-cols-2 gap-4">

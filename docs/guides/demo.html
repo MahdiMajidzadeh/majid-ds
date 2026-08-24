@@ -55,24 +55,18 @@
         <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
                             <div class="flex items-center gap-2 text-sm font-medium" data-slot="heading">
     
-    Some component output is Persian-only
+    The whole kit follows one config flag
 </div>
             
             
             <div class="text-sm" data-slot="text">
-    Digits, separators and the currency label follow <code>config('mds.persian_digits')</code>
-            and <code>config('mds.currency')</code>, so they are Latin here. A handful of strings are
-            baked into the kit with no prop to override them, and stay Persian on this page:
-</div>
-
-        <div class="text-sm mt-2" data-slot="text">
-    <div class="space-y-1">
-                <div>• <code>mds:discount-badge</code> — the <code dir="rtl">٪</code> sign</div>
-                <div>• <code>mds:countdown</code> — the unit labels <code dir="rtl">روز / ساعت / دقیقه / ثانیه</code> and the expiry text <code dir="rtl">به پایان رسید</code></div>
-                <div>• <code>mds:product-card</code> — <code dir="rtl">ناموجود</code> for an out-of-stock item</div>
-                <div>• <code>mds:jalali-date</code> — the month names, and the relative dates from <code>Persian::ago()</code></div>
-                <div>• the <code>@toman</code> and <code>@jalali</code> directives, which are Persian by definition</div>
-            </div>
+    <code>config('mds.persian_digits')</code> is off on this page, so every component speaks
+            English: Latin digits and separators, <code>%</code>, English unit labels, transliterated
+            Jalali month names, <code>Out of stock</code>, <code>159 KB</code>. The only Persian left
+            comes from the digit and money directives (<code>@fa</code>, <code>@faNum</code>,
+            <code>@toman</code>, <code>@rial</code>), which are Persian by definition —
+            <code>@jalali</code> and every component follow the config; reach for
+            <code>mds:price</code> when money should too.
 </div>
         </div>
 
@@ -220,7 +214,7 @@
         <div class="text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-subheading>
     A subheading to explain a section
 </div>
-        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Body text with an <a class="inline font-medium underline-offset-[6px] hover:decoration-current underline [[data-color]&gt;&amp;]:text-inherit [[data-color]&gt;&amp;]:decoration-current/20 dark:[[data-color]&gt;&amp;]:decoration-current/50 [[data-color]&gt;&amp;]:hover:decoration-current text-[var(--color-accent-content)] decoration-[color-mix(in_oklab,var(--color-accent-content),transparent_80%)]" href="#" data-flux-link >inline link</a> and Persian numerals straight from the @toman directive: ۲٬۵۰۰٬۰۰۰ تومان — and from @jalali: 29 مرداد 1405 (both are Persian by definition, whatever the page locale).</p>    </div>
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Body text with an <a class="inline font-medium underline-offset-[6px] hover:decoration-current underline [[data-color]&gt;&amp;]:text-inherit [[data-color]&gt;&amp;]:decoration-current/20 dark:[[data-color]&gt;&amp;]:decoration-current/50 [[data-color]&gt;&amp;]:hover:decoration-current text-[var(--color-accent-content)] decoration-[color-mix(in_oklab,var(--color-accent-content),transparent_80%)]" href="#" data-flux-link >inline link</a> and Persian numerals straight from the @toman directive: ۲٬۵۰۰٬۰۰۰ تومان — and from @jalali: 29 Mordad 1405 (both are Persian by definition, whatever the page locale).</p>    </div>
 
     <div data-orientation="horizontal" role="none" class="flex items-center w-full" data-flux-separator>
         <div class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full grow"></div>
@@ -1476,7 +1470,7 @@
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
@@ -1488,7 +1482,7 @@
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -1593,7 +1587,7 @@
             x-show="query !== ''"
             x-cloak
             x-on:click="query = ''; $el.closest('[data-mds-command-input]').querySelector('input').focus()"
-            aria-label="پاک کردن"
+            aria-label="Clear"
         >
             <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
         </button>
@@ -1806,7 +1800,7 @@
             type="button"
             class="shrink-0 rounded p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
             x-on:click="$el.closest('dialog')?.close()"
-            aria-label="بستن"
+            aria-label="Close"
         >
             <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
         </button>
@@ -2124,7 +2118,7 @@ document.addEventListener('alpine:init', () => {
                         x-show="! empty"
                         x-cloak
                         x-on:click="clear()"
-                        aria-label="پاک کردن"
+                        aria-label="Clear"
                     >
                         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
                     </button>
@@ -2145,7 +2139,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -2163,7 +2157,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -2178,7 +2172,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -2200,7 +2194,7 @@ document.addEventListener('alpine:init', () => {
     x-show="!! window.EyeDropper"
     x-cloak
     x-on:click="eyeDropper()"
-    aria-label="قطره‌چکان"
+    aria-label="Eyedropper"
     data-mds-color-picker-dropper
 >
     <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11.2872 8.00018L4.68174 14.6057C4.05287 15.2345 3.72789 16.0522 3.70679 16.8762C3.67836 17.9861 3.66415 18.5411 3.57991 18.7373C3.49566 18.9336 3.30358 19.1257 2.91944 19.5098L2.32535 20.1039C1.89155 20.5377 1.89155 21.241 2.32535 21.6748C2.75915 22.1086 3.46247 22.1086 3.89627 21.6748L4.49036 21.0807C4.87451 20.6966 5.06658 20.5045 5.26283 20.4203C5.45909 20.336 6.01406 20.3218 7.12396 20.2934C7.94797 20.2723 8.76565 19.9473 9.39451 19.3184L11.3227 17.3903M14.4291 14.2839L16 12.713M14.4291 14.2839L12.8582 12.713M14.4291 14.2839L11.3227 17.3903M11.3227 17.3903L9.75177 15.8193" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M21.068 7.43213L19.5002 8.99992C18.6718 9.82837 18.6718 11.1715 19.5002 12L12 4.49979C12.8285 5.32824 14.1716 5.32824 15.0001 4.49979L16.5679 2.93201C17.8105 1.68933 19.8253 1.68933 21.068 2.93201C22.3107 4.17468 22.3107 6.18946 21.068 7.43213Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
@@ -2432,7 +2426,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -2450,7 +2444,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -2465,7 +2459,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -2712,7 +2706,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -2730,7 +2724,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -2745,7 +2739,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -2831,7 +2825,7 @@ document.addEventListener('alpine:init', () => {
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
                 x-on:click="open = ! open"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="انتخاب رنگ"
+                aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -2852,7 +2846,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -2870,7 +2864,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -2885,7 +2879,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -3088,7 +3082,7 @@ document.addEventListener('alpine:init', () => {
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
                 x-on:click="open = ! open"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="انتخاب رنگ"
+                aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -3109,7 +3103,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -3127,7 +3121,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -3142,7 +3136,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -3481,7 +3475,7 @@ document.addEventListener('alpine:init', () => {
                     
             <div class="truncate text-sm font-medium text-zinc-800 dark:text-white" dir="auto" title="Profile_pic.jpg">Profile_pic.jpg</div>
         
-                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">158.6 KB</div>
+                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">159 KB</div>
         
             </div>
 
@@ -4081,7 +4075,7 @@ document.addEventListener('livewire:init', () => {
                     
             <div class="truncate text-sm font-medium text-zinc-800 dark:text-white" dir="auto" title="galaxy-phone.jpg">galaxy-phone.jpg</div>
         
-                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">158.6 KB</div>
+                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">159 KB</div>
         
             </div>
 
@@ -4143,7 +4137,7 @@ document.addEventListener('livewire:init', () => {
     datetime="2026-08-26T10:00:00+00:00"
         dir="auto"
     data-mds-jalali-date
->4 شهریور 1405</time>
+>4 Shahrivar 1405</time>
                     </div>
                 </div>
 
@@ -4748,7 +4742,7 @@ document.addEventListener('alpine:init', () => {
     datetime="2026-08-23T10:00:00+00:00"
         
     data-mds-jalali-date
->1 شهریور 1405</time></span></div>
+>1 Shahrivar 1405</time></span></div>
 </div>
 
     <div data-mds-timeline-line="trailing"><span></span></div>
@@ -4863,7 +4857,7 @@ document.addEventListener('alpine:init', () => {
 </div>
             <div class="min-w-0" data-mds-timeline-content>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Paid</div>
-                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >31 مرداد 1405</p>
+                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >31 Mordad 1405</p>
 </div>
 
     <div data-mds-timeline-line="trailing"><span></span></div>
@@ -4887,7 +4881,7 @@ document.addEventListener('alpine:init', () => {
 </div>
             <div class="min-w-0" data-mds-timeline-content>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Packed</div>
-                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >1 شهریور 1405</p>
+                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >1 Shahrivar 1405</p>
 </div>
 
     <div data-mds-timeline-line="trailing"><span></span></div>
@@ -5265,7 +5259,7 @@ document.addEventListener('alpine:init', () => {
 </svg>
 </div>
                 <div class="min-w-0" data-mds-timeline-content>
-    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Mahdi <span class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >left a comment · 30 مرداد 1405</span></div>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Mahdi <span class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >left a comment · 30 Mordad 1405</span></div>
 </div>
 
     <div data-mds-timeline-line="trailing"><span></span></div>
@@ -5712,12 +5706,12 @@ document.addEventListener('alpine:init', () => {
     <div class="inline-flex items-center gap-2" data-mds-price>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-1.5 py-px text-[10px]"
-    aria-label="13 درصد تخفیف"
+    aria-label="13% off"
     data-mds-discount-badge
->13٪</span>
+>13%</span>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">48,900,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">48,900,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-sm font-bold tabular-nums text-zinc-800 dark:text-white">42,500,000</span>
@@ -5776,12 +5770,12 @@ document.addEventListener('alpine:init', () => {
     <div class="inline-flex items-center gap-2" data-mds-price>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-1.5 py-px text-[10px]"
-    aria-label="30 درصد تخفیف"
+    aria-label="30% off"
     data-mds-discount-badge
->30٪</span>
+>30%</span>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">350,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">350,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-sm font-bold tabular-nums text-zinc-800 dark:text-white">245,000</span>
@@ -6167,7 +6161,7 @@ document.addEventListener('alpine:init', () => {
             x-bind:class="(hover ? hover >= 1 : value >= 1) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 1 ? 'true' : 'false'"
             role="radio"
-            aria-label="۱"
+            aria-label="1"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -6180,7 +6174,7 @@ document.addEventListener('alpine:init', () => {
             x-bind:class="(hover ? hover >= 2 : value >= 2) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 2 ? 'true' : 'false'"
             role="radio"
-            aria-label="۲"
+            aria-label="2"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -6193,7 +6187,7 @@ document.addEventListener('alpine:init', () => {
             x-bind:class="(hover ? hover >= 3 : value >= 3) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 3 ? 'true' : 'false'"
             role="radio"
-            aria-label="۳"
+            aria-label="3"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -6206,7 +6200,7 @@ document.addEventListener('alpine:init', () => {
             x-bind:class="(hover ? hover >= 4 : value >= 4) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 4 ? 'true' : 'false'"
             role="radio"
-            aria-label="۴"
+            aria-label="4"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -6219,7 +6213,7 @@ document.addEventListener('alpine:init', () => {
             x-bind:class="(hover ? hover >= 5 : value >= 5) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 5 ? 'true' : 'false'"
             role="radio"
-            aria-label="۵"
+            aria-label="5"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -6267,7 +6261,7 @@ document.addEventListener('alpine:init', () => {
         class="size-9 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
@@ -6279,7 +6273,7 @@ document.addEventListener('alpine:init', () => {
         class="size-9 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -6318,7 +6312,7 @@ document.addEventListener('alpine:init', () => {
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
@@ -6330,7 +6324,7 @@ document.addEventListener('alpine:init', () => {
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -6369,7 +6363,7 @@ document.addEventListener('alpine:init', () => {
         class="size-11 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
@@ -6381,7 +6375,7 @@ document.addEventListener('alpine:init', () => {
         class="size-11 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -6396,12 +6390,12 @@ document.addEventListener('alpine:init', () => {
             <div class="inline-flex items-center gap-2" data-mds-price>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2.5 py-1 text-sm"
-    aria-label="22 درصد تخفیف"
+    aria-label="22% off"
     data-mds-discount-badge
->22٪</span>
+>22%</span>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">3,200,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">3,200,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-xl font-bold tabular-nums text-zinc-800 dark:text-white">2,500,000</span>
@@ -6435,12 +6429,12 @@ document.addEventListener('alpine:init', () => {
             <div class="inline-flex items-center gap-2" data-mds-price>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
-    aria-label="20 درصد تخفیف"
+    aria-label="20% off"
     data-mds-discount-badge
->20٪</span>
+>20%</span>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">1,500,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">1,500,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">1,200,000</span>
@@ -6454,19 +6448,19 @@ document.addEventListener('alpine:init', () => {
         <div class="flex items-center gap-2">
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-1.5 py-px text-[10px]"
-    aria-label="10 درصد تخفیف"
+    aria-label="10% off"
     data-mds-discount-badge
->10٪</span>
+>10%</span>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
-    aria-label="25 درصد تخفیف"
+    aria-label="25% off"
     data-mds-discount-badge
->25٪</span>
+>25%</span>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2.5 py-1 text-sm"
-    aria-label="20 درصد تخفیف"
+    aria-label="20% off"
     data-mds-discount-badge
->20٪</span>
+>20%</span>
         </div>
 </div>
 </div>
@@ -6475,7 +6469,7 @@ document.addEventListener('alpine:init', () => {
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Checkout steps — mds:stepper</div>
 
-    <nav class="flex items-center gap-2 w-full" aria-label="مراحل" data-mds-stepper>
+    <nav class="flex items-center gap-2 w-full" aria-label="Steps" data-mds-stepper>
             
         <div class="flex items-center gap-2" aria-current="false" data-mds-stepper-step="completed">
             <span class="flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-medium bg-accent text-accent-foreground">
@@ -6568,7 +6562,7 @@ document.addEventListener('alpine:init', () => {
                             </div>
             </div>
 
-    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"  style="display: none"  x-show="expired">به پایان رسید</span>
+    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"  style="display: none"  x-show="expired">Expired</span>
 </div>
             </div>
 
@@ -6600,32 +6594,32 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-10 px-1.5 py-1.5 text-lg" x-text="seg(d)">02</span>
 
-                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">روز</span>
+                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">days</span>
                             </div>
                                     <span class="mt-0.5 font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-10 px-1.5 py-1.5 text-lg" x-text="seg(h)">05</span>
 
-                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">ساعت</span>
+                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">hours</span>
                             </div>
                                     <span class="mt-0.5 font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-10 px-1.5 py-1.5 text-lg" x-text="seg(m)">00</span>
 
-                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">دقیقه</span>
+                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">min</span>
                             </div>
                                     <span class="mt-0.5 font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-10 px-1.5 py-1.5 text-lg" x-text="seg(s)">00</span>
 
-                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">ثانیه</span>
+                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400">sec</span>
                             </div>
             </div>
 
-    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"  style="display: none"  x-show="expired">به پایان رسید</span>
+    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"  style="display: none"  x-show="expired">Expired</span>
 </div>
 
             <div
@@ -6690,7 +6684,7 @@ document.addEventListener('alpine:init', () => {
     datetime="2026-08-24T10:00:00+00:00"
         class="font-semibold"
     data-mds-jalali-date
->دوشنبه 2 شهریور 1405</time>
+>Monday 2 Shahrivar 1405</time>
 </div>
             <div>Numeric: <time
     datetime="2026-08-24T10:00:00+00:00"
@@ -6700,11 +6694,11 @@ document.addEventListener('alpine:init', () => {
 </div>
             <div>Order placed: <time
     datetime="2026-08-24T07:00:00+00:00"
-     title="دوشنبه 2 شهریور 1405"     class="font-semibold"
+     title="Monday 2 Shahrivar 1405"     class="font-semibold"
     data-mds-jalali-date
->۳ ساعت پیش</time>
+>3 hours ago</time>
 </div>
-            <div>With the Blade directives (always Persian): <span class="font-semibold">29 مرداد 1405</span> — <span class="font-semibold">۲٬۵۰۰٬۰۰۰ تومان</span></div>
+            <div>With the Blade directives (always Persian): <span class="font-semibold">29 Mordad 1405</span> — <span class="font-semibold">۲٬۵۰۰٬۰۰۰ تومان</span></div>
         </div>
 </div>
 </div>
@@ -6770,14 +6764,14 @@ document.addEventListener('alpine:init', () => {
     <div class="mt-auto flex items-center justify-between gap-2">
                                     <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
-    aria-label="13 درصد تخفیف"
+    aria-label="13% off"
     data-mds-discount-badge
->13٪</span>
+>13%</span>
             
             <div class="inline-flex items-center gap-2" data-mds-price>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">48,900,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">48,900,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">42,500,000</span>
@@ -6916,14 +6910,14 @@ document.addEventListener('alpine:init', () => {
     <div class="mt-auto flex items-center justify-between gap-2">
                                     <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
-    aria-label="30 درصد تخفیف"
+    aria-label="30% off"
     data-mds-discount-badge
->30٪</span>
+>30%</span>
             
             <div class="inline-flex items-center gap-2" data-mds-price>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">350,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">350,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">245,000</span>
@@ -6954,7 +6948,7 @@ document.addEventListener('alpine:init', () => {
 
     
     <div class="mt-auto flex items-center justify-between gap-2">
-                    <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">ناموجود</span>
+                    <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">Out of stock</span>
             </div>
 </div>
     </div>

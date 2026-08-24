@@ -5,7 +5,7 @@
 |
 | Only components whose Blade views are actually bundled appear here — Flux's
 | Pro-only components (accordion, autocomplete, calendar, chart, editor, kanban
-| and the rest) ship no code, so there is nothing to document or preview. Four
+| and the rest) ship no code, so there is nothing to document or preview. Five
 | of them have open mds equivalents; those live in the mds section.
 |
 | Every example's preview is the snippet below it, rendered.
@@ -543,7 +543,7 @@ $pages['callout'] = [
         ],
         ['name' => 'flux:callout.text', 'text' => 'The body copy. Takes no props.'],
         ['name' => 'flux:callout.link', 'props' => [
-            ['external', 'If <code>true</code>, opens in a new tab and shows an external-link icon.'],
+            ['external', 'If <code>true</code>, opens in a new tab (with <code>rel="noopener"</code>).'],
         ]],
     ],
     'related' => ['toast', 'card'],
@@ -733,7 +733,7 @@ $pages['dropdown'] = [
         ],
         [
             'name' => 'Position and align',
-            'text' => 'Both are logical, so <code>start</code> and <code>end</code> follow the reading direction.',
+            'text' => '<code>align</code> is logical — <code>start</code> and <code>end</code> follow the reading direction. <code>position</code> takes physical sides (<code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>).',
             'code' => <<<'BLADE'
             <flux:dropdown position="top" align="end">
                 <flux:button icon:trailing="chevron-up">Opens upward</flux:button>
@@ -820,8 +820,8 @@ $pages['dropdown'] = [
             'props' => [
                 ['position', 'Options: <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>. Default: <code>bottom</code>.'],
                 ['align', 'Options: <code>start</code>, <code>center</code>, <code>end</code>. Default: <code>start</code>.'],
-                ['offset', 'Pixel gap between trigger and panel.'],
-                ['gap', 'Alias for <code>offset</code>.'],
+                ['gap', 'Pixel gap between trigger and panel. Default: <code>5</code>.'],
+                ['offset', 'Pixel shift along the aligned edge. Default: <code>0</code>.'],
                 ['hover', 'Opens on hover instead of click.'],
             ],
         ],
@@ -1008,7 +1008,7 @@ $pages['heading'] = [
             ['accent', 'If <code>true</code>, uses the accent color.'],
         ]],
         ['name' => 'flux:subheading', 'props' => [
-            ['size', 'Options: <code>base</code>, <code>lg</code>. Default: <code>base</code>.'],
+            ['size', 'Options: <code>sm</code>, <code>base</code>, <code>lg</code>, <code>xl</code>. Default: <code>base</code>.'],
         ]],
     ],
     'related' => ['text', 'separator'],
@@ -1208,14 +1208,14 @@ $pages['input'] = [
                 ['description', 'Smaller text under the label.'],
                 ['placeholder', 'Placeholder text.'],
                 ['type', 'Any HTML input type: <code>text</code>, <code>email</code>, <code>password</code>, <code>tel</code>, <code>file</code>, <code>date</code>… Default: <code>text</code>.'],
-                ['size', 'Options: <code>sm</code>. Default: base.'],
+                ['size', 'Options: <code>sm</code>, <code>xs</code>. Default: base.'],
                 ['variant', 'Options: <code>outline</code>, <code>filled</code>. Default: <code>outline</code>.'],
                 ['icon', 'Leading icon name.'],
                 ['icon:trailing', 'Trailing icon name.'],
                 ['clearable', 'Adds a clear button once there is a value.'],
                 ['copyable', 'Adds a copy-to-clipboard button.'],
                 ['viewable', 'For passwords: adds a reveal toggle.'],
-                ['expandable', 'Grows the field on focus.'],
+                ['expandable', 'Adds a trailing chevron button (for inputs that expand into a dropdown).'],
                 ['kbd', 'Keyboard shortcut hint on the trailing edge.'],
                 ['invalid', 'Marks the field as invalid.'],
                 ['loading', 'Shows a spinner while a Livewire action runs.'],
@@ -1269,7 +1269,7 @@ $pages['modal'] = [
         ],
         [
             'name' => 'Flyout',
-            'text' => '<code>variant="flyout"</code> slides in from the trailing edge — the leading edge in RTL, with no extra classes.',
+            'text' => '<code>variant="flyout"</code> slides in from the trailing edge in both directions — the right in LTR, the left in RTL — with no extra classes.',
             'code' => <<<'BLADE'
             <flux:modal.trigger name="cart">
                 <flux:button icon="shopping-cart">Cart</flux:button>
@@ -1590,7 +1590,7 @@ $pages['otp-input'] = [
             ['wire:model', 'Binds to a Livewire property.'],
         ]],
         ['name' => 'flux:otp.group', 'text' => 'Groups a run of inputs, for codes split by a separator.'],
-        ['name' => 'flux:otp.separator', 'text' => 'A dash or dot between groups.'],
+        ['name' => 'flux:otp.separator', 'text' => 'An em dash between groups.'],
     ],
     'related' => ['input', 'field'],
 ];
@@ -1643,7 +1643,7 @@ $pages['pagination'] = [
     'reference' => [
         ['name' => 'flux:pagination', 'props' => [
             ['paginator', 'A <code>LengthAwarePaginator</code> or <code>Paginator</code> instance.'],
-            ['scroll-to', 'Selector to scroll to after a page change; <code>false</code> to disable.'],
+            ['scroll-to', 'Selector to scroll to after a page change (<code>true</code> scrolls to <code>body</code>). Off by default.'],
         ]],
     ],
     'related' => ['table'],
@@ -1881,7 +1881,7 @@ $pages['select'] = [
             ['label', 'Label above the control.'],
             ['description', 'Smaller text under the label.'],
             ['placeholder', 'Shown while nothing is selected.'],
-            ['size', 'Options: <code>sm</code>. Default: base.'],
+            ['size', 'Options: <code>sm</code>, <code>xs</code>. Default: base.'],
             ['variant', 'Options: <code>default</code>.'],
             ['invalid', 'Marks the control as invalid.'],
             ['multiple', 'Allows selecting more than one option.'],
@@ -2021,7 +2021,7 @@ $pages['switch'] = [
         ],
         [
             'name' => 'Label alignment',
-            'text' => '<code>align="left"</code> puts the control on the trailing edge instead of the leading one.',
+            'text' => '<code>align="left"</code> (or <code>start</code>) puts the control on the leading edge instead of the trailing one.',
             'code' => <<<'BLADE'
             <div class="space-y-4">
                 <flux:switch label="Right (default)" checked />
@@ -2212,14 +2212,14 @@ $pages['text'] = [
     ],
     'reference' => [
         ['name' => 'flux:text', 'props' => [
-            ['size', 'Options: <code>sm</code>, <code>base</code>, <code>lg</code>.'],
+            ['size', 'Options: <code>sm</code>, <code>base</code>, <code>lg</code>, <code>xl</code>.'],
             ['variant', 'Options: <code>strong</code>, <code>subtle</code>.'],
-            ['color', 'Any Tailwind color.'],
+            ['color', 'Any Tailwind hue (<code>red</code> … <code>rose</code>) — the neutral scales (zinc, gray…) are not accepted.'],
             ['inline', 'Renders a <code>span</code> instead of a <code>p</code>. Default: <code>false</code>.'],
         ]],
         ['name' => 'flux:link', 'props' => [
             ['href', 'Link target.'],
-            ['external', 'Opens in a new tab and adds an external-link icon.'],
+            ['external', 'Opens in a new tab (with <code>rel="noopener"</code>).'],
             ['variant', 'Visual variant of the link.'],
             ['accent', 'If <code>false</code>, inherits the surrounding color. Default: <code>true</code>.'],
             ['strong', 'Bolder link text. Default: <code>false</code>.'],
@@ -2329,7 +2329,7 @@ $pages['toast'] = [
         ['name' => 'flux:toast', 'props' => [
             ['position', 'Two words, vertical then horizontal, e.g. <code>bottom end</code>, <code>top start</code>. Default: <code>bottom end</code>.'],
         ]],
-        ['name' => '$flux.toast(…)', 'text' => 'Alpine magic. Takes <code>heading</code>, <code>text</code>, <code>variant</code> (<code>success</code>, <code>warning</code>, <code>danger</code>) and <code>duration</code>.'],
+        ['name' => '$flux.toast(…)', 'text' => 'Alpine magic. Takes <code>heading</code>, <code>text</code>, <code>variant</code> (<code>success</code>, <code>warning</code>, <code>danger</code>, <code>info</code>) and <code>duration</code>.'],
     ],
     'related' => ['callout', 'modal'],
 ];
@@ -2383,7 +2383,7 @@ $pages['toggle'] = [
             ['off-label', 'Label used while off.'],
             ['on-icon', 'Icon used while on.'],
             ['off-icon', 'Icon used while off.'],
-            ['variant', 'Options: <code>outline</code>, <code>ghost</code>, <code>subtle</code>. Default: <code>outline</code>.'],
+            ['variant', 'Options: <code>outline</code>, <code>ghost</code>, <code>subtle</code>, <code>filled</code>. Default: <code>outline</code>.'],
             ['size', 'Options: <code>sm</code>, <code>base</code>. Default: <code>base</code>.'],
             ['color', 'Any Tailwind color for the pressed state.'],
             ['name', 'Submitted field name.'],
@@ -2412,7 +2412,7 @@ $pages['tooltip'] = [
         ],
         [
             'name' => 'Position',
-            'text' => 'Positions are logical, so <code>start</code> and <code>end</code> follow the reading direction.',
+            'text' => '<code>position</code> takes physical sides — <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>; it is <code>align</code> that is logical.',
             'code' => <<<'BLADE'
             <div class="flex items-center gap-3">
                 <flux:tooltip content="Above" position="top">
@@ -2423,8 +2423,8 @@ $pages['tooltip'] = [
                     <flux:button size="sm">Bottom</flux:button>
                 </flux:tooltip>
 
-                <flux:tooltip content="Trailing edge" position="right">
-                    <flux:button size="sm">End</flux:button>
+                <flux:tooltip content="To the right" position="right">
+                    <flux:button size="sm">Right</flux:button>
                 </flux:tooltip>
             </div>
             BLADE,

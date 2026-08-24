@@ -237,7 +237,7 @@ document.addEventListener('alpine:init', () => {
                         x-show="! empty"
                         x-cloak
                         x-on:click="clear()"
-                        aria-label="پاک کردن"
+                        aria-label="Clear"
                     >
                         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
                     </button>
@@ -258,7 +258,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -276,7 +276,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -291,7 +291,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -313,7 +313,7 @@ document.addEventListener('alpine:init', () => {
     x-show="!! window.EyeDropper"
     x-cloak
     x-on:click="eyeDropper()"
-    aria-label="قطره‌چکان"
+    aria-label="Eyedropper"
     data-mds-color-picker-dropper
 >
     <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11.2872 8.00018L4.68174 14.6057C4.05287 15.2345 3.72789 16.0522 3.70679 16.8762C3.67836 17.9861 3.66415 18.5411 3.57991 18.7373C3.49566 18.9336 3.30358 19.1257 2.91944 19.5098L2.32535 20.1039C1.89155 20.5377 1.89155 21.241 2.32535 21.6748C2.75915 22.1086 3.46247 22.1086 3.89627 21.6748L4.49036 21.0807C4.87451 20.6966 5.06658 20.5045 5.26283 20.4203C5.45909 20.336 6.01406 20.3218 7.12396 20.2934C7.94797 20.2723 8.76565 19.9473 9.39451 19.3184L11.3227 17.3903M14.4291 14.2839L16 12.713M14.4291 14.2839L12.8582 12.713M14.4291 14.2839L11.3227 17.3903M11.3227 17.3903L9.75177 15.8193" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M21.068 7.43213L19.5002 8.99992C18.6718 9.82837 18.6718 11.1715 19.5002 12L12 4.49979C12.8285 5.32824 14.1716 5.32824 15.0001 4.49979L16.5679 2.93201C17.8105 1.68933 19.8253 1.68933 21.068 2.93201C22.3107 4.17468 22.3107 6.18946 21.068 7.43213Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
@@ -710,7 +710,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -728,7 +728,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -743,7 +743,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -1154,7 +1154,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -1172,7 +1172,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -1187,7 +1187,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -1435,7 +1435,7 @@ document.addEventListener('alpine:init', () => {
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
                 x-on:click="open = ! open"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="انتخاب رنگ"
+                aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -1456,7 +1456,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -1474,7 +1474,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -1489,7 +1489,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -1692,7 +1692,7 @@ document.addEventListener('alpine:init', () => {
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
                 x-on:click="open = ! open"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="انتخاب رنگ"
+                aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -1713,7 +1713,7 @@ document.addEventListener('alpine:init', () => {
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
     <div
@@ -1731,7 +1731,7 @@ document.addEventListener('alpine:init', () => {
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="رنگ"
+        aria-label="Hue"
         data-mds-color-picker-slider="hue"
     >
 
@@ -1746,7 +1746,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="شفافیت"
+        aria-label="Opacity"
         data-mds-color-picker-slider="alpha"
     >
 </div>
@@ -1945,6 +1945,345 @@ document.addEventListener('alpine:init', () => {
     </span><span class="t-punct">&lt;</span><span class="t-tag">mds:color-picker</span> <span class="t-attr">type</span><span class="t-equals">=</span><span class="t-string">&quot;button&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
     </div>
+</div></section><section id="in-rtl" class="docs-section"><h2>In RTL</h2><p class="docs-text">The built-in labels — clear, the eyedropper, the saturation area and the hue/opacity sliders — follow <code>config('mds.persian_digits')</code>, which is on by default in a real app and off in these docs; there is no <code>fa</code> prop here. Your own <code>label</code>, <code>description</code> and swatch names can be any language, and the layout mirrors on an RTL page by itself.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsColorPicker', (config) => ({
+        open: false,
+        h: 0, s: 100, v: 100, a: 1,
+        empty: true,
+        format: config.format ?? 'hex',
+
+        init() {
+            if (config.value) {
+                this.setFromString(config.value)
+
+                // Normalize the server-rendered value to the configured format (no event)...
+                this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
+            }
+        },
+
+        hsvToRgb(h, s, v) {
+            s /= 100; v /= 100
+            const f = (n) => {
+                const k = (n + h / 60) % 6
+                return v - v * s * Math.max(0, Math.min(k, 4 - k, 1))
+            }
+            return [f(5), f(3), f(1)].map(x => Math.round(x * 255))
+        },
+
+        rgbToHsv(r, g, b) {
+            r /= 255; g /= 255; b /= 255
+            const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min
+            let h = 0
+            if (d) {
+                if (max === r) h = ((g - b) / d) % 6
+                else if (max === g) h = (b - r) / d + 2
+                else h = (r - g) / d + 4
+                h *= 60
+                if (h < 0) h += 360
+            }
+            return [h, max ? (d / max) * 100 : 0, max * 100]
+        },
+
+        get rgb() { return this.hsvToRgb(this.h, this.s, this.v) },
+        get hex() { return '#' + this.rgb.map(x => x.toString(16).padStart(2, '0')).join('') },
+        get hexa() { return this.hex + Math.round(this.a * 255).toString(16).padStart(2, '0') },
+        get hsl() {
+            const s = this.s / 100, v = this.v / 100
+            const l = v * (1 - s / 2)
+            const sl = (l === 0 || l === 1) ? 0 : (v - l) / Math.min(l, 1 - l)
+            return [Math.round(this.h), Math.round(sl * 100), Math.round(l * 100)]
+        },
+
+        get hasAlpha() { return ['hexa', 'rgba', 'hsla'].includes(this.format) },
+
+        get output() {
+            if (this.empty) return ''
+            const [r, g, b] = this.rgb, [hh, ss, ll] = this.hsl, alpha = +this.a.toFixed(2)
+            switch (this.format) {
+                case 'hexa': return this.hexa
+                case 'rgb': return `rgb(${r}, ${g}, ${b})`
+                case 'rgba': return `rgba(${r}, ${g}, ${b}, ${alpha})`
+                case 'hsl': return `hsl(${hh}, ${ss}%, ${ll}%)`
+                case 'hsla': return `hsla(${hh}, ${ss}%, ${ll}%, ${alpha})`
+                default: return this.hex
+            }
+        },
+
+        get previewCss() {
+            if (this.empty) return ''
+            const [r, g, b] = this.rgb
+            return this.hasAlpha ? `rgba(${r}, ${g}, ${b}, ${+this.a.toFixed(2)})` : this.hex
+        },
+
+        setFromString(str) {
+            str = String(str ?? '').trim()
+            if (! str) { this.empty = true; return }
+
+            let m = str.match(/^#?([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i)
+            if (m) {
+                let hx = m[1]
+                if (hx.length === 3) hx = [...hx].map(c => c + c).join('')
+                ;[this.h, this.s, this.v] = this.rgbToHsv(parseInt(hx.slice(0, 2), 16), parseInt(hx.slice(2, 4), 16), parseInt(hx.slice(4, 6), 16))
+                this.a = hx.length === 8 ? +(parseInt(hx.slice(6, 8), 16) / 255).toFixed(2) : 1
+                this.empty = false
+                return
+            }
+
+            m = str.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s\/]+([\d.]+%?))?\s*\)$/i)
+            if (m) {
+                ;[this.h, this.s, this.v] = this.rgbToHsv(+m[1], +m[2], +m[3])
+                this.a = m[4] !== undefined ? (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : parseFloat(m[4])) : 1
+                this.empty = false
+                return
+            }
+
+            m = str.match(/^hsla?\(\s*([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\s\/]+([\d.]+%?))?\s*\)$/i)
+            if (m) {
+                const l = +m[3] / 100, sl = +m[2] / 100
+                const v = l + sl * Math.min(l, 1 - l)
+                this.h = +m[1]
+                this.s = (v === 0 ? 0 : 2 * (1 - l / v)) * 100
+                this.v = v * 100
+                this.a = m[4] !== undefined ? (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : parseFloat(m[4])) : 1
+                this.empty = false
+            }
+        },
+
+        commit() {
+            const input = this.$refs.input
+            if (! input) return
+            input.value = this.output
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        pick(value) { this.setFromString(value); this.commit() },
+        clear() { this.empty = true; this.commit() },
+
+        areaDown(e) {
+            const el = e.currentTarget
+            const move = (ev) => {
+                const rect = el.getBoundingClientRect()
+                this.s = Math.min(Math.max((ev.clientX - rect.left) / rect.width, 0), 1) * 100
+                this.v = 100 - Math.min(Math.max((ev.clientY - rect.top) / rect.height, 0), 1) * 100
+                this.empty = false
+                this.commit()
+            }
+            const up = () => {
+                window.removeEventListener('pointermove', move)
+                window.removeEventListener('pointerup', up)
+            }
+            move(e)
+            window.addEventListener('pointermove', move)
+            window.addEventListener('pointerup', up)
+        },
+
+        async eyeDropper() {
+            if (! window.EyeDropper) return
+            try {
+                const result = await new window.EyeDropper().open()
+                this.pick(result.sRGBHex)
+            } catch (e) {
+                // User dismissed the eyedropper...
+            }
+        },
+    }))
+})
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    رنگ سازمانی
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative max-w-xs"
+        x-data="mdsColorPicker({ value: '#e11d48', format: 'hex' })"
+        x-on:keydown.escape.window="open = false"
+        data-mds-color-picker
+    >
+        <input
+            type="hidden"
+            x-ref="input"
+            value="#e11d48"
+                        
+        >
+
+                    <div class="flex items-center gap-2 rounded-lg border bg-white ps-3 pe-2 shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10" data-mds-color-picker-trigger>
+                <button
+                    type="button"
+                    class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
+                    x-on:click="open = ! open"
+                    x-bind:aria-expanded="open ? 'true' : 'false'"
+                    aria-label="رنگ سازمانی"
+                >
+                    <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
+                </button>
+
+                <input
+                    type="text"
+                    dir="ltr"
+                    class="w-full flex-1 bg-transparent py-2 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500"
+                    x-bind:value="output"
+                    x-on:change="pick($event.target.value)"
+                    x-on:focus="open = true"
+                                    >
+
+                                    <button
+                        type="button"
+                        class="shrink-0 rounded p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                        x-show="! empty"
+                        x-cloak
+                        x-on:click="clear()"
+                        aria-label="Clear"
+                    >
+                        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
+                    </button>
+                            </div>
+        
+        <div
+            class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-show="open"
+            x-cloak
+            x-transition.opacity.duration.100ms
+            x-on:click.outside="open = false"
+            data-mds-color-picker-panel
+        >
+                            <div class="flex flex-col gap-3">
+                    <div
+    class="relative h-36 w-full cursor-crosshair touch-none rounded-lg border border-black/10 dark:border-white/10"
+    dir="ltr"
+    x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
+    x-on:pointerdown.prevent="areaDown($event)"
+    role="slider"
+    aria-label="Saturation and brightness"
+    data-mds-color-picker-area
+>
+    <div
+        class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
+        x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
+    ></div>
+</div>
+                    <input
+        type="range"
+        min="0"
+        max="360"
+        step="1"
+        dir="ltr"
+        class="mds-range w-full"
+        style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+        x-bind:value="Math.round(h)"
+        x-on:input="h = +$event.target.value; empty = false; commit()"
+        aria-label="Hue"
+        data-mds-color-picker-slider="hue"
+    >
+
+                    <template x-if="hasAlpha">
+                        <div><input
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        dir="ltr"
+        class="mds-range mds-checker w-full"
+        x-bind:value="Math.round(a * 100)"
+        x-on:input="a = $event.target.value / 100; empty = false; commit()"
+        x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
+        aria-label="Opacity"
+        data-mds-color-picker-slider="alpha"
+    >
+</div>
+                    </template>
+
+                    <div class="flex items-center gap-2">
+                        <input
+    type="text"
+    dir="ltr"
+    class="w-full flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:border-white/10 dark:bg-white/10 dark:text-white dark:placeholder:text-zinc-500"
+    x-bind:value="output"
+    x-on:change="pick($event.target.value)"
+    data-mds-color-picker-input
+>
+
+                                                    <button
+    type="button"
+    class="shrink-0 rounded-lg border border-zinc-200 p-2 text-zinc-500 hover:bg-zinc-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/5"
+    x-show="!! window.EyeDropper"
+    x-cloak
+    x-on:click="eyeDropper()"
+    aria-label="Eyedropper"
+    data-mds-color-picker-dropper
+>
+    <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11.2872 8.00018L4.68174 14.6057C4.05287 15.2345 3.72789 16.0522 3.70679 16.8762C3.67836 17.9861 3.66415 18.5411 3.57991 18.7373C3.49566 18.9336 3.30358 19.1257 2.91944 19.5098L2.32535 20.1039C1.89155 20.5377 1.89155 21.241 2.32535 21.6748C2.75915 22.1086 3.46247 22.1086 3.89627 21.6748L4.49036 21.0807C4.87451 20.6966 5.06658 20.5045 5.26283 20.4203C5.45909 20.336 6.01406 20.3218 7.12396 20.2934C7.94797 20.2723 8.76565 19.9473 9.39451 19.3184L11.3227 17.3903M14.4291 14.2839L16 12.713M14.4291 14.2839L12.8582 12.713M14.4291 14.2839L11.3227 17.3903M11.3227 17.3903L9.75177 15.8193" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M21.068 7.43213L19.5002 8.99992C18.6718 9.82837 18.6718 11.1715 19.5002 12L12 4.49979C12.8285 5.32824 14.1716 5.32824 15.0001 4.49979L16.5679 2.93201C17.8105 1.68933 19.8253 1.68933 21.068 2.93201C22.3107 4.17468 22.3107 6.18946 21.068 7.43213Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</button>
+                                            </div>
+
+                                            <div class="grid grid-cols-10 gap-1.5" data-mds-color-picker-swatches>
+    <button
+    type="button"
+    class="size-5 cursor-pointer rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/20"
+    style="background: #ef4444"
+    x-on:click="pick('#ef4444')"
+    aria-label="قرمز"
+    data-mds-color-picker-swatch
+></button>
+                                                            <button
+    type="button"
+    class="size-5 cursor-pointer rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/20"
+    style="background: #f59e0b"
+    x-on:click="pick('#f59e0b')"
+    aria-label="کهربایی"
+    data-mds-color-picker-swatch
+></button>
+                                                            <button
+    type="button"
+    class="size-5 cursor-pointer rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/20"
+    style="background: #00c16a"
+    x-on:click="pick('#00c16a')"
+    aria-label="سبز"
+    data-mds-color-picker-swatch
+></button>
+                                                            <button
+    type="button"
+    class="size-5 cursor-pointer rounded-md border border-black/10 transition-transform hover:scale-110 dark:border-white/20"
+    style="background: #3b82f6"
+    x-on:click="pick('#3b82f6')"
+    aria-label="آبی"
+    data-mds-color-picker-swatch
+></button>
+</div>
+                                    </div>
+                    </div>
+    </div>
+
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60" data-flux-description>
+    رنگ اصلی فروشگاه شما
+</ui-description>
+</ui-field></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:color-picker</span>
+    <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;رنگ سازمانی&quot;</span>
+    <span class="t-attr">description</span><span class="t-equals">=</span><span class="t-string">&quot;رنگ اصلی فروشگاه شما&quot;</span>
+    <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;#e11d48&quot;</span>
+    <span class="t-attr">:swatches</span><span class="t-equals">=</span><span class="t-string">&quot;[[&#039;#ef4444&#039;, &#039;قرمز&#039;], [&#039;#f59e0b&#039;, &#039;کهربایی&#039;], [&#039;#00c16a&#039;, &#039;سبز&#039;], [&#039;#3b82f6&#039;, &#039;آبی&#039;]]&quot;</span>
+    <span class="t-attr">clearable</span>
+    <span class="t-attr">dropper</span>
+    <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-xs&quot;</span>
+<span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
 </div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-color-picker" class="docs-ref-block"><h3>mds:color-picker</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
     <tbody><tr><td><span class="docs-prop">value</span></td><td>Initial colour, in any supported format.</td></tr><tr><td><span class="docs-prop">format</span></td><td>Output format: <code>hex</code>, <code>hexa</code>, <code>rgb</code>, <code>rgba</code>, <code>hsl</code>, <code>hsla</code>. Default: <code>hex</code>.</td></tr><tr><td><span class="docs-prop">type</span></td><td>Options: <code>input</code>, <code>button</code>. Default: <code>input</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Field label.</td></tr><tr><td><span class="docs-prop">description</span></td><td>Smaller text under the label.</td></tr><tr><td><span class="docs-prop">placeholder</span></td><td>Placeholder for the text field.</td></tr><tr><td><span class="docs-prop">swatches</span></td><td>Array of colours, or of <code>[colour, label]</code> pairs.</td></tr><tr><td><span class="docs-prop">dropper</span></td><td>Adds the eyedropper button where the browser supports it. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">clearable</span></td><td>Adds a clear button. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>.</td></tr><tr><td><span class="docs-prop">disabled</span></td><td>Disables the control.</td></tr><tr><td><span class="docs-prop">invalid</span></td><td>Marks the control as invalid.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
@@ -1953,7 +2292,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#introduction">Introduction</a><a href="#output-format">Output format</a><a href="#custom-swatches">Custom swatches</a><a href="#button-mode">Button mode</a><a href="#reference">Reference</a><a href="#mds-color-picker" class="docs-toc-sub">mds:color-picker</a></nav>
+        <nav><a href="#introduction">Introduction</a><a href="#output-format">Output format</a><a href="#custom-swatches">Custom swatches</a><a href="#button-mode">Button mode</a><a href="#in-rtl">In RTL</a><a href="#reference">Reference</a><a href="#mds-color-picker" class="docs-toc-sub">mds:color-picker</a></nav>
     </aside>
 </div>
 

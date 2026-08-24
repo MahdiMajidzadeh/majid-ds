@@ -134,7 +134,7 @@
     </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">flux:modal</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="flyout" class="docs-section"><h2>Flyout</h2><p class="docs-text"><code>variant="flyout"</code> slides in from the trailing edge — the leading edge in RTL, with no extra classes.</p><div class="docs-example">
+</div></section><section id="flyout" class="docs-section"><h2>Flyout</h2><p class="docs-text"><code>variant="flyout"</code> slides in from the trailing edge in both directions — the right in LTR, the left in RTL — with no extra classes.</p><div class="docs-example">
     <div class="docs-preview">
         <div class="docs-preview-inner"><div
     class="contents"
@@ -174,7 +174,7 @@
         min: 1,
         max: 3,
         step: 1,
-        fa: true,
+        fa: false,
         display() {
             const s = String(this.value)
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
@@ -201,19 +201,19 @@
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۱</span>
+    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">1</span>
 
     <button
         type="button"
         class="size-7 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -228,9 +228,9 @@
     <div class="flex flex-col items-end">
         
         <div class="flex items-baseline gap-1">
-            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">۱٬۸۹۰٬۰۰۰</span>
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">1,890,000</span>
 
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400">تومان</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
                     </div>
     </div>
 </div>
@@ -378,7 +378,7 @@
             type="button"
             class="shrink-0 rounded p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
             x-on:click="$el.closest('dialog')?.close()"
-            aria-label="بستن"
+            aria-label="Close"
         >
             <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
         </button>

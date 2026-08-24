@@ -18,7 +18,6 @@ $demoVars = fn (bool $fa) => [
     'mdsNum' => fn (mixed $value, int $decimals = 0) => $fa
         ? MajidDs\Support\Persian::number($value, $decimals)
         : number_format((float) $value, $decimals),
-    'mdsBytes' => fn (int $bytes) => $fa ? null : Illuminate\Support\Number::fileSize($bytes, 1),
 ];
 
 // The cards bring their own anchors; list them so the right rail can follow.
@@ -57,17 +56,16 @@ return [
             [
                 'name' => 'Introduction',
                 'lead' => true,
-                'text' => 'Majid DS does not replace Flux — it extends it. Every <code>flux:*</code> component keeps working exactly as it does upstream, and an <code>mds:*</code> namespace adds the pieces Flux does not have: Persian typography and digits, Jalali dates, Toman and Rial prices, and the e-commerce components a Persian storefront needs.',
-                'rtl' => true,
+                'text' => 'Majid DS does not replace Flux — it extends it. Every <code>flux:*</code> component keeps working exactly as it does upstream, and an <code>mds:*</code> namespace adds the pieces Flux does not have: Persian typography and digits, Jalali dates, Toman and Rial prices, and the e-commerce components a storefront needs. Previews in these docs render the way an English app would; one config flag turns the whole kit Persian.',
                 'code' => <<<'BLADE'
                 <mds:product-card
-                    title="گوشی موبایل سامسونگ مدل Galaxy S25"
+                    title="Samsung Galaxy S25 256GB smartphone"
                     image="https://picsum.photos/seed/phone/400/400"
                     :amount="42500000"
                     :original="48900000"
                     :rating="4.6"
                     :reviews="342"
-                    badge="ارسال امروز"
+                    badge="Ships today"
                     href="#"
                     class="max-w-56"
                 />
@@ -77,14 +75,10 @@ return [
                 'name' => 'What this adds on top of Flux',
                 'text' => 'Everything below is additive. Nothing here changes how a <code>flux:*</code> component behaves.',
                 'code' => <<<'BLADE'
-                {{-- Persian typography and digits --}}
-                <flux:heading>سفارش‌های من</flux:heading>
-                @fa(1405)
-
-                {{-- Money --}}
+                {{-- Money, with the original price struck through --}}
                 <mds:price :amount="2500000" :original="3200000" />
 
-                {{-- Jalali dates --}}
+                {{-- Dates in the Jalali calendar --}}
                 <mds:jalali-date :date="now()" format="l j F Y" />
 
                 {{-- E-commerce --}}
@@ -92,8 +86,7 @@ return [
                 <mds:countdown :until="now()->addHours(7)" :days="false" />
                 BLADE,
                 'render' => <<<'BLADE'
-                <div dir="rtl" class="w-full max-w-md space-y-4">
-                    <flux:heading>سفارش‌های من</flux:heading>
+                <div class="w-full max-w-md space-y-4">
                     <mds:price :amount="2500000" :original="3200000" />
                     <div class="text-sm"><mds:jalali-date :date="now()" format="l j F Y" /></div>
                     <div class="flex items-center gap-4">
@@ -105,14 +98,36 @@ return [
                 'align' => 'stretch',
             ],
             [
+                'name' => 'Persian-first when you flip the switch',
+                'text' => 'The kit was built RTL and Persian first. <code>config(\'mds.persian_digits\')</code> — on by default, off in these docs — switches digits, separators, unit names and every built-in string across the whole page at once; the <code>fa</code> prop does the same per component. The snippet below opts in explicitly — in a real Persian app the config default already covers every component.',
+                'rtl' => true,
+                'code' => <<<'BLADE'
+                <flux:heading>سفارش‌های من</flux:heading>
+                @fa(1405)
+
+                <mds:price :amount="2500000" :original="3200000" :fa="true" />
+                <mds:jalali-date :date="now()" format="l j F Y" :fa="true" />
+                <mds:countdown :until="now()->addHours(7)" :days="false" :fa="true" />
+                BLADE,
+                'render' => <<<'BLADE'
+                <div dir="rtl" class="w-full max-w-md space-y-4">
+                    <flux:heading>سفارش‌های من</flux:heading>
+                    <mds:price :amount="2500000" :original="3200000" :fa="true" />
+                    <div class="text-sm"><mds:jalali-date :date="now()" format="l j F Y" :fa="true" /></div>
+                    <mds:countdown :until="now()->addHours(7)->addMinutes(42)" :days="false" :fa="true" />
+                </div>
+                BLADE,
+                'align' => 'stretch',
+            ],
+            [
                 'name' => 'What is documented here',
-                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 30 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to five Flux Pro components: Command, Composer, Color picker, File upload and Timeline.',
+                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 32 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to five Flux Pro components: Command, Composer, Color picker, File upload and Timeline.',
                 'note' => '<p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> — Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker, Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code in the free tier, so there is nothing to preview or reference. Five of them have <code>mds:*</code> replacements — Command, Composer, Color picker, File upload and Timeline; for the others, see Flux\'s own docs.</p>',
             ],
             [
                 'name' => 'Try it',
-                'text' => 'The demo is the fastest way to see the whole kit at once. It is rendered twice — Persian right-to-left and English left-to-right — from the same Blade.',
-                'note' => '<p><a href="demo/demo-en.html">Component gallery</a> · <a href="demo/layouts-en.html">Layout gallery</a> · <a href="demo/demo.html">نمایشگاه اجزا (فارسی)</a></p>',
+                'text' => 'The demo is the fastest way to see the whole kit at once. It lives in these docs, rendered twice from the same Blade — English left-to-right, and Persian right-to-left.',
+                'note' => '<p><a href="guides/demo.html">Demo</a> · <a href="guides/rtl-demo.html">RTL demo</a> · <a href="demo/layouts-en.html">Layout gallery</a></p>',
             ],
         ],
         'related' => ['installation', 'directives', 'grid'],
@@ -182,7 +197,7 @@ return [
         'reference' => [
             ['name' => 'config/mds.php', 'props' => [
                 ['currency', 'Default for <code>mds:price</code> and <code>Persian::money()</code>: <code>toman</code>, <code>rial</code>, <code>none</code>, or a literal label.'],
-                ['persian_digits', 'When <code>true</code>, numeric output uses Persian digits. Every component reads this at render time, so flipping it per request switches the whole page.'],
+                ['persian_digits', 'When <code>true</code> (the default), output is Persian: digits, separators, and every built-in string — unit labels, empty states, ARIA labels. When <code>false</code>, all of it is English. Every component reads this at render time, so flipping it per request switches the whole page.'],
                 ['icons.default', '<code>hugeicons</code> or <code>flux</code> to go back to heroicons.'],
                 ['icons.style', 'Hugeicons style used when a component does not ask for one.'],
                 ['icons.fallback_style', 'Falls back to Stroke Rounded when a Pro style is not registered.'],
@@ -227,10 +242,12 @@ return [
             ],
             [
                 'name' => 'Dark mode',
-                'text' => 'Every component in both libraries ships dark variants. Flux drives them from a <code>dark</code> class on the root element, which is why the kit\'s CSS declares <code>@custom-variant dark (&:where(.dark, .dark *))</code>. The toggle in this page\'s top bar is doing exactly that.',
+                'text' => 'Every component in both libraries ships dark variants. Flux drives them from a <code>dark</code> class on the root element, which is why the <a href="installation.html">Installation stylesheet</a> has your <code>app.css</code> declare <code>@custom-variant dark (&:where(.dark, .dark *))</code>. A toggle is one Alpine expression. These reference pages themselves are light-only — see the dark styles in the <a href="rtl-demo.html">demo</a> or the layout gallery, which keep their own toggle.',
                 'code' => <<<'BLADE'
                 <flux:button variant="subtle" icon="moon" x-data x-on:click="$flux.dark = ! $flux.dark" aria-label="Toggle dark mode" />
                 BLADE,
+                'render' => '<div class="w-full text-xs text-zinc-500">Wire this into your own layout — these light-only docs would render it inertly.</div>',
+                'align' => 'stretch',
             ],
             [
                 'name' => 'Typography',
@@ -264,11 +281,16 @@ return [
         'group' => 'guides',
         'title' => 'Directives & helpers',
         'lede' => 'The Blade directives and PHP helpers behind the components.',
+        // The one page that renders Persian output on purpose: the digit and
+        // money directives are Persian by definition, and @jalali's preview
+        // should match the Persian comments beside it.
+        'env' => ['digits' => true, 'currency' => 'toman'],
         'sections' => [
             [
                 'name' => 'Blade directives',
                 'lead' => true,
-                'text' => 'For values inside a sentence, where a component would be too much.',
+                'text' => 'For values inside a sentence, where a component would be too much. The digit and money directives (<code>@fa</code>, <code>@faNum</code>, <code>@toman</code>, <code>@rial</code>) are Persian by definition — <code>@toman</code> always says تومان; <code>@jalali</code> follows <code>config(\'mds.persian_digits\')</code> like the components do. This page\'s examples read right-to-left, the way these directives are used.',
+                'rtl' => true,
                 'code' => <<<'BLADE'
                 <flux:text>
                     قیمت این کالا @toman(2500000) است و در
@@ -296,13 +318,13 @@ return [
                 'code' => <<<'BLADE'
                 @toman(2500000)        {{-- ۲٬۵۰۰٬۰۰۰ تومان --}}
                 @rial(14500000)        {{-- ۱۴٬۵۰۰٬۰۰۰ ریال --}}
-                @jalali(now())         {{-- ۱ شهریور ۱۴۰۵ --}}
+                @jalali('2026-08-20')  {{-- ۲۹ مرداد ۱۴۰۵ --}}
                 BLADE,
                 'render' => <<<'BLADE'
                 <div dir="rtl" class="space-y-1 text-sm">
                     <div>@toman(2500000)</div>
                     <div>@rial(14500000)</div>
-                    <div>@jalali(now())</div>
+                    <div>@jalali('2026-08-20')</div>
                 </div>
                 BLADE,
                 'align' => 'stretch',
@@ -321,9 +343,15 @@ return [
                 Persian::fileSize(162400);          // ۱۵۹ کیلوبایت
                 Persian::ago(now()->subHours(3));   // ۳ ساعت پیش
 
-                Jalali::format(now(), 'l j F Y');    // یکشنبه ۱ شهریور ۱۴۰۵
-                Jalali::fromGregorian(2026, 8, 23);  // [1405, 6, 1]
-                Jalali::toGregorian(1405, 6, 1);     // [2026, 8, 23]
+                Jalali::format('2026-08-20', 'l j F Y');  // پنجشنبه ۲۹ مرداد ۱۴۰۵
+                Jalali::fromGregorian(2026, 8, 23);       // [1405, 6, 1]
+                Jalali::toGregorian(1405, 6, 1);          // [2026, 8, 23]
+
+                // Both helpers can speak English too — Latin digits,
+                // transliterated month names, English units:
+                Persian::fileSize(162400, false);            // 159 KB
+                Persian::ago(now()->subHours(3), false);     // 3 hours ago
+                Jalali::format('2026-08-20', 'j F Y', false); // 29 Mordad 1405
                 BLADE,
                 'render' => '<div class="w-full text-xs text-zinc-500">MajidDs\\Support\\Persian and MajidDs\\Support\\Jalali</div>',
                 'align' => 'stretch',
@@ -337,23 +365,23 @@ return [
             ['name' => 'Directives', 'props' => [
                 ['@fa', 'Persian digits: <code>@fa(1405)</code>.'],
                 ['@faNum', 'Persian digits with the ٬ thousands separator.'],
-                ['@toman', 'Amount plus تومان.'],
-                ['@rial', 'Amount plus ریال.'],
-                ['@jalali', 'Jalali date: <code>@jalali($date, $format = \'j F Y\')</code>.'],
+                ['@toman', 'Amount plus تومان. Always Persian.'],
+                ['@rial', 'Amount plus ریال. Always Persian.'],
+                ['@jalali', 'Jalali date: <code>@jalali($date, $format = \'j F Y\')</code>. Follows <code>mds.persian_digits</code> — Persian names and digits when on, <code>29 Mordad 1405</code> when off.'],
                 ['@mdsFonts', 'The Vazirmatn <code>&lt;link&gt;</code> tags, for <code>&lt;head&gt;</code>.'],
             ]],
             ['name' => 'MajidDs\\Support\\Persian', 'props' => [
                 ['digits($value)', 'Latin and Arabic-Indic digits to Persian.'],
                 ['latinDigits($value)', 'Persian and Arabic-Indic digits back to Latin.'],
                 ['number($value, $decimals = 0)', 'Persian digits with the <code>٬</code> and <code>٫</code> separators.'],
-                ['money($amount, $currency = null, $decimals = 0)', 'Formatted amount plus its currency label.'],
-                ['currencyLabel($currency)', 'The label for a currency identifier; unknown values pass through as literals.'],
-                ['fileSize($bytes, $persianDigits = null)', 'Byte count in Persian units.'],
-                ['ago($date)', 'A short relative phrase, past or future.'],
+                ['money($amount, $currency = null, $decimals = 0)', 'Formatted amount plus its currency label. Always Persian — it backs <code>@toman</code>; use <code>mds:price</code> for config-aware output.'],
+                ['currencyLabel($currency, $persian = null)', 'The label for a currency identifier — تومان/ریال, or <code>Toman</code>/<code>Rial</code> when Persian output is off; unknown values pass through as literals.'],
+                ['fileSize($bytes, $persianDigits = null)', 'Byte count: <code>۱۵۹ کیلوبایت</code>, or <code>159 KB</code> when Persian output is off.'],
+                ['ago($date, $persian = null)', 'A short relative phrase, past or future — <code>۳ ساعت پیش</code> or <code>3 hours ago</code>.'],
                 ['toDateTime($date)', 'Normalises a date-ish value into a <code>DateTimeImmutable</code>.'],
             ]],
             ['name' => 'MajidDs\\Support\\Jalali', 'props' => [
-                ['format($date, $format, $persianDigits = null)', 'Formats a date in the Jalali calendar.'],
+                ['format($date, $format, $persianDigits = null)', 'Formats a date in the Jalali calendar — Persian names and digits, or Latin digits with transliterated names (<code>29 Mordad 1405</code>) when Persian output is off.'],
                 ['fromGregorian($y, $m, $d)', 'Gregorian to Jalali, as <code>[y, m, d]</code>.'],
                 ['toGregorian($y, $m, $d)', 'Jalali to Gregorian, as <code>[y, m, d]</code>.'],
                 ['isLeapYear($year)', 'Whether a Jalali year is a leap year.'],

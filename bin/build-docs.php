@@ -153,16 +153,14 @@ info('  wrote assets/nav.js ('.count($pages).' pages in '.count($nav).' groups)'
 // -------------------------------------------------------------- 3. write them
 
 /*
-| Almost every page renders in the builder's default environment. The two Demo
-| pages are the exception: like the workbench routes, each sets its locale and
-| the kit's formatting config before rendering ('env' on the page). Reapplying
-| the defaults for env-less pages keeps every page independent of build order.
+| The docs are English-first: unless a page says otherwise ('env' on the page),
+| previews render with Latin digits, English microcopy and "Toman" — what the
+| kit produces in an app configured for English. Pages opt back into Persian
+| where Persian is the point: the RTL demo, and Directives & helpers (the
+| directives are Persian by definition). Reapplying the defaults for env-less
+| pages keeps every page independent of build order.
 */
-$defaults = [
-    'locale' => $app->getLocale(),
-    'digits' => config('mds.persian_digits'),
-    'currency' => config('mds.currency'),
-];
+$defaults = ['locale' => 'en', 'digits' => false, 'currency' => 'toman'];
 
 $written = 0;
 

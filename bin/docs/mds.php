@@ -3,9 +3,11 @@
 /*
 | The mds:* layer — everything this package adds on top of Flux.
 |
-| These components are Persian-first, so their previews render Persian output:
-| Persian digits, the Persian thousands separator and تومان. That is what the
-| components do by default. Where a prop turns it off, the example shows it.
+| The kit is RTL/Persian-first, but these reference pages render with
+| config('mds.persian_digits') off and config('mds.currency') set to the
+| literal "Toman" — what the kit produces in an app configured for English:
+| Latin digits and English built-in microcopy. Each page closes with one
+| Persian section showing the same components as a Persian app renders them.
 */
 
 $pages = [];
@@ -89,6 +91,18 @@ $pages['mds-icon'] = [
             'render' => '<div class="text-xs text-zinc-500">config/mds.php</div>',
             'note' => 'Set <code>config(\'mds.icons.default\')</code> to <code>flux</code> to go back to heroicons everywhere.',
         ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'An icon has no digits or text of its own, so nothing here reads <code>config(\'mds.persian_digits\')</code> and the glyph never mirrors. On an RTL page only the accessible label needs translating.',
+            'code' => <<<'BLADE'
+            <div class="flex items-center gap-3">
+                <mds:icon icon="checkmark-circle-02" class="size-8 text-green-500" label="تأیید شد" />
+                <mds:icon icon="alert-02" class="size-8 text-amber-500" label="هشدار" />
+                <mds:icon icon="truck-delivery" class="size-8 text-zinc-500" label="در حال ارسال" />
+            </div>
+            BLADE,
+        ],
     ],
     'reference' => [
         ['name' => 'mds:icon', 'props' => [
@@ -106,37 +120,32 @@ $pages['mds-icon'] = [
 $pages['price'] = [
     'group' => 'mds',
     'title' => 'mds:price',
-    'lede' => 'Money in Toman or Rial, with Persian digits and separators.',
+    'lede' => 'Money in Toman or Rial — separators, currency label and discount badge from one amount.',
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
-            'text' => 'Persian digits, the <code>٬</code> thousands separator and the currency label, from one amount.',
+            'text' => 'Grouping separators and the currency label, from one amount. These docs render the kit configured for English — Latin digits, <code>Toman</code>; the last section shows the Persian output a Persian-configured app gets by default.',
             'code' => '<mds:price :amount="2500000" />',
         ],
         [
             'name' => 'With an original price',
-            'rtl' => true,
             'text' => 'Pass <code>original</code> and you get the strikethrough and the discount badge for free — the percentage is computed, not passed in.',
             'code' => '<mds:price :amount="2500000" :original="3200000" size="lg" />',
         ],
         [
             'name' => 'Currency',
-            'rtl' => true,
-            'text' => '<code>toman</code> (the default), <code>rial</code>, <code>none</code>, or any literal label. The default comes from <code>config(\'mds.currency\')</code>.',
+            'text' => '<code>toman</code> and <code>rial</code> render تومان / ریال in Persian mode and <code>Toman</code> / <code>Rial</code> in English mode, <code>none</code> drops the label, and any other string is used verbatim.',
             'code' => <<<'BLADE'
             <div class="flex flex-wrap items-center gap-8">
                 <mds:price :amount="2500000" />
-                <mds:price :amount="14500000" currency="rial" />
                 <mds:price :amount="890000" currency="none" />
-                <mds:price :amount="890000" currency="درهم" />
+                <mds:price :amount="890000" currency="AED" />
             </div>
             BLADE,
         ],
         [
             'name' => 'Sizes',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex flex-wrap items-center gap-8">
                 <mds:price :amount="2500000" size="sm" />
@@ -146,18 +155,7 @@ $pages['price'] = [
             BLADE,
         ],
         [
-            'name' => 'Latin digits',
-            'text' => '<code>:fa="false"</code> switches one price to Latin digits and grouping. To do it everywhere, set <code>config(\'mds.persian_digits\')</code> to <code>false</code> — every mds component reads it at render time, which is how the English demo is built.',
-            'code' => <<<'BLADE'
-            <div class="flex flex-wrap items-center gap-8">
-                <mds:price :amount="1200000" :original="1500000" :fa="false" />
-                <mds:price :amount="1200000" :fa="false" currency="Toman" />
-            </div>
-            BLADE,
-        ],
-        [
             'name' => 'Decimals and no badge',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex flex-wrap items-center gap-8">
                 <mds:price :amount="1250.75" :decimals="2" />
@@ -166,11 +164,18 @@ $pages['price'] = [
             BLADE,
         ],
         [
-            'name' => 'Blade directives',
+            'name' => 'Persian output',
             'rtl' => true,
-            'text' => 'For money inside a sentence, the directives are shorter than the component.',
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits, the <code>٬</code> separator and the currency label to Persian; <code>:fa="true"</code> does it for a single price. The <code>@toman</code> and <code>@rial</code> directives are Persian by definition — money inside a Persian sentence.',
             'code' => <<<'BLADE'
-            <flux:text>قیمت این کالا @toman(2500000) است.</flux:text>
+            <div class="flex flex-col items-center gap-6">
+                <div class="flex flex-wrap items-center gap-8">
+                    <mds:price :amount="2500000" :original="3200000" size="lg" :fa="true" currency="toman" />
+                    <mds:price :amount="14500000" :fa="true" currency="rial" />
+                </div>
+
+                <flux:text>قیمت این کالا @toman(2500000) است.</flux:text>
+            </div>
             BLADE,
         ],
     ],
@@ -178,13 +183,13 @@ $pages['price'] = [
         ['name' => 'mds:price', 'props' => [
             ['amount', 'The price. Default: <code>0</code>.'],
             ['original', 'Pre-discount price; adds the strikethrough and the badge.'],
-            ['currency', '<code>toman</code>, <code>rial</code>, <code>none</code>, or a literal label. Default: <code>config(\'mds.currency\')</code>.'],
+            ['currency', '<code>toman</code>, <code>rial</code> (the Persian words), <code>none</code>, or a literal label. Default: <code>config(\'mds.currency\')</code>.'],
             ['decimals', 'Decimal places. Default: <code>0</code>.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['fa', 'Persian digits, separators and built-in labels. Default: <code>config(\'mds.persian_digits\')</code>.'],
             ['badge', 'Shows the discount badge when <code>original</code> is set. Default: <code>true</code>.'],
         ]],
-        ['name' => '@toman / @rial', 'text' => 'Blade directives for a formatted amount inline, e.g. <code>@toman($order->total)</code>.'],
+        ['name' => '@toman / @rial', 'text' => 'Blade directives for a formatted amount inline, e.g. <code>@toman($order->total)</code>. Persian digits and labels by definition — they exist for Persian sentences.'],
     ],
     'related' => ['discount-badge', 'product-card'],
 ];
@@ -198,19 +203,16 @@ $pages['discount-badge'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'code' => '<mds:discount-badge :percent="25" />',
         ],
         [
             'name' => 'From two prices',
-            'rtl' => true,
             'text' => 'Give it the amounts instead of the percentage and it works the arithmetic out.',
             'code' => '<mds:discount-badge :amount="80000" :original="100000" />',
         ],
         [
             'name' => 'Sizes',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex items-center gap-3">
                 <mds:discount-badge :percent="10" size="sm" />
@@ -219,6 +221,12 @@ $pages['discount-badge'] = [
             </div>
             BLADE,
         ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — renders the badge with Persian digits and the <code>٪</code> sign, and its accessible label as «۲۵ درصد تخفیف» rather than "25% off". <code>:fa="true"</code> does the same for a single badge.',
+            'code' => '<mds:discount-badge :percent="25" :fa="true" />',
+        ],
     ],
     'reference' => [
         ['name' => 'mds:discount-badge', 'props' => [
@@ -226,7 +234,7 @@ $pages['discount-badge'] = [
             ['amount', 'Discounted price; used with <code>original</code>.'],
             ['original', 'Pre-discount price.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['fa', 'Persian digits and built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ]],
     ],
     'related' => ['price', 'badge'],
@@ -241,13 +249,11 @@ $pages['quantity'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'code' => '<mds:quantity :value="2" :min="1" :max="5" name="qty" />',
         ],
         [
             'name' => 'Sizes',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex items-center gap-4">
                 <mds:quantity :value="1" size="sm" />
@@ -258,7 +264,6 @@ $pages['quantity'] = [
         ],
         [
             'name' => 'Bounds and step',
-            'rtl' => true,
             'text' => 'The buttons disable themselves at the bounds.',
             'code' => <<<'BLADE'
             <div class="flex items-center gap-4">
@@ -269,14 +274,15 @@ $pages['quantity'] = [
         ],
         [
             'name' => 'With Livewire',
-            'rtl' => true,
             'text' => 'The hidden input always holds Latin digits, whatever the display shows — so the value that reaches your component is a number, not a Persian string.',
             'code' => '<mds:quantity wire:model.live="quantity" :min="1" :max="10" />',
             'render' => '<mds:quantity :value="2" :min="1" :max="10" />',
         ],
         [
-            'name' => 'Latin digits',
-            'code' => '<mds:quantity :value="3" :fa="false" />',
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the displayed digits and the built-in strings to Persian: the buttons are labeled افزایش تعداد and کاهش تعداد for screen readers. <code>:fa="true"</code> does it for a single stepper.',
+            'code' => '<mds:quantity :value="2" :min="1" :max="10" :fa="true" />',
         ],
     ],
     'reference' => [
@@ -287,9 +293,9 @@ $pages['quantity'] = [
             ['step', 'Increment. Default: <code>1</code>.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
             ['name', 'Field name for a plain form.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
-            ['increment-label', 'Accessible label for the plus button.'],
-            ['decrement-label', 'Accessible label for the minus button.'],
+            ['fa', 'Persian digits and built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['increment-label', 'Accessible label for the plus button. Default: "Increase quantity", or افزایش تعداد in Persian.'],
+            ['decrement-label', 'Accessible label for the minus button. Default: "Decrease quantity", or کاهش تعداد in Persian.'],
             ['wire:model', 'Binds to a Livewire property.'],
         ]],
     ],
@@ -305,14 +311,12 @@ $pages['rating'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'text' => 'Half stars are supported, and the review count comes along.',
             'code' => '<mds:rating :value="4.3" :count="126" />',
         ],
         [
             'name' => 'Sizes',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex flex-wrap items-center gap-8">
                 <mds:rating :value="4.6" size="sm" />
@@ -323,7 +327,6 @@ $pages['rating'] = [
         ],
         [
             'name' => 'Without the number',
-            'rtl' => true,
             'code' => <<<'BLADE'
             <div class="flex flex-wrap items-center gap-8">
                 <mds:rating :value="5" :count="12" />
@@ -333,12 +336,19 @@ $pages['rating'] = [
         ],
         [
             'name' => 'As an input',
-            'text' => '<code>mds:rating.input</code> is a real radio group under the hood, so it works in a plain form and with the keyboard.',
-            'code' => '<mds:rating.input name="score" :value="3" label="Rating" />',
+            'text' => '<code>mds:rating.input</code> is a real radio group under the hood, so it works in a plain form and with the keyboard. Its default group label follows the config language — "Rating" here, امتیاز in Persian.',
+            'code' => '<mds:rating.input name="score" :value="3" />',
         ],
         [
-            'name' => 'Latin digits',
-            'code' => '<mds:rating :value="3.7" :count="1205" :fa="false" />',
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the value and count to Persian digits and the built-in labels to Persian; <code>:fa="true"</code> does it for a single rating.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center gap-8">
+                <mds:rating :value="4.3" :count="126" :fa="true" />
+                <mds:rating :value="3.7" :count="1205" :fa="true" />
+            </div>
+            BLADE,
         ],
     ],
     'reference' => [
@@ -355,7 +365,7 @@ $pages['rating'] = [
             ['max', 'Number of stars. Default: <code>5</code>.'],
             ['name', 'Field name for a plain form.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
-            ['label', 'Accessible group label.'],
+            ['label', 'Accessible group label. Default: "Rating", or امتیاز in Persian (follows the config).'],
             ['wire:model', 'Binds to a Livewire property.'],
         ]],
     ],
@@ -371,8 +381,70 @@ $pages['product-card'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
+            'code' => <<<'BLADE'
+            <mds:product-card
+                title="Samsung Galaxy S25 smartphone, 256 GB"
+                image="https://picsum.photos/seed/phone/400/400"
+                :amount="42500000"
+                :original="48900000"
+                :rating="4.6"
+                :reviews="342"
+                badge="Ships today"
+                href="#"
+                class="max-w-56"
+            />
+            BLADE,
+        ],
+        [
+            'name' => 'With an action',
+            'text' => 'Anything in the slot lands under the price.',
+            'code' => <<<'BLADE'
+            <mds:product-card
+                title="AirSound Pro wireless headphones"
+                image="https://picsum.photos/seed/headphone/400/400"
+                :amount="1890000"
+                :rating="4.1"
+                :reviews="87"
+                href="#"
+                class="max-w-56"
+            >
+                <flux:button variant="primary" size="sm" class="w-full">Add to cart</flux:button>
+            </mds:product-card>
+            BLADE,
+        ],
+        [
+            'name' => 'Out of stock',
+            'text' => '<code>unavailable</code> drops the price and shows the out-of-stock label instead — "Out of stock" here, ناموجود in Persian.',
+            'code' => <<<'BLADE'
+            <mds:product-card
+                title="Fit Band 8 smart watch"
+                image="https://picsum.photos/seed/watch/400/400"
+                unavailable
+                href="#"
+                class="max-w-56"
+            />
+            BLADE,
+        ],
+        [
+            'name' => 'Badge color',
+            'code' => <<<'BLADE'
+            <mds:product-card
+                title="One Hundred Years of Solitude"
+                image="https://picsum.photos/seed/book/400/400"
+                :amount="245000"
+                :original="350000"
+                badge="Bestseller"
+                badge-color="amber"
+                href="#"
+                class="max-w-56"
+            />
+            BLADE,
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the price, rating and built-in strings (ناموجود for out of stock) to Persian; <code>:fa="true"</code> does it for a single card.',
             'code' => <<<'BLADE'
             <mds:product-card
                 title="گوشی موبایل سامسونگ مدل Galaxy S25 ظرفیت ۲۵۶ گیگابایت"
@@ -383,55 +455,8 @@ $pages['product-card'] = [
                 :reviews="342"
                 badge="ارسال امروز"
                 href="#"
-                class="max-w-56"
-            />
-            BLADE,
-        ],
-        [
-            'name' => 'With an action',
-            'rtl' => true,
-            'text' => 'Anything in the slot lands under the price.',
-            'code' => <<<'BLADE'
-            <mds:product-card
-                title="هدفون بی‌سیم مدل AirSound Pro"
-                image="https://picsum.photos/seed/headphone/400/400"
-                :amount="1890000"
-                :rating="4.1"
-                :reviews="87"
-                href="#"
-                class="max-w-56"
-            >
-                <flux:button variant="primary" size="sm" class="w-full">افزودن به سبد</flux:button>
-            </mds:product-card>
-            BLADE,
-        ],
-        [
-            'name' => 'Out of stock',
-            'rtl' => true,
-            'text' => '<code>unavailable</code> drops the price and shows ناموجود instead.',
-            'code' => <<<'BLADE'
-            <mds:product-card
-                title="ساعت هوشمند مدل Fit Band 8"
-                image="https://picsum.photos/seed/watch/400/400"
-                unavailable
-                href="#"
-                class="max-w-56"
-            />
-            BLADE,
-            'note' => 'The ناموجود label is currently baked in — there is no prop to translate it.',
-        ],
-        [
-            'name' => 'Badge color',
-            'rtl' => true,
-            'code' => <<<'BLADE'
-            <mds:product-card
-                title="کتاب صد سال تنهایی"
-                image="https://picsum.photos/seed/book/400/400"
-                :amount="245000"
-                :original="350000"
-                badge="پرفروش"
-                badge-color="amber"
-                href="#"
+                :fa="true"
+                currency="toman"
                 class="max-w-56"
             />
             BLADE,
@@ -449,8 +474,8 @@ $pages['product-card'] = [
             ['reviews', 'Review count.'],
             ['badge', 'Corner badge text.'],
             ['badge-color', 'Badge color. Default: <code>lime</code>.'],
-            ['unavailable', 'Marks the product out of stock. Default: <code>false</code>.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['unavailable', 'Marks the product out of stock: the price is replaced with "Out of stock", or ناموجود in Persian. Default: <code>false</code>.'],
+            ['fa', 'Persian digits and built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ]],
     ],
     'related' => ['price', 'rating', 'quantity'],
@@ -465,18 +490,10 @@ $pages['stepper'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
+            'text' => 'The step labels are yours, so the component is language-agnostic; the numbers and the nav\'s accessible label follow the digit config.',
             'code' => <<<'BLADE'
-            <mds:stepper :steps="['سبد خرید', 'آدرس و زمان ارسال', 'پرداخت', 'تأیید نهایی']" :current="2" class="w-full" />
-            BLADE,
-            'align' => 'stretch',
-        ],
-        [
-            'name' => 'In English',
-            'text' => 'The step labels are yours, so the component is direction-agnostic; only the numbers follow the digit config.',
-            'code' => <<<'BLADE'
-            <mds:stepper :steps="['Cart', 'Shipping', 'Payment']" :current="2" :fa="false" class="w-full" />
+            <mds:stepper :steps="['Cart', 'Shipping', 'Payment', 'Review']" :current="2" class="w-full" />
             BLADE,
             'align' => 'stretch',
         ],
@@ -484,9 +501,18 @@ $pages['stepper'] = [
             'name' => 'First and last step',
             'code' => <<<'BLADE'
             <div class="w-full space-y-6">
-                <mds:stepper :steps="['Cart', 'Shipping', 'Payment']" :current="1" :fa="false" class="w-full" />
-                <mds:stepper :steps="['Cart', 'Shipping', 'Payment']" :current="3" :fa="false" class="w-full" />
+                <mds:stepper :steps="['Cart', 'Shipping', 'Payment']" :current="1" class="w-full" />
+                <mds:stepper :steps="['Cart', 'Shipping', 'Payment']" :current="3" class="w-full" />
             </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the step numbers to Persian digits and the nav\'s accessible label to مراحل; <code>:fa="true"</code> does it for a single stepper. On an RTL page the steps flow right-to-left by themselves.',
+            'code' => <<<'BLADE'
+            <mds:stepper :steps="['سبد خرید', 'آدرس و زمان ارسال', 'پرداخت', 'تأیید نهایی']" :current="2" :fa="true" class="w-full" />
             BLADE,
             'align' => 'stretch',
         ],
@@ -495,7 +521,7 @@ $pages['stepper'] = [
         ['name' => 'mds:stepper', 'props' => [
             ['steps', 'Array of step labels.'],
             ['current', '1-based index of the active step. Default: <code>1</code>.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['fa', 'Persian digits and built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ]],
     ],
     'related' => ['timeline', 'progress'],
@@ -510,26 +536,25 @@ $pages['countdown'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'text' => 'Rendered on the server first, then kept ticking by Alpine — so it is never blank before JS boots. These previews are live.',
             'code' => '<mds:countdown :until="now()->addHours(7)->addMinutes(42)" :days="false" />',
         ],
         [
             'name' => 'With days and labels',
-            'rtl' => true,
+            'text' => 'The unit labels follow the config language — days / hours / min / sec here, روز / ساعت / دقیقه / ثانیه in Persian.',
             'code' => '<mds:countdown :until="now()->addDays(2)->addHours(5)" labels size="lg" />',
         ],
         [
             'name' => 'Expired',
-            'rtl' => true,
-            'text' => 'Past the deadline it swaps to <code>expired-text</code>.',
-            'code' => '<mds:countdown :until="now()->subMinute()" expired-text="این پیشنهاد به پایان رسید" />',
+            'text' => 'Past the deadline it swaps to <code>expired-text</code> — "Expired" unless you pass your own.',
+            'code' => '<mds:countdown :until="now()->subMinute()" expired-text="This deal has ended" />',
         ],
         [
-            'name' => 'Latin digits',
-            'code' => '<mds:countdown :until="now()->addHours(3)" :fa="false" labels />',
-            'note' => 'The unit labels (روز / ساعت / دقیقه / ثانیه) are currently baked in — <code>:fa="false"</code> switches the digits but not the words.',
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits, the unit labels (روز / ساعت / دقیقه / ثانیه) and the default expired text (به پایان رسید) to Persian; <code>:fa="true"</code> does it for a single countdown.',
+            'code' => '<mds:countdown :until="now()->addDays(2)->addHours(5)" labels size="lg" :fa="true" />',
         ],
     ],
     'reference' => [
@@ -538,8 +563,8 @@ $pages['countdown'] = [
             ['days', 'Shows a days segment. Default: <code>true</code>.'],
             ['labels', 'Shows the unit labels under the digits. Default: <code>false</code>.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
-            ['expired-text', 'Shown once the deadline passes.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['expired-text', 'Shown once the deadline passes. Default: "Expired", or به پایان رسید in Persian.'],
+            ['fa', 'Persian digits and built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ]],
     ],
     'related' => ['jalali-date', 'badge'],
@@ -554,15 +579,13 @@ $pages['jalali-date'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
-            'text' => 'The conversion is implemented in the package itself — no ext-intl, no calendar library.',
+            'text' => 'The conversion is implemented in the package itself — no ext-intl, no calendar library. The calendar is always Jalali; the output language follows <code>config(\'mds.persian_digits\')</code>, so on these pages you get Latin digits and transliterated names.',
             'code' => '<mds:jalali-date :date="now()" format="l j F Y" />',
         ],
         [
             'name' => 'Formats',
-            'rtl' => true,
-            'text' => 'Same format characters as PHP\'s <code>date()</code>, with Persian month and day names.',
+            'text' => 'Same format characters as PHP\'s <code>date()</code>. Month and weekday names follow the output language: transliterations like Shahrivar and English weekdays here, فروردین تا اسفند and Persian weekdays in Persian.',
             'code' => <<<'BLADE'
             <div class="space-y-1 text-sm">
                 <div><mds:jalali-date :date="now()" format="l j F Y" /></div>
@@ -574,8 +597,7 @@ $pages['jalali-date'] = [
         ],
         [
             'name' => 'Relative',
-            'rtl' => true,
-            'text' => '<code>ago</code> gives a short "N hours ago" phrase, with the full date in the <code>title</code>.',
+            'text' => '<code>ago</code> gives a short relative phrase — "3 hours ago", "in 2 days", "just now" — with the full date in the <code>title</code>.',
             'code' => <<<'BLADE'
             <div class="space-y-1 text-sm">
                 <div><mds:jalali-date :date="now()->subHours(3)" ago /></div>
@@ -585,14 +607,21 @@ $pages['jalali-date'] = [
             'align' => 'stretch',
         ],
         [
-            'name' => 'Latin digits',
-            'code' => '<mds:jalali-date :date="now()" format="Y/m/d" :fa="false" />',
-            'note' => 'The month names stay Persian — they are the names of Jalali months, so there is nothing to switch them to.',
+            'name' => 'Blade directive',
+            'text' => 'The directive reads the config too, so on these pages it comes out transliterated.',
+            'code' => '<flux:text>Registered on @jalali(now()).</flux:text>',
         ],
         [
-            'name' => 'Blade directive',
+            'name' => 'Persian output',
             'rtl' => true,
-            'code' => '<flux:text>ثبت شده در @jalali(now()).</flux:text>',
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the whole output to Persian: digits, month and weekday names, and the relative phrases; <code>:fa="true"</code> does it for a single date.',
+            'code' => <<<'BLADE'
+            <div class="space-y-1 text-sm">
+                <div><mds:jalali-date :date="now()" format="l j F Y" :fa="true" /></div>
+                <div><mds:jalali-date :date="now()->subDays(4)" ago :fa="true" /></div>
+            </div>
+            BLADE,
+            'align' => 'stretch',
         ],
     ],
     'reference' => [
@@ -600,9 +629,9 @@ $pages['jalali-date'] = [
             ['date', 'A Carbon instance, a timestamp or a parseable string.'],
             ['format', 'PHP date format characters. Default: <code>j F Y</code>.'],
             ['ago', 'Renders a relative phrase instead. Default: <code>false</code>.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['fa', 'Persian output — digits, names and relative phrases; Latin digits with transliterated names when off. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ]],
-        ['name' => '@jalali', 'text' => 'Blade directive: <code>@jalali($date, $format = \'j F Y\')</code>.'],
+        ['name' => '@jalali', 'text' => 'Blade directive: <code>@jalali($date, $format = \'j F Y\')</code>. Follows the config for digits and names.'],
         ['name' => 'MajidDs\\Support\\Jalali', 'text' => 'The PHP helper behind the component: <code>Jalali::format()</code>, <code>Jalali::fromGregorian()</code>, <code>Jalali::toGregorian()</code>.'],
     ],
     'related' => ['countdown', 'table'],
@@ -617,16 +646,15 @@ $pages['empty-state'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'code' => <<<'BLADE'
             <mds:empty-state
                 icon="shopping-cart"
-                title="سبد خرید شما خالی است"
-                description="هنوز کالایی به سبد خرید خود اضافه نکرده‌اید."
+                title="Your cart is empty"
+                description="You haven't added anything to your cart yet."
             >
-                <flux:button variant="primary">مشاهده پیشنهادها</flux:button>
-                <flux:button variant="ghost">تاریخچه سفارش‌ها</flux:button>
+                <flux:button variant="primary">Browse deals</flux:button>
+                <flux:button variant="ghost">Order history</flux:button>
             </mds:empty-state>
             BLADE,
             'align' => 'stretch',
@@ -639,6 +667,22 @@ $pages['empty-state'] = [
                 title="No results"
                 description="Try a different search term or clear your filters."
             />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'All the copy here is yours, so nothing reads <code>config(\'mds.persian_digits\')</code> — a Persian empty state is just Persian props on an RTL page.',
+            'code' => <<<'BLADE'
+            <mds:empty-state
+                icon="shopping-cart"
+                title="سبد خرید شما خالی است"
+                description="هنوز کالایی به سبد خرید خود اضافه نکرده‌اید."
+            >
+                <flux:button variant="primary">مشاهده پیشنهادها</flux:button>
+                <flux:button variant="ghost">تاریخچه سفارش‌ها</flux:button>
+            </mds:empty-state>
             BLADE,
             'align' => 'stretch',
         ],
@@ -664,64 +708,62 @@ $pages['preview-card'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'text' => 'The trigger is a real <code>&lt;a&gt;</code> — it still navigates on click. Hovering or focusing it reveals a card previewing where the link goes: the profile behind an @mention, the product behind a link. Hover the mention below.',
             'code' => <<<'BLADE'
             <p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
-                این کیت توسط تیم
+                This kit is maintained by the
                 <mds:preview-card>
                     <mds:preview-card.trigger href="#!">@majid_ds</mds:preview-card.trigger>
 
                     <mds:preview-card.content>
                         <div class="flex items-center justify-between">
                             <flux:avatar src="https://i.pravatar.cc/48?img=12" />
-                            <flux:button size="sm" variant="primary">دنبال کردن</flux:button>
+                            <flux:button size="sm" variant="primary">Follow</flux:button>
                         </div>
 
                         <div>
-                            <div class="font-semibold text-zinc-800 dark:text-white">مجید دیزاین سیستم</div>
+                            <div class="font-semibold text-zinc-800 dark:text-white">Majid Design System</div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
                         </div>
 
-                        <p>کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</p>
+                        <p>An RTL-first UI kit for Laravel Livewire, on top of Flux UI.</p>
 
                         <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                            <span class="font-medium text-zinc-800 dark:text-white">@faNum(2481)</span> دنبال‌کننده
+                            <span class="font-medium text-zinc-800 dark:text-white">2,481</span> followers
                         </div>
                     </mds:preview-card.content>
                 </mds:preview-card>
-                نگه‌داری می‌شود.
+                team.
             </p>
             BLADE,
             'note' => '<p><strong>Keep the preview supplementary.</strong> The card only appears on hover or keyboard focus — it never opens on touch, and screen readers do not announce it. It previews where the link goes; anything essential belongs on the linked page itself.</p>',
         ],
         [
             'name' => 'Media preview',
-            'rtl' => true,
             'text' => 'The content is just a styled container, so a card can lead with a cover image: cancel the padding with <code>!p-0</code>, clip with <code>overflow-hidden</code>, pad the text back in.',
             'code' => <<<'BLADE'
             <p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
-                جلسه بعدی تیم در
+                The next team offsite is at the
                 <mds:preview-card>
-                    <mds:preview-card.trigger href="#!">خانه ساحلی</mds:preview-card.trigger>
+                    <mds:preview-card.trigger href="#!">Coast House</mds:preview-card.trigger>
 
                     <mds:preview-card.content :arrow="false" class="overflow-hidden !p-0">
                         <img src="https://picsum.photos/seed/coast/288/140" alt="" class="h-32 w-full object-cover">
 
                         <div class="flex flex-col gap-1 p-4">
                             <div class="flex items-center justify-between">
-                                <div class="font-semibold text-zinc-800 dark:text-white">خانه ساحلی</div>
+                                <div class="font-semibold text-zinc-800 dark:text-white">Coast House</div>
                                 <span class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
                                     <mds:icon icon="star" class="size-4 text-amber-500" />
-                                    @faNum(4.9, 1)
+                                    4.9
                                 </span>
                             </div>
-                            <p>فضای کار روشن و باز رو به خلیج — جا برای ۲۴ نفر.</p>
+                            <p>A bright, open workspace facing the bay — room for 24.</p>
                         </div>
                     </mds:preview-card.content>
                 </mds:preview-card>
-                برگزار می‌شود.
+                venue.
             </p>
             BLADE,
         ],
@@ -800,6 +842,38 @@ $pages['preview-card'] = [
             </p>
             BLADE,
         ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'Everything positional is logical, so on an RTL page <code>start</code>/<code>end</code> and the alignment axis mirror by themselves. The copy is yours; the follower count here uses the <code>@faNum</code> directive, which formats with Persian digits by definition.',
+            'code' => <<<'BLADE'
+            <p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
+                این کیت توسط تیم
+                <mds:preview-card>
+                    <mds:preview-card.trigger href="#!">@majid_ds</mds:preview-card.trigger>
+
+                    <mds:preview-card.content>
+                        <div class="flex items-center justify-between">
+                            <flux:avatar src="https://i.pravatar.cc/48?img=12" />
+                            <flux:button size="sm" variant="primary">دنبال کردن</flux:button>
+                        </div>
+
+                        <div>
+                            <div class="font-semibold text-zinc-800 dark:text-white">مجید دیزاین سیستم</div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">@majid_ds</div>
+                        </div>
+
+                        <p>کیت رابط کاربری راست‌چین برای Laravel Livewire، روی Flux UI.</p>
+
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            <span class="font-medium text-zinc-800 dark:text-white">@faNum(2481)</span> دنبال‌کننده
+                        </div>
+                    </mds:preview-card.content>
+                </mds:preview-card>
+                نگه‌داری می‌شود.
+            </p>
+            BLADE,
+        ],
     ],
     'reference' => [
         ['name' => 'mds:preview-card', 'text' => 'The root. Holds the open state; renders an inline wrapper.', 'props' => [
@@ -828,22 +902,21 @@ $pages['command'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
-            'text' => 'Flux\'s Command component is Pro-only. This is a working replacement with Persian search, keyboard navigation and a ⌘K shortcut. The preview is live — type in it.',
+            'text' => 'Flux\'s Command component is Pro-only. This is a working replacement with keyboard navigation, a ⌘K shortcut and search that handles Persian text as comfortably as Latin. The preview is live — type in it.',
             'code' => <<<'BLADE'
             <mds:command class="max-w-md">
-                <mds:command.input placeholder="جستجوی فرمان..." clearable />
+                <mds:command.input placeholder="Search commands..." clearable />
 
-                <mds:command.items empty="نتیجه‌ای یافت نشد.">
-                    <mds:command.heading>ناوبری</mds:command.heading>
-                    <mds:command.item icon="shopping-bag" kbd="⌘O">سفارش‌های من</mds:command.item>
-                    <mds:command.item icon="heart" kbd="⌘F">علاقه‌مندی‌ها</mds:command.item>
-                    <mds:command.item icon="map-pin">آدرس‌های من</mds:command.item>
+                <mds:command.items>
+                    <mds:command.heading>Navigation</mds:command.heading>
+                    <mds:command.item icon="shopping-bag" kbd="⌘O">My orders</mds:command.item>
+                    <mds:command.item icon="heart" kbd="⌘F">Favorites</mds:command.item>
+                    <mds:command.item icon="map-pin">My addresses</mds:command.item>
 
-                    <mds:command.heading>عملیات</mds:command.heading>
-                    <mds:command.item icon="truck" kbd="⌘T">پیگیری مرسوله</mds:command.item>
-                    <mds:command.item icon="arrow-right-start-on-rectangle">خروج از حساب</mds:command.item>
+                    <mds:command.heading>Actions</mds:command.heading>
+                    <mds:command.item icon="truck" kbd="⌘T">Track shipment</mds:command.item>
+                    <mds:command.item icon="arrow-right-start-on-rectangle">Sign out</mds:command.item>
                 </mds:command.items>
             </mds:command>
             BLADE,
@@ -851,21 +924,20 @@ $pages['command'] = [
         ],
         [
             'name' => 'Inside a modal',
-            'rtl' => true,
             'text' => 'The usual shape: a bare modal opened by <code>⌘K</code>.',
             'code' => <<<'BLADE'
             <flux:modal.trigger name="global-search" shortcut="cmd.k">
-                <flux:input as="button" placeholder="جستجو..." icon="magnifying-glass" kbd="⌘K" class="max-w-md" />
+                <flux:input as="button" placeholder="Search..." icon="magnifying-glass" kbd="⌘K" class="max-w-md" />
             </flux:modal.trigger>
 
             <flux:modal name="global-search" variant="bare" class="w-full max-w-md">
                 <mds:command>
-                    <mds:command.input placeholder="جستجو در همه‌جا..." closable autofocus />
+                    <mds:command.input placeholder="Search everywhere..." closable autofocus />
 
                     <mds:command.items>
-                        <mds:command.heading>پیشنهادها</mds:command.heading>
-                        <mds:command.item icon="fire">پیشنهادهای شگفت‌انگیز</mds:command.item>
-                        <mds:command.item icon="device-phone-mobile">گوشی موبایل</mds:command.item>
+                        <mds:command.heading>Suggestions</mds:command.heading>
+                        <mds:command.item icon="fire">Today's deals</mds:command.item>
+                        <mds:command.item icon="device-phone-mobile">Mobile phones</mds:command.item>
                     </mds:command.items>
                 </mds:command>
             </flux:modal>
@@ -878,9 +950,27 @@ $pages['command'] = [
             <mds:command class="max-w-md">
                 <mds:command.input placeholder="Search pages..." />
 
-                <mds:command.items empty="No results found.">
+                <mds:command.items>
                     <mds:command.item icon="home" href="#">Dashboard</mds:command.item>
                     <mds:command.item icon="cog-6-tooth" href="#">Settings</mds:command.item>
+                </mds:command.items>
+            </mds:command>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => 'The built-in microcopy — the empty message and the clear/close button labels — follows <code>config(\'mds.persian_digits\')</code>, which is on by default in a real app and off in these docs. There is no <code>fa</code> prop here, so to force Persian on one palette pass the string props (<code>empty</code>, <code>clear-label</code>, <code>close-label</code>) as this example does.',
+            'code' => <<<'BLADE'
+            <mds:command class="max-w-md">
+                <mds:command.input placeholder="جستجوی فرمان..." clearable clear-label="پاک کردن" />
+
+                <mds:command.items empty="نتیجه‌ای یافت نشد.">
+                    <mds:command.heading>ناوبری</mds:command.heading>
+                    <mds:command.item icon="shopping-bag" kbd="⌘O">سفارش‌های من</mds:command.item>
+                    <mds:command.item icon="heart" kbd="⌘F">علاقه‌مندی‌ها</mds:command.item>
+                    <mds:command.item icon="truck" kbd="⌘T">پیگیری مرسوله</mds:command.item>
                 </mds:command.items>
             </mds:command>
             BLADE,
@@ -895,11 +985,11 @@ $pages['command'] = [
             ['clearable', 'Adds a clear button. Default: <code>false</code>.'],
             ['closable', 'Adds a close button, for use inside a modal. Default: <code>false</code>.'],
             ['autofocus', 'Focuses the field on open.'],
-            ['clear-label', 'Accessible label for the clear button.'],
-            ['close-label', 'Accessible label for the close button.'],
+            ['clear-label', 'Accessible label for the clear button. Default: "Clear", or پاک کردن in Persian.'],
+            ['close-label', 'Accessible label for the close button. Default: "Close", or بستن in Persian.'],
         ]],
         ['name' => 'mds:command.items', 'props' => [
-            ['empty', 'Message shown when the search matches nothing.'],
+            ['empty', 'Message shown when the search matches nothing. Default: "No results found.", or نتیجه‌ای یافت نشد. in Persian.'],
         ]],
         ['name' => 'mds:command.heading', 'text' => 'A group label inside the list.'],
         ['name' => 'mds:command.item', 'props' => [
@@ -920,12 +1010,11 @@ $pages['composer'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'text' => 'A textarea that grows with what you type, an action bar around it, and <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> to submit the surrounding form. The preview is live — type a few lines into it.',
             'code' => <<<'BLADE'
             <form wire:submit="send">
-                <mds:composer wire:model="prompt" label="پیام" label:sr-only placeholder="چطور می‌توانم کمکتان کنم؟">
+                <mds:composer wire:model="prompt" label="Message" label:sr-only placeholder="How can I help you today?">
                     <x-slot name="actionsLeading">
                         <flux:button size="sm" variant="subtle" square><mds:icon icon="paper-clip" class="size-4" /></flux:button>
                         <flux:button size="sm" variant="subtle" square><mds:icon icon="adjustments-horizontal" class="size-4" /></flux:button>
@@ -943,14 +1032,13 @@ $pages['composer'] = [
         ],
         [
             'name' => 'With a header',
-            'rtl' => true,
             'text' => 'The <code>header</code> slot sits above the input — attachments, a reply-to line, a model picker.',
             'code' => <<<'BLADE'
-            <mds:composer placeholder="توضیحی برای این تصویر بنویسید...">
+            <mds:composer placeholder="Write a caption for this image...">
                 <x-slot name="header">
-                    <mds:file-item heading="گوشی-گلکسی.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400" class="w-full max-w-64">
+                    <mds:file-item heading="galaxy-phone.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400" class="w-full max-w-64">
                         <x-slot name="actions">
-                            <mds:file-item.remove label="حذف تصویر" />
+                            <mds:file-item.remove label="Remove image" />
                         </x-slot>
                     </mds:file-item>
                 </x-slot>
@@ -964,10 +1052,9 @@ $pages['composer'] = [
         ],
         [
             'name' => 'Inline',
-            'rtl' => true,
             'text' => 'One row: the actions sit beside the input instead of under it. Pair it with <code>rows="1"</code>.',
             'code' => <<<'BLADE'
-            <mds:composer rows="1" inline placeholder="پیام خود را بنویسید...">
+            <mds:composer rows="1" inline placeholder="Write your message...">
                 <x-slot name="actionsLeading">
                     <flux:button size="sm" variant="ghost" square><mds:icon icon="plus" class="size-4" /></flux:button>
                 </x-slot>
@@ -1020,26 +1107,24 @@ $pages['composer'] = [
         ],
         [
             'name' => 'Character counter',
-            'rtl' => true,
-            'text' => 'Not in Flux: <code>maxlength</code> caps the message and <code>counter</code> shows how much of it is used, in Persian digits.',
+            'text' => 'Not in Flux: <code>maxlength</code> caps the message and <code>counter</code> shows how much of it is used.',
             'code' => <<<'BLADE'
-            <mds:composer :maxlength="280" counter rows="2" placeholder="حداکثر ۲۸۰ نویسه..." value="سلام! این پیام شمرده می‌شود.">
+            <mds:composer :maxlength="280" counter rows="2" placeholder="280 characters at most..." value="Hi! Every character of this message is counted.">
                 <x-slot name="actionsTrailing">
                     <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
                 </x-slot>
             </mds:composer>
             BLADE,
             'align' => 'stretch',
-            'note' => 'The count is in characters, not bytes — «سلام» is ۴, not ۸. Pass <code>:fa="false"</code> for Latin digits.',
+            'note' => 'The count is in characters, not bytes — a four-letter Persian word like «سلام» counts as 4, not 8.',
         ],
         [
             'name' => 'Footer',
-            'rtl' => true,
             'text' => 'The <code>footer</code> slot runs under the action bar, sharing its row with the counter.',
             'code' => <<<'BLADE'
-            <mds:composer :maxlength="280" counter rows="2" placeholder="پیام...">
+            <mds:composer :maxlength="280" counter rows="2" placeholder="Message...">
                 <x-slot name="footer">
-                    <span>پاسخ‌ها ممکن است اشتباه باشند.</span>
+                    <span>Replies may be inaccurate.</span>
                 </x-slot>
 
                 <x-slot name="actionsTrailing">
@@ -1068,17 +1153,16 @@ $pages['composer'] = [
         ],
         [
             'name' => 'Disabled and invalid',
-            'rtl' => true,
             'text' => 'A disabled composer is <code>inert</code> — the whole box, action buttons included, stops taking input. Validation errors come from the error bag for <code>name</code>, or from an explicit <code>error</code>.',
             'code' => <<<'BLADE'
             <div class="w-full space-y-4">
-                <mds:composer disabled rows="1" inline placeholder="ابتدا وارد حساب خود شوید">
+                <mds:composer disabled rows="1" inline placeholder="Sign in to start writing">
                     <x-slot name="actionsTrailing">
                         <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
                     </x-slot>
                 </mds:composer>
 
-                <mds:composer name="prompt" label="پیام" error="نوشتن پیام الزامی است." rows="1" inline>
+                <mds:composer name="prompt" label="Message" error="A message is required." rows="1" inline>
                     <x-slot name="actionsTrailing">
                         <flux:button type="submit" size="sm" variant="primary" square><mds:icon icon="paper-airplane" class="size-4" /></flux:button>
                     </x-slot>
@@ -1088,9 +1172,9 @@ $pages['composer'] = [
             'align' => 'stretch',
         ],
         [
-            'name' => 'A whole chat panel',
+            'name' => 'Persian output',
             'rtl' => true,
-            'text' => 'The composer only handles the input; the transcript above it is your markup. This is the shape most Livewire chat pages end up with.',
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits and the built-in strings to Persian; <code>:fa="true"</code> does it for a single composer, visible here in the counter («۰ / ۲۸۰»). The transcript above the composer is your own markup — the shape most Livewire chat pages end up with; the date in the reply is <code>mds:jalali-date</code>.',
             'code' => <<<'BLADE'
             <div class="w-full max-w-lg space-y-4">
                 <div class="space-y-3">
@@ -1102,13 +1186,13 @@ $pages['composer'] = [
 
                     <div class="flex justify-end">
                         <div class="max-w-[80%] rounded-2xl rounded-se-sm bg-accent px-3 py-2 text-sm text-accent-foreground">
-                            مرسوله شما @jalali('2026-08-25') به دستتان می‌رسد.
+                            مرسوله شما <mds:jalali-date :date="'2026-08-25'" :fa="true" /> به دستتان می‌رسد.
                         </div>
                     </div>
                 </div>
 
                 <form wire:submit="send">
-                    <mds:composer wire:model="message" label="پیام" label:sr-only rows="1" max-rows="6" submit="enter" inline placeholder="پیام خود را بنویسید...">
+                    <mds:composer wire:model="message" label="پیام" label:sr-only rows="1" max-rows="6" :maxlength="280" counter submit="enter" :fa="true" placeholder="پیام خود را بنویسید...">
                         <x-slot name="actionsLeading">
                             <flux:button size="sm" variant="ghost" square><mds:icon icon="paper-clip" class="size-4" /></flux:button>
                         </x-slot>
@@ -1216,6 +1300,23 @@ $pages['color-picker'] = [
             </div>
             BLADE,
         ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'The built-in labels — clear, the eyedropper, the saturation area and the hue/opacity sliders — follow <code>config(\'mds.persian_digits\')</code>, which is on by default in a real app and off in these docs; there is no <code>fa</code> prop here. Your own <code>label</code>, <code>description</code> and swatch names can be any language, and the layout mirrors on an RTL page by itself.',
+            'code' => <<<'BLADE'
+            <mds:color-picker
+                label="رنگ سازمانی"
+                description="رنگ اصلی فروشگاه شما"
+                value="#e11d48"
+                :swatches="[['#ef4444', 'قرمز'], ['#f59e0b', 'کهربایی'], ['#00c16a', 'سبز'], ['#3b82f6', 'آبی']]"
+                clearable
+                dropper
+                class="max-w-xs"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
     ],
     'reference' => [
         ['name' => 'mds:color-picker', 'props' => [
@@ -1247,13 +1348,12 @@ $pages['file-upload'] = [
     'sections' => [
         [
             'name' => 'Introduction',
-            'rtl' => true,
             'lead' => true,
             'code' => <<<'BLADE'
-            <mds:file-upload name="photos" label="بارگذاری تصاویر" description="می‌توانید چند فایل را همزمان انتخاب کنید." accept="image/*" multiple class="max-w-md">
+            <mds:file-upload name="photos" label="Upload images" description="You can pick several files at once." accept="image/*" multiple class="max-w-md">
                 <mds:file-upload.dropzone
-                    heading="فایل‌ها را اینجا رها کنید یا کلیک کنید"
-                    text="JPG، PNG یا GIF تا ۱۰ مگابایت"
+                    heading="Drop your images here or click to browse"
+                    text="JPG, PNG or GIF up to 10 MB"
                 />
             </mds:file-upload>
             BLADE,
@@ -1277,19 +1377,18 @@ $pages['file-upload'] = [
         ],
         [
             'name' => 'File list',
-            'rtl' => true,
-            'text' => '<code>mds:file-item</code> renders the chosen files. Give it a byte count and it formats the size in Persian units.',
+            'text' => '<code>mds:file-item</code> renders the chosen files. Give it a byte count and it formats the size — "159 KB" here, Persian units under a Persian config.',
             'code' => <<<'BLADE'
             <div class="w-full max-w-md space-y-2">
                 <mds:file-item heading="Profile_pic.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400">
                     <x-slot name="actions">
-                        <mds:file-item.remove label="حذف Profile_pic.jpg" />
+                        <mds:file-item.remove label="Remove Profile_pic.jpg" />
                     </x-slot>
                 </mds:file-item>
 
-                <mds:file-item heading="archive.zip" text="حجم فایل بیش از ۱۰ مگابایت است." icon="exclamation-triangle" invalid>
+                <mds:file-item heading="archive.zip" text="This file is over the 10 MB limit." icon="exclamation-triangle" invalid>
                     <x-slot name="actions">
-                        <mds:file-item.remove label="حذف archive.zip" />
+                        <mds:file-item.remove label="Remove archive.zip" />
                     </x-slot>
                 </mds:file-item>
             </div>
@@ -1326,6 +1425,28 @@ $pages['file-upload'] = [
             </mds:file-upload>
             BLADE,
         ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits and the built-in strings (the dropzone\'s default heading, the remove button\'s label, the size units) to Persian. <code>:fa="true"</code> flips the upload progress on <code>mds:file-upload</code> and the size on <code>mds:file-item</code>; the dropzone has no <code>fa</code> prop, so this example passes its heading in Persian directly.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-4">
+                <mds:file-upload name="photos" label="بارگذاری تصاویر" accept="image/*" multiple :fa="true">
+                    <mds:file-upload.dropzone
+                        heading="فایل‌ها را اینجا رها کنید یا کلیک کنید"
+                        text="JPG، PNG یا GIF تا ۱۰ مگابایت"
+                    />
+                </mds:file-upload>
+
+                <mds:file-item heading="گوشی-گلکسی.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400" :fa="true">
+                    <x-slot name="actions">
+                        <mds:file-item.remove label="حذف فایل" />
+                    </x-slot>
+                </mds:file-item>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
     ],
     'reference' => [
         ['name' => 'mds:file-upload', 'props' => [
@@ -1337,11 +1458,11 @@ $pages['file-upload'] = [
             ['error', 'Validation message shown under the control.'],
             ['invalid', 'Marks the control as invalid.'],
             ['disabled', 'Disables the control.'],
-            ['fa', 'Persian digits in the progress bar and sizes.'],
+            ['fa', 'Persian digits in the upload progress. Default: <code>config(\'mds.persian_digits\')</code>.'],
             ['wire:model', 'Binds to a Livewire property for real uploads.'],
         ]],
         ['name' => 'mds:file-upload.dropzone', 'props' => [
-            ['heading', 'Main line inside the dropzone.'],
+            ['heading', 'Main line inside the dropzone. Default: "Drop a file here or click to browse", or the Persian equivalent — follows the config.'],
             ['text', 'Supporting line, usually the accepted types and size.'],
             ['icon', 'Icon name. Default: <code>cloud-arrow-up</code>.'],
             ['inline', 'Compact single-row layout. Default: <code>false</code>.'],
@@ -1350,14 +1471,14 @@ $pages['file-upload'] = [
         ['name' => 'mds:file-item', 'props' => [
             ['heading', 'File name.'],
             ['text', 'Secondary line. Derived from <code>size</code> when absent.'],
-            ['size', 'Byte count, formatted into Persian units.'],
+            ['size', 'Byte count, formatted into a readable size — "159 KB", or ۱۵۹ کیلوبایت in Persian.'],
             ['image', 'Thumbnail URL.'],
             ['icon', 'Icon when there is no thumbnail. Default: <code>document</code>.'],
             ['invalid', 'Marks the file as rejected.'],
-            ['fa', 'Persian digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['fa', 'Persian digits and size units. Default: <code>config(\'mds.persian_digits\')</code>.'],
         ], 'slots' => [['actions', 'Buttons on the trailing edge, e.g. remove.']]],
         ['name' => 'mds:file-item.remove', 'props' => [
-            ['label', 'Accessible label. Default: حذف فایل.'],
+            ['label', 'Accessible label. Default: "Remove file", or حذف فایل in Persian.'],
             ['icon', 'Icon name. Default: <code>x-mark</code>.'],
         ]],
     ],
@@ -1503,6 +1624,43 @@ $pages['timeline'] = [
                             </div>
                         </mds:timeline.subgrid>
                     </mds:timeline.block>
+                </mds:timeline.item>
+            </mds:timeline>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'On this RTL preview the rail sits on the right with no extra props — it follows the leading edge. The timeline has no digits or built-in strings of its own, so nothing reads <code>config(\'mds.persian_digits\')</code>; the date here is <code>mds:jalali-date</code> with <code>:fa="true"</code>.',
+            'code' => <<<'BLADE'
+            <mds:timeline>
+                <mds:timeline.item>
+                    <mds:timeline.indicator>
+                        <flux:icon icon="shopping-bag" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>سفارش ثبت شد</flux:heading>
+                        <flux:text><mds:jalali-date :date="now()->subDays(4)" :fa="true" /></flux:text>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+
+                <mds:timeline.item>
+                    <mds:timeline.indicator>
+                        <flux:icon icon="banknotes" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>پرداخت تأیید شد <flux:badge size="sm" color="lime">آنلاین</flux:badge></flux:heading>
+                    </mds:timeline.content>
+                </mds:timeline.item>
+
+                <mds:timeline.item>
+                    <mds:timeline.indicator color="green">
+                        <flux:icon icon="check" variant="micro" />
+                    </mds:timeline.indicator>
+                    <mds:timeline.content>
+                        <flux:heading>تحویل شد</flux:heading>
+                    </mds:timeline.content>
                 </mds:timeline.item>
             </mds:timeline>
             BLADE,

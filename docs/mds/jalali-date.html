@@ -42,13 +42,13 @@
         <p class="docs-eyebrow">mds components</p>
         <h1>mds:jalali-date</h1>
         <p class="docs-lede">Jalali (Shamsi) dates, with no external calendar dependency.</p>
-        <section id="introduction" class="docs-section"><p class="docs-text">The conversion is implemented in the package itself — no ext-intl, no calendar library.</p><div class="docs-example">
+        <section id="introduction" class="docs-section"><p class="docs-text">The conversion is implemented in the package itself — no ext-intl, no calendar library. The calendar is always Jalali; the output language follows <code>config('mds.persian_digits')</code>, so on these pages you get Latin digits and transliterated names.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><time
+        <div class="docs-preview-inner"><time
     datetime="2026-08-24T10:00:00+00:00"
         
     data-mds-jalali-date
->دوشنبه ۲ شهریور ۱۴۰۵</time></div>
+>Monday 2 Shahrivar 1405</time></div>
     </div>
 
     <div class="docs-code">
@@ -60,26 +60,26 @@
         </button>
         <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;l j F Y&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="formats" class="docs-section"><h2>Formats</h2><p class="docs-text">Same format characters as PHP's <code>date()</code>, with Persian month and day names.</p><div class="docs-example">
+</div></section><section id="formats" class="docs-section"><h2>Formats</h2><p class="docs-text">Same format characters as PHP's <code>date()</code>. Month and weekday names follow the output language: transliterations like Shahrivar and English weekdays here, فروردین تا اسفند and Persian weekdays in Persian.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner" dir="rtl"><div class="space-y-1 text-sm">
+        <div class="docs-preview-inner"><div class="space-y-1 text-sm">
     <div><time
     datetime="2026-08-24T10:00:00+00:00"
         
     data-mds-jalali-date
->دوشنبه ۲ شهریور ۱۴۰۵</time>
+>Monday 2 Shahrivar 1405</time>
 </div>
     <div><time
     datetime="2026-08-24T10:00:00+00:00"
         
     data-mds-jalali-date
->۲ شهریور ۱۴۰۵</time>
+>2 Shahrivar 1405</time>
 </div>
     <div><time
     datetime="2026-08-24T10:00:00+00:00"
         
     data-mds-jalali-date
->۱۴۰۵/۰۶/۰۲</time>
+>1405/06/02</time>
 </div>
 </div></div>
     </div>
@@ -97,14 +97,58 @@
     </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;Y/m/d&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="relative" class="docs-section"><h2>Relative</h2><p class="docs-text"><code>ago</code> gives a short "N hours ago" phrase, with the full date in the <code>title</code>.</p><div class="docs-example">
+</div></section><section id="relative" class="docs-section"><h2>Relative</h2><p class="docs-text"><code>ago</code> gives a short relative phrase — "3 hours ago", "in 2 days", "just now" — with the full date in the <code>title</code>.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="space-y-1 text-sm">
+    <div><time
+    datetime="2026-08-24T07:00:00+00:00"
+     title="Monday 2 Shahrivar 1405"     
+    data-mds-jalali-date
+>3 hours ago</time>
+</div>
+    <div><time
+    datetime="2026-08-20T10:00:00+00:00"
+     title="Thursday 29 Mordad 1405"     
+    data-mds-jalali-date
+>4 days ago</time>
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-1 text-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;subHours(3)&quot;</span> <span class="t-attr">ago</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;subDays(4)&quot;</span> <span class="t-attr">ago</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="blade-directive" class="docs-section"><h2>Blade directive</h2><p class="docs-text">The directive reads the config too, so on these pages it comes out transliterated.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Registered on 2 Shahrivar 1405.</p></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">Registered on </span><span class="t-directive">@jalali</span><span class="t-text">(now()).</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text"><code>config('mds.persian_digits')</code> — on by default in a real app, off in these docs — switches the whole output to Persian: digits, month and weekday names, and the relative phrases; <code>:fa="true"</code> does it for a single date.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner" dir="rtl"><div class="space-y-1 text-sm">
     <div><time
-    datetime="2026-08-24T07:00:00+00:00"
-     title="دوشنبه ۲ شهریور ۱۴۰۵"     
+    datetime="2026-08-24T10:00:00+00:00"
+        
     data-mds-jalali-date
->۳ ساعت پیش</time>
+>دوشنبه ۲ شهریور ۱۴۰۵</time>
 </div>
     <div><time
     datetime="2026-08-20T10:00:00+00:00"
@@ -123,51 +167,19 @@
             </svg>
         </button>
         <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-1 text-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
-    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;subHours(3)&quot;</span> <span class="t-attr">ago</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
-    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;subDays(4)&quot;</span> <span class="t-attr">ago</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;l j F Y&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()-&gt;subDays(4)&quot;</span> <span class="t-attr">ago</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
-    </div>
-</div></section><section id="latin-digits" class="docs-section"><h2>Latin digits</h2><div class="docs-example">
-    <div class="docs-preview">
-        <div class="docs-preview-inner"><time
-    datetime="2026-08-24T10:00:00+00:00"
-        
-    data-mds-jalali-date
->1405/06/02</time></div>
-    </div>
-
-    <div class="docs-code">
-        <button type="button" class="docs-copy" aria-label="Copy code">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
-                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
-            </svg>
-        </button>
-        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:jalali-date</span> <span class="t-attr">:date</span><span class="t-equals">=</span><span class="t-string">&quot;now()&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;Y/m/d&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
-    </div>
-</div><div class="docs-note">The month names stay Persian — they are the names of Jalali months, so there is nothing to switch them to.</div></section><section id="blade-directive" class="docs-section"><h2>Blade directive</h2><div class="docs-example">
-    <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >ثبت شده در ۲ شهریور ۱۴۰۵.</p></div>
-    </div>
-
-    <div class="docs-code">
-        <button type="button" class="docs-copy" aria-label="Copy code">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
-                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
-            </svg>
-        </button>
-        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span><span class="t-text">ثبت شده در </span><span class="t-directive">@jalali</span><span class="t-text">(now()).</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:text</span><span class="t-punct">&gt;</span></code></pre>
     </div>
 </div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-jalali-date" class="docs-ref-block"><h3>mds:jalali-date</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
-    <tbody><tr><td><span class="docs-prop">date</span></td><td>A Carbon instance, a timestamp or a parseable string.</td></tr><tr><td><span class="docs-prop">format</span></td><td>PHP date format characters. Default: <code>j F Y</code>.</td></tr><tr><td><span class="docs-prop">ago</span></td><td>Renders a relative phrase instead. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
-</table></div><div id="jalali" class="docs-ref-block"><h3>@jalali</h3><p class="docs-text">Blade directive: <code>@jalali($date, $format = 'j F Y')</code>.</p></div><div id="majidds-support-jalali" class="docs-ref-block"><h3>MajidDs\Support\Jalali</h3><p class="docs-text">The PHP helper behind the component: <code>Jalali::format()</code>, <code>Jalali::fromGregorian()</code>, <code>Jalali::toGregorian()</code>.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/countdown.html"><span class="docs-related-name">mds:countdown</span><span class="docs-related-lede">A live countdown to a deadline.</span></a><a class="docs-related-card" href="../components/table.html"><span class="docs-related-name">Table</span><span class="docs-related-lede">Tabular data, with sortable and aligned columns.</span></a></div></section>
+    <tbody><tr><td><span class="docs-prop">date</span></td><td>A Carbon instance, a timestamp or a parseable string.</td></tr><tr><td><span class="docs-prop">format</span></td><td>PHP date format characters. Default: <code>j F Y</code>.</td></tr><tr><td><span class="docs-prop">ago</span></td><td>Renders a relative phrase instead. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian output — digits, names and relative phrases; Latin digits with transliterated names when off. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
+</table></div><div id="jalali" class="docs-ref-block"><h3>@jalali</h3><p class="docs-text">Blade directive: <code>@jalali($date, $format = 'j F Y')</code>. Follows the config for digits and names.</p></div><div id="majidds-support-jalali" class="docs-ref-block"><h3>MajidDs\Support\Jalali</h3><p class="docs-text">The PHP helper behind the component: <code>Jalali::format()</code>, <code>Jalali::fromGregorian()</code>, <code>Jalali::toGregorian()</code>.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/countdown.html"><span class="docs-related-name">mds:countdown</span><span class="docs-related-lede">A live countdown to a deadline.</span></a><a class="docs-related-card" href="../components/table.html"><span class="docs-related-name">Table</span><span class="docs-related-lede">Tabular data, with sortable and aligned columns.</span></a></div></section>
     </main>
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#introduction">Introduction</a><a href="#formats">Formats</a><a href="#relative">Relative</a><a href="#latin-digits">Latin digits</a><a href="#blade-directive">Blade directive</a><a href="#reference">Reference</a><a href="#mds-jalali-date" class="docs-toc-sub">mds:jalali-date</a><a href="#jalali" class="docs-toc-sub">@jalali</a><a href="#majidds-support-jalali" class="docs-toc-sub">MajidDs\Support\Jalali</a></nav>
+        <nav><a href="#introduction">Introduction</a><a href="#formats">Formats</a><a href="#relative">Relative</a><a href="#blade-directive">Blade directive</a><a href="#persian-output">Persian output</a><a href="#reference">Reference</a><a href="#mds-jalali-date" class="docs-toc-sub">mds:jalali-date</a><a href="#jalali" class="docs-toc-sub">@jalali</a><a href="#majidds-support-jalali" class="docs-toc-sub">MajidDs\Support\Jalali</a></nav>
     </aside>
 </div>
 

@@ -6351,7 +6351,7 @@ document.addEventListener('alpine:init', () => {
         class="size-11 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value + step)"
         x-bind:disabled="max !== null && value >= max"
-        aria-label="افزایش تعداد"
+        aria-label="Increase quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
@@ -6363,7 +6363,7 @@ document.addEventListener('alpine:init', () => {
         class="size-11 flex items-center justify-center rounded-lg text-accent-content transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-300 dark:hover:bg-white/5 dark:disabled:text-zinc-600"
         x-on:click="set(value - step)"
         x-bind:disabled="value <= min"
-        aria-label="کاهش تعداد"
+        aria-label="Decrease quantity"
     >
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
     </button>
@@ -6417,17 +6417,17 @@ document.addEventListener('alpine:init', () => {
             <div class="inline-flex items-center gap-2" data-mds-price>
             <span
     class="inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums px-2 py-0.5 text-xs"
-    aria-label="20 درصد تخفیف"
+    aria-label="20% off"
     data-mds-discount-badge
->20٪</span>
+>20%</span>
     
     <div class="flex flex-col items-end">
-                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">1,500,000</del>
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">1,500,000</del>
         
         <div class="flex items-baseline gap-1">
             <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">1,200,000</span>
 
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400">تومان</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
                     </div>
     </div>
 </div>

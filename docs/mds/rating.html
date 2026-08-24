@@ -44,10 +44,10 @@
         <p class="docs-lede">A star rating, read-only or as an input.</p>
         <section id="introduction" class="docs-section"><p class="docs-text">Half stars are supported, and the review count comes along.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><div
+        <div class="docs-preview-inner"><div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۴٫۳ / ۵"
+    aria-label="4.3 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -70,9 +70,9 @@
         </div>
     </div>
 
-            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">۴٫۳</span>
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">4.3</span>
     
-            <span class="text-sm text-zinc-400 dark:text-zinc-500">(۱۲۶)</span>
+            <span class="text-sm text-zinc-400 dark:text-zinc-500">(126)</span>
     </div></div>
     </div>
 
@@ -87,11 +87,11 @@
     </div>
 </div></section><section id="sizes" class="docs-section"><h2>Sizes</h2><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><div class="flex flex-wrap items-center gap-8">
+        <div class="docs-preview-inner"><div class="flex flex-wrap items-center gap-8">
     <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۴٫۶ / ۵"
+    aria-label="4.6 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -114,13 +114,13 @@
         </div>
     </div>
 
-            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">۴٫۶</span>
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">4.6</span>
     
     </div>
     <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۴٫۶ / ۵"
+    aria-label="4.6 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -143,13 +143,13 @@
         </div>
     </div>
 
-            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">۴٫۶</span>
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">4.6</span>
     
     </div>
     <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۴٫۶ / ۵"
+    aria-label="4.6 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -172,7 +172,7 @@
         </div>
     </div>
 
-            <span class="text-base font-medium text-zinc-700 dark:text-zinc-200">۴٫۶</span>
+            <span class="text-base font-medium text-zinc-700 dark:text-zinc-200">4.6</span>
     
     </div>
 </div></div>
@@ -193,11 +193,11 @@
     </div>
 </div></section><section id="without-the-number" class="docs-section"><h2>Without the number</h2><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><div class="flex flex-wrap items-center gap-8">
+        <div class="docs-preview-inner"><div class="flex flex-wrap items-center gap-8">
     <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۵ / ۵"
+    aria-label="5 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -220,14 +220,14 @@
         </div>
     </div>
 
-            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">۵</span>
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">5</span>
     
-            <span class="text-sm text-zinc-400 dark:text-zinc-500">(۱۲)</span>
+            <span class="text-sm text-zinc-400 dark:text-zinc-500">(12)</span>
     </div>
     <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="۲٫۵ / ۵"
+    aria-label="2.5 / 5"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -267,7 +267,7 @@
     </span><span class="t-punct">&lt;</span><span class="t-tag">mds:rating</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;2.5&quot;</span> <span class="t-attr">:show-value</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="as-an-input" class="docs-section"><h2>As an input</h2><p class="docs-text"><code>mds:rating.input</code> is a real radio group under the hood, so it works in a plain form and with the keyboard.</p><div class="docs-example">
+</div></section><section id="as-an-input" class="docs-section"><h2>As an input</h2><p class="docs-text"><code>mds:rating.input</code> is a real radio group under the hood, so it works in a plain form and with the keyboard. Its default group label follows the config language — "Rating" here, امتیاز in Persian.</p><div class="docs-example">
     <div class="docs-preview">
         <div class="docs-preview-inner"><div
     class="inline-flex items-center"
@@ -292,7 +292,7 @@
             x-bind:class="(hover ? hover >= 1 : value >= 1) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 1 ? 'true' : 'false'"
             role="radio"
-            aria-label="۱"
+            aria-label="1"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -305,7 +305,7 @@
             x-bind:class="(hover ? hover >= 2 : value >= 2) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 2 ? 'true' : 'false'"
             role="radio"
-            aria-label="۲"
+            aria-label="2"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -318,7 +318,7 @@
             x-bind:class="(hover ? hover >= 3 : value >= 3) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 3 ? 'true' : 'false'"
             role="radio"
-            aria-label="۳"
+            aria-label="3"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -331,7 +331,7 @@
             x-bind:class="(hover ? hover >= 4 : value >= 4) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 4 ? 'true' : 'false'"
             role="radio"
-            aria-label="۴"
+            aria-label="4"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -344,7 +344,7 @@
             x-bind:class="(hover ? hover >= 5 : value >= 5) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 5 ? 'true' : 'false'"
             role="radio"
-            aria-label="۵"
+            aria-label="5"
         >
             <svg class="size-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
         </button>
@@ -358,14 +358,45 @@
                 <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
             </svg>
         </button>
-        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:rating.input</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;score&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Rating&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:rating.input</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;score&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="latin-digits" class="docs-section"><h2>Latin digits</h2><div class="docs-example">
+</div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text"><code>config('mds.persian_digits')</code> — on by default in a real app, off in these docs — switches the value and count to Persian digits and the built-in labels to Persian; <code>:fa="true"</code> does it for a single rating.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner"><div
+        <div class="docs-preview-inner" dir="rtl"><div class="flex flex-wrap items-center gap-8">
+    <div
     class="inline-flex items-center gap-1.5"
     role="img"
-    aria-label="3.7 / 5"
+    aria-label="۴٫۳ / ۵"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+                            <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 86.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-4.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
+
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">۴٫۳</span>
+    
+            <span class="text-sm text-zinc-400 dark:text-zinc-500">(۱۲۶)</span>
+    </div>
+    <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="۳٫۷ / ۵"
     data-mds-rating
 >
     <div class="inline-grid align-middle">
@@ -388,10 +419,11 @@
         </div>
     </div>
 
-            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">3.7</span>
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">۳٫۷</span>
     
-            <span class="text-sm text-zinc-400 dark:text-zinc-500">(1,205)</span>
-    </div></div>
+            <span class="text-sm text-zinc-400 dark:text-zinc-500">(۱٬۲۰۵)</span>
+    </div>
+</div></div>
     </div>
 
     <div class="docs-code">
@@ -401,20 +433,23 @@
                 <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
             </svg>
         </button>
-        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:rating</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3.7&quot;</span> <span class="t-attr">:count</span><span class="t-equals">=</span><span class="t-string">&quot;1205&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex flex-wrap items-center gap-8&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:rating</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;4.3&quot;</span> <span class="t-attr">:count</span><span class="t-equals">=</span><span class="t-string">&quot;126&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:rating</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3.7&quot;</span> <span class="t-attr">:count</span><span class="t-equals">=</span><span class="t-string">&quot;1205&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
     </div>
 </div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-rating" class="docs-ref-block"><h3>mds:rating</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
     <tbody><tr><td><span class="docs-prop">value</span></td><td>The rating. Default: <code>0</code>.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">count</span></td><td>Review count shown after the stars.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">show-value</span></td><td>Shows the numeric value. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
 </table></div><div id="mds-rating-input" class="docs-ref-block"><h3>mds:rating.input</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
-    <tbody><tr><td><span class="docs-prop">value</span></td><td>Pre-selected rating.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Accessible group label.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
-</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/product-card.html"><span class="docs-related-name">mds:product-card</span><span class="docs-related-lede">A whole product tile: image, title, price, rating and a badge.</span></a><a class="docs-related-card" href="../mds/price.html"><span class="docs-related-name">mds:price</span><span class="docs-related-lede">Money in Toman or Rial, with Persian digits and separators.</span></a></div></section>
+    <tbody><tr><td><span class="docs-prop">value</span></td><td>Pre-selected rating.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Accessible group label. Default: "Rating", or امتیاز in Persian (follows the config).</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/product-card.html"><span class="docs-related-name">mds:product-card</span><span class="docs-related-lede">A whole product tile: image, title, price, rating and a badge.</span></a><a class="docs-related-card" href="../mds/price.html"><span class="docs-related-name">mds:price</span><span class="docs-related-lede">Money in Toman or Rial — separators, currency label and discount badge from one amount.</span></a></div></section>
     </main>
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#introduction">Introduction</a><a href="#sizes">Sizes</a><a href="#without-the-number">Without the number</a><a href="#as-an-input">As an input</a><a href="#latin-digits">Latin digits</a><a href="#reference">Reference</a><a href="#mds-rating" class="docs-toc-sub">mds:rating</a><a href="#mds-rating-input" class="docs-toc-sub">mds:rating.input</a></nav>
+        <nav><a href="#introduction">Introduction</a><a href="#sizes">Sizes</a><a href="#without-the-number">Without the number</a><a href="#as-an-input">As an input</a><a href="#persian-output">Persian output</a><a href="#reference">Reference</a><a href="#mds-rating" class="docs-toc-sub">mds:rating</a><a href="#mds-rating-input" class="docs-toc-sub">mds:rating.input</a></nav>
     </aside>
 </div>
 
