@@ -34,8 +34,8 @@ All components are RTL-first (built with logical properties, so they also work L
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 57 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
-- **Live demo**: the workbench demos, pre-rendered to static HTML so they run without PHP, in both directions — Persian RTL at [docs/demo/demo.html](docs/demo/demo.html) / [docs/demo/layouts.html](docs/demo/layouts.html), English LTR at [docs/demo/demo-en.html](docs/demo/demo-en.html) / [docs/demo/layouts-en.html](docs/demo/layouts-en.html). Every page has a language switcher.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 59 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
 The whole `docs/` folder is a static site: **Settings → Pages → Source: `main` / `/docs`**
@@ -43,8 +43,8 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 57 reference pages + docs/assets/site.css
-npm run pages           # rebuilds the 20 demo pages in docs/demo/
+npm run docs            # rebuilds the 59 reference pages + docs/assets/site.css
+npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
 ```
 
 Both sites share one stylesheet, `docs/assets/site.css`, built from
@@ -82,11 +82,13 @@ only resemble the components. Rendering it means the snippet you copy and the pr
 above it are provably the same thing — and because the real `flux.js` is loaded, the
 dropdowns, modals, tooltips and countdowns in the docs actually work.
 
-`bin/build-pages.php` is the equivalent tool for the demo: it boots the workbench app
-on a throwaway port, crawls `/demo`, `/layouts` and their `/en` counterparts, and writes
-flat `.html` files into `docs/demo/` with every link and asset rewritten to a relative
-path — so the site works from a project subpath, a custom domain, or straight off the
-file system.
+`bin/build-pages.php` is the equivalent tool for the layout gallery: it boots the
+workbench app on a throwaway port, crawls `/layouts` and its `/en` counterpart, and
+writes flat `.html` files into `docs/demo/` with every link and asset rewritten to a
+relative path — so the site works from a project subpath, a custom domain, or straight
+off the file system. The component showcase needs no crawl: the docs builder renders
+the workbench's demo cards (`workbench/resources/views/demo/cards.blade.php`) straight
+into the Demo and RTL demo pages under Guides.
 
 ## Requirements
 
@@ -549,7 +551,7 @@ npm run demo:serve      # then open http://127.0.0.1:8720/demo
 
 Every route above also exists under `/en` — `/en/demo`, `/en/layouts/aside` and so
 on — rendered left-to-right in English. Both locales are what `npm run pages`
-snapshots into `docs/` (20 pages); see [Documentation](#documentation) for
+snapshots into `docs/` (18 pages); see [Documentation](#documentation) for
 publishing them.
 
 ### How the two locales work

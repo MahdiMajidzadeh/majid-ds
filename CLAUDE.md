@@ -14,8 +14,8 @@ only covers what llms.txt doesn't: how to work on the package itself.
 ```bash
 vendor/bin/phpunit                        # full suite (~2s, keep it green)
 vendor/bin/phpunit --filter composer      # one component's tests
-npm run docs                              # regenerate the 57 reference pages + docs/assets/site.css
-npm run pages                             # regenerate the 20 static demo pages in docs/demo/
+npm run docs                              # regenerate the 59 reference pages + docs/assets/site.css
+npm run pages                             # regenerate the 18 static layout-gallery pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
 
@@ -33,7 +33,7 @@ Any change to a component's view, CSS, or docs content is not done until
 | `resources/views/mds/` | the components — anonymous Blade views, subcomponents in subdirs (`command/item.blade.php` = `<mds:command.item>`) |
 | `resources/css/mds.css` | the kit's CSS layer; component rules MUST stay in `@layer components` (unlayered rules beat Tailwind utilities) |
 | `bin/docs/` | docs content as PHP arrays, one file per group (`mds.php`, `flux.php`, `nav.php`…); `bin/build-docs.php` renders each snippet through real Blade |
-| `workbench/` | the bilingual demo app (testbench); `bin/build-pages.php` crawls it into `docs/demo/` |
+| `workbench/` | the bilingual demo app (testbench); `bin/build-pages.php` crawls its layout gallery into `docs/demo/`, and `demo/cards.blade.php` (the showcase content) is rendered into the docs' Demo pages by `build-docs.php` |
 | `tests/Feature/ComponentsTest.php` | render-a-Blade-string, assert-substrings tests |
 
 ## Component conventions (follow the neighbors)
@@ -71,7 +71,7 @@ Any change to a component's view, CSS, or docs content is not done until
   the builder hard-fails on missing pages and warns on orphans. The nav ships
   as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
   on `file://`) and pages render the sidebar client-side, so a nav change
-  rewrites one asset, not all 57 pages.
+  rewrites one asset, not all 59 pages.
 - Rebuilds are byte-identical: both builders pin the clock (`Date::setTestNow`
   in `build-docs.php`; the `MDS_TEST_NOW` env var for the crawled demo server)
   and the crawler pins the unused Livewire CSRF token. A rebuild that dirties
@@ -86,8 +86,9 @@ Any change to a component's view, CSS, or docs content is not done until
 3. Docs page in `bin/docs/mds.php` + nav entry in `bin/docs/nav.php`
    (sections use `rtl => true` for Persian previews, `align => 'stretch'` for
    full-width ones; `related` cross-links both ways).
-4. Demo card in `workbench/resources/views/demo.blade.php` + navbar ToC item +
-   `en.json` keys.
+4. Demo card in `workbench/resources/views/demo/cards.blade.php` + its navbar
+   ToC item + `en.json` keys (the partial is shared: the workbench `/demo` page
+   includes it, and the docs' Demo / RTL demo pages embed it at build time).
 5. `llms.txt` section (props · slots · behavior · Livewire contract) and a
    README section; bump the page/component counts in README and
    `bin/docs/guides.php` if it's a Pro alternative.
@@ -96,12 +97,14 @@ Any change to a component's view, CSS, or docs content is not done until
 ## Verifying visually
 
 The generated pages run without PHP — open `docs/mds/<name>.html` or
-`docs/demo/demo.html` straight from disk (`file://`), screenshot the
-`.docs-preview` elements. The reference docs are light-only (no toggle,
-`color-scheme: light`); to check a component's dark styles, add the class by
-hand — `document.documentElement.classList.add('dark')` — or use the demo,
-which keeps its own toggle. Alpine is live on these pages, so keyboard/submit
-behavior is testable there too.
+`docs/guides/demo.html` / `docs/guides/rtl-demo.html` straight from disk
+(`file://`), screenshot the `.docs-preview` / `.docs-embed` elements. The
+reference docs are light-only (no toggle, `color-scheme: light`); to check a
+component's dark styles, add the class by hand —
+`document.documentElement.classList.add('dark')` — or use the layout-gallery
+pages in `docs/demo/` or the live workbench, which keep their own toggle.
+Alpine is live on these pages, so keyboard/submit behavior is testable there
+too.
 
 ## Don'ts
 
