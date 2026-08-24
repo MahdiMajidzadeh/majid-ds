@@ -550,3 +550,8 @@ html.docs body {
 /* The kit's own components are Persian-first, so previews of them read RTL. */
 .docs-preview-inner[dir='rtl'],
 .docs-preview-inner [dir='rtl'] { font-family: 'Vazirmatn', var(--docs-sans); }
+
+/* Embedded content (the Demo pages) stands on the page, not in a preview card. */
+.docs-embed { margin-top: 1.5rem; }
+.docs-embed[dir='rtl'],
+.docs-embed [dir='rtl'] { font-family: 'Vazirmatn', var(--docs-sans); }

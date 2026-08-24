@@ -1,9 +1,51 @@
 <?php
 
 /*
-| The guides: the overview page, installation, theming, and the directives and
-| helpers that have no component of their own.
+| The guides: the overview page, installation, theming, the directives and
+| helpers that have no component of their own, and the two Demo pages that
+| embed the workbench's demo cards whole.
 */
+
+/*
+| What the demo cards partial needs from its page — the docs-build twin of the
+| View::composer in workbench/routes/web.php, minus everything page-level.
+| Pagination links point at '#': on a static page a dead route helps nobody.
+*/
+$demoVars = fn (bool $fa) => [
+    'mdsFa' => $fa,
+    'mdsForward' => $fa ? 'arrow-left' : 'arrow-right',
+    'mdsUrl' => fn (string $path) => '#',
+    'mdsNum' => fn (mixed $value, int $decimals = 0) => $fa
+        ? MajidDs\Support\Persian::number($value, $decimals)
+        : number_format((float) $value, $decimals),
+    'mdsBytes' => fn (int $bytes) => $fa ? null : Illuminate\Support\Number::fileSize($bytes, 1),
+];
+
+// The cards bring their own anchors; list them so the right rail can follow.
+$demoAnchors = [
+    'typography' => 'Typography',
+    'buttons' => 'Buttons',
+    'badges' => 'Badges',
+    'avatars' => 'Avatars & icons',
+    'forms' => 'Forms',
+    'overlays' => 'Overlays & toasts',
+    'command' => 'Command palette',
+    'color-picker' => 'Color picker',
+    'file-upload' => 'File upload',
+    'composer' => 'Composer',
+    'preview-card' => 'Preview card',
+    'timeline' => 'Timeline',
+    'icons' => 'Icons',
+    'table' => 'Table & pagination',
+    'mds' => 'mds components',
+];
+
+$demoEmbed = <<<'BLADE'
+<div class="space-y-10" x-data>
+    @include('demo.cards')
+</div>
+<flux:toast />
+BLADE;
 
 return [
     // ----------------------------------------------------------------- index
@@ -353,5 +395,44 @@ return [
             ],
         ],
         'related' => ['directives', 'index'],
+    ],
+
+    // ------------------------------------------------------------------ demo
+    'demo' => [
+        'group' => 'guides',
+        'title' => 'Demo',
+        'lede' => 'Every component on one page — the free Flux UI set plus the whole mds layer, in English.',
+        'env' => ['locale' => 'en', 'digits' => false, 'currency' => 'Toman'],
+        'sections' => [
+            [
+                'name' => 'Showcase',
+                'lead' => true,
+                'text' => 'This is the workbench demo, rendered through Blade at build time like every other preview in these docs. Everything on it is live: open the modals, press <kbd>⌘K</kbd>, type in the composer. For the kit in the language it is designed for, see the <a href="rtl-demo.html">RTL demo</a>.',
+                'embed' => $demoEmbed,
+                'with' => $demoVars(false),
+                'anchors' => $demoAnchors,
+            ],
+        ],
+        'related' => ['rtl-demo', 'index'],
+    ],
+
+    // -------------------------------------------------------------- rtl-demo
+    'rtl-demo' => [
+        'group' => 'guides',
+        'title' => 'RTL demo',
+        'lede' => 'The same showcase right-to-left and in Persian — digits, dates and currency the way a Persian storefront ships them.',
+        'env' => ['locale' => 'fa', 'digits' => true, 'currency' => 'toman'],
+        'sections' => [
+            [
+                'name' => 'Showcase',
+                'lead' => true,
+                'text' => 'The Persian original of the <a href="demo.html">demo</a>: the direction flips to RTL, digits and separators turn Persian, dates go Jalali — all from <code>config()</code> and logical CSS properties, with not one component call changed.',
+                'embed' => $demoEmbed,
+                'with' => $demoVars(true),
+                'rtl' => true,
+                'anchors' => $demoAnchors,
+            ],
+        ],
+        'related' => ['demo', 'index'],
     ],
 ];

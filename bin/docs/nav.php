@@ -24,6 +24,8 @@ return [
             'theming' => 'Theming',
             'directives' => 'Directives & helpers',
             'ai-agents' => 'AI agents',
+            'demo' => 'Demo',
+            'rtl-demo' => 'RTL demo',
         ],
     ],
     [

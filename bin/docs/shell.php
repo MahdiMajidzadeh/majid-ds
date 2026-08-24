@@ -76,6 +76,20 @@ function example(array $section): string
     HTML;
 }
 
+/**
+ * An embedded section: rendered markup standing on its own, with no code half.
+ * This is how the Demo pages carry the workbench's demo cards — content worth
+ * looking at whole, not a snippet worth copying.
+ */
+function embed(array $section): string
+{
+    $html = render($section['embed'], $section['with'] ?? []);
+
+    $dir = ($section['rtl'] ?? false) ? ' dir="rtl"' : '';
+
+    return '<div class="docs-embed"'.$dir.'>'.$html.'</div>';
+}
+
 /** A Prop/Slot table in the Reference section. */
 function referenceTable(string $heading, array $rows): string
 {
@@ -118,6 +132,13 @@ function renderPage(string $slug, array $page, array $pages): string
         $id = $section['id'] ?? slugify($section['name']);
         $toc[] = ['id' => $id, 'name' => $section['name'], 'sub' => false];
 
+        // An embedded section's content brings its own anchors (the demo's
+        // cards); listing them keeps the right-hand rail useful on a page
+        // whose section list would otherwise be a single entry.
+        foreach ($section['anchors'] ?? [] as $anchorId => $anchorName) {
+            $toc[] = ['id' => $anchorId, 'name' => $anchorName, 'sub' => true];
+        }
+
         $body .= '<section id="'.$id.'" class="docs-section">';
 
         // The first section carries the page title, so it needs no heading of
@@ -132,6 +153,10 @@ function renderPage(string $slug, array $page, array $pages): string
 
         if (isset($section['code'])) {
             $body .= example($section);
+        }
+
+        if (isset($section['embed'])) {
+            $body .= embed($section);
         }
 
         if (isset($section['note'])) {
@@ -233,7 +258,7 @@ function renderPage(string $slug, array $page, array $pages): string
 
         <nav class="docs-topnav">
             <a href="{$prefix}index.html">Docs</a>
-            <a href="{$prefix}demo/demo-en.html">Demo</a>
+            <a href="{$prefix}guides/demo.html">Demo</a>
             <a href="{$prefix}demo/layouts-en.html">Layouts</a>
         </nav>
 

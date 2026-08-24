@@ -73,10 +73,20 @@ Illuminate\Support\Facades\Date::setTestNow('2026-08-24 10:00:00');
 */
 Illuminate\Support\Facades\View::share('errors', new Illuminate\Support\ViewErrorBag);
 
+/*
+| The Demo pages render the workbench's demo cards partial in place, so the
+| builder needs the workbench views resolvable and its Persian-keyed English
+| translations registered — exactly what workbench/routes/web.php does for the
+| live demo. The en.json keys are Persian strings, so registering them can
+| never change what an English snippet on any other page renders.
+*/
+Illuminate\Support\Facades\View::addLocation($root.'/workbench/resources/views');
+$app->make('translation.loader')->addJsonPath($root.'/workbench/lang');
+
 /** Render one Blade snippet to the markup a real page would contain. */
-function render(string $blade): string
+function render(string $blade, array $data = []): string
 {
-    return trim(Blade::render($blade));
+    return trim(Blade::render($blade, $data));
 }
 
 // ------------------------------------------------------------- 2. the content
@@ -142,12 +152,28 @@ info('  wrote assets/nav.js ('.count($pages).' pages in '.count($nav).' groups)'
 
 // -------------------------------------------------------------- 3. write them
 
+/*
+| Almost every page renders in the builder's default environment. The two Demo
+| pages are the exception: like the workbench routes, each sets its locale and
+| the kit's formatting config before rendering ('env' on the page). Reapplying
+| the defaults for env-less pages keeps every page independent of build order.
+*/
+$defaults = [
+    'locale' => $app->getLocale(),
+    'digits' => config('mds.persian_digits'),
+    'currency' => config('mds.currency'),
+];
+
 $written = 0;
 
 foreach ($pages as $slug => $page) {
     if ($only !== null && ! in_array($slug, $only, true)) {
         continue;
     }
+
+    $env = ($page['env'] ?? []) + $defaults;
+    $app->setLocale($env['locale']);
+    config(['mds.persian_digits' => $env['digits'], 'mds.currency' => $env['currency']]);
 
     $path = $root.'/docs/'.docsPath($slug, $pages);
     $dir = dirname($path);
@@ -156,7 +182,19 @@ foreach ($pages as $slug => $page) {
         mkdir($dir, 0755, true);
     }
 
-    file_put_contents($path, renderPage($slug, $page, $pages));
+    $html = renderPage($slug, $page, $pages);
+
+    /*
+    | An English page is only as translated as workbench/lang/en.json — count
+    | what is left. A handful is expected (the demo's callout names them), but
+    | a jump means a string was added to a view without a translation.
+    */
+    if (($page['env']['locale'] ?? null) === 'en' && preg_match_all('/[\x{0600}-\x{06FF}]+/u', strip_tags($html), $found)) {
+        $words = array_unique($found[0]);
+        info(sprintf('  %d Persian strings left in %s: %s', count($words), $slug, implode(' ', array_slice($words, 0, 12))));
+    }
+
+    file_put_contents($path, $html);
     $written++;
     info('  wrote '.substr($path, strlen($root) + 6).' ('.round(filesize($path) / 1024).' KB)');
 }
