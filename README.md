@@ -58,7 +58,7 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 |---|---|
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
-| Components | The 30 free Flux components bundled with this package |
+| Components | The 32 free Flux components bundled with this package |
 | mds components | All 16 `mds:*` components, including the five Flux Pro alternatives |
 
 **Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
@@ -171,7 +171,7 @@ Composes `flux:card`, `mds:rating`, `mds:price`, and `mds:discount-badge`. The s
     <flux:button variant="primary" size="sm" class="w-full">افزودن به سبد</flux:button>
 </mds:product-card>
 
-<mds:product-card title="..." image="..." unavailable />   {{-- grayscale + ناموجود --}}
+<mds:product-card title="..." image="..." unavailable />   {{-- grayscale + ناموجود / "Out of stock" --}}
 ```
 
 Other props: `original`, `currency`, `badge` + `badge-color` (top corner `flux:badge`), `fa`.
@@ -236,7 +236,7 @@ For a global ⌘K palette, pair it with Flux's modal (the `shortcut` prop and `b
 </flux:modal>
 ```
 
-Props — `command.input`: `icon` (default `magnifying-glass`), `clearable`, `closable` (closes the containing modal); `command.item`: `icon`, `icon-variant`, `kbd`, `href` (renders `<a>` instead of `<button>`); `command.items`: `empty` (no-results text, default «نتیجه‌ای یافت نشد.»).
+Props — `command.input`: `icon` (default `magnifying-glass`), `clearable`, `closable` (closes the containing modal); `command.item`: `icon`, `icon-variant`, `kbd`, `href` (renders `<a>` instead of `<button>`); `command.items`: `empty` (no-results text, default «نتیجه‌ای یافت نشد.» — or "No results found." when Persian output is off).
 
 ### `<mds:composer>`
 
@@ -567,18 +567,20 @@ stays readable in the language the kit is designed for:
 English via Laravel's JSON translations. An unmapped key falls through to itself,
 so `fa` needs no translation file at all.
 
-Locale also drives the kit's own formatting. Every `mds:*` component reads
+Locale also drives the kit's own output. Every `mds:*` component reads
 `config('mds.persian_digits')` and `config('mds.currency')` at render time, so the
-route sets them once per locale and digits, separators and the currency label
-switch across the whole page — `۲٬۵۰۰٬۰۰۰ تومان` becomes `2,500,000 Toman` without
-touching a single component call.
+route sets them once per locale and the whole page switches — digits, separators,
+the currency label, and every built-in string: `۲٬۵۰۰٬۰۰۰ تومان` becomes
+`2,500,000 Toman`, `ناموجود` becomes `Out of stock`, the countdown's
+`روز / ساعت / دقیقه / ثانیه` become `days / hours / min / sec`, Jalali month names
+transliterate (`۲۹ مرداد` → `29 Mordad`), and `Persian::ago()` speaks English —
+without touching a single component call.
 
-A few strings are hardcoded Persian inside the kit with no prop to override them,
-so they stay Persian on the English pages: the `٪` sign on `<mds:discount-badge>`,
-the unit labels and expiry text on `<mds:countdown>`, `ناموجود` on
-`<mds:product-card>`, the Jalali month names, and `Persian::ago()`. The English
-demo carries a callout naming them, and the build script counts what is left on
-each English page so a new untranslated string shows up in the build output.
+The only Persian the config cannot switch is the digit and money directives
+(`@fa`, `@faNum`, `@toman`, `@rial`), which are Persian by definition — `@jalali`
+follows the config, and `mds:price` is the config-aware way to write money. The
+docs build counts the Persian left on each English page, so a new untranslated
+string shows up in the build output.
 
 Every layout page carries a floating switcher, so you can jump between them (and
 toggle dark mode) without going back to the gallery. Layout arrangement is decided
