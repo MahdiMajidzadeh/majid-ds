@@ -211,7 +211,7 @@ document.addEventListener('alpine:init', () => {
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
                 x-on:click="open = ! open"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="{{ $label ?? 'انتخاب رنگ' }}"
+                aria-label="{{ $label ?? (config('mds.persian_digits', true) ? 'انتخاب رنگ' : 'Pick a color') }}"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -227,7 +227,7 @@ document.addEventListener('alpine:init', () => {
                     class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
                     x-on:click="open = ! open"
                     x-bind:aria-expanded="open ? 'true' : 'false'"
-                    aria-label="{{ $label ?? 'انتخاب رنگ' }}"
+                    aria-label="{{ $label ?? (config('mds.persian_digits', true) ? 'انتخاب رنگ' : 'Pick a color') }}"
                 >
                     <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
                 </button>
@@ -249,7 +249,7 @@ document.addEventListener('alpine:init', () => {
                         x-show="! empty"
                         x-cloak
                         x-on:click="clear()"
-                        aria-label="پاک کردن"
+                        aria-label="{{ config('mds.persian_digits', true) ? 'پاک کردن' : 'Clear' }}"
                     >
                         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
                     </button>

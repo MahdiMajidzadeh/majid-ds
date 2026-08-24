@@ -12,11 +12,41 @@ class Jalali
     ];
 
     /**
+     * The months' common English transliterations, used when Persian output
+     * is off — the calendar stays Jalali either way.
+     */
+    public const MONTHS_LATIN = [
+        1 => 'Farvardin', 'Ordibehesht', 'Khordad', 'Tir', 'Mordad', 'Shahrivar',
+        'Mehr', 'Aban', 'Azar', 'Dey', 'Bahman', 'Esfand',
+    ];
+
+    /**
      * Keyed by PHP's `w` format (0 = Sunday).
      */
     public const WEEKDAYS = [
         0 => 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه',
     ];
+
+    /**
+     * Keyed by PHP's `w` format (0 = Sunday).
+     */
+    public const WEEKDAYS_LATIN = [
+        0 => 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+    ];
+
+    /**
+     * Whether a Jalali year is a leap year (Esfand has 30 days).
+     *
+     * Derived from the same 33-year-cycle arithmetic the converters use, so
+     * the two can never disagree: a year is leap exactly when the cumulative
+     * leap-day count grows by one.
+     */
+    public static function isLeapYear(int $year): bool
+    {
+        $leaps = fn (int $jy) => intdiv($jy, 33) * 8 + intdiv(($jy % 33) + 3, 4);
+
+        return $leaps($year + 1595 + 1) - $leaps($year + 1595) === 1;
+    }
 
     /**
      * Convert a Gregorian date to Jalali. Returns [year, month, day].
@@ -110,6 +140,10 @@ class Jalali
      *
      * Supported tokens: Y y n m j d F l D  and time passthroughs  H G h g i s A a v
      * Backslash escapes a token. Anything else is emitted literally.
+     *
+     * $persianDigits picks the whole output language: Persian digits and names
+     * when true, Latin digits with transliterated names when false. The
+     * calendar itself is always Jalali.
      */
     public static function format(mixed $date, string $format = 'j F Y', ?bool $persianDigits = null): string
     {
@@ -142,10 +176,14 @@ class Jalali
                 'm' => str_pad((string) $jm, 2, '0', STR_PAD_LEFT),
                 'j' => (string) $jd,
                 'd' => str_pad((string) $jd, 2, '0', STR_PAD_LEFT),
-                'F' => static::MONTHS[$jm],
-                'l', 'D' => static::WEEKDAYS[(int) $date->format('w')],
+                'F' => $persianDigits ? static::MONTHS[$jm] : static::MONTHS_LATIN[$jm],
+                'l', 'D' => $persianDigits
+                    ? static::WEEKDAYS[(int) $date->format('w')]
+                    : static::WEEKDAYS_LATIN[(int) $date->format('w')],
                 'H', 'G', 'h', 'g', 'i', 's', 'v' => $date->format($char),
-                'A', 'a' => ((int) $date->format('G')) < 12 ? 'قبل‌ازظهر' : 'بعدازظهر',
+                'A', 'a' => ((int) $date->format('G')) < 12
+                    ? ($persianDigits ? 'قبل‌ازظهر' : 'AM')
+                    : ($persianDigits ? 'بعدازظهر' : 'PM'),
                 default => $char,
             };
         }

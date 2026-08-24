@@ -7,7 +7,10 @@
 ])
 
 @php
-$heading ??= 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید';
+// fa (via config) picks the built-in heading's language.
+$heading ??= config('mds.persian_digits', true)
+    ? 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید'
+    : 'Drop a file here or click to browse';
 @endphp
 
 <div

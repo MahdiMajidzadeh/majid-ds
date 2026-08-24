@@ -55,7 +55,11 @@ class ComponentsTest extends TestCase
         $html = $this->render('<mds:price :amount="1000" currency="rial" :fa="false" />');
 
         $this->assertStringContainsString('1,000', $html);
-        $this->assertStringContainsString('ریال', $html);
+        $this->assertStringContainsString('Rial', $html);
+
+        $persian = $this->render('<mds:price :amount="1000" currency="rial" :fa="true" />');
+
+        $this->assertStringContainsString('ریال', $persian);
     }
 
     public function test_discount_badge_computes_percent_from_amounts(): void
@@ -743,5 +747,95 @@ class ComponentsTest extends TestCase
         $this->assertSame('۱۲۳', $this->render('@fa(123)'));
         $this->assertSame('۱٬۰۰۰ تومان', $this->render('@toman(1000)'));
         $this->assertSame('۲۹ مرداد ۱۴۰۵', $this->render("@jalali('2026-08-20')"));
+    }
+
+    /*
+    | fa=false (per prop or config) switches every built-in string to English —
+    | digits and microcopy travel together, so an English app never ships a
+    | stray Persian word it cannot override.
+    */
+
+    public function test_countdown_english_labels_and_expiry(): void
+    {
+        $labeled = $this->render('<mds:countdown :until="now()->addDays(2)" labels :fa="false" />');
+        foreach (['days', 'hours', 'min', 'sec'] as $label) {
+            $this->assertStringContainsString($label, $labeled);
+        }
+
+        $expired = $this->render('<mds:countdown :until="now()->subMinute()" :fa="false" />');
+        $this->assertStringContainsString('Expired', $expired);
+        $this->assertStringNotContainsString('به پایان رسید', $expired);
+    }
+
+    public function test_discount_badge_english_sign_and_label(): void
+    {
+        $html = $this->render('<mds:discount-badge :percent="25" :fa="false" />');
+
+        $this->assertStringContainsString('>25%<', $html);
+        $this->assertStringContainsString('aria-label="25% off"', $html);
+        $this->assertStringNotContainsString('٪', $html);
+    }
+
+    public function test_product_card_english_unavailable_state(): void
+    {
+        $html = $this->render('<mds:product-card title="Widget" unavailable :fa="false" />');
+
+        $this->assertStringContainsString('Out of stock', $html);
+        $this->assertStringNotContainsString('ناموجود', $html);
+    }
+
+    public function test_jalali_date_english_output_keeps_the_jalali_calendar(): void
+    {
+        $formatted = $this->render('<mds:jalali-date date="2026-08-20" :fa="false" />');
+        $this->assertStringContainsString('29 Mordad 1405', $formatted);
+
+        $ago = $this->render('<mds:jalali-date :date="now()->subDays(2)" ago :fa="false" />');
+        $this->assertStringContainsString('2 days ago', $ago);
+    }
+
+    public function test_file_item_derives_an_english_size(): void
+    {
+        $html = $this->render('<mds:file-item heading="report.pdf" :size="162400" :fa="false" />');
+
+        $this->assertStringContainsString('159 KB', $html);
+    }
+
+    public function test_microcopy_follows_the_persian_digits_config(): void
+    {
+        config(['mds.persian_digits' => false]);
+
+        try {
+            $this->assertStringContainsString('No results found.',
+                $this->render('<mds:command><mds:command.items>x</mds:command.items></mds:command>'));
+
+            $this->assertStringContainsString('Drop a file here or click to browse',
+                $this->render('<mds:file-upload><mds:file-upload.dropzone /></mds:file-upload>'));
+
+            $this->assertStringContainsString('aria-label="Increase quantity"',
+                $this->render('<mds:quantity :value="1" />'));
+
+            $this->assertStringContainsString('aria-label="Rating"',
+                $this->render('<mds:rating.input name="score" />'));
+
+            $this->assertStringContainsString('aria-label="Steps"',
+                $this->render('<mds:stepper :steps="[\'Cart\', \'Payment\']" :current="1" />'));
+
+            $this->assertStringContainsString('aria-label="Remove file"',
+                $this->render('<mds:file-item.remove />'));
+
+            $this->assertStringContainsString('aria-label="Pick a color"',
+                $this->render('<mds:color-picker type="button" />'));
+
+            $this->assertStringContainsString('aria-label="Original price"',
+                $this->render('<mds:price :amount="800" :original="1000" currency="none" />'));
+
+            $this->assertStringContainsString('Toman',
+                $this->render('<mds:price :amount="800" currency="toman" />'));
+
+            $this->assertStringContainsString('aria-label="3"',
+                $this->render('<mds:rating.input name="score" :value="3" />'));
+        } finally {
+            config(['mds.persian_digits' => true]);
+        }
     }
 }

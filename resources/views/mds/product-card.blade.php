@@ -58,7 +58,7 @@ $percent = (! $unavailable && $original !== null && $amount !== null && $origina
 
     <div class="mt-auto flex items-center justify-between gap-2">
         @if ($unavailable)
-            <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">ناموجود</span>
+            <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $fa ? 'ناموجود' : 'Out of stock' }}</span>
         @else
             @if ($percent !== null)
                 <mds:discount-badge :percent="$percent" :fa="$fa" />

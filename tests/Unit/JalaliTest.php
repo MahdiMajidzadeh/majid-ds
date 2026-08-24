@@ -90,6 +90,40 @@ class JalaliTest extends TestCase
         $this->assertSame('۱۴۰۵/۰۵/۲۹', Jalali::format('2026-08-20', 'Y/m/d'));
     }
 
+    public function test_leap_years(): void
+    {
+        // Known recent leap years in the 33-year cycle.
+        $this->assertTrue(Jalali::isLeapYear(1399));
+        $this->assertTrue(Jalali::isLeapYear(1403));
+        $this->assertTrue(Jalali::isLeapYear(1408));
+        $this->assertFalse(Jalali::isLeapYear(1402));
+        $this->assertFalse(Jalali::isLeapYear(1404));
+        $this->assertFalse(Jalali::isLeapYear(1405));
+
+        // Must agree with the converters: a leap year is exactly 366 days.
+        foreach (range(1390, 1420) as $year) {
+            [$gy, $gm, $gd] = Jalali::toGregorian($year, 1, 1);
+            [$ny, $nm, $nd] = Jalali::toGregorian($year + 1, 1, 1);
+
+            $days = (new \DateTimeImmutable(sprintf('%d-%02d-%02d', $gy, $gm, $gd)))
+                ->diff(new \DateTimeImmutable(sprintf('%d-%02d-%02d', $ny, $nm, $nd)))
+                ->days;
+
+            $this->assertSame(Jalali::isLeapYear($year), $days === 366, "year {$year}");
+        }
+    }
+
+    public function test_format_transliterates_names_when_persian_output_is_off(): void
+    {
+        // The calendar stays Jalali — only the language of the output changes.
+        $this->assertSame('29 Mordad 1405', Jalali::format('2026-08-20', 'j F Y', false));
+
+        // 2026-08-20 is a Thursday.
+        $this->assertSame('Thursday', Jalali::format('2026-08-20', 'l', false));
+        $this->assertSame('AM', Jalali::format('2026-08-20 09:00', 'A', false));
+        $this->assertSame('PM', Jalali::format('2026-08-20 15:00', 'A', false));
+    }
+
     public function test_format_supports_weekday_and_time(): void
     {
         // 2026-08-20 is a Thursday...

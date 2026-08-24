@@ -1,7 +1,12 @@
 @props([
     'icon' => 'x-mark',
-    'label' => 'حذف فایل',
+    'label' => null,
 ])
+
+@php
+// fa (via config) picks the built-in label's language.
+$label ??= config('mds.persian_digits', true) ? 'حذف فایل' : 'Remove file';
+@endphp
 
 <button
     type="button"

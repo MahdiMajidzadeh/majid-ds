@@ -27,7 +27,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
 ## Config (config/mds.php; publish tag `mds-config`)
 
 - `mds.currency` (default `'toman'`): default currency for price component/directives/helpers. Values: `toman` | `rial` | `none` | any literal label string.
-- `mds.persian_digits` (default `true`): global default for Persian-digit rendering. Every component overrides per-instance via `:fa="true|false"`.
+- `mds.persian_digits` (default `true`): global default for Persian output — digits, separators, AND every built-in string (unit labels, empty states, aria-labels). `false` = Latin digits + English strings throughout. Every component overrides per-instance via `:fa="true|false"`.
 - `mds.icons.default` (default `'hugeicons'`): icon set for `<mds:icon>` and every mds component's `icon` prop. `'flux'` reverts the whole kit to heroicons.
 - `mds.icons.style` (default `'stroke-rounded'`): Hugeicons style used when a component doesn't ask for one.
 - `mds.icons.fallback_style` (default `true`): fall back to the free Stroke Rounded set when a requested Pro style isn't registered.
@@ -44,24 +44,28 @@ Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views
 - `@jalali($date)` -> ۲۹ مرداد ۱۴۰۵ (fixed 'j F Y'; custom formats via Mds::jalali())
 - `@mdsFonts` -> Vazirmatn <link> tags (put in <head>)
 
+`@fa`/`@faNum`/`@toman`/`@rial` are Persian by definition (they ignore `mds.persian_digits`);
+`@jalali` follows the config like the components — "29 Mordad 1405" when it is off.
+
 ## PHP API
 
 Facade `MajidDs\Mds`:
 - `Mds::fa($v): string` — digit conversion
 - `Mds::number($v, int $decimals = 0): string`
-- `Mds::money($amount, ?string $currency = null, int $decimals = 0): string`
+- `Mds::money($amount, ?string $currency = null, int $decimals = 0): string` — always Persian (backs `@toman`); use `<mds:price>` for config-aware money
 - `Mds::toman($amount): string` / `Mds::rial($amount): string`
 - `Mds::jalali($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
-- `Mds::ago($date): string` — «۳ ساعت پیش» / «۲ روز دیگر»
-- `Mds::fileSize($bytes, ?bool $persianDigits = null): string` — «۱۵۹ کیلوبایت» / «۱٫۵ مگابایت»
+- `Mds::ago($date, ?bool $persian = null): string` — «۳ ساعت پیش» / «۲ روز دیگر»; `false` -> "3 hours ago" / "in 2 days"
+- `Mds::fileSize($bytes, ?bool $persianDigits = null): string` — «۱۵۹ کیلوبایت» / «۱٫۵ مگابایت»; `false` -> "159 KB" / "1.5 MB"
 
-`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money`, `currencyLabel`, `ago`, `fileSize` (bytes -> بایت/کیلوبایت/مگابایت/گیگابایت/ترابایت, 1024-based, 1 decimal below 100 and none for whole numbers), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
+`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money` (always Persian), `currencyLabel($currency, ?bool $persian = null)` (تومان/ریال or Toman/Rial), `ago($date, ?bool $persian = null)`, `fileSize($bytes, ?bool $persianDigits = null)` (1024-based, 1 decimal below 100 and none for whole numbers; Persian units بایت/کیلوبایت/… or English B/KB/MB/GB/TB), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
 
 `MajidDs\Support\Jalali` (static, dependency-free, intl-verified):
 - `fromGregorian(int $gy, int $gm, int $gd): array{0:int,1:int,2:int}` — e.g. (2026,8,20) -> [1405,5,29]
 - `toGregorian(int $jy, int $jm, int $jd): array` — exact inverse
-- `format($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
-- Format tokens: Y y n m j d F(month name) l/D(weekday name) + time passthroughs H G h g i s v, A/a (قبل‌ازظهر/بعدازظهر). Backslash escapes a token.
+- `isLeapYear(int $year): bool` — whether Esfand has 30 days; agrees with the converters by construction
+- `format($date, string $format = 'j F Y', ?bool $persianDigits = null): string` — `$persianDigits=false` gives Latin digits, transliterated month names (Farvardin…Esfand), English weekdays, AM/PM
+- Format tokens: Y y n m j d F(month name) l/D(weekday name) + time passthroughs H G h g i s v, A/a (قبل‌ازظهر/بعدازظهر or AM/PM). Backslash escapes a token.
 - Constants: `Jalali::MONTHS` (1-indexed Persian month names), `Jalali::WEEKDAYS` (keyed by PHP `w`, 0=Sunday).
 
 ## Livewire/form binding contract
@@ -77,7 +81,7 @@ Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5
 Renders role="img" with aria-label. RTL-correct partial fill.
 
 ### <mds:rating.input> — interactive stars
-Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string='امتیاز'.
+Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string|null='امتیاز' / 'Rating' by config language.
 role="radiogroup"; hover preview; integer values; wire:model forwarded.
 
 ### <mds:price>
@@ -89,11 +93,11 @@ Props: `percent` int|null · `amount`+`original` number|null (computes percent w
 Red pill, Persian percent sign ٪.
 
 ### <mds:quantity> — cart stepper
-Props: `value` int|null=min · `min` int=1 · `max` int|null=null · `step` int=1 · `size` sm|lg|default · `name` · `fa` · `increment-label`='افزایش تعداد' · `decrement-label`='کاهش تعداد'.
+Props: `value` int|null=min · `min` int=1 · `max` int|null=null · `step` int=1 · `size` sm|lg|default · `name` · `fa` · `increment-label` / `decrement-label` (default 'افزایش تعداد'/'کاهش تعداد', or 'Increase quantity'/'Decrease quantity' when fa is off).
 `+` sits at inline-start (right in RTL). Buttons disable at bounds. Hidden input = Latin digits.
 
 ### <mds:product-card>
-Props: `title` string='' · `image` string|null · `href` string|null · `amount`/`original` number|null · `currency` · `rating` float|null · `reviews` int|null · `badge` string|null (corner flux:badge text) · `badge-color` string='lime' (any Flux badge color) · `unavailable` bool=false (grayscale + «ناموجود») · `fa`.
+Props: `title` string='' · `image` string|null · `href` string|null · `amount`/`original` number|null · `currency` · `rating` float|null · `reviews` int|null · `badge` string|null (corner flux:badge text) · `badge-color` string='lime' (any Flux badge color) · `unavailable` bool=false (grayscale + «ناموجود», or "Out of stock" when fa is off) · `fa`.
 Slot = actions area (e.g. add-to-cart flux:button). Composes flux:card + mds:rating + mds:price + mds:discount-badge.
 
 ### <mds:stepper> — checkout steps
@@ -102,14 +106,16 @@ States: completed (check, accent) / current (aria-current="step") / upcoming (mu
 
 ### <mds:countdown>
 Props: `until` DateTime|string REQUIRED · `days` bool=true (false = hours accumulate) · `labels` bool=false ·
-`size` sm|lg|default · `fa` · `expired-text` string='به پایان رسید'.
+`size` sm|lg|default · `fa` · `expired-text` string|null='به پایان رسید' / 'Expired' by fa.
 Server-renders initial segments (no blank flash), ticks via Alpine.
 Direction contract: plain variant is dir="ltr" wall-clock (۰۷:۴۱:۵۵ hours-first); `labels` variant is RTL boxes
-(days rightmost) with روز/ساعت/دقیقه/ثانیه labels — Iranian e-commerce convention. Do not override.
+(days rightmost) with روز/ساعت/دقیقه/ثانیه labels — Iranian e-commerce convention — or days/hours/min/sec when fa is off. Do not override.
 
 ### <mds:jalali-date>
 Props: `date` DateTime|string|int REQUIRED · `format` string='j F Y' (Jalali tokens above) · `fa` · `ago` bool=false.
 Renders `<time datetime="<gregorian ISO>">`; `ago` mode shows relative text with full Jalali date in title attr.
+The calendar is always Jalali; `fa=false` switches the language: Latin digits, transliterated month names ("29 Mordad 1405"),
+English weekday names, and English `ago` phrases ("2 days ago").
 
 ### <mds:empty-state>
 Props: `icon` string|null (heroicon name) · `title` string|null · `description` string|null. Slot = action buttons.
@@ -146,8 +152,8 @@ Do not put unique or essential content in it; keep that on the linked page.
 
 ### <mds:command> — command palette (open version of Flux Pro's flux:command)
 Wrapper holds state. Compose:
-- `<mds:command.input>` props: `icon`='magnifying-glass' · `clearable` bool=false · `closable` bool=false (closes containing <dialog>/Flux modal) · `clear-label`='پاک کردن' · `close-label`='بستن' · plus any input attrs (placeholder, autofocus).
-- `<mds:command.items>` props: `empty`='نتیجه‌ای یافت نشد.' (no-results text). Scrollable listbox.
+- `<mds:command.input>` props: `icon`='magnifying-glass' · `clearable` bool=false · `closable` bool=false (closes containing <dialog>/Flux modal) · `clear-label` / `close-label` (default 'پاک کردن'/'بستن', or 'Clear'/'Close' when persian_digits is off) · plus any input attrs (placeholder, autofocus).
+- `<mds:command.items>` props: `empty` (no-results text; default 'نتیجه‌ای یافت نشد.', or 'No results found.' when persian_digits is off). Scrollable listbox.
 - `<mds:command.item>` props: `icon` · `icon-variant`='micro' · `kbd` string|null (rendered LTR at inline-end) · `href` (renders <a>; else <button type="button">). wire:click / x-on:click pass through.
 - `<mds:command.heading>` — group label, auto-hides while a query is typed.
 Behavior: live filter with Persian normalization (Arabic ي/ك -> ی/ک; Persian/Arabic-Indic digits -> Latin before matching);
@@ -207,7 +213,7 @@ Slot replaces the default popover layout; subcomponents share state:
 - `<mds:color-picker.slider channel="hue|alpha" />` — native range inputs (keyboard accessible)
 - `<mds:color-picker.input placeholder="#000000" />` — parses on change
 - `<mds:color-picker.swatches>` + `<mds:color-picker.swatch value="#..." label="..." />`
-- `<mds:color-picker.dropper label="قطره‌چکان" />`
+- `<mds:color-picker.dropper />` (`label` defaults to 'قطره‌چکان' / 'Eyedropper' by config language)
 RTL note: canvas/sliders stay physically LTR (universal convention); field chrome follows page direction.
 
 ### <mds:file-upload> — file upload (open version of Flux Pro's flux:file-upload)
@@ -224,7 +230,7 @@ Tailwind's `in-data-dragging:` / `in-data-loading:` prefixes. Also sets CSS cust
 `--mds-file-upload-progress` (Latin `42%`, for widths) and `--mds-file-upload-progress-as-string` (quoted, fa-aware `'۴۲٪'`, for `content:`).
 
 ### <mds:file-upload.dropzone>
-Props: `heading` string='فایل را اینجا رها کنید یا برای انتخاب کلیک کنید' · `text` string|null (size/format hint) ·
+Props: `heading` string|null (default 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید', or 'Drop a file here or click to browse' when persian_digits is off) · `text` string|null (size/format hint) ·
 `icon` string='cloud-arrow-up' · `inline` bool=false (compact horizontal layout) · `with-progress` bool=false (progress bar + percent
 while uploading, replacing `text`; pair it with `text` so the idle state still reads).
 Dashed border, accent border + tint while dragging, accent ring while the input is focus-visible, spinner swap while loading.
@@ -238,7 +244,7 @@ Named slot `actions` (inline-end) for buttons; default slot renders under the te
 Sits OUTSIDE `<mds:file-upload>` — render one per uploaded file yourself (see the Livewire snippet below).
 
 ### <mds:file-item.remove>
-Props: `icon` string='x-mark' · `label` string='حذف فایل' (becomes `aria-label`). `wire:click` / `x-on:click` pass through.
+Props: `icon` string='x-mark' · `label` string|null='حذف فایل' / 'Remove file' by config language (becomes `aria-label`). `wire:click` / `x-on:click` pass through.
 
 Livewire contract (same as Flux):
 ```php

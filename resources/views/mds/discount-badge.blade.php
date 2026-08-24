@@ -24,6 +24,6 @@ $classes = match ($size) {
 
 <span
     {{ $attributes->class("inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums {$classes}") }}
-    aria-label="{{ ($fa ? \MajidDs\Support\Persian::digits($percent) : $percent) }} درصد تخفیف"
+    aria-label="{{ $fa ? \MajidDs\Support\Persian::digits($percent).' درصد تخفیف' : $percent.'% off' }}"
     data-mds-discount-badge
->{{ $fa ? \MajidDs\Support\Persian::digits($percent) : $percent }}٪</span>
+>{{ $fa ? \MajidDs\Support\Persian::digits($percent).'٪' : $percent.'%' }}</span>

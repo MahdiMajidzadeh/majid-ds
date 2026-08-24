@@ -2,9 +2,15 @@
     'icon' => 'magnifying-glass',
     'clearable' => false,
     'closable' => false,
-    'clearLabel' => 'پاک کردن',
-    'closeLabel' => 'بستن',
+    'clearLabel' => null,
+    'closeLabel' => null,
 ])
+
+@php
+// fa (via config) picks the built-in labels' language.
+$clearLabel ??= config('mds.persian_digits', true) ? 'پاک کردن' : 'Clear';
+$closeLabel ??= config('mds.persian_digits', true) ? 'بستن' : 'Close';
+@endphp
 
 <div class="flex items-center gap-2 border-b border-zinc-200 px-3 dark:border-white/10" data-mds-command-input>
     @if ($icon)

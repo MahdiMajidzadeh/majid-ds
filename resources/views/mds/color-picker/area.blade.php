@@ -4,7 +4,7 @@
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
     role="slider"
-    aria-label="اشباع و روشنایی"
+    aria-label="{{ config('mds.persian_digits', true) ? 'اشباع و روشنایی' : 'Saturation and brightness' }}"
     data-mds-color-picker-area
 >
     <div

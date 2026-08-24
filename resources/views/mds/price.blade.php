@@ -14,7 +14,7 @@ use MajidDs\Support\Persian;
 $fa ??= config('mds.persian_digits', true);
 $currency ??= config('mds.currency', 'toman');
 
-$label = Persian::currencyLabel($currency);
+$label = Persian::currencyLabel($currency, $fa);
 
 $fmt = fn ($n) => $fa
     ? Persian::number($n, $decimals)
@@ -38,7 +38,7 @@ $amountClasses = match ($size) {
 
     <div class="flex flex-col items-end">
         @if ($percent !== null)
-            <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="قیمت قبلی">{{ $fmt($original) }}</del>
+            <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="{{ $fa ? 'قیمت قبلی' : 'Original price' }}">{{ $fmt($original) }}</del>
         @endif
 
         <div class="flex items-baseline gap-1">

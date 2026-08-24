@@ -4,13 +4,16 @@
     'labels' => false,
     'size' => null,
     'fa' => null,
-    'expiredText' => 'به پایان رسید',
+    'expiredText' => null,
 ])
 
 @php
 use MajidDs\Support\Persian;
 
+// fa picks the built-in strings' language along with the digits.
 $fa ??= config('mds.persian_digits', true);
+
+$expiredText ??= $fa ? 'به پایان رسید' : 'Expired';
 
 $until = Persian::toDateTime($until);
 
@@ -35,15 +38,19 @@ $boxClasses = match ($size) {
 
 $box = "flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 {$boxClasses}";
 
+$unitLabels = $fa
+    ? ['d' => 'روز', 'h' => 'ساعت', 'm' => 'دقیقه', 's' => 'ثانیه']
+    : ['d' => 'days', 'h' => 'hours', 'm' => 'min', 's' => 'sec'];
+
 $segments = [];
 
 if ($days) {
-    $segments[] = ['key' => 'd', 'label' => 'روز', 'initial' => $seg($initial['d'])];
+    $segments[] = ['key' => 'd', 'label' => $unitLabels['d'], 'initial' => $seg($initial['d'])];
 }
 
-$segments[] = ['key' => 'h', 'label' => 'ساعت', 'initial' => $seg($initial['h'])];
-$segments[] = ['key' => 'm', 'label' => 'دقیقه', 'initial' => $seg($initial['m'])];
-$segments[] = ['key' => 's', 'label' => 'ثانیه', 'initial' => $seg($initial['s'])];
+$segments[] = ['key' => 'h', 'label' => $unitLabels['h'], 'initial' => $seg($initial['h'])];
+$segments[] = ['key' => 'm', 'label' => $unitLabels['m'], 'initial' => $seg($initial['m'])];
+$segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($initial['s'])];
 @endphp
 
 <div

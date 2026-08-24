@@ -6,12 +6,16 @@
     'size' => null,
     'name' => null,
     'fa' => null,
-    'incrementLabel' => 'افزایش تعداد',
-    'decrementLabel' => 'کاهش تعداد',
+    'incrementLabel' => null,
+    'decrementLabel' => null,
 ])
 
 @php
+// fa picks the built-in strings' language along with the digits.
 $fa ??= config('mds.persian_digits', true);
+
+$incrementLabel ??= $fa ? 'افزایش تعداد' : 'Increase quantity';
+$decrementLabel ??= $fa ? 'کاهش تعداد' : 'Decrease quantity';
 $value = (int) ($value ?? $min);
 
 $buttonClasses = match ($size) {

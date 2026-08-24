@@ -10,7 +10,7 @@ $current = (int) $current;
 $total = count($steps);
 @endphp
 
-<nav {{ $attributes->class('flex items-center gap-2') }} aria-label="مراحل" data-mds-stepper>
+<nav {{ $attributes->class('flex items-center gap-2') }} aria-label="{{ $fa ? 'مراحل' : 'Steps' }}" data-mds-stepper>
     @foreach (array_values($steps) as $index => $step)
         @php
         $number = $index + 1;

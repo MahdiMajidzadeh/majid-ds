@@ -54,10 +54,33 @@ class PersianTest extends TestCase
         $this->assertSame('۲ گیگابایت', Persian::fileSize(2 * 1024 ** 3));
     }
 
-    public function test_file_size_supports_latin_digits(): void
+    public function test_currency_label_speaks_both_languages(): void
     {
-        $this->assertSame('159 کیلوبایت', Persian::fileSize(162400, false));
-        $this->assertSame('1.5 مگابایت', Persian::fileSize(1572864, false));
+        $this->assertSame('تومان', Persian::currencyLabel('toman', true));
+        $this->assertSame('Toman', Persian::currencyLabel('toman', false));
+        $this->assertSame('Rial', Persian::currencyLabel('rial', false));
+        $this->assertSame('AED', Persian::currencyLabel('AED', false));
+        $this->assertSame('', Persian::currencyLabel('none', false));
+    }
+
+    public function test_money_is_persian_by_definition(): void
+    {
+        // money() backs @toman/@rial: it must stay Persian even when the
+        // config is off — mds:price is the config-aware alternative.
+        config(['mds.persian_digits' => false]);
+
+        try {
+            $this->assertSame('۱٬۰۰۰ تومان', Persian::money(1000, 'toman'));
+        } finally {
+            config(['mds.persian_digits' => true]);
+        }
+    }
+
+    public function test_file_size_switches_to_english_units_with_latin_digits(): void
+    {
+        $this->assertSame('159 KB', Persian::fileSize(162400, false));
+        $this->assertSame('1.5 MB', Persian::fileSize(1572864, false));
+        $this->assertSame('0 B', Persian::fileSize(0, false));
     }
 
     public function test_it_renders_relative_time(): void
@@ -67,5 +90,15 @@ class PersianTest extends TestCase
         $this->assertSame('۳ ساعت پیش', Persian::ago(new \DateTimeImmutable('-3 hours')));
         $this->assertSame('۲ روز پیش', Persian::ago(new \DateTimeImmutable('-2 days')));
         $this->assertSame('۲ روز دیگر', Persian::ago(new \DateTimeImmutable('+2 days +1 minute')));
+    }
+
+    public function test_it_renders_relative_time_in_english(): void
+    {
+        $this->assertSame('just now', Persian::ago(new \DateTimeImmutable('-10 seconds'), false));
+        $this->assertSame('in a moment', Persian::ago(new \DateTimeImmutable('+10 seconds'), false));
+        $this->assertSame('1 minute ago', Persian::ago(new \DateTimeImmutable('-1 minute -5 seconds'), false));
+        $this->assertSame('5 minutes ago', Persian::ago(new \DateTimeImmutable('-5 minutes'), false));
+        $this->assertSame('2 days ago', Persian::ago(new \DateTimeImmutable('-2 days'), false));
+        $this->assertSame('in 2 days', Persian::ago(new \DateTimeImmutable('+2 days +1 minute'), false));
     }
 }

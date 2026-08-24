@@ -17,4 +17,4 @@ $dt = Persian::toDateTime($date);
     @if ($ago) title="{{ Jalali::format($dt, 'l j F Y', $fa) }}" @endif
     {{ $attributes }}
     data-mds-jalali-date
->{{ $ago ? Persian::ago($dt) : Jalali::format($dt, $format, $fa) }}</time>
+>{{ $ago ? Persian::ago($dt, $fa) : Jalali::format($dt, $format, $fa) }}</time>
