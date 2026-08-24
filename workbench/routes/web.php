@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Number;
 use MajidDs\Support\Persian;
 
 use function Orchestra\Testbench\workbench_path;
@@ -251,9 +250,6 @@ View::composer(['demo', 'layouts.*'], function ($view) use ($locales) {
             ? Persian::number($value, $decimals)
             : number_format((float) $value, $decimals),
 
-        // mds:file-item formats a byte count in Persian on its own; in English
-        // it needs the text handed to it, since the units are not translatable.
-        'mdsBytes' => fn (int $bytes) => $locales[$locale]['digits'] ? null : Number::fileSize($bytes, 1),
 
         /*
         | Where the "docs" link points. The docs page is a static file with no

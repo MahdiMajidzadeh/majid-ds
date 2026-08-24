@@ -9,7 +9,7 @@
 
     It therefore must not touch anything page-level (no <html>, no header,
     no $mdsAlt/$mdsDocsHref) and may only rely on: $mdsFa, $mdsNum,
-    $mdsBytes, $mdsForward, $mdsUrl — plus __() and the mds config.
+    $mdsForward, $mdsUrl — plus __() and the mds config.
 --}}
 
 @php
@@ -34,21 +34,15 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     and it is about which Persian strings are left on it.
 --}}
 @unless ($mdsFa)
-    <flux:callout icon="information-circle" heading="Some component output is Persian-only">
+    <flux:callout icon="information-circle" heading="The whole kit follows one config flag">
         <flux:callout.text>
-            Digits, separators and the currency label follow <code>config('mds.persian_digits')</code>
-            and <code>config('mds.currency')</code>, so they are Latin here. A handful of strings are
-            baked into the kit with no prop to override them, and stay Persian on this page:
-        </flux:callout.text>
-
-        <flux:callout.text class="mt-2">
-            <div class="space-y-1">
-                <div>• <code>mds:discount-badge</code> — the <code dir="rtl">٪</code> sign</div>
-                <div>• <code>mds:countdown</code> — the unit labels <code dir="rtl">روز / ساعت / دقیقه / ثانیه</code> and the expiry text <code dir="rtl">به پایان رسید</code></div>
-                <div>• <code>mds:product-card</code> — <code dir="rtl">ناموجود</code> for an out-of-stock item</div>
-                <div>• <code>mds:jalali-date</code> — the month names, and the relative dates from <code>Persian::ago()</code></div>
-                <div>• the <code>@@toman</code> and <code>@@jalali</code> directives, which are Persian by definition</div>
-            </div>
+            <code>config('mds.persian_digits')</code> is off on this page, so every component speaks
+            English: Latin digits and separators, <code>%</code>, English unit labels, transliterated
+            Jalali month names, <code>Out of stock</code>, <code>159 KB</code>. The only Persian left
+            comes from the digit and money directives (<code>@@fa</code>, <code>@@faNum</code>,
+            <code>@@toman</code>, <code>@@rial</code>), which are Persian by definition —
+            <code>@@jalali</code> and every component follow the config; reach for
+            <code>mds:price</code> when money should too.
         </flux:callout.text>
     </flux:callout>
 @endunless
@@ -447,13 +441,13 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             </mds:file-upload>
 
             <div class="flex flex-col gap-2">
-                <mds:file-item heading="Profile_pic.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400" :text="$mdsBytes(162400)">
+                <mds:file-item heading="Profile_pic.jpg" image="https://picsum.photos/seed/phone/80/80" :size="162400">
                     <x-slot name="actions">
                         <mds:file-item.remove :label="__('حذف Profile_pic.jpg')" />
                     </x-slot>
                 </mds:file-item>
 
-                <mds:file-item :heading="__('قرارداد-فروش.pdf')" :size="2411724" :text="$mdsBytes(2411724)">
+                <mds:file-item :heading="__('قرارداد-فروش.pdf')" :size="2411724">
                     <x-slot name="actions">
                         <mds:file-item.remove :label="__('حذف قرارداد-فروش.pdf')" />
                     </x-slot>
@@ -543,7 +537,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
 
             <mds:composer :placeholder="__('توضیحی برای این تصویر بنویسید...')" rows="2">
                 <x-slot name="header">
-                    <mds:file-item :heading="__('گوشی-گلکسی.jpg')" image="https://picsum.photos/seed/phone/80/80" :size="162400" :text="$mdsBytes(162400)" class="w-full max-w-64">
+                    <mds:file-item :heading="__('گوشی-گلکسی.jpg')" image="https://picsum.photos/seed/phone/80/80" :size="162400" class="w-full max-w-64">
                         <x-slot name="actions">
                             <mds:file-item.remove :label="__('حذف تصویر')" />
                         </x-slot>
