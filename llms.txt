@@ -31,6 +31,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
 - `mds.icons.default` (default `'hugeicons'`): icon set for `<mds:icon>` and every mds component's `icon` prop. `'flux'` reverts the whole kit to heroicons.
 - `mds.icons.style` (default `'stroke-rounded'`): Hugeicons style used when a component doesn't ask for one.
 - `mds.icons.fallback_style` (default `true`): fall back to the free Stroke Rounded set when a requested Pro style isn't registered.
+- `mds.icons.strict` (default `false`): `true` makes `<mds:icon>` render nothing (instead of `flux:icon`/heroicons) for a name no Hugeicons source has — use it to guarantee heroicons never render on pages that only call `<mds:icon>`.
 - `mds.icons.sets` (default `[]`): `style => directory of .svg` for Hugeicons Pro exports. Each becomes a blade-icons set named `mds-hugeicons-{style}`. No Pro file is ever shipped with this package.
 
 Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views/mds/, app copies override package), `mds-assets` (mds.css copy).
@@ -287,7 +288,8 @@ the default 1.5rem comes from mds.css, so any `size-*` utility wins.
 Source: the free Stroke Rounded set (6,200 icons) via the `afatmustafa/blade-hugeicons` dependency. Pro styles
 resolve only from `mds.icons.sets`.
 Resolution order for a name: `Icons::OVERRIDES` -> the literal Hugeicons name -> `Icons::ALIASES` -> `flux:icon`.
-So a real Hugeicons name always wins, heroicon names still work, and an unknown name still renders as a heroicon.
+So a real Hugeicons name always wins, heroicon names still work, and an unknown name still renders as a heroicon —
+unless `mds.icons.strict` is `true`, in which case it renders nothing instead of ever touching `flux:icon`.
 `MajidDs\Support\Icons` (static): `ALIASES` (49 heroicon names with no Hugeicons counterpart, e.g.
 `magnifying-glass` -> `search-01`, `x-mark` -> `cancel-01`, `cloud-arrow-up` -> `cloud-upload`, `document` -> `file-01`,
 `exclamation-triangle` -> `alert-02`, `photo` -> `image-01`, `trash` -> `delete-02`, `users` -> `user-multiple`,

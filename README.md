@@ -384,6 +384,8 @@ The free **Stroke Rounded** set (6,200 icons) ships with the `afatmustafa/blade-
 
 **Heroicon names keep working.** Two maps handle the vocabulary gap: `ALIASES` translates heroicon names with no Hugeicons counterpart (`magnifying-glass` → `search-01`, `x-mark` → `cancel-01`, `cloud-arrow-up` → `cloud-upload`), and `OVERRIDES` handles the six names Hugeicons *also* has but draws differently — its `arrow-*` are chevrons rather than arrows, its `moon` is full rather than crescent, and its `map-pin` is a pin on a map. A literal Hugeicons name always beats an alias, so `icon="heart"` gets you Hugeicons' own heart. Anything neither map covers falls back to `flux:icon`, which still renders heroicons — so nothing breaks.
 
+If you only ever use `<mds:icon>` and want a hard guarantee that heroicons never render — for example to keep the heroicons set out of the page entirely — set `'strict' => true` under `icons` in `config/mds.php`. An unmapped name then renders nothing instead of falling back.
+
 `:stroke` is opt-in on purpose: 453 of the free icons vary their stroke weight deliberately, and forcing one width would flatten them.
 
 **Pro styles.** Only Stroke Rounded is free. The other eight styles are never bundled — register your own licensed export and they resolve by name:

@@ -39,7 +39,7 @@ $svg = $icon === null || config('mds.icons.default', 'hugeicons') !== 'hugeicons
 
 @if ($svg)
     {!! $svg->toHtml() !!}
-@elseif ($icon)
+@elseif ($icon && ! config('mds.icons.strict', false))
     {{-- No Hugeicons match, or the flux driver is on — heroicons still render... --}}
     <flux:icon :icon="$icon" :variant="$fluxVariant" {{ $attributes->merge($extra) }} />
 @endif

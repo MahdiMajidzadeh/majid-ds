@@ -92,6 +92,18 @@ $pages['mds-icon'] = [
             'note' => 'Set <code>config(\'mds.icons.default\')</code> to <code>flux</code> to go back to heroicons everywhere.',
         ],
         [
+            'name' => 'Strict mode (no heroicons fallback)',
+            'text' => 'By default, a name neither Hugeicons nor the alias map covers still renders — as a heroicon, via <code>flux:icon</code>. If a page only ever calls <code>mds:icon</code> and you want a hard guarantee that heroicons never render, set <code>strict</code> instead of relying on every call site using a name Hugeicons actually has.',
+            'code' => <<<'BLADE'
+            // config/mds.php
+            'icons' => [
+                'strict' => true,
+            ],
+            BLADE,
+            'render' => '<div class="text-xs text-zinc-500">config/mds.php</div>',
+            'note' => 'An unmapped name then renders nothing instead of falling back to <code>flux:icon</code>.',
+        ],
+        [
             'name' => 'In RTL',
             'rtl' => true,
             'text' => 'An icon has no digits or text of its own, so nothing here reads <code>config(\'mds.persian_digits\')</code> and the glyph never mirrors. On an RTL page only the accessible label needs translating.',

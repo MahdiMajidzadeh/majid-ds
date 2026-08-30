@@ -53,6 +53,11 @@ return [
         // style isn't registered. Set false to render nothing instead.
         'fallback_style' => true,
 
+        // <mds:icon> renders flux:icon (heroicons) for a name no Hugeicons
+        // source has. Set true to render nothing instead — use this to keep
+        // heroicons out of pages that only ever call <mds:icon>.
+        'strict' => false,
+
         // Pro styles: style name => directory of .svg files exported from
         // your Hugeicons licence. Nothing here is shipped with this package.
         //

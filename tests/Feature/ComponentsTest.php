@@ -673,6 +673,16 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-flux-icon', $html);
     }
 
+    public function test_icon_strict_mode_suppresses_the_flux_fallback(): void
+    {
+        config(['mds.icons.strict' => true]);
+
+        $html = $this->render('<mds:icon icon="arrow-trending-up" />');
+
+        $this->assertStringNotContainsString('data-flux-icon', $html);
+        $this->assertStringNotContainsString('<svg', $html);
+    }
+
     public function test_icon_honours_the_flux_driver(): void
     {
         config(['mds.icons.default' => 'flux']);
