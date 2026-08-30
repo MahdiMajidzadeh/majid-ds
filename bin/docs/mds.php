@@ -203,7 +203,7 @@ $pages['price'] = [
         ]],
         ['name' => '@toman / @rial', 'text' => 'Blade directives for a formatted amount inline, e.g. <code>@toman($order->total)</code>. Persian digits and labels by definition — they exist for Persian sentences.'],
     ],
-    'related' => ['discount-badge', 'product-card'],
+    'related' => ['discount-badge', 'product-card', 'chart'],
 ];
 
 // -------------------------------------------------------- mds:discount-badge
@@ -646,7 +646,7 @@ $pages['jalali-date'] = [
         ['name' => '@jalali', 'text' => 'Blade directive: <code>@jalali($date, $format = \'j F Y\')</code>. Follows the config for digits and names.'],
         ['name' => 'MajidDs\\Support\\Jalali', 'text' => 'The PHP helper behind the component: <code>Jalali::format()</code>, <code>Jalali::fromGregorian()</code>, <code>Jalali::toGregorian()</code>.'],
     ],
-    'related' => ['countdown', 'table'],
+    'related' => ['countdown', 'table', 'chart'],
 ];
 
 // ----------------------------------------------------------- mds:empty-state
@@ -1699,7 +1699,264 @@ $pages['timeline'] = [
         ['name' => 'mds:timeline.block', 'text' => 'A row that spans the full width, with no indicator.'],
         ['name' => 'mds:timeline.subgrid', 'text' => 'Aligns nested content with the timeline\'s own columns.'],
     ],
-    'related' => ['stepper', 'jalali-date'],
+    'related' => ['stepper', 'jalali-date', 'chart'],
+];
+
+// ----------------------------------------------------------------- mds:chart
+
+$pages['chart'] = [
+    'group' => 'mds',
+    'title' => 'mds:chart',
+    'lede' => 'Monochrome dashboard charts, server-rendered as SVG — an open answer to a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A family of dashboard visualizers in one ink: rounded splines, pill bars, arc dials. Everything renders on the server — no chart library, no JSON payload, no script. The design follows Amicro\'s <a href="https://github.com/Subhan-code/Monocharts">Mono Charts</a> (MIT). Flux Pro\'s <code>flux:chart</code> is a client-side line-chart toolkit; <code>mds:chart</code> is a different, batteries-included take for static dashboard cards.',
+            'code' => <<<'BLADE'
+            <mds:chart
+                label="Spline dynamics"
+                badge="Line"
+                :value="84"
+                unit="k nodes"
+                footer-start="Rounded caps"
+                footer-end="84k peak"
+                class="w-full max-w-sm"
+            >
+                <mds:chart.line :data="[24, 45, 38, 65, 52, 84]" :labels="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']" />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'The card and the stage',
+            'text' => 'Two layers, both optional. <code>mds:chart</code> is the card — label, badge, big stat, footer. The <code>mds:chart.*</code> stages draw the actual chart and work anywhere on their own: inside a <code>flux:card</code>, a table cell, or bare. The ink is <code>currentColor</code>, so one text utility recolors a whole chart.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-sm space-y-4">
+                <mds:chart.line :data="[18, 34, 72, 89, 64, 48]" :labels="['02', '06', '10', '14', '18', '22']" area :dots="false" />
+                <mds:chart.line :data="[18, 34, 72, 89, 64, 48]" area :dots="false" :axis="false" class="text-accent" />
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Line',
+            'text' => 'The line is a monotone spline — smooth, but it never overshoots the data. <code>baseline</code> adds a dashed comparison series on the same axis, <code>area</code> pours a soft gradient under the curve, and <code>curve="straight"</code> switches to plain segments.',
+            'code' => <<<'BLADE'
+            <mds:chart
+                label="Weekly sessions"
+                badge="vs last week"
+                :value="84"
+                unit="k"
+                footer-start="Dashed: last week"
+                footer-end="84k peak"
+                class="w-full max-w-sm"
+            >
+                <mds:chart.line
+                    :data="[24, 45, 38, 65, 52, 84]"
+                    :baseline="[18, 32, 29, 48, 41, 62]"
+                    :labels="['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu']"
+                    area
+                />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'Bars',
+            'text' => 'Bars are pills — fully rounded ends, one tone. A <code>secondary</code> series renders as a faint twin next to each bar. When an item is an <em>array</em>, its values stack: solid base, lighter tones upward, only the stack\'s outer ends rounded.',
+            'code' => <<<'BLADE'
+            <div class="grid w-full gap-4 sm:grid-cols-2">
+                <mds:chart label="Pill pillars" badge="Grouped" :value="422" unit="units">
+                    <mds:chart.bars
+                        :data="[45, 78, 62, 95, 88, 54]"
+                        :secondary="[25, 40, 30, 55, 50, 28]"
+                        :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']"
+                    />
+                </mds:chart>
+
+                <mds:chart label="Stacked tones" badge="3 layers" :value="160" unit="cumulative">
+                    <mds:chart.bars
+                        :data="[[30, 25, 20], [45, 35, 25], [60, 40, 30], [75, 50, 35]]"
+                        :labels="['Q1', 'Q2', 'Q3', 'Q4']"
+                    />
+                </mds:chart>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Funnel rows',
+            'text' => '<code>horizontal</code> switches to HTML rows — label, pill track, value. Rows follow the page direction (they grow from the right in RTL), which makes them the funnel of choice for Persian checkouts.',
+            'code' => <<<'BLADE'
+            <mds:chart label="Stage funnel" badge="Pipeline" value="24%" unit="conversion" class="w-full max-w-sm">
+                <mds:chart.bars horizontal :data="[100, 68, 42, 24]" :labels="['Visits', 'Signup', 'Active', 'Paid']" />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'Donut',
+            'text' => 'Rounded segments separated by real gaps, shaded down a fixed tone ladder in segment order. The keys of <code>data</code> are the labels; the legend inherits each segment\'s tone. <code>value</code> and <code>label</code> fill the center.',
+            'code' => <<<'BLADE'
+            <mds:chart label="Rounded donut" badge="Soft arc caps" value="100%" unit="allocation" class="w-full max-w-sm">
+                <mds:chart.donut
+                    :data="['Core engine' => 45, 'UI layer' => 30, 'Assets' => 15, 'Other' => 10]"
+                    value="100%"
+                    label="Mono arc"
+                />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'Gauge and bullet',
+            'text' => 'The gauge is a 240° dial with pill ends over a faint track. The bullet rows compare a value against a target — the marker is the one accent-colored element in the family, sitting on <code>--color-accent</code>.',
+            'code' => <<<'BLADE'
+            <div class="grid w-full gap-4 sm:grid-cols-2">
+                <mds:chart label="Speedometer arc" badge="Gauge" value="84%" unit="performance">
+                    <mds:chart.gauge :value="84" label="Target met" />
+                </mds:chart>
+
+                <mds:chart label="Bullet target" badge="Benchmark" :value="3" unit="targets">
+                    <mds:chart.bullet :items="[
+                        ['label' => 'Throughput', 'value' => 82, 'target' => 75],
+                        ['label' => 'Latency', 'value' => 65, 'target' => 80],
+                        ['label' => 'Uptime', 'value' => 95, 'target' => 90],
+                    ]" />
+                </mds:chart>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Radar',
+            'text' => 'A polygon web: four grid rings, one spoke per key, the shape filled at 15% ink.',
+            'code' => <<<'BLADE'
+            <mds:chart label="Polygon web" badge="Radar" :value="85" unit="score" class="w-full max-w-sm">
+                <mds:chart.radar :data="['Speed' => 90, 'Memory' => 75, 'Scale' => 85, 'Latency' => 95, 'IOPS' => 80]" />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'Activity heatmap',
+            'text' => 'A contribution grid: values grade into five tones of the ink, columns follow the page direction, and hovering a tile reports its value in the callout row (Alpine, with a <code>title</code> fallback). <code>color="accent"</code> swaps the ladder onto the accent color.',
+            'code' => <<<'BLADE'
+            <mds:chart label="Activity heatmap" badge="14 weeks" :value="807" unit="contributions" class="w-full max-w-md">
+                <mds:chart.heatmap
+                    :data="array_map(fn ($i) => ($i * 7) % 13, range(1, 98))"
+                    :labels="['Jan', 'Feb', 'Mar']"
+                    color="accent"
+                />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'KPI card recipe',
+            'text' => 'There is no KPI component — it is the card doing what it already does: a stat, a <code>delta</code> (a leading minus turns it red), and a bare <code>mds:chart.sparkline</code>, which also works inline in tables and lists.',
+            'code' => <<<'BLADE'
+            <mds:chart label="KPI stat card" badge="Metric" value="$48,920" delta="+14.2%" footer-start="Rounded sparkline" footer-end="Monthly revenue" class="w-full max-w-sm">
+                <mds:chart.sparkline :data="[30, 45, 35, 60, 50, 85, 75, 95]" area class="h-16" />
+            </mds:chart>
+            BLADE,
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches every digit the family renders: the card\'s stat and delta, axis ticks, bullet readouts, the heatmap\'s callout and its built-in hover hint. <code>:fa="true"</code> on the card flows into the stages inside it. The SVG plot plane itself never mirrors; the HTML stages (funnel rows, bullet, heatmap) follow the page direction.',
+            'code' => <<<'BLADE'
+            <div class="grid w-full gap-4 sm:grid-cols-2">
+                <mds:chart label="فروش ماهانه" badge="تومان" :value="48920" unit="هزار" delta="+14.2%" footer-start="شش ماه اخیر" footer-end="اوج در مرداد" :fa="true">
+                    <mds:chart.line :data="[24, 45, 38, 65, 52, 84]" :labels="['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور']" area />
+                </mds:chart>
+
+                <mds:chart label="قیف فروش" badge="۴ مرحله" value="۲۴٪" unit="نرخ تبدیل" :fa="true">
+                    <mds:chart.bars horizontal :data="[100, 68, 42, 24]" :labels="['بازدید', 'سبد خرید', 'پرداخت', 'خرید']" />
+                </mds:chart>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:chart', 'props' => [
+            ['label', 'Uppercase kicker line above the stat.'],
+            ['badge', 'Small pill next to the label.'],
+            ['value', 'The big stat. Numbers get thousands separators; strings ("84%") keep their shape with localized digits.'],
+            ['unit', 'Faint suffix after the stat.'],
+            ['delta', 'Change readout after the stat — green, or red when it starts with a minus.'],
+            ['footer-start', 'Muted footer text on the leading edge.'],
+            ['footer-end', 'Emphasized footer text on the trailing edge.'],
+            ['fa', 'Persian digits for the stat and delta — inherited by the stages inside. Default: <code>config(\'mds.persian_digits\')</code>.'],
+        ], 'slots' => [
+            ['header', 'Extra content on the header\'s trailing edge — filters, a toggle.'],
+            ['footer', 'Replaces the two footer props.'],
+            ['default', 'The stage(s).'],
+        ]],
+        ['name' => 'mds:chart.line', 'props' => [
+            ['data', 'Array of numbers.'],
+            ['labels', 'Category labels under the plot, one per point.'],
+            ['baseline', 'Second series, drawn dashed and faint on the same axis.'],
+            ['area', 'Gradient fill under the curve. Default: <code>false</code>.'],
+            ['dots', 'Point markers with a stage-colored halo. Default: <code>true</code>.'],
+            ['curve', 'Options: <code>smooth</code> (monotone spline), <code>straight</code>. Default: <code>smooth</code>.'],
+            ['axis', 'Y ticks, grid lines and x labels. Default: <code>true</code>.'],
+            ['max', 'Pins the axis ceiling. Default: a "nice" ceiling above the data.'],
+            ['width', 'ViewBox width. Default: <code>360</code>.'],
+            ['height', 'ViewBox height. Default: <code>170</code>.'],
+            ['fa', 'Persian digits on ticks and labels. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.bars', 'props' => [
+            ['data', 'Array of numbers — or arrays, which stack into layers (bottom first).'],
+            ['labels', 'Category labels.'],
+            ['secondary', 'Faint second series next to each bar.'],
+            ['horizontal', 'HTML rows that follow the page direction — the funnel layout. Default: <code>false</code>.'],
+            ['axis', 'Y ticks, grid lines and x labels. Default: <code>true</code>.'],
+            ['max', 'Pins the scale ceiling.'],
+            ['width', 'ViewBox width. Default: <code>360</code>.'],
+            ['height', 'ViewBox height. Default: <code>170</code>.'],
+            ['fa', 'Persian digits. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.donut', 'props' => [
+            ['data', 'Assoc array — labels to values.'],
+            ['value', 'Center readout. Default: the values\' sum.'],
+            ['label', 'Small line under the center readout.'],
+            ['legend', 'Tone-matched legend under the ring. Default: <code>true</code>.'],
+            ['size', 'ViewBox size. Default: <code>160</code>.'],
+            ['thickness', 'Ring thickness. Default: <code>22</code>.'],
+            ['fa', 'Persian digits. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.gauge', 'props' => [
+            ['value', 'The dialed value.'],
+            ['max', 'Full-dial value. Default: <code>100</code>.'],
+            ['label', 'Small line under the readout.'],
+            ['decimals', 'Decimals in the readout. Default: <code>0</code>.'],
+            ['fa', 'Persian digits. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.radar', 'props' => [
+            ['data', 'Assoc array — axis labels to values.'],
+            ['max', 'The web\'s outer ring value. Default: <code>100</code>.'],
+            ['fa', 'Persian digits in labels. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.bullet', 'props' => [
+            ['items', 'Rows: <code>[[\'label\' => ..., \'value\' => ..., \'target\' => ...], ...]</code> — <code>target</code> optional.'],
+            ['max', 'Full-track value. Default: <code>100</code>.'],
+            ['unit', 'Suffix in the readouts. Default: <code>%</code>.'],
+            ['fa', 'Persian digits. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.heatmap', 'props' => [
+            ['data', 'Array of counts, column-major — every <code>rows</code> values are one column.'],
+            ['rows', 'Cells per column. Default: <code>7</code>.'],
+            ['labels', 'Labels spread across the top — usually months.'],
+            ['color', 'Options: <code>accent</code>. Default: the ink.'],
+            ['unit', 'Word in the hover callout. Default: "items" / مورد by language.'],
+            ['callout', 'The hover-readout row (needs Alpine; tiles keep a <code>title</code> either way). Default: <code>true</code>.'],
+            ['fa', 'Persian digits and built-in strings. Default: the enclosing card\'s, else the config.'],
+        ]],
+        ['name' => 'mds:chart.sparkline', 'props' => [
+            ['data', 'Array of numbers — the sparkline auto-fits its own range.'],
+            ['area', 'Gradient fill under the curve. Default: <code>false</code>.'],
+            ['curve', 'Options: <code>smooth</code>, <code>straight</code>. Default: <code>smooth</code>.'],
+            ['width', 'ViewBox width. Default: <code>120</code>.'],
+            ['height', 'ViewBox height. Default: <code>28</code>.'],
+        ], 'text' => 'A bare <code>&lt;svg&gt;</code> that stretches to any box (strokes stay 2px crisp) — size it with width/height utilities.'],
+    ],
+    'related' => ['price', 'jalali-date', 'timeline'],
 ];
 
 return $pages;

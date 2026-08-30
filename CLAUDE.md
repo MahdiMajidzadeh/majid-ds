@@ -4,7 +4,7 @@ Majid DS (`mahdimajidzadeh/ds`) — an RTL/Persian-first UI kit for Laravel Live
 layered **on top of** Flux UI (free tier), never replacing it. It adds an `<mds:*>`
 Blade namespace next to `<flux:*>`: Persian digits/money, Jalali dates, Hugeicons,
 e-commerce components, and open versions of Flux Pro-only components (command,
-composer, color-picker, file-upload, timeline).
+composer, color-picker, file-upload, timeline, chart).
 
 **[llms.txt](llms.txt) is the complete API reference — read it first.** This file
 only covers what llms.txt doesn't: how to work on the package itself.
@@ -14,7 +14,7 @@ only covers what llms.txt doesn't: how to work on the package itself.
 ```bash
 vendor/bin/phpunit                        # full suite (~2s, keep it green)
 vendor/bin/phpunit --filter composer      # one component's tests
-npm run docs                              # regenerate the 59 reference pages + docs/assets/site.css
+npm run docs                              # regenerate the 60 reference pages + docs/assets/site.css
 npm run pages                             # regenerate the 18 static layout-gallery pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
@@ -73,7 +73,7 @@ Any change to a component's view, CSS, or docs content is not done until
   the builder hard-fails on missing pages and warns on orphans. The nav ships
   as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
   on `file://`) and pages render the sidebar client-side, so a nav change
-  rewrites one asset, not all 59 pages.
+  rewrites one asset, not all 60 pages.
 - Rebuilds are byte-identical: both builders pin the clock (`Date::setTestNow`
   in `build-docs.php`; the `MDS_TEST_NOW` env var for the crawled demo server)
   and the crawler pins the unused Livewire CSRF token. A rebuild that dirties

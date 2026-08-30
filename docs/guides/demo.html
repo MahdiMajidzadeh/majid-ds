@@ -180,6 +180,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Timeline</div>
     </a>
+        <a href="#chart" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
+    </a>
         <a href="#icons" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -5312,6 +5323,876 @@ document.addEventListener('alpine:init', () => {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="chart" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Charts — mds:chart</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Monochrome dashboard charts, server-rendered as SVG with no library — an open take on the Chart component (Pro-only in Flux). Persian digits; the funnel and heatmap are RTL-native.</p>
+    <div class="grid gap-4 sm:grid-cols-2">
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Monthly revenue</span>                                            </div>
+                
+                                    <div data-mds-chart-value>48,920 <span data-mds-chart-unit>k Toman</span> <span data-mds-chart-delta  dir="ltr">+14.2%</span></div>
+                            </div>
+
+            
+        </div>
+    
+    <svg class="h-16" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none" role="img" aria-hidden="true" data-mds-chart-sparkline>
+                        <defs>
+                <linearGradient id="mds-chart-fade-6f34b004" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+            <path d="M3 18.05 C8.43 16.32 13.86 14.58 19.29 14.58 C24.71 14.58 30.14 16.89 35.57 16.89 C41 16.89 46.43 11.11 51.86 11.11 C57.29 11.11 62.71 13.42 68.14 13.42 C73.57 13.42 79 5.32 84.43 5.32 C89.86 5.32 95.29 7.63 100.71 7.63 C106.14 7.63 111.57 5.32 117 3 L117 25 L3 25 Z" fill="url(#mds-chart-fade-6f34b004)" />
+                <path d="M3 18.05 C8.43 16.32 13.86 14.58 19.29 14.58 C24.71 14.58 30.14 16.89 35.57 16.89 C41 16.89 46.43 11.11 51.86 11.11 C57.29 11.11 62.71 13.42 68.14 13.42 C73.57 13.42 79 5.32 84.43 5.32 C89.86 5.32 95.29 7.63 100.71 7.63 C106.14 7.63 111.57 5.32 117 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+    </svg>
+
+            <div data-mds-chart-footer>
+                            <span>Rounded sparkline</span>
+                <span>Last six months</span>
+                    </div>
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Monthly sales</span>                        <span data-mds-chart-badge>Spline</span>                    </div>
+                
+                                    <div data-mds-chart-value>84 <span data-mds-chart-unit>k orders</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                    <defs>
+                <linearGradient id="mds-chart-fade-80aac908" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        
+                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                            <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">25</text>
+                                            <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                            <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">75</text>
+                                            <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                    
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76 L346 146 L40 146 Z" fill="url(#mds-chart-fade-80aac908)" />
+        
+                    <path d="M40 121.52 C60.4 112 80.8 102.48 101.2 102.48 C121.6 102.48 142 106.56 162.4 106.56 C182.8 106.56 203.2 80.72 223.6 80.72 C244 80.72 264.4 90.24 284.8 90.24 C305.2 90.24 325.6 75.96 346 61.68" stroke="currentColor" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" stroke-linejoin="round" />
+        
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+                                    <circle cx="40" cy="113.36" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="101.2" cy="84.8" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="162.4" cy="94.32" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="223.6" cy="57.6" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="284.8" cy="75.28" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="346" cy="31.76" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                    
+                                                        <text x="40" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Far</text>
+                                                                <text x="101.2" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Ord</text>
+                                                                <text x="162.4" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Kho</text>
+                                                                <text x="223.6" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Tir</text>
+                                                                <text x="284.8" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Mor</text>
+                                                                <text x="346" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Sha</text>
+                                        </svg>
+</div>
+
+            <div data-mds-chart-footer>
+                            <span>Dashed: last year</span>
+                <span>Peak in Mordad</span>
+                    </div>
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Seasonal sales</span>                        <span data-mds-chart-badge>3 layers</span>                    </div>
+                
+                                    <div data-mds-chart-value>160 <span data-mds-chart-unit>billion</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars>
+        <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                                        <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                                        <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                                                        <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">150</text>
+                                                        <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">200</text>
+                            
+                            
+                                
+                                                        <path d="M65.75 125.6 H81.75 V138 A8 8 0 0 1 73.75 146 H73.75 A8 8 0 0 1 65.75 138 V125.6 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M65.75 108.6 H81.75 V125.6 H65.75 V108.6 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M72.55 95 H74.95 A6.8 6.8 0 0 1 81.75 101.8 V108.6 H65.75 V101.8 A6.8 6.8 0 0 1 72.55 95 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="73.75" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Spring</text>
+                                            
+                                
+                                                        <path d="M145.25 115.4 H161.25 V138 A8 8 0 0 1 153.25 146 H153.25 A8 8 0 0 1 145.25 138 V115.4 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M145.25 91.6 H161.25 V115.4 H145.25 V91.6 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M153.25 74.6 H153.25 A8 8 0 0 1 161.25 82.6 V91.6 H145.25 V82.6 A8 8 0 0 1 153.25 74.6 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="153.25" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Summer</text>
+                                            
+                                
+                                                        <path d="M224.75 105.2 H240.75 V138 A8 8 0 0 1 232.75 146 H232.75 A8 8 0 0 1 224.75 138 V105.2 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M224.75 78 H240.75 V105.2 H224.75 V78 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M232.75 57.6 H232.75 A8 8 0 0 1 240.75 65.6 V78 H224.75 V65.6 A8 8 0 0 1 232.75 57.6 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="232.75" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Fall</text>
+                                            
+                                
+                                                        <path d="M304.25 95 H320.25 V138 A8 8 0 0 1 312.25 146 H312.25 A8 8 0 0 1 304.25 138 V95 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M304.25 61 H320.25 V95 H304.25 V61 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M312.25 37.2 H312.25 A8 8 0 0 1 320.25 45.2 V61 H304.25 V45.2 A8 8 0 0 1 312.25 37.2 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="312.25" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Winter</text>
+                                    </svg>
+    </div>
+
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Sales funnel</span>                        <span data-mds-chart-badge>4 stages</span>                    </div>
+                
+                                    <div data-mds-chart-value>24% <span data-mds-chart-unit>conversion</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars-rows>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Visits</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 100%"></span></span>
+                <span data-mds-chart-row-value>100</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Cart</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 68%"></span></span>
+                <span data-mds-chart-row-value>68</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Payment</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 42%"></span></span>
+                <span data-mds-chart-row-value>42</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Purchase</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 24%"></span></span>
+                <span data-mds-chart-row-value>24</span>
+            </div>
+            </div>
+
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Category share</span>                        <span data-mds-chart-badge>Donut</span>                    </div>
+                
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-donut>
+    <svg viewBox="0 0 160 160" fill="none" role="img" aria-hidden="true">
+                                                        <path d="M93.84 24.71 A57 57 0 0 1 110.25 128.31" stroke="currentColor" stroke-opacity="1" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M83.92 136.87 A57 57 0 0 1 24.71 93.84" stroke="currentColor" stroke-opacity="0.7" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M24.71 66.16 A57 57 0 0 1 36.3 43.4" stroke="currentColor" stroke-opacity="0.4" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M58.7 27.13 A57 57 0 0 1 66.16 24.71" stroke="currentColor" stroke-opacity="0.2" stroke-width="22" stroke-linecap="round" />
+                    
+        <text x="80" y="79" text-anchor="middle" font-size="18" font-weight="700" fill="currentColor">100%</text>
+                    <text x="80" y="95" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.55">Total sales</text>
+            </svg>
+
+            <div data-mds-chart-legend>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 1"></span><span data-mds-chart-legend-name>Mobile</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.7"></span><span data-mds-chart-legend-name>Home appliances</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.4"></span><span data-mds-chart-legend-name>Books</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.2"></span><span data-mds-chart-legend-name>Other</span></span>
+                    </div>
+    </div>
+
+            <div data-mds-chart-footer>
+                            <span>4 categories</span>
+                <span>Share of sales</span>
+                    </div>
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Customer satisfaction</span>                        <span data-mds-chart-badge>Gauge</span>                    </div>
+                
+                                    <div data-mds-chart-value>84% <span data-mds-chart-unit>performance index</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-gauge>
+    <svg viewBox="0 0 160 130" fill="none" role="img" aria-hidden="true">
+                    <path d="M21.51 115.41 A63 63 0 1 1 140.38 74.02" stroke="currentColor" stroke-width="18" stroke-linecap="round" />
+        
+                    <path d="M142.86 96.16 A63 63 0 0 1 138.49 115.41" stroke="currentColor" stroke-opacity="0.1" stroke-width="18" stroke-linecap="round" />
+        
+        <text x="80" y="88" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">84</text>
+                    <text x="80" y="104" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.55">Target met</text>
+            </svg>
+</div>
+
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Ops targets</span>                        <span data-mds-chart-badge>Benchmark</span>                    </div>
+                
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bullet>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>On-time delivery</span>
+                <span data-mds-chart-row-value>82% / 75%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 82%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 75%"></span>
+                            </span>
+        </div>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>Response rate</span>
+                <span data-mds-chart-row-value>65% / 80%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 65%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 80%"></span>
+                            </span>
+        </div>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>Uptime</span>
+                <span data-mds-chart-row-value>95% / 90%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 95%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 90%"></span>
+                            </span>
+        </div>
+    </div>
+
+            <div data-mds-chart-footer>
+                            <span>Marker: target</span>
+                <span>3 metrics</span>
+                    </div>
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Seller score</span>                        <span data-mds-chart-badge>Radar</span>                    </div>
+                
+                                    <div data-mds-chart-value>85 <span data-mds-chart-unit>of 100</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-radar>
+    <svg viewBox="0 0 220 150" fill="none" role="img" aria-hidden="true">
+                    <polygon points="110,65.5 121.89,74.14 117.35,88.11 102.65,88.11 98.11,74.14" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,53 133.78,70.27 124.69,98.23 95.31,98.23 86.22,70.27" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,40.5 145.66,66.41 132.04,108.34 87.96,108.34 74.34,66.41" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,28 157.55,62.55 139.39,118.45 80.61,118.45 62.45,62.55" stroke="currentColor" stroke-opacity="0.08" />
+        
+                                <line x1="110" y1="78" x2="110" y2="28" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="157.55" y2="62.55" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="139.39" y2="118.45" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="80.61" y2="118.45" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="62.45" y2="62.55" stroke="currentColor" stroke-opacity="0.08" />
+        
+                    <polygon points="110,33 145.66,66.41 134.98,112.38 82.08,116.43 71.96,65.64" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        
+                                <text x="110" y="16" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.45">Shipping speed</text>
+                                <text x="167.06" y="62.46" text-anchor="start" font-size="9" fill="currentColor" fill-opacity="0.45">Quality</text>
+                                <text x="145.27" y="134.54" text-anchor="start" font-size="9" fill="currentColor" fill-opacity="0.45">Price</text>
+                                <text x="74.73" y="134.54" text-anchor="end" font-size="9" fill="currentColor" fill-opacity="0.45">Response rate</text>
+                                <text x="52.94" y="62.46" text-anchor="end" font-size="9" fill="currentColor" fill-opacity="0.45">Packaging</text>
+            </svg>
+</div>
+
+    </div>
+
+        <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Order activity</span>                        <span data-mds-chart-badge>14 weeks</span>                    </div>
+                
+                                    <div data-mds-chart-value>807 <span data-mds-chart-unit>orders</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div
+    
+     x-data="{ hover: null }"      data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
+    data-mds-chart-heatmap
+>
+            <div data-mds-chart-heatmap-labels>
+                            <span>Tir</span>
+                            <span>Mor</span>
+                            <span>Sha</span>
+                    </div>
+    
+    
+    <div
+        data-mds-chart-heatmap-grid
+        style="grid-template-rows: repeat(7, 1fr)"
+         x-on:mouseleave="hover = null"     >
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+            </div>
+
+            <div data-mds-chart-heatmap-callout x-text="hover ?? 'Hover tiles for details'">Hover tiles for details</div>
+    </div>
+
+            <div data-mds-chart-footer>
+                            <span>One column per week</span>
+                <span>Darker: more</span>
+                    </div>
+    </div>
+    </div>
+
+    <p class="[:where(&amp;)]:font-normal text-xs [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >Every chart&#039;s ink is currentColor; a single text-accent class recolors the whole thing.</p>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -7034,7 +7915,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

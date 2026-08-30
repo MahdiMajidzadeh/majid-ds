@@ -28,13 +28,13 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>`, `<mds:preview-card>` |
-| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:composer>` (chat/prompt input), `<mds:color-picker>`, `<mds:file-upload>`, and `<mds:timeline>` — open versions of Flux Pro-only components |
+| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:composer>` (chat/prompt input), `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, and `<mds:chart>` — open versions of Flux Pro-only components |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 59 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 60 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -43,7 +43,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 59 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 60 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
 ```
 
@@ -59,14 +59,14 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
 | Components | The 32 free Flux components bundled with this package |
-| mds components | All 16 `mds:*` components, including the five Flux Pro alternatives |
+| mds components | All 17 `mds:*` components, including the six Flux Pro alternatives |
 
 **Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
 Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker,
 Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code
-in the free tier, so there is nothing to preview or reference. Five of them have `mds:*`
-replacements (Command, Composer, Color picker, File upload, Timeline); for the others, see
-Flux's own docs.
+in the free tier, so there is nothing to preview or reference. Six of them have `mds:*`
+replacements (Command, Composer, Color picker, File upload, Timeline, Chart); for the
+others, see Flux's own docs.
 
 ### How the docs are built
 
@@ -466,6 +466,29 @@ Geometry is four CSS variables: `--mds-timeline-item-gap`, `--mds-timeline-conte
 ```blade
 <mds:timeline class="[--mds-timeline-item-gap:3rem]">...</mds:timeline>
 ```
+
+### `<mds:chart>`
+
+Monochrome dashboard charts in the [Mono Charts](https://github.com/Subhan-code/Monocharts) style (MIT), server-rendered as SVG — no chart library, no script, no payload. An open answer to Flux Pro's `flux:chart`, with a different, batteries-included API: where Flux ships a client-side line-chart toolkit, `mds:chart` ships finished dashboard cards. `<mds:chart>` is the card chrome (label, badge, big stat, delta, footer); the `<mds:chart.*>` stages draw the charts and also work standalone anywhere:
+
+```blade
+<mds:chart label="فروش ماهانه" :value="84" unit="هزار سفارش" delta="+14.2%">
+    <mds:chart.line :data="[24, 45, 38, 65, 52, 84]" :labels="['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور']" area />
+</mds:chart>
+
+<mds:chart.bars :data="[[30, 25, 20], [45, 35, 25]]" />        {{-- arrays stack into tone layers --}}
+<mds:chart.bars horizontal :data="[100, 68, 42, 24]" :labels="['بازدید', 'سبد خرید', 'پرداخت', 'خرید']" />
+<mds:chart.donut :data="['موبایل' => 45, 'کتاب' => 30, 'دیگر' => 25]" value="100%" />
+<mds:chart.gauge :value="84" label="هدف محقق شد" />
+<mds:chart.bullet :items="[['label' => 'ارسال به‌موقع', 'value' => 82, 'target' => 75]]" />
+<mds:chart.radar :data="['سرعت' => 90, 'کیفیت' => 75, 'قیمت' => 85]" />
+<mds:chart.heatmap :data="$dailyOrders" :labels="['تیر', 'مرداد', 'شهریور']" color="accent" />
+<mds:chart.sparkline :data="[30, 45, 35, 60, 85]" area class="h-16" />  {{-- bare svg, KPI recipe --}}
+```
+
+Every chart is one ink: the stage renders in `currentColor` at fixed opacity steps, so `class="text-accent"` recolors a whole chart, and dark mode needs nothing. Lines are monotone splines (smooth, never overshooting the data), bars are pills, donut and gauge segments end in round caps, axis ticks land on "nice" numbers — with Persian digits per `fa`, like everything else in the kit. The SVG plot plane is always LTR (the color-picker precedent); the HTML stages — bullet, heatmap, and horizontal funnel bars — follow the page direction, so funnels grow rightward in RTL and the heatmap's weeks read like the calendar.
+
+Props — `chart`: `label`, `badge`, `value`, `unit`, `delta` (leading `-` turns it red), `footer-start` / `footer-end`, `fa` (inherited by the stages inside); `chart.line`: `data`, `labels`, `baseline` (dashed twin series), `area`, `dots`, `curve` (`smooth` | `straight`), `axis`, `max`, `width` / `height`; `chart.bars`: `data` (numbers, or arrays that stack), `secondary`, `labels`, `horizontal`, `axis`, `max`; `chart.donut`: `data` (label ⇒ value), `value` / `label` (center), `legend`, `size`, `thickness`; `chart.gauge`: `value`, `max`, `label`, `decimals`; `chart.radar`: `data`, `max`; `chart.bullet`: `items`, `max`, `unit`; `chart.heatmap`: `data`, `rows`, `labels`, `color` (`accent`), `unit`, `callout`; `chart.sparkline`: `data`, `area`, `curve`, `width` / `height`.
 
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 

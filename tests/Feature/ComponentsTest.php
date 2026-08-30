@@ -810,6 +810,162 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('159 KB', $html);
     }
 
+
+    public function test_chart_card_renders_persian_stat_delta_and_footer(): void
+    {
+        $html = $this->render('<mds:chart label="فروش ماهانه" badge="تومان" :value="48920" unit="هزار" delta="+14.2%" footer-start="شش ماه اخیر" footer-end="اوج در مرداد">stage</mds:chart>');
+
+        $this->assertStringContainsString('data-mds-chart', $html);
+        $this->assertStringContainsString('۴۸٬۹۲۰', $html);
+        $this->assertStringContainsString('+۱۴.۲%', $html);
+        $this->assertStringContainsString('data-mds-chart-delta', $html);
+        $this->assertStringContainsString('اوج در مرداد', $html);
+    }
+
+    public function test_chart_card_marks_a_negative_delta_as_a_drop(): void
+    {
+        $html = $this->render('<mds:chart :value="10" delta="-3%" :fa="false">stage</mds:chart>');
+
+        $this->assertStringContainsString('data-mds-chart-delta-down', $html);
+        $this->assertStringContainsString('-3%', $html);
+    }
+
+    public function test_chart_line_draws_a_spline_with_dots_and_persian_ticks(): void
+    {
+        $html = $this->render('<mds:chart.line :data="[24, 45, 38, 65, 52, 84]" :labels="[\'فروردین\', \'اردیبهشت\', \'خرداد\', \'تیر\', \'مرداد\', \'شهریور\']" />');
+
+        $this->assertStringContainsString('data-mds-chart-line', $html);
+        $this->assertStringContainsString('data-mds-chart-stage', $html);
+        // The monotone spline renders cubic segments, not straight lines.
+        $this->assertMatchesRegularExpression('/<path d="M[^"]* C[^"]*" stroke="currentColor" stroke-width="3"/', $html);
+        $this->assertSame(6, substr_count($html, 'data-mds-chart-dot'));
+        // 84 peaks on a 0..100 axis with Persian tick digits.
+        $this->assertStringContainsString('>۱۰۰</text>', $html);
+        $this->assertStringContainsString('فروردین', $html);
+    }
+
+    public function test_chart_line_supports_area_baseline_and_latin_digits(): void
+    {
+        $html = $this->render('<mds:chart.line :data="[24, 45, 84]" :baseline="[18, 32, 62]" area :fa="false" />');
+
+        $this->assertStringContainsString('<linearGradient', $html);
+        $this->assertStringContainsString('stroke-dasharray="4 4"', $html);
+        $this->assertStringContainsString('>100</text>', $html);
+        $this->assertStringNotContainsString('۱۰۰', $html);
+    }
+
+    public function test_chart_bars_stacks_layers_with_outer_end_rounding(): void
+    {
+        $html = $this->render('<mds:chart.bars :data="[[30, 25, 20], [45, 35, 25]]" :labels="[\'Q1\', \'Q2\']" :fa="false" />');
+
+        $this->assertStringContainsString('data-mds-chart-bars', $html);
+        // Two stacks of three tones: solid base, half, fifth.
+        $this->assertSame(2, substr_count($html, 'fill-opacity="1"'));
+        $this->assertSame(2, substr_count($html, 'fill-opacity="0.5"'));
+        $this->assertSame(2, substr_count($html, 'fill-opacity="0.2"'));
+    }
+
+    public function test_chart_bars_horizontal_renders_direction_aware_rows(): void
+    {
+        $html = $this->render('<mds:chart.bars horizontal :data="[100, 68, 42, 24]" :labels="[\'بازدید\', \'ثبت‌نام\', \'فعال\', \'خرید\']" />');
+
+        $this->assertStringContainsString('data-mds-chart-bars-rows', $html);
+        $this->assertStringContainsString('inline-size: 100%', $html);
+        $this->assertStringContainsString('inline-size: 68%', $html);
+        $this->assertStringContainsString('ثبت‌نام', $html);
+        $this->assertStringContainsString('۱۰۰', $html);
+    }
+
+    public function test_chart_donut_draws_rounded_segments_and_a_legend(): void
+    {
+        $html = $this->render('<mds:chart.donut :data="[\'هسته\' => 45, \'رابط\' => 30, \'دارایی\' => 15, \'دیگر\' => 10]" value="100%" label="تخصیص" />');
+
+        $this->assertStringContainsString('data-mds-chart-donut', $html);
+        $this->assertSame(4, substr_count($html, 'stroke-linecap="round"'));
+        $this->assertStringContainsString('stroke-opacity="0.7"', $html);
+        $this->assertStringContainsString('۱۰۰%', $html);
+        $this->assertStringContainsString('data-mds-chart-legend', $html);
+        $this->assertStringContainsString('دارایی', $html);
+    }
+
+    public function test_chart_gauge_dials_the_value_over_a_faint_track(): void
+    {
+        $html = $this->render('<mds:chart.gauge :value="84" label="Target met" :fa="false" />');
+
+        $this->assertStringContainsString('data-mds-chart-gauge', $html);
+        $this->assertStringContainsString('>84</text>', $html);
+        $this->assertStringContainsString('stroke-opacity="0.1"', $html);
+        $this->assertStringContainsString('Target met', $html);
+    }
+
+    public function test_chart_radar_webs_the_axes(): void
+    {
+        $html = $this->render('<mds:chart.radar :data="[\'سرعت\' => 90, \'حافظه\' => 75, \'مقیاس\' => 85, \'تاخیر\' => 95, \'دقت\' => 80]" />');
+
+        $this->assertStringContainsString('data-mds-chart-radar', $html);
+        // Four grid rings plus the data shape.
+        $this->assertSame(5, substr_count($html, '<polygon'));
+        $this->assertStringContainsString('fill-opacity="0.15"', $html);
+        $this->assertStringContainsString('حافظه', $html);
+    }
+
+    public function test_chart_bullet_places_the_target_marker(): void
+    {
+        $html = $this->render('<mds:chart.bullet :items="[[\'label\' => \'گذردهی\', \'value\' => 82, \'target\' => 75]]" />');
+
+        $this->assertStringContainsString('data-mds-chart-bullet', $html);
+        $this->assertStringContainsString('inline-size: 82%', $html);
+        $this->assertStringContainsString('inset-inline-start: 75%', $html);
+        $this->assertStringContainsString('۸۲% / ۷۵%', $html);
+    }
+
+    public function test_chart_heatmap_grades_cells_and_speaks_persian(): void
+    {
+        $html = $this->render('<mds:chart.heatmap :data="[0, 1, 3, 6, 12]" :labels="[\'فروردین\']" />');
+
+        $this->assertStringContainsString('data-mds-chart-heatmap', $html);
+        $this->assertSame(5, substr_count($html, 'data-mds-chart-cell'));
+        $this->assertStringContainsString('data-level="0"', $html);
+        $this->assertStringContainsString('data-level="4"', $html);
+        $this->assertStringContainsString('۱۲ مورد', $html);
+        $this->assertStringContainsString('برای جزئیات روی خانه‌ها بروید', $html);
+    }
+
+    public function test_chart_heatmap_supports_english_and_the_accent_ladder(): void
+    {
+        $html = $this->render('<mds:chart.heatmap :data="[2, 4]" color="accent" :fa="false" />');
+
+        $this->assertStringContainsString('data-mds-chart-heatmap-color="accent"', $html);
+        $this->assertStringContainsString('4 items', $html);
+        $this->assertStringContainsString('Hover tiles for details', $html);
+    }
+
+    public function test_chart_sparkline_is_a_bare_stretchable_svg(): void
+    {
+        $html = $this->render('<mds:chart.sparkline :data="[30, 45, 35, 60, 50, 85]" area class="h-10" />');
+
+        $this->assertStringContainsString('data-mds-chart-sparkline', $html);
+        $this->assertStringContainsString('preserveAspectRatio="none"', $html);
+        $this->assertStringContainsString('vector-effect="non-scaling-stroke"', $html);
+        $this->assertStringContainsString('<linearGradient', $html);
+        $this->assertMatchesRegularExpression('/<svg\s[^>]*class="h-10"/', $html);
+    }
+
+    public function test_chart_stages_inherit_fa_from_the_card(): void
+    {
+        $html = $this->render('<mds:chart :fa="false"><mds:chart.line :data="[10, 20]" /></mds:chart>');
+
+        $this->assertStringContainsString('>20</text>', $html);
+        $this->assertStringNotContainsString('۲۰', $html);
+    }
+
+    public function test_chart_stage_fa_overrides_the_card(): void
+    {
+        $html = $this->render('<mds:chart :fa="false"><mds:chart.gauge :value="84" :fa="true" /></mds:chart>');
+
+        $this->assertStringContainsString('۸۴', $html);
+    }
+
     public function test_microcopy_follows_the_persian_digits_config(): void
     {
         config(['mds.persian_digits' => false]);

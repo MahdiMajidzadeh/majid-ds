@@ -337,3 +337,379 @@
         height: 1px;
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Chart (mds:chart)
+|--------------------------------------------------------------------------
+|
+| Monochrome dashboard visualizers in the Mono Charts style (Amicro, MIT):
+| rounded geometry, one ink. The ink is currentColor — the stage sets it to
+| zinc-950/white and every fill and stroke is that color at a fixed opacity
+| step, so a single text utility (`text-accent`) recolors a whole chart.
+| SVG stages force direction: ltr (the plot plane never mirrors); the HTML
+| stages (bullet, heatmap, horizontal bars) follow the page direction.
+|
+| Knobs (set them on the element with an arbitrary class):
+|   --mds-chart-radius   card corner radius (default 1.5rem)
+|   --mds-chart-stage    stage background — also the halo around line dots
+|
+| These live in @layer components on purpose: cascade layers outrank
+| specificity, so unlayered rules would beat Tailwind's @layer utilities
+| and swallow classes like `text-accent` on a stage.
+|
+*/
+
+@layer components {
+    /* The card: header, stage, footer — a vertical stack. */
+    :where([data-mds-chart]) {
+        --mds-chart-radius: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1.25rem;
+        border-radius: var(--mds-chart-radius);
+        background: white;
+        border: 1px solid var(--color-zinc-100);
+        box-shadow: 0 4px 20px rgb(0 0 0 / 0.04);
+    }
+
+    :where(.dark [data-mds-chart]) {
+        background: var(--color-zinc-900);
+        border-color: transparent;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+    }
+
+    [data-mds-chart-header] {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    :where([data-mds-chart-label]) {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--color-zinc-500);
+    }
+
+    :where(.dark [data-mds-chart-label]) {
+        color: var(--color-zinc-400);
+    }
+
+    :where([data-mds-chart-badge]) {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.4375rem;
+        border-radius: 9999px;
+        font-size: 0.625rem;
+        font-variant-numeric: tabular-nums;
+        background: rgb(0 0 0 / 0.04);
+        border: 1px solid rgb(0 0 0 / 0.08);
+        color: var(--color-zinc-600);
+    }
+
+    :where(.dark [data-mds-chart-badge]) {
+        background: rgb(255 255 255 / 0.1);
+        border-color: rgb(255 255 255 / 0.2);
+        color: white;
+    }
+
+    :where([data-mds-chart-value]) {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        font-variant-numeric: tabular-nums;
+        margin-block-start: 0.125rem;
+        color: var(--color-zinc-950);
+    }
+
+    :where(.dark [data-mds-chart-value]) {
+        color: white;
+    }
+
+    [data-mds-chart-unit] {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.7;
+    }
+
+    :where([data-mds-chart-delta]) {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--color-emerald-600);
+    }
+
+    :where(.dark [data-mds-chart-delta]) {
+        color: var(--color-emerald-400);
+    }
+
+    :where([data-mds-chart-delta-down]) {
+        color: var(--color-red-500);
+    }
+
+    :where(.dark [data-mds-chart-delta-down]) {
+        color: var(--color-red-400);
+    }
+
+    [data-mds-chart-footer] {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-block-start: auto;
+        padding-block-start: 0.5rem;
+        border-block-start: 1px solid var(--color-zinc-100);
+        font-size: 0.6875rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    :where(.dark [data-mds-chart]) [data-mds-chart-footer] {
+        border-color: rgb(255 255 255 / 0.05);
+    }
+
+    :where([data-mds-chart-footer] > span:first-child) {
+        color: var(--color-zinc-500);
+    }
+
+    :where(.dark [data-mds-chart-footer] > span:first-child) {
+        color: var(--color-zinc-400);
+    }
+
+    :where([data-mds-chart-footer] > span:last-child) {
+        font-weight: 500;
+        color: var(--color-zinc-950);
+    }
+
+    :where(.dark [data-mds-chart-footer] > span:last-child) {
+        color: white;
+    }
+
+    /* The stage: the inner screen a chart sits on. Its text color IS the
+       chart's ink — recolor everything with e.g. `class="text-accent"`. */
+    :where([data-mds-chart-stage]) {
+        --mds-chart-stage: var(--color-zinc-100);
+        flex: 1;
+        border-radius: 0.875rem;
+        padding: 0.5rem;
+        background: var(--mds-chart-stage);
+        color: var(--color-zinc-950);
+    }
+
+    :where(.dark [data-mds-chart-stage]) {
+        --mds-chart-stage: var(--color-zinc-950);
+        color: white;
+    }
+
+    /* The SVG plot plane never mirrors — anchors and axes assume LTR. */
+    [data-mds-chart-stage] svg {
+        display: block;
+        inline-size: 100%;
+        block-size: auto;
+        direction: ltr;
+    }
+
+    /* The polar charts stay compact and centered instead of stretching. */
+    [data-mds-chart-donut] > svg,
+    [data-mds-chart-gauge] > svg,
+    [data-mds-chart-radar] > svg {
+        max-inline-size: 13rem;
+        margin-inline: auto;
+    }
+
+    /* The radar's viewBox is wider — the side labels live in the margins. */
+    [data-mds-chart-radar] > svg {
+        max-inline-size: 16rem;
+    }
+
+    /* Line dots wear a stage-colored halo so they read as punched out. */
+    [data-mds-chart-line] [data-mds-chart-dot] {
+        stroke: var(--mds-chart-stage);
+    }
+
+    /* Row charts: bullet targets and horizontal (funnel) bars. */
+    [data-mds-chart-bars-rows],
+    [data-mds-chart-bullet] {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        gap: 0.625rem;
+        padding: 0.75rem;
+    }
+
+    [data-mds-chart-row] {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    [data-mds-chart-bullet-item] {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3125rem;
+    }
+
+    [data-mds-chart-bullet-head] {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    :where([data-mds-chart-row-label]) {
+        font-size: 0.6875rem;
+        font-weight: 500;
+    }
+
+    :where([data-mds-chart-row] > [data-mds-chart-row-label]) {
+        flex: none;
+        inline-size: 4.5rem;
+    }
+
+    :where([data-mds-chart-row-value]) {
+        font-size: 0.6875rem;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.55;
+    }
+
+    :where([data-mds-chart-row] > [data-mds-chart-row-value]) {
+        flex: none;
+        min-inline-size: 2rem;
+        text-align: end;
+    }
+
+    [data-mds-chart-track] {
+        position: relative;
+        display: block;
+        block-size: 0.875rem;
+        border-radius: 9999px;
+        overflow: hidden;
+        background: color-mix(in oklab, currentColor 10%, transparent);
+    }
+
+    /* Only in a row does the track flex — in a bullet column, flex-basis 0
+       would win over block-size and collapse it flat. */
+    [data-mds-chart-row] > [data-mds-chart-track] {
+        flex: 1;
+    }
+
+    [data-mds-chart-fill] {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: 0;
+        display: block;
+        border-radius: 9999px;
+        background: currentColor;
+    }
+
+    :where([data-mds-chart-target]) {
+        position: absolute;
+        inset-block: 0;
+        inline-size: 0.25rem;
+        border-radius: 9999px;
+        background: var(--color-accent);
+        /* A stage-colored halo keeps the marker readable on top of the fill. */
+        box-shadow: 0 0 0 1.5px var(--mds-chart-stage);
+    }
+
+    /* Donut legend. */
+    [data-mds-chart-legend] {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 0.25rem 0.75rem;
+        padding-block-start: 0.5rem;
+        font-size: 0.625rem;
+    }
+
+    [data-mds-chart-legend-item] {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    [data-mds-chart-legend-dot] {
+        inline-size: 0.375rem;
+        block-size: 0.375rem;
+        border-radius: 9999px;
+        background: currentColor;
+    }
+
+    [data-mds-chart-legend-name] {
+        opacity: 0.6;
+    }
+
+    /* Activity heatmap. */
+    [data-mds-chart-heatmap] {
+        --mds-chart-heatmap-base: currentColor;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        padding: 0.75rem;
+    }
+
+    :where([data-mds-chart-heatmap-color='accent']) {
+        --mds-chart-heatmap-base: var(--color-accent);
+    }
+
+    [data-mds-chart-heatmap-labels] {
+        display: flex;
+        font-size: 0.625rem;
+        opacity: 0.55;
+    }
+
+    [data-mds-chart-heatmap-labels] > span {
+        flex: 1;
+        text-align: center;
+    }
+
+    [data-mds-chart-heatmap-grid] {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        gap: 0.25rem;
+    }
+
+    [data-mds-chart-cell] {
+        block-size: 0.75rem;
+        border-radius: 0.1875rem;
+        background: color-mix(in oklab, var(--mds-chart-heatmap-base) 8%, transparent);
+        transition: transform 150ms;
+    }
+
+    [data-mds-chart-cell]:hover {
+        transform: scale(1.25);
+    }
+
+    [data-mds-chart-cell][data-level='1'] {
+        background: color-mix(in oklab, var(--mds-chart-heatmap-base) 30%, transparent);
+    }
+
+    [data-mds-chart-cell][data-level='2'] {
+        background: color-mix(in oklab, var(--mds-chart-heatmap-base) 55%, transparent);
+    }
+
+    [data-mds-chart-cell][data-level='3'] {
+        background: color-mix(in oklab, var(--mds-chart-heatmap-base) 80%, transparent);
+    }
+
+    [data-mds-chart-cell][data-level='4'] {
+        background: var(--mds-chart-heatmap-base);
+    }
+
+    [data-mds-chart-heatmap-callout] {
+        block-size: 1rem;
+        margin-block-start: 0.125rem;
+        text-align: center;
+        font-size: 0.625rem;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.55;
+    }
+
+    /* A bare sparkline sizes itself; any width/height utility overrides. */
+    :where([data-mds-chart-sparkline]) {
+        display: block;
+        inline-size: 100%;
+        block-size: 1.75rem;
+    }
+}

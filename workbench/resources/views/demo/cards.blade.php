@@ -62,6 +62,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#composer" icon="chat-bubble-oval-left">{{ __('گفتگو') }}</flux:navbar.item>
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
+        <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
@@ -875,6 +876,78 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             </mds:timeline.item>
         </mds:timeline>
     </div>
+</flux:card>
+
+{{-- ============================== MDS: Chart ============================== --}}
+<flux:card id="chart" class="space-y-6">
+    <flux:heading size="lg">{{ __('نمودار — mds:chart') }}</flux:heading>
+    <flux:text>{{ __('نمودارهای تک‌رنگ داشبورد، رندرشده در سرور به‌صورت SVG بدون هیچ کتابخانه‌ای — نسخه آزاد از کامپوننت Chart (در Flux فقط Pro). ارقام فارسی، قیف و هیت‌مپ راست‌به‌چپ.') }}</flux:text>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+        <mds:chart :label="__('درآمد ماهانه')" :value="48920" :unit="__('هزار تومان')" delta="+14.2%" :footer-start="__('اسپارک‌لاین گرد')" :footer-end="__('شش ماه اخیر')">
+            <mds:chart.sparkline :data="[30, 45, 35, 60, 50, 85, 75, 95]" area class="h-16" />
+        </mds:chart>
+
+        <mds:chart :label="__('فروش ماهانه')" :badge="__('اسپلاین')" :value="84" :unit="__('هزار سفارش')" :footer-start="__('خط‌چین: سال گذشته')" :footer-end="__('اوج در مرداد')">
+            <mds:chart.line
+                :data="[24, 45, 38, 65, 52, 84]"
+                :baseline="[18, 32, 29, 48, 41, 62]"
+                :labels="[__('فروردین'), __('اردیبهشت'), __('خرداد'), __('تیر'), __('مرداد'), __('شهریور')]"
+                area
+            />
+        </mds:chart>
+
+        <mds:chart :label="__('فروش فصلی')" :badge="__('سه لایه')" :value="160" :unit="__('میلیارد')">
+            <mds:chart.bars
+                :data="[[30, 25, 20], [45, 35, 25], [60, 40, 30], [75, 50, 35]]"
+                :labels="[__('بهار'), __('تابستان'), __('پاییز'), __('زمستان')]"
+            />
+        </mds:chart>
+
+        <mds:chart :label="__('قیف فروش')" :badge="__('چهار مرحله')" value="24%" :unit="__('نرخ تبدیل')">
+            <mds:chart.bars horizontal :data="[100, 68, 42, 24]" :labels="[__('بازدید'), __('سبد خرید'), __('پرداخت'), __('خرید')]" />
+        </mds:chart>
+
+        <mds:chart :label="__('سهم دسته‌ها')" :badge="__('دونات')" :footer-start="__('چهار دسته')" :footer-end="__('سهم از فروش')">
+            <mds:chart.donut
+                :data="[__('موبایل') => 45, __('لوازم خانگی') => 30, __('کتاب') => 15, __('دیگر') => 10]"
+                value="100%"
+                :label="__('کل فروش')"
+            />
+        </mds:chart>
+
+        <mds:chart :label="__('رضایت مشتری')" :badge="__('عقربه‌ای')" value="84%" :unit="__('شاخص عملکرد')">
+            <mds:chart.gauge :value="84" :label="__('هدف محقق شد')" />
+        </mds:chart>
+
+        <mds:chart :label="__('اهداف عملیات')" :badge="__('سنجش')" :footer-start="__('نشانگر: هدف')" :footer-end="__('سه سنجه')">
+            <mds:chart.bullet :items="[
+                ['label' => __('ارسال به‌موقع'), 'value' => 82, 'target' => 75],
+                ['label' => __('پاسخ‌گویی'), 'value' => 65, 'target' => 80],
+                ['label' => __('دسترس‌پذیری'), 'value' => 95, 'target' => 90],
+            ]" />
+        </mds:chart>
+
+        <mds:chart :label="__('امتیاز فروشنده')" :badge="__('رادار')" :value="85" :unit="__('از صد')">
+            <mds:chart.radar :data="[
+                __('سرعت ارسال') => 90,
+                __('کیفیت') => 75,
+                __('قیمت') => 85,
+                __('پاسخ‌گویی') => 95,
+                __('بسته‌بندی') => 80,
+            ]" />
+        </mds:chart>
+
+        <mds:chart :label="__('فعالیت سفارش‌ها')" :badge="__('چهارده هفته')" :value="807" :unit="__('سفارش')" :footer-start="__('هر ستون یک هفته')" :footer-end="__('پررنگ‌تر: بیشتر')">
+            <mds:chart.heatmap
+                :data="array_map(fn ($i) => ($i * 7) % 13, range(1, 98))"
+                :labels="[__('تیر'), __('مرداد'), __('شهریور')]"
+                color="accent"
+            />
+        </mds:chart>
+    </div>
+
+    <flux:text size="sm">{{ __('رنگ جوهر همه نمودارها currentColor است؛ با یک کلاس text-accent کل نمودار رنگ می‌گیرد.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

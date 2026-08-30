@@ -93,6 +93,7 @@ return [
             'color-picker' => 'mds:color-picker',
             'file-upload' => 'mds:file-upload',
             'timeline' => 'mds:timeline',
+            'chart' => 'mds:chart',
         ],
     ],
 ];

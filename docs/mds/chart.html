@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:chart — Majid DS</title>
+<meta name="description" content="mds:chart — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../guides/demo.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open data-docs-slug="chart" data-docs-prefix="../">
+            <summary>Menu</summary>
+            <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="../index.html">overview</a>.</p></noscript>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:chart</h1>
+        <p class="docs-lede">Monochrome dashboard charts, server-rendered as SVG — an open answer to a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">A family of dashboard visualizers in one ink: rounded splines, pill bars, arc dials. Everything renders on the server — no chart library, no JSON payload, no script. The design follows Amicro's <a href="https://github.com/Subhan-code/Monocharts">Mono Charts</a> (MIT). Flux Pro's <code>flux:chart</code> is a client-side line-chart toolkit; <code>mds:chart</code> is a different, batteries-included take for static dashboard cards.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Spline dynamics</span>                        <span data-mds-chart-badge>Line</span>                    </div>
+                
+                                    <div data-mds-chart-value>84 <span data-mds-chart-unit>k nodes</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+        
+                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                            <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">25</text>
+                                            <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                            <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">75</text>
+                                            <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                    
+        
+        
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        
+                                    <circle cx="40" cy="113.36" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="101.2" cy="84.8" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="162.4" cy="94.32" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="223.6" cy="57.6" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="284.8" cy="75.28" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="346" cy="31.76" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                    
+                                                        <text x="40" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Jan</text>
+                                                                <text x="101.2" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Feb</text>
+                                                                <text x="162.4" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Mar</text>
+                                                                <text x="223.6" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Apr</text>
+                                                                <text x="284.8" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">May</text>
+                                                                <text x="346" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Jun</text>
+                                        </svg>
+</div>
+
+            <div data-mds-chart-footer>
+                            <span>Rounded caps</span>
+                <span>84k peak</span>
+                    </div>
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span>
+    <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Spline dynamics&quot;</span>
+    <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Line&quot;</span>
+    <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;84&quot;</span>
+    <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;k nodes&quot;</span>
+    <span class="t-attr">footer-start</span><span class="t-equals">=</span><span class="t-string">&quot;Rounded caps&quot;</span>
+    <span class="t-attr">footer-end</span><span class="t-equals">=</span><span class="t-string">&quot;84k peak&quot;</span>
+    <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span>
+<span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.line</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[24, 45, 38, 65, 52, 84]&quot;</span> <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Jan&#039;, &#039;Feb&#039;, &#039;Mar&#039;, &#039;Apr&#039;, &#039;May&#039;, &#039;Jun&#039;]&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="the-card-and-the-stage" class="docs-section"><h2>The card and the stage</h2><p class="docs-text">Two layers, both optional. <code>mds:chart</code> is the card — label, badge, big stat, footer. The <code>mds:chart.*</code> stages draw the actual chart and work anywhere on their own: inside a <code>flux:card</code>, a table cell, or bare. The ink is <code>currentColor</code>, so one text utility recolors a whole chart.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm space-y-4">
+    <div  data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                    <defs>
+                <linearGradient id="mds-chart-fade-64a44734" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        
+                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                            <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">25</text>
+                                            <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                            <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">75</text>
+                                            <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                    
+                    <path d="M40 121.52 C60.4 115.74 80.8 109.97 101.2 99.76 C121.6 89.55 142 58.73 162.4 48.08 C182.8 37.43 203.2 24.96 223.6 24.96 C244 24.96 264.4 50.11 284.8 58.96 C305.2 67.81 325.6 74.26 346 80.72 L346 146 L40 146 Z" fill="url(#mds-chart-fade-64a44734)" />
+        
+        
+                    <path d="M40 121.52 C60.4 115.74 80.8 109.97 101.2 99.76 C121.6 89.55 142 58.73 162.4 48.08 C182.8 37.43 203.2 24.96 223.6 24.96 C244 24.96 264.4 50.11 284.8 58.96 C305.2 67.81 325.6 74.26 346 80.72" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+        
+                                                        <text x="40" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">02</text>
+                                                                <text x="101.2" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">06</text>
+                                                                <text x="162.4" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">10</text>
+                                                                <text x="223.6" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">14</text>
+                                                                <text x="284.8" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">18</text>
+                                                                <text x="346" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">22</text>
+                                        </svg>
+</div>
+    <div class="text-accent" data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                    <defs>
+                <linearGradient id="mds-chart-fade-64a44734" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        
+        
+                    <path d="M12 133 C34.27 126.63 56.53 120.26 78.8 109 C101.07 97.74 123.33 63.75 145.6 52 C167.87 40.25 190.13 26.5 212.4 26.5 C234.67 26.5 256.93 54.24 279.2 64 C301.47 73.76 323.73 80.88 346 88 L346 160 L12 160 Z" fill="url(#mds-chart-fade-64a44734)" />
+        
+        
+                    <path d="M12 133 C34.27 126.63 56.53 120.26 78.8 109 C101.07 97.74 123.33 63.75 145.6 52 C167.87 40.25 190.13 26.5 212.4 26.5 C234.67 26.5 256.93 54.24 279.2 64 C301.47 73.76 323.73 80.88 346 88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+        
+            </svg>
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm space-y-4&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.line</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[18, 34, 72, 89, 64, 48]&quot;</span> <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;02&#039;, &#039;06&#039;, &#039;10&#039;, &#039;14&#039;, &#039;18&#039;, &#039;22&#039;]&quot;</span> <span class="t-attr">area</span> <span class="t-attr">:dots</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.line</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[18, 34, 72, 89, 64, 48]&quot;</span> <span class="t-attr">area</span> <span class="t-attr">:dots</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">:axis</span><span class="t-equals">=</span><span class="t-string">&quot;false&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;text-accent&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="line" class="docs-section"><h2>Line</h2><p class="docs-text">The line is a monotone spline — smooth, but it never overshoots the data. <code>baseline</code> adds a dashed comparison series on the same axis, <code>area</code> pours a soft gradient under the curve, and <code>curve="straight"</code> switches to plain segments.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Weekly sessions</span>                        <span data-mds-chart-badge>vs last week</span>                    </div>
+                
+                                    <div data-mds-chart-value>84 <span data-mds-chart-unit>k</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                    <defs>
+                <linearGradient id="mds-chart-fade-80aac908" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        
+                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                            <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">25</text>
+                                            <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                            <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">75</text>
+                                            <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                    
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76 L346 146 L40 146 Z" fill="url(#mds-chart-fade-80aac908)" />
+        
+                    <path d="M40 121.52 C60.4 112 80.8 102.48 101.2 102.48 C121.6 102.48 142 106.56 162.4 106.56 C182.8 106.56 203.2 80.72 223.6 80.72 C244 80.72 264.4 90.24 284.8 90.24 C305.2 90.24 325.6 75.96 346 61.68" stroke="currentColor" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" stroke-linejoin="round" />
+        
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+                                    <circle cx="40" cy="113.36" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="101.2" cy="84.8" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="162.4" cy="94.32" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="223.6" cy="57.6" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="284.8" cy="75.28" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="346" cy="31.76" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                    
+                                                        <text x="40" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Sat</text>
+                                                                <text x="101.2" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Sun</text>
+                                                                <text x="162.4" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Mon</text>
+                                                                <text x="223.6" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Tue</text>
+                                                                <text x="284.8" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Wed</text>
+                                                                <text x="346" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Thu</text>
+                                        </svg>
+</div>
+
+            <div data-mds-chart-footer>
+                            <span>Dashed: last week</span>
+                <span>84k peak</span>
+                    </div>
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span>
+    <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Weekly sessions&quot;</span>
+    <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;vs last week&quot;</span>
+    <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;84&quot;</span>
+    <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;k&quot;</span>
+    <span class="t-attr">footer-start</span><span class="t-equals">=</span><span class="t-string">&quot;Dashed: last week&quot;</span>
+    <span class="t-attr">footer-end</span><span class="t-equals">=</span><span class="t-string">&quot;84k peak&quot;</span>
+    <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span>
+<span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.line</span>
+        <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[24, 45, 38, 65, 52, 84]&quot;</span>
+        <span class="t-attr">:baseline</span><span class="t-equals">=</span><span class="t-string">&quot;[18, 32, 29, 48, 41, 62]&quot;</span>
+        <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Sat&#039;, &#039;Sun&#039;, &#039;Mon&#039;, &#039;Tue&#039;, &#039;Wed&#039;, &#039;Thu&#039;]&quot;</span>
+        <span class="t-attr">area</span>
+    <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="bars" class="docs-section"><h2>Bars</h2><p class="docs-text">Bars are pills — fully rounded ends, one tone. A <code>secondary</code> series renders as a faint twin next to each bar. When an item is an <em>array</em>, its values stack: solid base, lighter tones upward, only the stack's outer ends rounded.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="grid w-full gap-4 sm:grid-cols-2">
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Pill pillars</span>                        <span data-mds-chart-badge>Grouped</span>                    </div>
+                
+                                    <div data-mds-chart-value>422 <span data-mds-chart-unit>units</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars>
+        <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                                        <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">25</text>
+                                                        <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                                        <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">75</text>
+                                                        <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                            
+                            
+                                
+                                                        <path d="M52.5 84.8 H52.5 A6 6 0 0 1 58.5 90.8 V140 A6 6 0 0 1 52.5 146 H52.5 A6 6 0 0 1 46.5 140 V90.8 A6 6 0 0 1 52.5 84.8 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M68.5 112 H68.5 A6 6 0 0 1 74.5 118 V140 A6 6 0 0 1 68.5 146 H68.5 A6 6 0 0 1 62.5 140 V118 A6 6 0 0 1 68.5 112 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="60.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Mon</text>
+                                            
+                                
+                                                        <path d="M105.5 39.92 H105.5 A6 6 0 0 1 111.5 45.92 V140 A6 6 0 0 1 105.5 146 H105.5 A6 6 0 0 1 99.5 140 V45.92 A6 6 0 0 1 105.5 39.92 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M121.5 91.6 H121.5 A6 6 0 0 1 127.5 97.6 V140 A6 6 0 0 1 121.5 146 H121.5 A6 6 0 0 1 115.5 140 V97.6 A6 6 0 0 1 121.5 91.6 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="113.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Tue</text>
+                                            
+                                
+                                                        <path d="M158.5 61.68 H158.5 A6 6 0 0 1 164.5 67.68 V140 A6 6 0 0 1 158.5 146 H158.5 A6 6 0 0 1 152.5 140 V67.68 A6 6 0 0 1 158.5 61.68 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M174.5 105.2 H174.5 A6 6 0 0 1 180.5 111.2 V140 A6 6 0 0 1 174.5 146 H174.5 A6 6 0 0 1 168.5 140 V111.2 A6 6 0 0 1 174.5 105.2 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="166.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Wed</text>
+                                            
+                                
+                                                        <path d="M211.5 16.8 H211.5 A6 6 0 0 1 217.5 22.8 V140 A6 6 0 0 1 211.5 146 H211.5 A6 6 0 0 1 205.5 140 V22.8 A6 6 0 0 1 211.5 16.8 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M227.5 71.2 H227.5 A6 6 0 0 1 233.5 77.2 V140 A6 6 0 0 1 227.5 146 H227.5 A6 6 0 0 1 221.5 140 V77.2 A6 6 0 0 1 227.5 71.2 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="219.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Thu</text>
+                                            
+                                
+                                                        <path d="M264.5 26.32 H264.5 A6 6 0 0 1 270.5 32.32 V140 A6 6 0 0 1 264.5 146 H264.5 A6 6 0 0 1 258.5 140 V32.32 A6 6 0 0 1 264.5 26.32 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M280.5 78 H280.5 A6 6 0 0 1 286.5 84 V140 A6 6 0 0 1 280.5 146 H280.5 A6 6 0 0 1 274.5 140 V84 A6 6 0 0 1 280.5 78 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="272.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Fri</text>
+                                            
+                                
+                                                        <path d="M317.5 72.56 H317.5 A6 6 0 0 1 323.5 78.56 V140 A6 6 0 0 1 317.5 146 H317.5 A6 6 0 0 1 311.5 140 V78.56 A6 6 0 0 1 317.5 72.56 Z" fill="currentColor" fill-opacity="1" />
+                
+                                                        <path d="M333.5 107.92 H333.5 A6 6 0 0 1 339.5 113.92 V140 A6 6 0 0 1 333.5 146 H333.5 A6 6 0 0 1 327.5 140 V113.92 A6 6 0 0 1 333.5 107.92 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                                    <text x="325.5" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Sat</text>
+                                    </svg>
+    </div>
+
+    </div>
+
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Stacked tones</span>                        <span data-mds-chart-badge>3 layers</span>                    </div>
+                
+                                    <div data-mds-chart-value>160 <span data-mds-chart-unit>cumulative</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars>
+        <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">0</text>
+                                                        <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">50</text>
+                                                        <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">100</text>
+                                                        <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">150</text>
+                                                        <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="2 2" />
+                    <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">200</text>
+                            
+                            
+                                
+                                                        <path d="M65.75 125.6 H81.75 V138 A8 8 0 0 1 73.75 146 H73.75 A8 8 0 0 1 65.75 138 V125.6 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M65.75 108.6 H81.75 V125.6 H65.75 V108.6 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M72.55 95 H74.95 A6.8 6.8 0 0 1 81.75 101.8 V108.6 H65.75 V101.8 A6.8 6.8 0 0 1 72.55 95 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="73.75" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Q1</text>
+                                            
+                                
+                                                        <path d="M145.25 115.4 H161.25 V138 A8 8 0 0 1 153.25 146 H153.25 A8 8 0 0 1 145.25 138 V115.4 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M145.25 91.6 H161.25 V115.4 H145.25 V91.6 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M153.25 74.6 H153.25 A8 8 0 0 1 161.25 82.6 V91.6 H145.25 V82.6 A8 8 0 0 1 153.25 74.6 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="153.25" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Q2</text>
+                                            
+                                
+                                                        <path d="M224.75 105.2 H240.75 V138 A8 8 0 0 1 232.75 146 H232.75 A8 8 0 0 1 224.75 138 V105.2 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M224.75 78 H240.75 V105.2 H224.75 V78 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M232.75 57.6 H232.75 A8 8 0 0 1 240.75 65.6 V78 H224.75 V65.6 A8 8 0 0 1 232.75 57.6 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="232.75" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Q3</text>
+                                            
+                                
+                                                        <path d="M304.25 95 H320.25 V138 A8 8 0 0 1 312.25 146 H312.25 A8 8 0 0 1 304.25 138 V95 Z" fill="currentColor" fill-opacity="1" />
+                                                        <path d="M304.25 61 H320.25 V95 H304.25 V61 Z" fill="currentColor" fill-opacity="0.5" />
+                                                        <path d="M312.25 37.2 H312.25 A8 8 0 0 1 320.25 45.2 V61 H304.25 V45.2 A8 8 0 0 1 312.25 37.2 Z" fill="currentColor" fill-opacity="0.2" />
+                
+                
+                                    <text x="312.25" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">Q4</text>
+                                    </svg>
+    </div>
+
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;grid w-full gap-4 sm:grid-cols-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Pill pillars&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Grouped&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;422&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;units&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.bars</span>
+            <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[45, 78, 62, 95, 88, 54]&quot;</span>
+            <span class="t-attr">:secondary</span><span class="t-equals">=</span><span class="t-string">&quot;[25, 40, 30, 55, 50, 28]&quot;</span>
+            <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Mon&#039;, &#039;Tue&#039;, &#039;Wed&#039;, &#039;Thu&#039;, &#039;Fri&#039;, &#039;Sat&#039;]&quot;</span>
+        <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Stacked tones&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;3 layers&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;160&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;cumulative&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.bars</span>
+            <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[[30, 25, 20], [45, 35, 25], [60, 40, 30], [75, 50, 35]]&quot;</span>
+            <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Q1&#039;, &#039;Q2&#039;, &#039;Q3&#039;, &#039;Q4&#039;]&quot;</span>
+        <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="funnel-rows" class="docs-section"><h2>Funnel rows</h2><p class="docs-text"><code>horizontal</code> switches to HTML rows — label, pill track, value. Rows follow the page direction (they grow from the right in RTL), which makes them the funnel of choice for Persian checkouts.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Stage funnel</span>                        <span data-mds-chart-badge>Pipeline</span>                    </div>
+                
+                                    <div data-mds-chart-value>24% <span data-mds-chart-unit>conversion</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars-rows>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Visits</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 100%"></span></span>
+                <span data-mds-chart-row-value>100</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Signup</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 68%"></span></span>
+                <span data-mds-chart-row-value>68</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Active</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 42%"></span></span>
+                <span data-mds-chart-row-value>42</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>Paid</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 24%"></span></span>
+                <span data-mds-chart-row-value>24</span>
+            </div>
+            </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Stage funnel&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Pipeline&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;24%&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;conversion&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.bars</span> <span class="t-attr">horizontal</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[100, 68, 42, 24]&quot;</span> <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Visits&#039;, &#039;Signup&#039;, &#039;Active&#039;, &#039;Paid&#039;]&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="donut" class="docs-section"><h2>Donut</h2><p class="docs-text">Rounded segments separated by real gaps, shaded down a fixed tone ladder in segment order. The keys of <code>data</code> are the labels; the legend inherits each segment's tone. <code>value</code> and <code>label</code> fill the center.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Rounded donut</span>                        <span data-mds-chart-badge>Soft arc caps</span>                    </div>
+                
+                                    <div data-mds-chart-value>100% <span data-mds-chart-unit>allocation</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-donut>
+    <svg viewBox="0 0 160 160" fill="none" role="img" aria-hidden="true">
+                                                        <path d="M93.84 24.71 A57 57 0 0 1 110.25 128.31" stroke="currentColor" stroke-opacity="1" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M83.92 136.87 A57 57 0 0 1 24.71 93.84" stroke="currentColor" stroke-opacity="0.7" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M24.71 66.16 A57 57 0 0 1 36.3 43.4" stroke="currentColor" stroke-opacity="0.4" stroke-width="22" stroke-linecap="round" />
+                                                            <path d="M58.7 27.13 A57 57 0 0 1 66.16 24.71" stroke="currentColor" stroke-opacity="0.2" stroke-width="22" stroke-linecap="round" />
+                    
+        <text x="80" y="79" text-anchor="middle" font-size="18" font-weight="700" fill="currentColor">100%</text>
+                    <text x="80" y="95" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.55">Mono arc</text>
+            </svg>
+
+            <div data-mds-chart-legend>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 1"></span><span data-mds-chart-legend-name>Core engine</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.7"></span><span data-mds-chart-legend-name>UI layer</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.4"></span><span data-mds-chart-legend-name>Assets</span></span>
+                            <span data-mds-chart-legend-item><span data-mds-chart-legend-dot style="opacity: 0.2"></span><span data-mds-chart-legend-name>Other</span></span>
+                    </div>
+    </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Rounded donut&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Soft arc caps&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;100%&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;allocation&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.donut</span>
+        <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Core engine&#039; =&gt; 45, &#039;UI layer&#039; =&gt; 30, &#039;Assets&#039; =&gt; 15, &#039;Other&#039; =&gt; 10]&quot;</span>
+        <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;100%&quot;</span>
+        <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Mono arc&quot;</span>
+    <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="gauge-and-bullet" class="docs-section"><h2>Gauge and bullet</h2><p class="docs-text">The gauge is a 240° dial with pill ends over a faint track. The bullet rows compare a value against a target — the marker is the one accent-colored element in the family, sitting on <code>--color-accent</code>.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="grid w-full gap-4 sm:grid-cols-2">
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Speedometer arc</span>                        <span data-mds-chart-badge>Gauge</span>                    </div>
+                
+                                    <div data-mds-chart-value>84% <span data-mds-chart-unit>performance</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-gauge>
+    <svg viewBox="0 0 160 130" fill="none" role="img" aria-hidden="true">
+                    <path d="M21.51 115.41 A63 63 0 1 1 140.38 74.02" stroke="currentColor" stroke-width="18" stroke-linecap="round" />
+        
+                    <path d="M142.86 96.16 A63 63 0 0 1 138.49 115.41" stroke="currentColor" stroke-opacity="0.1" stroke-width="18" stroke-linecap="round" />
+        
+        <text x="80" y="88" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">84</text>
+                    <text x="80" y="104" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.55">Target met</text>
+            </svg>
+</div>
+
+    </div>
+
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Bullet target</span>                        <span data-mds-chart-badge>Benchmark</span>                    </div>
+                
+                                    <div data-mds-chart-value>3 <span data-mds-chart-unit>targets</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bullet>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>Throughput</span>
+                <span data-mds-chart-row-value>82% / 75%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 82%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 75%"></span>
+                            </span>
+        </div>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>Latency</span>
+                <span data-mds-chart-row-value>65% / 80%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 65%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 80%"></span>
+                            </span>
+        </div>
+                    <div data-mds-chart-bullet-item>
+            <div data-mds-chart-bullet-head>
+                <span data-mds-chart-row-label>Uptime</span>
+                <span data-mds-chart-row-value>95% / 90%</span>
+            </div>
+            <span data-mds-chart-track>
+                <span data-mds-chart-fill style="inline-size: 95%"></span>
+                                    <span data-mds-chart-target style="inset-inline-start: 90%"></span>
+                            </span>
+        </div>
+    </div>
+
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;grid w-full gap-4 sm:grid-cols-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Speedometer arc&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Gauge&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;84%&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;performance&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.gauge</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;84&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Target met&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Bullet target&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Benchmark&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;targets&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.bullet</span> <span class="t-attr">:items</span><span class="t-equals">=</span><span class="t-string">&quot;[
+            [&#039;label&#039; =&gt; &#039;Throughput&#039;, &#039;value&#039; =&gt; 82, &#039;target&#039; =&gt; 75],
+            [&#039;label&#039; =&gt; &#039;Latency&#039;, &#039;value&#039; =&gt; 65, &#039;target&#039; =&gt; 80],
+            [&#039;label&#039; =&gt; &#039;Uptime&#039;, &#039;value&#039; =&gt; 95, &#039;target&#039; =&gt; 90],
+        ]&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="radar" class="docs-section"><h2>Radar</h2><p class="docs-text">A polygon web: four grid rings, one spoke per key, the shape filled at 15% ink.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Polygon web</span>                        <span data-mds-chart-badge>Radar</span>                    </div>
+                
+                                    <div data-mds-chart-value>85 <span data-mds-chart-unit>score</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-radar>
+    <svg viewBox="0 0 220 150" fill="none" role="img" aria-hidden="true">
+                    <polygon points="110,65.5 121.89,74.14 117.35,88.11 102.65,88.11 98.11,74.14" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,53 133.78,70.27 124.69,98.23 95.31,98.23 86.22,70.27" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,40.5 145.66,66.41 132.04,108.34 87.96,108.34 74.34,66.41" stroke="currentColor" stroke-opacity="0.08" />
+                    <polygon points="110,28 157.55,62.55 139.39,118.45 80.61,118.45 62.45,62.55" stroke="currentColor" stroke-opacity="0.08" />
+        
+                                <line x1="110" y1="78" x2="110" y2="28" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="157.55" y2="62.55" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="139.39" y2="118.45" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="80.61" y2="118.45" stroke="currentColor" stroke-opacity="0.08" />
+                                <line x1="110" y1="78" x2="62.45" y2="62.55" stroke="currentColor" stroke-opacity="0.08" />
+        
+                    <polygon points="110,33 145.66,66.41 134.98,112.38 82.08,116.43 71.96,65.64" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        
+                                <text x="110" y="16" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.45">Speed</text>
+                                <text x="167.06" y="62.46" text-anchor="start" font-size="9" fill="currentColor" fill-opacity="0.45">Memory</text>
+                                <text x="145.27" y="134.54" text-anchor="start" font-size="9" fill="currentColor" fill-opacity="0.45">Scale</text>
+                                <text x="74.73" y="134.54" text-anchor="end" font-size="9" fill="currentColor" fill-opacity="0.45">Latency</text>
+                                <text x="52.94" y="62.46" text-anchor="end" font-size="9" fill="currentColor" fill-opacity="0.45">IOPS</text>
+            </svg>
+</div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Polygon web&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Radar&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;85&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;score&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.radar</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Speed&#039; =&gt; 90, &#039;Memory&#039; =&gt; 75, &#039;Scale&#039; =&gt; 85, &#039;Latency&#039; =&gt; 95, &#039;IOPS&#039; =&gt; 80]&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="activity-heatmap" class="docs-section"><h2>Activity heatmap</h2><p class="docs-text">A contribution grid: values grade into five tones of the ink, columns follow the page direction, and hovering a tile reports its value in the callout row (Alpine, with a <code>title</code> fallback). <code>color="accent"</code> swaps the ladder onto the accent color.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-md" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>Activity heatmap</span>                        <span data-mds-chart-badge>14 weeks</span>                    </div>
+                
+                                    <div data-mds-chart-value>807 <span data-mds-chart-unit>contributions</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div
+    
+     x-data="{ hover: null }"      data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
+    data-mds-chart-heatmap
+>
+            <div data-mds-chart-heatmap-labels>
+                            <span>Jan</span>
+                            <span>Feb</span>
+                            <span>Mar</span>
+                    </div>
+    
+    
+    <div
+        data-mds-chart-heatmap-grid
+        style="grid-template-rows: repeat(7, 1fr)"
+         x-on:mouseleave="hover = null"     >
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="4 items"
+                 x-on:mouseenter="hover = '4 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="11 items"
+                 x-on:mouseenter="hover = '11 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="5 items"
+                 x-on:mouseenter="hover = '5 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="12 items"
+                 x-on:mouseenter="hover = '12 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="2"
+                title="6 items"
+                 x-on:mouseenter="hover = '6 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="0"
+                title="0 items"
+                 x-on:mouseenter="hover = '0 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="7 items"
+                 x-on:mouseenter="hover = '7 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="1 items"
+                 x-on:mouseenter="hover = '1 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="8 items"
+                 x-on:mouseenter="hover = '8 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="2 items"
+                 x-on:mouseenter="hover = '2 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="3"
+                title="9 items"
+                 x-on:mouseenter="hover = '9 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="1"
+                title="3 items"
+                 x-on:mouseenter="hover = '3 items'"             ></span>
+                    <span
+                data-mds-chart-cell
+                data-level="4"
+                title="10 items"
+                 x-on:mouseenter="hover = '10 items'"             ></span>
+            </div>
+
+            <div data-mds-chart-heatmap-callout x-text="hover ?? 'Hover tiles for details'">Hover tiles for details</div>
+    </div>
+
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Activity heatmap&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;14 weeks&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;807&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;contributions&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.heatmap</span>
+        <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;array_map(fn ($i) =&gt; ($i * 7) % 13, range(1, 98))&quot;</span>
+        <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;Jan&#039;, &#039;Feb&#039;, &#039;Mar&#039;]&quot;</span>
+        <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;accent&quot;</span>
+    <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="kpi-card-recipe" class="docs-section"><h2>KPI card recipe</h2><p class="docs-text">There is no KPI component — it is the card doing what it already does: a stat, a <code>delta</code> (a leading minus turns it red), and a bare <code>mds:chart.sparkline</code>, which also works inline in tables and lists.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><div class="w-full max-w-sm" data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>KPI stat card</span>                        <span data-mds-chart-badge>Metric</span>                    </div>
+                
+                                    <div data-mds-chart-value>$48,920 <span data-mds-chart-delta  dir="ltr">+14.2%</span></div>
+                            </div>
+
+            
+        </div>
+    
+    <svg class="h-16" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none" role="img" aria-hidden="true" data-mds-chart-sparkline>
+                        <defs>
+                <linearGradient id="mds-chart-fade-6f34b004" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+            <path d="M3 18.05 C8.43 16.32 13.86 14.58 19.29 14.58 C24.71 14.58 30.14 16.89 35.57 16.89 C41 16.89 46.43 11.11 51.86 11.11 C57.29 11.11 62.71 13.42 68.14 13.42 C73.57 13.42 79 5.32 84.43 5.32 C89.86 5.32 95.29 7.63 100.71 7.63 C106.14 7.63 111.57 5.32 117 3 L117 25 L3 25 Z" fill="url(#mds-chart-fade-6f34b004)" />
+                <path d="M3 18.05 C8.43 16.32 13.86 14.58 19.29 14.58 C24.71 14.58 30.14 16.89 35.57 16.89 C41 16.89 46.43 11.11 51.86 11.11 C57.29 11.11 62.71 13.42 68.14 13.42 C73.57 13.42 79 5.32 84.43 5.32 C89.86 5.32 95.29 7.63 100.71 7.63 C106.14 7.63 111.57 5.32 117 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+    </svg>
+
+            <div data-mds-chart-footer>
+                            <span>Rounded sparkline</span>
+                <span>Monthly revenue</span>
+                    </div>
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;KPI stat card&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;Metric&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;$48,920&quot;</span> <span class="t-attr">delta</span><span class="t-equals">=</span><span class="t-string">&quot;+14.2%&quot;</span> <span class="t-attr">footer-start</span><span class="t-equals">=</span><span class="t-string">&quot;Rounded sparkline&quot;</span> <span class="t-attr">footer-end</span><span class="t-equals">=</span><span class="t-string">&quot;Monthly revenue&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.sparkline</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[30, 45, 35, 60, 50, 85, 75, 95]&quot;</span> <span class="t-attr">area</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;h-16&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text"><code>config('mds.persian_digits')</code> — on by default in a real app, off in these docs — switches every digit the family renders: the card's stat and delta, axis ticks, bullet readouts, the heatmap's callout and its built-in hover hint. <code>:fa="true"</code> on the card flows into the stages inside it. The SVG plot plane itself never mirrors; the HTML stages (funnel rows, bullet, heatmap) follow the page direction.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><div class="grid w-full gap-4 sm:grid-cols-2">
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>فروش ماهانه</span>                        <span data-mds-chart-badge>تومان</span>                    </div>
+                
+                                    <div data-mds-chart-value>۴۸٬۹۲۰ <span data-mds-chart-unit>هزار</span> <span data-mds-chart-delta  dir="ltr">+۱۴.۲%</span></div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-line>
+    <svg viewBox="0 0 360 170" fill="none" role="img" aria-hidden="true">
+                    <defs>
+                <linearGradient id="mds-chart-fade-80aac908" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0.3" />
+                    <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        
+                                                    <line x1="34" y1="146" x2="352" y2="146" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="146" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">۰</text>
+                                            <line x1="34" y1="112" x2="352" y2="112" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="112" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">۲۵</text>
+                                            <line x1="34" y1="78" x2="352" y2="78" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="78" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">۵۰</text>
+                                            <line x1="34" y1="44" x2="352" y2="44" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="44" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">۷۵</text>
+                                            <line x1="34" y1="10" x2="352" y2="10" stroke="currentColor" stroke-opacity="0.07" stroke-dasharray="3 3" />
+                <text x="26" y="10" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" fill-opacity="0.45">۱۰۰</text>
+                    
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76 L346 146 L40 146 Z" fill="url(#mds-chart-fade-80aac908)" />
+        
+        
+                    <path d="M40 113.36 C60.4 99.08 80.8 84.8 101.2 84.8 C121.6 84.8 142 94.32 162.4 94.32 C182.8 94.32 203.2 57.6 223.6 57.6 C244 57.6 264.4 75.28 284.8 75.28 C305.2 75.28 325.6 53.52 346 31.76" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+                                    <circle cx="40" cy="113.36" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="101.2" cy="84.8" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="162.4" cy="94.32" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="223.6" cy="57.6" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="284.8" cy="75.28" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                            <circle cx="346" cy="31.76" r="4" fill="currentColor" stroke-width="2" data-mds-chart-dot />
+                    
+                                                        <text x="40" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">فروردین</text>
+                                                                <text x="101.2" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">اردیبهشت</text>
+                                                                <text x="162.4" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">خرداد</text>
+                                                                <text x="223.6" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">تیر</text>
+                                                                <text x="284.8" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">مرداد</text>
+                                                                <text x="346" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">شهریور</text>
+                                        </svg>
+</div>
+
+            <div data-mds-chart-footer>
+                            <span>شش ماه اخیر</span>
+                <span>اوج در مرداد</span>
+                    </div>
+    </div>
+
+    <div  data-mds-chart>
+            <div data-mds-chart-header>
+            <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                        <span data-mds-chart-label>قیف فروش</span>                        <span data-mds-chart-badge>۴ مرحله</span>                    </div>
+                
+                                    <div data-mds-chart-value>۲۴٪ <span data-mds-chart-unit>نرخ تبدیل</span> </div>
+                            </div>
+
+            
+        </div>
+    
+    <div  data-mds-chart-stage data-mds-chart-bars-rows>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>بازدید</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 100%"></span></span>
+                <span data-mds-chart-row-value>۱۰۰</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>سبد خرید</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 68%"></span></span>
+                <span data-mds-chart-row-value>۶۸</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>پرداخت</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 42%"></span></span>
+                <span data-mds-chart-row-value>۴۲</span>
+            </div>
+                                <div data-mds-chart-row>
+                <span data-mds-chart-row-label>خرید</span>                <span data-mds-chart-track><span data-mds-chart-fill style="inline-size: 24%"></span></span>
+                <span data-mds-chart-row-value>۲۴</span>
+            </div>
+            </div>
+
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;grid w-full gap-4 sm:grid-cols-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;فروش ماهانه&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;تومان&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;48920&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;هزار&quot;</span> <span class="t-attr">delta</span><span class="t-equals">=</span><span class="t-string">&quot;+14.2%&quot;</span> <span class="t-attr">footer-start</span><span class="t-equals">=</span><span class="t-string">&quot;شش ماه اخیر&quot;</span> <span class="t-attr">footer-end</span><span class="t-equals">=</span><span class="t-string">&quot;اوج در مرداد&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.line</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[24, 45, 38, 65, 52, 84]&quot;</span> <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;فروردین&#039;, &#039;اردیبهشت&#039;, &#039;خرداد&#039;, &#039;تیر&#039;, &#039;مرداد&#039;, &#039;شهریور&#039;]&quot;</span> <span class="t-attr">area</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;قیف فروش&quot;</span> <span class="t-attr">badge</span><span class="t-equals">=</span><span class="t-string">&quot;۴ مرحله&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;۲۴٪&quot;</span> <span class="t-attr">unit</span><span class="t-equals">=</span><span class="t-string">&quot;نرخ تبدیل&quot;</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:chart.bars</span> <span class="t-attr">horizontal</span> <span class="t-attr">:data</span><span class="t-equals">=</span><span class="t-string">&quot;[100, 68, 42, 24]&quot;</span> <span class="t-attr">:labels</span><span class="t-equals">=</span><span class="t-string">&quot;[&#039;بازدید&#039;, &#039;سبد خرید&#039;, &#039;پرداخت&#039;, &#039;خرید&#039;]&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:chart</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-chart" class="docs-ref-block"><h3>mds:chart</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">label</span></td><td>Uppercase kicker line above the stat.</td></tr><tr><td><span class="docs-prop">badge</span></td><td>Small pill next to the label.</td></tr><tr><td><span class="docs-prop">value</span></td><td>The big stat. Numbers get thousands separators; strings ("84%") keep their shape with localized digits.</td></tr><tr><td><span class="docs-prop">unit</span></td><td>Faint suffix after the stat.</td></tr><tr><td><span class="docs-prop">delta</span></td><td>Change readout after the stat — green, or red when it starts with a minus.</td></tr><tr><td><span class="docs-prop">footer-start</span></td><td>Muted footer text on the leading edge.</td></tr><tr><td><span class="docs-prop">footer-end</span></td><td>Emphasized footer text on the trailing edge.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits for the stat and delta — inherited by the stages inside. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
+</table><table class="docs-table">
+    <thead><tr><th>Slot</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">header</span></td><td>Extra content on the header's trailing edge — filters, a toggle.</td></tr><tr><td><span class="docs-prop">footer</span></td><td>Replaces the two footer props.</td></tr><tr><td><span class="docs-prop">default</span></td><td>The stage(s).</td></tr></tbody>
+</table></div><div id="mds-chart-line" class="docs-ref-block"><h3>mds:chart.line</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Array of numbers.</td></tr><tr><td><span class="docs-prop">labels</span></td><td>Category labels under the plot, one per point.</td></tr><tr><td><span class="docs-prop">baseline</span></td><td>Second series, drawn dashed and faint on the same axis.</td></tr><tr><td><span class="docs-prop">area</span></td><td>Gradient fill under the curve. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">dots</span></td><td>Point markers with a stage-colored halo. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">curve</span></td><td>Options: <code>smooth</code> (monotone spline), <code>straight</code>. Default: <code>smooth</code>.</td></tr><tr><td><span class="docs-prop">axis</span></td><td>Y ticks, grid lines and x labels. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Pins the axis ceiling. Default: a "nice" ceiling above the data.</td></tr><tr><td><span class="docs-prop">width</span></td><td>ViewBox width. Default: <code>360</code>.</td></tr><tr><td><span class="docs-prop">height</span></td><td>ViewBox height. Default: <code>170</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits on ticks and labels. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-bars" class="docs-ref-block"><h3>mds:chart.bars</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Array of numbers — or arrays, which stack into layers (bottom first).</td></tr><tr><td><span class="docs-prop">labels</span></td><td>Category labels.</td></tr><tr><td><span class="docs-prop">secondary</span></td><td>Faint second series next to each bar.</td></tr><tr><td><span class="docs-prop">horizontal</span></td><td>HTML rows that follow the page direction — the funnel layout. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">axis</span></td><td>Y ticks, grid lines and x labels. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Pins the scale ceiling.</td></tr><tr><td><span class="docs-prop">width</span></td><td>ViewBox width. Default: <code>360</code>.</td></tr><tr><td><span class="docs-prop">height</span></td><td>ViewBox height. Default: <code>170</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-donut" class="docs-ref-block"><h3>mds:chart.donut</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Assoc array — labels to values.</td></tr><tr><td><span class="docs-prop">value</span></td><td>Center readout. Default: the values' sum.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Small line under the center readout.</td></tr><tr><td><span class="docs-prop">legend</span></td><td>Tone-matched legend under the ring. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">size</span></td><td>ViewBox size. Default: <code>160</code>.</td></tr><tr><td><span class="docs-prop">thickness</span></td><td>Ring thickness. Default: <code>22</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-gauge" class="docs-ref-block"><h3>mds:chart.gauge</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">value</span></td><td>The dialed value.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Full-dial value. Default: <code>100</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Small line under the readout.</td></tr><tr><td><span class="docs-prop">decimals</span></td><td>Decimals in the readout. Default: <code>0</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-radar" class="docs-ref-block"><h3>mds:chart.radar</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Assoc array — axis labels to values.</td></tr><tr><td><span class="docs-prop">max</span></td><td>The web's outer ring value. Default: <code>100</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits in labels. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-bullet" class="docs-ref-block"><h3>mds:chart.bullet</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">items</span></td><td>Rows: <code>[['label' => ..., 'value' => ..., 'target' => ...], ...]</code> — <code>target</code> optional.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Full-track value. Default: <code>100</code>.</td></tr><tr><td><span class="docs-prop">unit</span></td><td>Suffix in the readouts. Default: <code>%</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-heatmap" class="docs-ref-block"><h3>mds:chart.heatmap</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Array of counts, column-major — every <code>rows</code> values are one column.</td></tr><tr><td><span class="docs-prop">rows</span></td><td>Cells per column. Default: <code>7</code>.</td></tr><tr><td><span class="docs-prop">labels</span></td><td>Labels spread across the top — usually months.</td></tr><tr><td><span class="docs-prop">color</span></td><td>Options: <code>accent</code>. Default: the ink.</td></tr><tr><td><span class="docs-prop">unit</span></td><td>Word in the hover callout. Default: "items" / مورد by language.</td></tr><tr><td><span class="docs-prop">callout</span></td><td>The hover-readout row (needs Alpine; tiles keep a <code>title</code> either way). Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits and built-in strings. Default: the enclosing card's, else the config.</td></tr></tbody>
+</table></div><div id="mds-chart-sparkline" class="docs-ref-block"><h3>mds:chart.sparkline</h3><p class="docs-text">A bare <code>&lt;svg&gt;</code> that stretches to any box (strokes stay 2px crisp) — size it with width/height utilities.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">data</span></td><td>Array of numbers — the sparkline auto-fits its own range.</td></tr><tr><td><span class="docs-prop">area</span></td><td>Gradient fill under the curve. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">curve</span></td><td>Options: <code>smooth</code>, <code>straight</code>. Default: <code>smooth</code>.</td></tr><tr><td><span class="docs-prop">width</span></td><td>ViewBox width. Default: <code>120</code>.</td></tr><tr><td><span class="docs-prop">height</span></td><td>ViewBox height. Default: <code>28</code>.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/price.html"><span class="docs-related-name">mds:price</span><span class="docs-related-lede">Money in Toman or Rial — separators, currency label and discount badge from one amount.</span></a><a class="docs-related-card" href="../mds/jalali-date.html"><span class="docs-related-name">mds:jalali-date</span><span class="docs-related-lede">Jalali (Shamsi) dates, with no external calendar dependency.</span></a><a class="docs-related-card" href="../mds/timeline.html"><span class="docs-related-name">mds:timeline</span><span class="docs-related-lede">An event timeline — an open version of a Flux Pro component.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#the-card-and-the-stage">The card and the stage</a><a href="#line">Line</a><a href="#bars">Bars</a><a href="#funnel-rows">Funnel rows</a><a href="#donut">Donut</a><a href="#gauge-and-bullet">Gauge and bullet</a><a href="#radar">Radar</a><a href="#activity-heatmap">Activity heatmap</a><a href="#kpi-card-recipe">KPI card recipe</a><a href="#persian-output">Persian output</a><a href="#reference">Reference</a><a href="#mds-chart" class="docs-toc-sub">mds:chart</a><a href="#mds-chart-line" class="docs-toc-sub">mds:chart.line</a><a href="#mds-chart-bars" class="docs-toc-sub">mds:chart.bars</a><a href="#mds-chart-donut" class="docs-toc-sub">mds:chart.donut</a><a href="#mds-chart-gauge" class="docs-toc-sub">mds:chart.gauge</a><a href="#mds-chart-radar" class="docs-toc-sub">mds:chart.radar</a><a href="#mds-chart-bullet" class="docs-toc-sub">mds:chart.bullet</a><a href="#mds-chart-heatmap" class="docs-toc-sub">mds:chart.heatmap</a><a href="#mds-chart-sparkline" class="docs-toc-sub">mds:chart.sparkline</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+<script src="../assets/nav.js"></script>
+
+<script>
+// Build the sidebar from the nav data. textContent throughout — labels and
+// tags are data, never markup.
+(function () {
+    var details = document.querySelector('.docs-nav');
+    var slug = details.getAttribute('data-docs-slug');
+    var prefix = details.getAttribute('data-docs-prefix');
+
+    (window.__mdsNav || []).forEach(function (group) {
+        var wrap = document.createElement('div');
+        wrap.className = 'docs-nav-group';
+
+        var title = document.createElement('p');
+        title.className = 'docs-nav-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+
+        var items = document.createElement('div');
+        items.className = 'docs-nav-items';
+
+        group.items.forEach(function (item) {
+            var link = document.createElement('a');
+            link.href = prefix + item.path;
+            link.textContent = item.label;
+
+            if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+            if (item.tag) {
+                var tag = document.createElement('span');
+                tag.className = 'docs-nav-tag';
+                tag.textContent = item.tag;
+                link.appendChild(document.createTextNode(' '));
+                link.appendChild(tag);
+            }
+
+            items.appendChild(link);
+        });
+
+        wrap.appendChild(items);
+        details.appendChild(wrap);
+    });
+})();
+
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

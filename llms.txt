@@ -3,7 +3,7 @@
 > RTL/Persian-first UI kit for Laravel Livewire, layered on top of Flux UI (livewire/flux, free tier).
 > Adds an `mds:` Blade component namespace next to `flux:`: Persian digits/money, Jalali dates,
 > Hugeicons in place of heroicons, e-commerce components, and open implementations of Flux Pro's command
-> palette, composer, color picker, file upload and timeline.
+> palette, composer, color picker, file upload, timeline and chart.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
 Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card).
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap's hover callout).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -277,6 +277,10 @@ public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->phot
 - `@layer components { [data-mds-timeline] ... }` — the timeline grid, connector lines and indicator states.
   It MUST stay inside `@layer components`: cascade layers outrank specificity, so unlayered rules would beat
   Tailwind's `@layer utilities` and swallow classes users put on an indicator (e.g. `bg-green-500`).
+- `@layer components { [data-mds-chart] ... }` — chart card chrome, stages, tracks and the heatmap tone ladder.
+  The chart ink is currentColor: the stage sets zinc-950/white and every fill/stroke is an opacity step of it,
+  so a text utility (`text-accent`) on a stage recolors the whole chart. Knobs: `--mds-chart-radius` (card,
+  1.5rem), `--mds-chart-stage` (stage background, also the halo behind line dots).
 
 ### <mds:icon> — Hugeicons (replaces heroicons across the kit)
 Props: `icon` / `name` string (interchangeable, matching flux:icon) · `variant` string|null (either a Flux variant
@@ -353,6 +357,65 @@ Typical order-tracking timeline (Jalali dates, RTL rail):
 </mds:timeline>
 ```
 
+### <mds:chart> — monochrome dashboard charts (open alternative to Flux Pro's flux:chart, different API)
+Server-rendered SVG/HTML in the Mono Charts style (Amicro, MIT) — no chart library, no script, no wire:model.
+The card chrome; the `mds:chart.*` stages below draw the charts and also work standalone anywhere.
+Props: `label` string (uppercase kicker) · `badge` string (pill next to it) · `value` int|float|string (big stat;
+numbers get separators, strings keep their shape with localized digits) · `unit` string (faint suffix) ·
+`delta` string (change readout — green, red when it starts with `-`) · `footer-start`/`footer-end` string ·
+`fa` bool|null=config (inherited by the stages inside via @aware).
+Slots: `header` (trailing side of the header row) · `footer` (replaces the footer props) · default (the stages).
+Ink contract: every stage's ink is currentColor at fixed opacity steps — `class="text-accent"` on a stage
+recolors the whole chart. Direction contract: the SVG plot plane is always LTR (like the color-picker canvas);
+the HTML stages — bullet, heatmap, horizontal bars — follow the page direction, so funnels grow rightward in RTL.
+
+### <mds:chart.line> — rounded spline (SVG)
+Props: `data` number[] · `labels` string[] (x categories) · `baseline` number[] (dashed faint twin series, same
+axis) · `area` bool=false (gradient under the curve) · `dots` bool=true (stage-halo point markers) ·
+`curve` smooth|straight='smooth' (smooth = monotone cubic, never overshoots) · `axis` bool=true (Persian-digit
+y ticks on a "nice" 0..ceiling scale, dashed grid, x labels) · `max` number|null (pins the ceiling) ·
+`width` int=360 / `height` int=170 (viewBox; scales to its box) · `fa`.
+
+### <mds:chart.bars> — pill bars (SVG), or direction-aware rows
+Props: `data` (number|number[])[] — an array item stacks: solid base then lighter tones up, only the stack's
+outer ends rounded · `secondary` number[] (faint twin next to each bar) · `labels` string[] ·
+`horizontal` bool=false — switches to HTML label/track/value rows (the funnel layout; follows page direction) ·
+`axis` bool=true · `max` · `width`/`height` · `fa`.
+
+### <mds:chart.donut> — rounded ring (SVG)
+Props: `data` array<label, number> · `value` (center readout; default: the sum) · `label` (under it) ·
+`legend` bool=true (tone-matched dots + labels) · `size` int=160 · `thickness` int=22 · `fa`.
+Segments are stroked arcs with round caps and real gaps, shaded down a fixed tone ladder (1/.7/.4/.2) in order;
+very thin segments (< ~8% of the ring) collapse to a dot.
+
+### <mds:chart.gauge> — 240° dial (SVG)
+Props: `value` number · `max` number=100 · `label` (under the readout) · `decimals` int=0 · `fa`.
+
+### <mds:chart.radar> — polygon web (SVG)
+Props: `data` array<label, number> · `max` number=100 · `fa`. Four grid rings, one spoke per key, first axis
+at 12 o'clock; the shape fills at 15% ink.
+
+### <mds:chart.bullet> — value-vs-target rows (HTML, RTL-native)
+Props: `items` array of ['label' => string, 'value' => number, 'target' => number|null] · `max` number=100 ·
+`unit` string='%' · `fa`. The target marker is the family's one accent: it sits on `--color-accent`.
+
+### <mds:chart.heatmap> — activity grid (HTML, RTL-native)
+Props: `data` number[] (column-major: every `rows` values are one column/week) · `rows` int=7 ·
+`labels` string[] (spread across the top) · `color` accent|null (tone ladder base; default the ink) ·
+`unit` string|null='مورد' / 'items' by fa · `callout` bool=true (Alpine hover readout row; cells keep a
+`title` fallback without Alpine) · `fa`. Values grade into 5 tones of the base via color-mix.
+
+### <mds:chart.sparkline> — bare inline spline (SVG)
+Props: `data` number[] (auto-fits its own range — shape, not scale) · `area` bool=false ·
+`curve` smooth|straight='smooth' · `width` int=120 / `height` int=28.
+A bare <svg> with preserveAspectRatio=none + non-scaling 2px stroke: size it with any width/height utilities.
+No fa (it renders no text). KPI card recipe = mds:chart with `delta` + a sparkline, no stage box:
+```blade
+<mds:chart label="درآمد ماهانه" :value="48920" unit="هزار تومان" delta="+14.2%">
+    <mds:chart.sparkline :data="[30, 45, 35, 60, 50, 85, 75, 95]" area class="h-16" />
+</mds:chart>
+```
+
 ## Page layouts (Flux grid; demo: workbench /layouts)
 
 The element that directly wraps `<flux:main>` becomes a 3x3 grid (rule lives in flux.css):
@@ -389,9 +452,10 @@ changes; child order picks the arrangement. In RTL the sidebar lands on the righ
 - Flux free components available alongside: avatar, badge, brand, breadcrumbs, button, callout, card, checkbox,
   dropdown/menu, field, heading, icon, input, modal, navbar, otp, pagination, profile, progress, radio, select,
   separator, skeleton, switch, table, text, textarea, toast, tooltip. Flux Pro-only components NOT available
-  unless licensed: autocomplete, calendar, chart, date-picker, editor, tabs, etc. — use mds:command and
-  mds:command, mds:color-picker, mds:file-upload and mds:timeline instead of flux:command / flux:color-picker /
-  flux:file-upload / flux:timeline.
+  unless licensed: autocomplete, calendar, date-picker, editor, tabs, etc. — use mds:command,
+  mds:color-picker, mds:file-upload, mds:timeline and mds:chart instead of flux:command / flux:color-picker /
+  flux:file-upload / flux:timeline / flux:chart (different API: mds:chart is server-rendered SVG, not a
+  wire:model-driven client chart).
 - File sizes shown to users: <mds:file-item :size="$bytes" /> or Persian::fileSize() — never a hand-rolled KB/MB formatter.
 - Icons: prefer <mds:icon icon="..." /> with a Hugeicons name (hugeicons.com) over raw <svg> or <flux:icon>.
   Heroicon names still resolve, so existing markup needs no rewrite.
