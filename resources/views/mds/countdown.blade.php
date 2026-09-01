@@ -53,13 +53,35 @@ $segments[] = ['key' => 'm', 'label' => $unitLabels['m'], 'initial' => $seg($ini
 $segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($initial['s'])];
 @endphp
 
-<div
-    {{ $attributes->class('inline-flex items-center') }}
-    x-data="{
-        end: {{ $until->getTimestamp() }} * 1000,
+@once
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: {{ $fa ? 'true' : 'false' }},
-        withDays: {{ $days ? 'true' : 'false' }},
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -70,8 +92,18 @@ $segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($ini
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+@endonce
+
+<div
+    {{ $attributes->class('inline-flex items-center') }}
+    x-data="mdsCountdown({
+        end: {{ $until->getTimestamp() }} * 1000,
+        fa: {{ $fa ? 'true' : 'false' }},
+        withDays: {{ $days ? 'true' : 'false' }},
+    })"
     role="timer"
     data-mds-countdown
 >

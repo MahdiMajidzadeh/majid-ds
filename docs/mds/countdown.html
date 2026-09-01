@@ -44,13 +44,34 @@
         <p class="docs-lede">A live countdown to a deadline.</p>
         <section id="introduction" class="docs-section"><p class="docs-text">Rendered on the server first, then kept ticking by Alpine — so it is never blank before JS boots. These previews are live.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner"><div
-    class="inline-flex items-center"
-    x-data="{
-        end: 1787593320 * 1000,
+        <div class="docs-preview-inner"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: false,
-        withDays: false,
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -61,8 +82,17 @@
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+
+<div
+    class="inline-flex items-center"
+    x-data="mdsCountdown({
+        end: 1787593320 * 1000,
+        fa: false,
+        withDays: false,
+    })"
     role="timer"
     data-mds-countdown
 >
@@ -102,13 +132,34 @@
     </div>
 </div></section><section id="with-days-and-labels" class="docs-section"><h2>With days and labels</h2><p class="docs-text">The unit labels follow the config language — days / hours / min / sec here, روز / ساعت / دقیقه / ثانیه in Persian.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner"><div
-    class="inline-flex items-center"
-    x-data="{
-        end: 1787756400 * 1000,
+        <div class="docs-preview-inner"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: false,
-        withDays: true,
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -119,8 +170,17 @@
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+
+<div
+    class="inline-flex items-center"
+    x-data="mdsCountdown({
+        end: 1787756400 * 1000,
+        fa: false,
+        withDays: true,
+    })"
     role="timer"
     data-mds-countdown
 >
@@ -170,13 +230,34 @@
     </div>
 </div></section><section id="expired" class="docs-section"><h2>Expired</h2><p class="docs-text">Past the deadline it swaps to <code>expired-text</code> — "Expired" unless you pass your own.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner"><div
-    class="inline-flex items-center"
-    x-data="{
-        end: 1787565540 * 1000,
+        <div class="docs-preview-inner"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: false,
-        withDays: true,
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -187,8 +268,17 @@
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+
+<div
+    class="inline-flex items-center"
+    x-data="mdsCountdown({
+        end: 1787565540 * 1000,
+        fa: false,
+        withDays: true,
+    })"
     role="timer"
     data-mds-countdown
 >
@@ -234,13 +324,34 @@
     </div>
 </div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text"><code>config('mds.persian_digits')</code> — on by default in a real app, off in these docs — switches the digits, the unit labels (روز / ساعت / دقیقه / ثانیه) and the default expired text (به پایان رسید) to Persian; <code>:fa="true"</code> does it for a single countdown.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner" dir="rtl"><div
-    class="inline-flex items-center"
-    x-data="{
-        end: 1787756400 * 1000,
+        <div class="docs-preview-inner" dir="rtl"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: true,
-        withDays: true,
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -251,8 +362,17 @@
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+
+<div
+    class="inline-flex items-center"
+    x-data="mdsCountdown({
+        end: 1787756400 * 1000,
+        fa: true,
+        withDays: true,
+    })"
     role="timer"
     data-mds-countdown
 >

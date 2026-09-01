@@ -126,6 +126,18 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۰۱', $html);
     }
 
+    public function test_countdown_ticks_through_a_shared_alpine_component_that_clears_its_interval(): void
+    {
+        $html = $this->render('<mds:countdown :until="now()->addHours(2)" />');
+
+        // The interval lives in Alpine.data so destroy() can clear it — an
+        // inline setInterval survives Livewire morphs and wire:navigate.
+        $this->assertMatchesRegularExpression('/x-data="mdsCountdown\(/', $html);
+        $this->assertStringContainsString("Alpine.data('mdsCountdown'", $html);
+        $this->assertStringContainsString('clearInterval(this.timer)', $html);
+        $this->assertStringNotContainsString('x-init="setInterval', $html);
+    }
+
     public function test_countdown_plain_variant_is_ltr_but_labeled_variant_inherits_rtl(): void
     {
         // A wall-clock style time (HH:MM:SS) is always written left-to-right...
