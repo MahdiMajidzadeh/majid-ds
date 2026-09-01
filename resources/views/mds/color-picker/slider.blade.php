@@ -1,6 +1,14 @@
 @props([
     'channel' => 'hue',
+    'fa' => null,
 ])
+
+@aware(['fa' => null])
+
+@php
+// fa picks the built-in labels' language; inherited from the picker.
+$fa ??= config('mds.persian_digits', true);
+@endphp
 
 @if ($channel === 'alpha')
     <input
@@ -13,7 +21,7 @@
         x-bind:value="Math.round(a * 100)"
         x-on:input="a = $event.target.value / 100; empty = false; commit()"
         x-bind:style="{ backgroundImage: `linear-gradient(to right, transparent, ${hex}), repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%)`, backgroundSize: 'auto, 10px 10px' }"
-        aria-label="{{ config('mds.persian_digits', true) ? 'شفافیت' : 'Opacity' }}"
+        aria-label="{{ $fa ? 'شفافیت' : 'Opacity' }}"
         data-mds-color-picker-slider="alpha"
     >
 @else
@@ -27,7 +35,7 @@
         style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         x-bind:value="Math.round(h)"
         x-on:input="h = +$event.target.value; empty = false; commit()"
-        aria-label="{{ config('mds.persian_digits', true) ? 'رنگ' : 'Hue' }}"
+        aria-label="{{ $fa ? 'رنگ' : 'Hue' }}"
         data-mds-color-picker-slider="hue"
     >
 @endif

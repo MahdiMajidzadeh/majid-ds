@@ -7,6 +7,8 @@
     'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
 $fa ??= config('mds.persian_digits', true);
 

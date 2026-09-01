@@ -4,12 +4,17 @@
     'closable' => false,
     'clearLabel' => null,
     'closeLabel' => null,
+    'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in labels' language.
-$clearLabel ??= config('mds.persian_digits', true) ? 'پاک کردن' : 'Clear';
-$closeLabel ??= config('mds.persian_digits', true) ? 'بستن' : 'Close';
+// fa picks the built-in labels' language; inherited from the palette.
+$fa ??= config('mds.persian_digits', true);
+
+$clearLabel ??= $fa ? 'پاک کردن' : 'Clear';
+$closeLabel ??= $fa ? 'بستن' : 'Close';
 @endphp
 
 <div class="flex items-center gap-2 border-b border-zinc-200 px-3 dark:border-white/10" data-mds-command-input>

@@ -1264,6 +1264,40 @@ class ComponentsTest extends TestCase
     }
 
     /**
+     * A subcomponent that reads the config directly cannot see its parent's
+     * choice, so `:fa="false"` on the wrapper left Persian strings in the
+     * children. @aware is what carries it down.
+     *
+     * @return array<string, array{0: string, 1: string, 2: string}>
+     */
+    public static function faInheritance(): array
+    {
+        return [
+            'file-upload to dropzone' => ['<mds:file-upload :fa="false"><mds:file-upload.dropzone /></mds:file-upload>', 'Drop a file here or click to browse', 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید'],
+            'command to items' => ['<mds:command :fa="false"><mds:command.items>x</mds:command.items></mds:command>', 'No results found.', 'نتیجه‌ای یافت نشد.'],
+            'command to input' => ['<mds:command :fa="false"><mds:command.input clearable closable /></mds:command>', 'aria-label="Clear"', 'aria-label="پاک کردن"'],
+            'colour picker to area' => ['<mds:color-picker type="button" :fa="false" />', 'aria-label="Saturation"', 'aria-label="اشباع"'],
+            'colour picker to hue slider' => ['<mds:color-picker type="button" :fa="false" />', 'aria-label="Hue"', 'aria-label="رنگ"'],
+            'colour picker to dropper' => ['<mds:color-picker type="button" dropper :fa="false" />', 'aria-label="Eyedropper"', 'aria-label="قطره‌چکان"'],
+            'file-item to remove' => ['<mds:file-item heading="a.pdf" :fa="false"><mds:file-item.remove /></mds:file-item>', 'aria-label="Remove file"', 'aria-label="حذف فایل"'],
+            'product-card to price' => ['<mds:product-card title="x" :amount="800" :original="1000" :fa="false" />', 'aria-label="Original price"', 'aria-label="قیمت قبلی"'],
+            'product-card to rating' => ['<mds:product-card title="x" :rating="4" :fa="false" />', '>4</span>', '>۴</span>'],
+            'rating input' => ['<mds:rating.input name="s" :fa="false" />', 'aria-label="Rating"', 'aria-label="امتیاز"'],
+        ];
+    }
+
+    #[DataProvider('faInheritance')]
+    public function test_fa_reaches_the_subcomponents(string $template, string $english, string $persian): void
+    {
+        // Persian is the config default here, so English can only appear if
+        // the prop travelled down.
+        $html = $this->render($template);
+
+        $this->assertStringContainsString($english, $html);
+        $this->assertStringNotContainsString($persian, $html);
+    }
+
+    /**
      * Every built-in string ships in both languages, and `fa` — or the
      * `mds.persian_digits` default behind it — picks which. One table feeds
      * both directions, so the languages cannot drift apart the way they did

@@ -1,10 +1,15 @@
 @props([
     'empty' => null,
+    'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in empty text's language.
-$empty ??= config('mds.persian_digits', true) ? 'نتیجه‌ای یافت نشد.' : 'No results found.';
+// fa picks the built-in empty text's language; inherited from the palette.
+$fa ??= config('mds.persian_digits', true);
+
+$empty ??= $fa ? 'نتیجه‌ای یافت نشد.' : 'No results found.';
 @endphp
 
 <div {{ $attributes->class('max-h-72 overflow-y-auto p-1.5') }} data-mds-command-items>

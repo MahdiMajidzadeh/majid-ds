@@ -1,6 +1,12 @@
+@props([
+    'fa' => null,
+])
+
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in labels' language.
-$fa = config('mds.persian_digits', true);
+// fa picks the built-in labels' language; inherited from the picker.
+$fa ??= config('mds.persian_digits', true);
 @endphp
 
 <div

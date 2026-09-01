@@ -1,3 +1,7 @@
+@props([
+    'fa' => null,
+])
+
 <div
     {{ $attributes->class('flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800') }}
     x-id="['mds-command-listbox', 'mds-command-option']"

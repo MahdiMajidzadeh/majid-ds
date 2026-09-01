@@ -4,11 +4,14 @@
     'icon' => 'cloud-arrow-up',
     'inline' => false,
     'withProgress' => false,
+    'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in strings' language.
-$fa = config('mds.persian_digits', true);
+// fa picks the built-in strings' language; inherited from the upload field.
+$fa ??= config('mds.persian_digits', true);
 
 $heading ??= $fa
     ? 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید'

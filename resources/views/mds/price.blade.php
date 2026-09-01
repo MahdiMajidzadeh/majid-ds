@@ -8,6 +8,8 @@
     'badge' => true,
 ])
 
+@aware(['fa' => null])
+
 @php
 use MajidDs\Support\Persian;
 

@@ -1,10 +1,15 @@
 @props([
     'label' => null,
+    'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in label's language.
-$label ??= config('mds.persian_digits', true) ? 'قطره‌چکان' : 'Eyedropper';
+// fa picks the built-in label's language; inherited from the picker.
+$fa ??= config('mds.persian_digits', true);
+
+$label ??= $fa ? 'قطره‌چکان' : 'Eyedropper';
 @endphp
 
 <button

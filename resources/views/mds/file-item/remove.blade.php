@@ -1,11 +1,16 @@
 @props([
     'icon' => 'x-mark',
     'label' => null,
+    'fa' => null,
 ])
 
+@aware(['fa' => null])
+
 @php
-// fa (via config) picks the built-in label's language.
-$label ??= config('mds.persian_digits', true) ? 'حذف فایل' : 'Remove file';
+// fa picks the built-in label's language; inherited from the file item.
+$fa ??= config('mds.persian_digits', true);
+
+$label ??= $fa ? 'حذف فایل' : 'Remove file';
 @endphp
 
 <button

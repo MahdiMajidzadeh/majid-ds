@@ -12,11 +12,12 @@
     'size' => null,
     'disabled' => false,
     'invalid' => false,
+    'fa' => null,
 ])
 
 @php
-// fa (via config) picks the built-in labels' language.
-$fa = config('mds.persian_digits', true);
+// fa picks the built-in labels' language.
+$fa ??= config('mds.persian_digits', true);
 
 // Default palette (Tailwind 500s + neutrals), used when no :swatches given.
 // Pass :swatches="false" to hide the grid entirely...
