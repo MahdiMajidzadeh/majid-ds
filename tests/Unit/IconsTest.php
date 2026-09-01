@@ -132,4 +132,43 @@ class IconsTest extends TestCase
         $this->assertSame([], Icons::prefixes('solid-sharp'));
         $this->assertSame([Icons::FREE_SET], Icons::prefixes('stroke-rounded'));
     }
+
+    /**
+     * CLAUDE.md promises that a heroicon name used anywhere in the kit
+     * resolves. The invariants above only check the alias and override maps;
+     * nothing checked the call sites, so a view could name an icon that
+     * quietly fell through to flux:icon — or to nothing at all under
+     * mds.icons.strict.
+     */
+    public function test_every_icon_name_used_in_a_view_resolves(): void
+    {
+        $views = glob(dirname(__DIR__, 2).'/resources/views/mds/{*.blade.php,*/*.blade.php}', GLOB_BRACE);
+
+        $this->assertNotEmpty($views);
+
+        $checked = 0;
+
+        foreach ($views as $view) {
+            $source = (string) file_get_contents($view);
+            $name = basename(dirname($view)).'/'.basename($view);
+
+            // Literal names only — a bound :icon="$x" cannot be resolved here.
+            preg_match_all('/\bicon="([a-z0-9-]+)"/', $source, $matches);
+
+            // Defaults declared in @props, e.g. 'icon' => 'document'. Not
+            // 'iconVariant', whose values are variants, not icon names.
+            preg_match_all("/'icon' => '([a-z0-9-]+)'/", $source, $defaults);
+
+            foreach (array_unique([...$matches[1], ...$defaults[1]]) as $icon) {
+                $this->assertNotNull(
+                    Icons::svg($icon),
+                    "[{$icon}] in {$name} resolves to no Hugeicon — add it to Icons::ALIASES.",
+                );
+
+                $checked++;
+            }
+        }
+
+        $this->assertGreaterThan(5, $checked, 'Expected to find icon names to check.');
+    }
 }

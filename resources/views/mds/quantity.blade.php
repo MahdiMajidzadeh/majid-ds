@@ -103,7 +103,7 @@ document.addEventListener('alpine:init', () => {
         x-bind:disabled="max !== null && value >= max"
         aria-label="{{ $incrementLabel }}"
     >
-        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
+        <mds:icon icon="plus" variant="micro" class="size-4" />
     </button>
 
     <span class="{{ $textClasses }} text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">{{ $fa ? \MajidDs\Support\Persian::digits($value) : $value }}</span>
@@ -115,6 +115,6 @@ document.addEventListener('alpine:init', () => {
         x-bind:disabled="value <= min"
         aria-label="{{ $decrementLabel }}"
     >
-        <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>
+        <mds:icon icon="minus" variant="micro" class="size-4" />
     </button>
 </div>

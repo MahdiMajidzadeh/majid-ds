@@ -45,7 +45,7 @@ $closeLabel ??= $fa ? 'بستن' : 'Close';
             x-on:click="query = ''; $el.closest('[data-mds-command-input]').querySelector('input').focus()"
             aria-label="{{ $clearLabel }}"
         >
-            <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
+            <mds:icon icon="x-mark" variant="micro" class="size-4" />
         </button>
     @endif
 
@@ -56,7 +56,7 @@ $closeLabel ??= $fa ? 'بستن' : 'Close';
             x-on:click="$el.closest('dialog')?.close()"
             aria-label="{{ $closeLabel }}"
         >
-            <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
+            <mds:icon icon="x-mark" variant="micro" class="size-4" />
         </button>
     @endif
 </div>
