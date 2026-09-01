@@ -16,6 +16,34 @@ class ComponentsTest extends TestCase
         return Blade::render($template, $data);
     }
 
+    /**
+     * The kit's Livewire contract, asserted the same way for every control:
+     * the binding reaches the real form element, and the wrapper keeps no
+     * copy of it.
+     *
+     * Each view spells this as two independent expressions — the wrapper's
+     * whereDoesntStartWith('wire:model') and the control's whereStartsWith —
+     * so losing the second still leaves the binding in the markup, sitting on
+     * the wrapper where Livewire ignores it. A substring assertion cannot see
+     * that; matching the control's own tag and counting occurrences can.
+     *
+     * @param  string  $control  regex fragment matching the control's opening tag
+     */
+    protected function assertBindingReachesControl(string $html, string $control, string $binding): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/<'.$control.'[^>]*\s'.preg_quote($binding, '/').'[\s>]/',
+            $html,
+            "[{$binding}] never reached the control it is supposed to bind.",
+        );
+
+        $this->assertSame(
+            1,
+            substr_count($html, $binding),
+            "[{$binding}] appears more than once — the wrapper kept a copy it should have dropped.",
+        );
+    }
+
     public function test_rating_renders_stars_and_persian_value(): void
     {
         $html = $this->render('<mds:rating :value="4.3" :count="126" />');
@@ -40,6 +68,15 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-mds-rating-input', $html);
         $this->assertStringContainsString('role="radiogroup"', $html);
         $this->assertStringContainsString('name="score"', $html);
+    }
+
+    public function test_rating_input_forwards_wire_model_to_the_hidden_input(): void
+    {
+        // A modifier has to survive too — the views filter on the wire:model
+        // prefix, not on the exact attribute name.
+        $html = $this->render('<mds:rating.input name="score" wire:model.live="score" />');
+
+        $this->assertBindingReachesControl($html, 'input[^>]*type="hidden"', 'wire:model.live="score"');
     }
 
     public function test_price_renders_amount_original_and_discount(): void
@@ -88,7 +125,7 @@ class ComponentsTest extends TestCase
     {
         $html = $this->render('<mds:quantity wire:model="qty" />');
 
-        $this->assertStringContainsString('wire:model="qty"', $html);
+        $this->assertBindingReachesControl($html, 'input[^>]*type="hidden"', 'wire:model="qty"');
     }
 
     public function test_stepper_marks_completed_current_and_upcoming_steps(): void
@@ -223,7 +260,13 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('aria-label="#3b82f6"', $html);
         $this->assertSame(2, substr_count($html, 'data-mds-color-picker-swatch') - substr_count($html, 'data-mds-color-picker-swatches'));
         $this->assertStringContainsString("format: 'rgba'", $html);
-        $this->assertStringContainsString('wire:model="color"', $html);
+    }
+
+    public function test_color_picker_forwards_wire_model_to_the_hidden_input(): void
+    {
+        $html = $this->render('<mds:color-picker wire:model="color" />');
+
+        $this->assertBindingReachesControl($html, 'input[^>]*type="hidden"', 'wire:model="color"');
     }
 
     public function test_color_picker_swatches_can_be_hidden(): void
@@ -284,8 +327,7 @@ class ComponentsTest extends TestCase
     {
         $html = $this->render('<mds:file-upload wire:model="photos" multiple />');
 
-        // wire:model must land on the file input itself, not the wrapper...
-        $this->assertMatchesRegularExpression('/<input\s[^>]*type="file"[^>]*wire:model="photos"/', $html);
+        $this->assertBindingReachesControl($html, 'input[^>]*type="file"', 'wire:model="photos"');
     }
 
     public function test_file_upload_disabled_state(): void
@@ -369,8 +411,7 @@ class ComponentsTest extends TestCase
     {
         $html = $this->render('<mds:composer wire:model="prompt" />');
 
-        // wire:model must land on the textarea itself, not the wrapper...
-        $this->assertMatchesRegularExpression('/<textarea\s[^>]*wire:model="prompt"/', $html);
+        $this->assertBindingReachesControl($html, 'textarea', 'wire:model="prompt"');
     }
 
     public function test_composer_renders_the_named_slots_in_grid_order(): void

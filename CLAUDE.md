@@ -97,8 +97,11 @@ Any change to a component's view, CSS, or docs content is not done until
 ## Adding a component (the full checklist)
 
 1. View(s) in `resources/views/mds/<name>/` (or a single `<name>.blade.php`).
-2. Tests in `tests/Feature/ComponentsTest.php` — render + assert, including the
-   `wire:model`-lands-on-the-control regex and error-bag fallback.
+2. Tests in `tests/Feature/ComponentsTest.php` — render + assert. A control
+   that takes `wire:model` goes through `assertBindingReachesControl()`, which
+   checks both halves of the contract at once: the binding matches the real
+   control's own tag, and appears exactly once, so a wrapper that quietly
+   keeps a copy fails. Cover the error-bag fallback too.
 3. Docs page in `bin/docs/mds.php` + nav entry in `bin/docs/nav.php`
    (sections use `rtl => true` for Persian previews, `align => 'stretch'` for
    full-width ones; `related` cross-links both ways).
