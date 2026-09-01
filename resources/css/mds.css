@@ -24,47 +24,71 @@
     display: none !important;
 }
 
-/* Keep phone numbers, codes, and card numbers LTR inside RTL forms... */
-[dir='rtl'] input[type='tel'],
-[dir='rtl'] input[data-ltr] {
-    direction: ltr;
-    text-align: end;
-}
+/*
+| Everything below is a component rule, so it belongs in @layer components:
+| unlayered CSS outranks every Tailwind utility, and a caller could not
+| override any of it with a class. [x-cloak] above stays unlayered on
+| purpose — it has to beat whatever the component sets while Alpine boots.
+*/
+@layer components {
+    /* Keep phone numbers, codes, and card numbers LTR inside RTL forms... */
+    [dir='rtl'] input[type='tel'],
+    [dir='rtl'] input[data-ltr] {
+        direction: ltr;
+        text-align: end;
+    }
 
-/* Checkerboard backdrop for transparent colors (mds:color-picker)... */
-.mds-checker {
-    background-image: repeating-conic-gradient(#e4e4e7 0% 25%, #ffffff 0% 50%);
-    background-size: 10px 10px;
-}
+    /* Checkerboard backdrop for transparent colors (mds:color-picker)... */
+    .mds-checker {
+        background-image: repeating-conic-gradient(var(--mds-checker-dark, #e4e4e7) 0% 25%, var(--mds-checker-light, #ffffff) 0% 50%);
+        background-size: 10px 10px;
+    }
 
-/* Gradient range sliders (mds:color-picker hue/alpha)... */
-.mds-range {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 0.75rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    border: 1px solid rgb(0 0 0 / 0.1);
-}
+    /* A white checkerboard glows inside the dark popover. */
+    .dark .mds-checker {
+        --mds-checker-dark: #3f3f46;
+        --mds-checker-light: #52525b;
+    }
 
-.mds-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 9999px;
-    background: #ffffff;
-    border: 1px solid rgb(0 0 0 / 0.2);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
-}
+    /* Gradient range sliders (mds:color-picker hue/alpha)... */
+    .mds-range {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 0.75rem;
+        border-radius: 9999px;
+        cursor: pointer;
+        border: 1px solid rgb(0 0 0 / 0.1);
+    }
 
-.mds-range::-moz-range-thumb {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 9999px;
-    background: #ffffff;
-    border: 1px solid rgb(0 0 0 / 0.2);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+    /* appearance:none drops the native focus ring with the native styling. */
+    .mds-range:focus-visible {
+        outline: 2px solid var(--color-accent, currentColor);
+        outline-offset: 2px;
+    }
+
+    .mds-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+        background: var(--mds-thumb, #ffffff);
+        border: 1px solid rgb(0 0 0 / 0.2);
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+    }
+
+    .mds-range::-moz-range-thumb {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+        background: var(--mds-thumb, #ffffff);
+        border: 1px solid rgb(0 0 0 / 0.2);
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+    }
+
+    .dark .mds-range {
+        --mds-thumb: #e4e4e7;
+    }
 }
 
 /*
