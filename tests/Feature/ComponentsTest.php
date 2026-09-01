@@ -792,6 +792,14 @@ class ComponentsTest extends TestCase
         $this->assertSame('۲۹ مرداد ۱۴۰۵', $this->render("@jalali('2026-08-20')"));
     }
 
+    public function test_mds_facade_is_reachable_as_a_global_alias(): void
+    {
+        // Registered via composer.json's extra.laravel.aliases — an app sees
+        // it at the root namespace without importing anything.
+        $this->assertTrue(class_exists('Mds'));
+        $this->assertSame('۱۲۳', \Mds::fa(123));
+    }
+
     public function test_mds_facade_ago_speaks_both_languages(): void
     {
         $date = new \DateTimeImmutable('-3 hours');

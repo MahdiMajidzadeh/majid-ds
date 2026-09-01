@@ -6,7 +6,8 @@
     "homepage": "https://github.com/MahdiMajidzadeh/majid-ds",
     "support": {
         "issues": "https://github.com/MahdiMajidzadeh/majid-ds/issues",
-        "source": "https://github.com/MahdiMajidzadeh/majid-ds"
+        "source": "https://github.com/MahdiMajidzadeh/majid-ds",
+        "docs": "https://mahdimajidzadeh.github.io/majid-ds/"
     },
     "keywords": [
         "laravel",
@@ -27,8 +28,10 @@
     "require": {
         "php": "^8.2",
         "afatmustafa/blade-hugeicons": "^2.0",
-        "laravel/framework": "^11.0|^12.0|^13.0",
-        "livewire/flux": "^2.0"
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "illuminate/view": "^11.0|^12.0|^13.0",
+        "livewire/flux": "^2.0",
+        "livewire/livewire": "^3.7.4|^4.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
@@ -51,7 +54,13 @@
         "laravel": {
             "providers": [
                 "MajidDs\\MajidDsServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Mds": "MajidDs\\Mds"
+            }
+        },
+        "branch-alias": {
+            "dev-main": "0.4.x-dev"
         }
     },
     "scripts": {
@@ -66,10 +75,7 @@
         ]
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": false
-        }
+        "sort-packages": true
     },
     "minimum-stability": "stable",
     "prefer-stable": true,

@@ -3,7 +3,6 @@
 namespace MajidDs;
 
 use BladeUI\Icons\Factory as IconFactory;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use MajidDs\Support\Icons;
@@ -19,7 +18,9 @@ class MajidDsServiceProvider extends ServiceProvider
         $this->app->singleton(MdsManager::class);
         $this->app->alias(MdsManager::class, 'mds');
 
-        AliasLoader::getInstance()->alias('Mds', Mds::class);
+        // The `Mds` facade alias is registered through composer.json's
+        // extra.laravel.aliases, so an app can opt out with dont-discover
+        // and keep its own class of that name.
     }
 
     public function boot(): void
