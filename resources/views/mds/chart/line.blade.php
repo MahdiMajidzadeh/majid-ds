@@ -24,7 +24,7 @@ $values = array_values(array_map(floatval(...), $data));
 $second = array_values(array_map(floatval(...), $baseline));
 
 // One shared y scale: the axis ceiling covers both series unless pinned.
-$top = $max !== null ? (float) $max : Charts::niceMax(max([1.0, ...$values, ...$second]));
+$top = $max !== null ? max((float) $max, 1e-9) : Charts::niceMax(max([1.0, ...$values, ...$second]));
 $ticks = [0.0, $top / 4, $top / 2, $top * 3 / 4, $top];
 
 $x0 = $axis ? 34 : 6;

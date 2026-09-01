@@ -55,7 +55,7 @@ $shades = fn (int $layers) => match (true) {
     </div>
 @else
     @php
-    $top = $max !== null ? (float) $max : Charts::niceMax($dataMax);
+    $top = $max !== null ? max((float) $max, 1e-9) : Charts::niceMax($dataMax);
     $ticks = [0.0, $top / 4, $top / 2, $top * 3 / 4, $top];
 
     $x0 = $axis ? 34 : 6;

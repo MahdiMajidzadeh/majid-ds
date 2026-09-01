@@ -888,6 +888,17 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۱۰۰', $html);
     }
 
+    public function test_chart_bars_and_line_survive_a_zero_max(): void
+    {
+        // A caller-supplied ceiling of zero must clamp, not divide by zero —
+        // the same guard gauge, bullet, and radar already carry.
+        $bars = $this->render('<mds:chart.bars :data="[3, 7]" :max="0" />');
+        $this->assertStringContainsString('data-mds-chart-bars', $bars);
+
+        $line = $this->render('<mds:chart.line :data="[3, 7]" :max="0" />');
+        $this->assertStringContainsString('data-mds-chart-line', $line);
+    }
+
     public function test_chart_donut_draws_rounded_segments_and_a_legend(): void
     {
         $html = $this->render('<mds:chart.donut :data="[\'هسته\' => 45, \'رابط\' => 30, \'دارایی\' => 15, \'دیگر\' => 10]" value="100%" label="تخصیص" />');
