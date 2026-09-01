@@ -1,47 +1,5 @@
 {
-  "name": "@mahdimajidzadeh/ds",
-  "version": "0.3.0",
-  "description": "Majid DS — an RTL/Persian-first UI kit for Laravel Livewire, built on top of Flux UI with extra e-commerce components.",
-  "license": "MIT",
-  "author": "Mahdi Majidzadeh",
-  "homepage": "https://mahdimajidzadeh.github.io/majid-ds/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MahdiMajidzadeh/majid-ds.git"
-  },
-  "bugs": "https://github.com/MahdiMajidzadeh/majid-ds/issues",
-  "keywords": [
-    "laravel",
-    "livewire",
-    "flux",
-    "blade",
-    "ui-kit",
-    "rtl",
-    "persian",
-    "farsi",
-    "tailwindcss",
-    "e-commerce"
-  ],
-  "main": "resources/css/mds.css",
-  "style": "resources/css/mds.css",
-  "exports": {
-    ".": "./resources/css/mds.css",
-    "./mds.css": "./resources/css/mds.css",
-    "./views/*": "./resources/views/*",
-    "./llms.txt": "./llms.txt"
-  },
-  "files": [
-    "resources/css",
-    "resources/views",
-    "llms.txt"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
-  "engines": {
-    "node": ">=20"
-  },
+  "private": true,
   "scripts": {
     "css": "tailwindcss -i workbench/resources/css/site-input.css -o docs/assets/site.css --minify",
     "demo:css": "tailwindcss -i workbench/resources/css/site-input.css -o workbench/public/demo.css --minify",

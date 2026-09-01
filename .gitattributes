@@ -2,7 +2,6 @@
 * text=auto
 
 # Keep composer dist installs lean — these ship in the repo, not the package...
-/.github export-ignore
 /tests export-ignore
 /workbench export-ignore
 /docs export-ignore
