@@ -647,6 +647,23 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('aria-hidden="true"', $html);
     }
 
+    public function test_icon_escapes_caller_attribute_values(): void
+    {
+        // blade-icons prints attributes verbatim, so a quote in a caller's
+        // value must be escaped here or it breaks out of the attribute.
+        $html = $this->render(
+            '<mds:icon icon="search-01" :data-note="$note" label="گفت «سلام» & رفت" />',
+            ['note' => 'a" onmouseover="alert(1)'],
+        );
+
+        $this->assertStringContainsString('data-note="a&quot; onmouseover=&quot;alert(1)"', $html);
+        $this->assertStringNotContainsString('data-note="a" onmouseover=', $html);
+
+        // merge() already escapes the label — the pass must not double-encode it.
+        $this->assertStringContainsString('aria-label="گفت «سلام» &amp; رفت"', $html);
+        $this->assertStringNotContainsString('&amp;amp;', $html);
+    }
+
     public function test_icon_resolves_heroicon_names_through_the_alias_map(): void
     {
         // search-01 opens its path with the magnifier handle...

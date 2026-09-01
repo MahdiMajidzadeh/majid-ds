@@ -32,9 +32,16 @@ $isStyle = in_array($variant, \MajidDs\Support\Icons::STYLES, true);
 // so the fallback always gets one of Flux's four variants...
 $fluxVariant = $isStyle || ! $variant ? 'outline' : $variant;
 
+// blade-icons prints attributes verbatim (sprintf, no e()), so escape the
+// caller's values here — merge() only escapes $extra, and without this a
+// quote in an attribute value breaks out of the rendered attribute. The
+// no-double-encode flag keeps merge()'s already-escaped defaults intact.
 $svg = $icon === null || config('mds.icons.default', 'hugeicons') !== 'hugeicons'
     ? null
-    : \MajidDs\Support\Icons::svg($icon, $variant, $attributes->merge($extra)->getAttributes());
+    : \MajidDs\Support\Icons::svg($icon, $variant, array_map(
+        fn ($value) => is_string($value) ? e($value, false) : $value,
+        $attributes->merge($extra)->getAttributes(),
+    ));
 @endphp
 
 @if ($svg)
