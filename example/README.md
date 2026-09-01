@@ -1,6 +1,6 @@
 # Using Majid DS in a Laravel app
 
-Minimal integration example for a real Laravel 11/12 + Livewire 3 app.
+Minimal integration example for a real Laravel 11/12/13 + Livewire 3 app.
 (For a runnable showcase of every component, use the workbench demo instead:
 `npm run demo:css && npm run demo:serve` from the package root.)
 
@@ -16,6 +16,10 @@ composer require mahdimajidzadeh/ds
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 @import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
+
+/* Tailwind v4 skips gitignored paths, so point it at the kit's Blade views
+   or the utility classes inside them never get generated. */
+@source '../../vendor/mahdimajidzadeh/ds/resources/views';
 
 @custom-variant dark (&:where(.dark, .dark *));
 ```
