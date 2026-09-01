@@ -460,13 +460,34 @@
             <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>پیشنهاد شگفت‌انگیز</div>
 
                             <div class="flex items-center gap-2">
-                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >پایان تا:</p>                    <div
-    class="inline-flex items-center"
-    x-data="{
-        end: 1787593320 * 1000,
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >پایان تا:</p>                    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsCountdown', (config = {}) => ({
+        end: config.end ?? 0,
         now: Date.now(),
-        fa: true,
-        withDays: false,
+        fa: config.fa ?? true,
+        withDays: config.withDays ?? true,
+        timer: null,
+
+        init() {
+            // The tick dies with the component — a Livewire morph or
+            // wire:navigate must never strand a running interval.
+            if (! this.expired) {
+                this.timer = setInterval(() => {
+                    this.now = Date.now()
+
+                    if (this.expired) this.stop()
+                }, 1000)
+            }
+        },
+
+        destroy() { this.stop() },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+
         get total() { return Math.max(0, Math.floor((this.end - this.now) / 1000)) },
         get expired() { return this.total <= 0 },
         get d() { return Math.floor(this.total / 86400) },
@@ -477,8 +498,17 @@
             const s = String(n).padStart(2, '0')
             return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
         },
-    }"
-    x-init="setInterval(() => now = Date.now(), 1000)"
+    }))
+})
+</script>
+
+<div
+    class="inline-flex items-center"
+    x-data="mdsCountdown({
+        end: 1787593320 * 1000,
+        fa: true,
+        withDays: false,
+    })"
     role="timer"
     data-mds-countdown
 >
