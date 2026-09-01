@@ -378,6 +378,25 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('هر فایل باید کمتر از ۱۰ مگابایت باشد.', $html);
     }
 
+    public function test_file_upload_falls_back_to_per_file_validation_errors(): void
+    {
+        // A `photos.*` rule reports against photos.0, photos.1 … and never
+        // against a plain `photos` key. That is the ordinary shape for a
+        // multiple upload, and the half of the fallback that exists for it.
+        $bag = new ViewErrorBag;
+        $bag->put('default', new MessageBag([
+            'photos.0' => ['تصویر اول باید کمتر از ۱۰ مگابایت باشد.'],
+            'photos.1' => ['تصویر دوم باید یک تصویر باشد.'],
+        ]));
+
+        View::share('errors', $bag);
+
+        $html = $this->render('<mds:file-upload name="photos" multiple />');
+
+        $this->assertStringContainsString('تصویر اول باید کمتر از ۱۰ مگابایت باشد.', $html);
+        $this->assertStringContainsString('aria-invalid="true"', $html);
+    }
+
     public function test_dropzone_inline_and_progress_variants(): void
     {
         $html = $this->render('<mds:file-upload><mds:file-upload.dropzone heading="رها کنید" text="JPG تا ۱۰ مگابایت" inline with-progress /></mds:file-upload>');
