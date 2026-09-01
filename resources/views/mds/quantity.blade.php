@@ -27,7 +27,10 @@ $invalid = $invalid || filled($error);
 
 $incrementLabel ??= $fa ? 'افزایش تعداد' : 'Increase quantity';
 $decrementLabel ??= $fa ? 'کاهش تعداد' : 'Decrease quantity';
+// Clamp on the server too: Alpine's set() does it, but the first paint and
+// the value that posts without JS came straight from the prop.
 $value = (int) ($value ?? $min);
+$value = max((int) $min, $max === null ? $value : min((int) $max, $value));
 
 $buttonClasses = match ($size) {
     'sm' => 'size-7',

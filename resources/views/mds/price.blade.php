@@ -20,7 +20,7 @@ $label = Persian::currencyLabel($currency, $fa);
 
 $fmt = fn ($n) => Persian::format($n, $decimals, $fa);
 
-$percent = ($original !== null && $original > $amount)
+$percent = ($original !== null && $original > 0 && $original > $amount)
     ? (int) round((1 - $amount / $original) * 100)
     : null;
 

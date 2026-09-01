@@ -25,7 +25,7 @@ $percent = fn ($n) => Charts::n(min(100, max(0, (float) $n / $max * 100)));
         @php $target = $item['target'] ?? null; @endphp
         <div data-mds-chart-bullet-item>
             <div data-mds-chart-bullet-head>
-                <span data-mds-chart-row-label>{{ $item['label'] ?? '' }}</span>
+                <span data-mds-chart-row-label>{{ Persian::auto($item['label'] ?? '', $fa) }}</span>
                 <span data-mds-chart-row-value>{{ $num($item['value'] ?? 0) }}@if ($target !== null) / {{ $num($target) }}@endif</span>
             </div>
             <span data-mds-chart-track>

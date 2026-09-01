@@ -15,7 +15,7 @@ if ($percent === null && $amount !== null && $original !== null && $original > 0
     $percent = (int) round((1 - $amount / $original) * 100);
 }
 
-$percent = (int) $percent;
+$percent = $percent === null ? null : (int) $percent;
 
 $classes = match ($size) {
     'sm' => 'px-1.5 py-px text-[10px]',
@@ -24,8 +24,11 @@ $classes = match ($size) {
 };
 @endphp
 
+{{-- Nothing to say without a discount: (int) null used to render «۰٪». --}}
+@if ($percent !== null)
 <span
     {{ $attributes->class("inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums {$classes}") }}
     aria-label="{{ $fa ? \MajidDs\Support\Persian::digits($percent).' درصد تخفیف' : $percent.'% off' }}"
     data-mds-discount-badge
 >{{ $fa ? \MajidDs\Support\Persian::digits($percent).'٪' : $percent.'%' }}</span>
+@endif

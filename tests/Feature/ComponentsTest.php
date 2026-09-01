@@ -1128,6 +1128,34 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
+    public function test_components_hold_up_at_their_edges(): void
+    {
+        // quantity clamped in Alpine but not on the server, so the first paint
+        // — and the value that posts without JS — could sit outside its bounds.
+        $below = $this->render('<mds:quantity :value="0" :min="1" :max="5" />');
+        $this->assertStringContainsString('x-text="display()">۱</span>', $below);
+        $this->assertMatchesRegularExpression('/<input[^>]*type="hidden"[^>]*value="1"/', $below);
+
+        $above = $this->render('<mds:quantity :value="99" :min="1" :max="5" />');
+        $this->assertStringContainsString('x-text="display()">۵</span>', $above);
+
+        // `original > amount` was true for original=0 with a negative amount,
+        // which then divided by it.
+        $free = $this->render('<mds:price :amount="-10" :original="0" />');
+        $this->assertStringNotContainsString('٪', $free);
+
+        $card = $this->render('<mds:product-card title="x" :amount="-10" :original="0" />');
+        $this->assertStringNotContainsString('data-mds-discount-badge', $card);
+
+        // A badge with nothing to say used to render «۰٪».
+        $this->assertSame('', trim($this->render('<mds:discount-badge />')));
+        $this->assertStringContainsString('۲۰٪', $this->render('<mds:discount-badge :percent="20" />'));
+
+        // The one chart label that ignored fa.
+        $bullet = $this->render('<mds:chart.bullet :items="[[\'label\' => \'Q1 2026\', \'value\' => 5, \'target\' => 8]]" />');
+        $this->assertStringContainsString('Q۱ ۲۰۲۶', $bullet);
+    }
+
     public function test_the_digit_helper_ships_once_for_the_whole_page(): void
     {
         // Five views used to inline the same Latin -> Persian replace().

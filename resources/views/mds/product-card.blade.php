@@ -16,7 +16,7 @@
 @php
 $fa ??= config('mds.persian_digits', true);
 
-$percent = (! $unavailable && $original !== null && $amount !== null && $original > $amount)
+$percent = (! $unavailable && $original !== null && $amount !== null && $original > 0 && $original > $amount)
     ? (int) round((1 - $amount / $original) * 100)
     : null;
 @endphp
