@@ -1221,6 +1221,20 @@ class ComponentsTest extends TestCase
         $this->assertStringNotContainsString('aria-invalid', $this->render('<mds:quantity name="other" />'));
     }
 
+    public function test_command_registers_a_shared_alpine_component(): void
+    {
+        $html = $this->render('<mds:command><mds:command.items>x</mds:command.items></mds:command>');
+
+        $this->assertStringContainsString('x-data="mdsCommand()"', $html);
+        $this->assertStringContainsString("Alpine.data('mdsCommand'", $html);
+
+        // The option list is read once into `options`, and each item carries
+        // its normalised text, so a keystroke no longer re-queries the DOM
+        // and re-normalises every option for every other option.
+        $this->assertStringContainsString('this.options = [', $html);
+        $this->assertStringContainsString('el.dataset.mdsHaystack', $html);
+    }
+
     public function test_command_input_is_wired_as_a_combobox(): void
     {
         $html = $this->render('<mds:command>

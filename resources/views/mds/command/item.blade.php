@@ -15,7 +15,7 @@ $attributes = $attributes->merge($href ? ['href' => $href] : ['type' => 'button'
     {{ $attributes->class('flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-sm text-zinc-700 dark:text-zinc-200') }}
     x-show="matches($el)"
     x-bind:class="isActive($el) && 'bg-zinc-100 dark:bg-white/10'"
-    x-on:mouseenter="active = items().indexOf($el)"
+    x-on:mouseenter="point($el)"
     x-bind:aria-selected="isActive($el) ? 'true' : 'false'"
     role="option"
     data-mds-command-item
