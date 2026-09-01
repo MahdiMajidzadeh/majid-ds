@@ -32,10 +32,14 @@ $valueTo = max(min($split - $trim, $end), $start + 0.5);
 $restFrom = $split + 4 + $trim;
 
 $text = $fa ? Persian::number($value, $decimals) : number_format((float) $value, $decimals);
+
+// role="img" makes the SVG's own <text> presentational, so the dial's
+// value has to travel in the accessible name.
+$ariaLabel = ($label !== null ? $label.($fa ? '، ' : ', ') : '').$text;
 @endphp
 
 <div {{ $attributes }} data-mds-chart-stage data-mds-chart-gauge>
-    <svg viewBox="0 0 160 130" fill="none" role="img" aria-hidden="true">
+    <svg viewBox="0 0 160 130" fill="none" role="img" aria-label="{{ $ariaLabel }}">
         @if ($ratio > 0)
             <path d="{{ Charts::arcPath($cx, $cy, $r, $start, $valueTo) }}" stroke="currentColor" stroke-width="{{ $stroke }}" stroke-linecap="round" />
         @endif

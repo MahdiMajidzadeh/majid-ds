@@ -76,7 +76,7 @@ $shades = fn (int $layers) => match (true) {
     @endphp
 
     <div {{ $attributes }} data-mds-chart-stage data-mds-chart-bars>
-        <svg viewBox="0 0 {{ $width }} {{ $height }}" fill="none" role="img" aria-hidden="true">
+        <svg viewBox="0 0 {{ $width }} {{ $height }}" fill="none" role="img" aria-label="{{ $fa ? 'نمودار ستونی' : 'Bar chart' }}">
             @if ($axis)
                 @foreach ($ticks as $t)
                     @php $ty = Charts::n($y0 + $plotH - $plotH * ($t / $top)); @endphp

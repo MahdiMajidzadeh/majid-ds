@@ -47,7 +47,7 @@ $gradientId = 'mds-chart-fade-'.substr(md5(json_encode([$values, $width, $height
 @endphp
 
 <div {{ $attributes }} data-mds-chart-stage data-mds-chart-line>
-    <svg viewBox="0 0 {{ $width }} {{ $height }}" fill="none" role="img" aria-hidden="true">
+    <svg viewBox="0 0 {{ $width }} {{ $height }}" fill="none" role="img" aria-label="{{ $fa ? 'نمودار خطی' : 'Line chart' }}">
         @if ($area && $points !== [])
             <defs>
                 <linearGradient id="{{ $gradientId }}" x1="0" y1="0" x2="0" y2="1">

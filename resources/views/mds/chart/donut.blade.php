@@ -38,10 +38,14 @@ $centerText = match (true) {
     is_int($centerValue) || is_float($centerValue) => $fa ? Persian::number($centerValue) : number_format((float) $centerValue),
     default => $fa ? Persian::digits($centerValue) : (string) $centerValue,
 };
+
+// role="img" makes the SVG's own <text> presentational, so the center
+// value has to travel in the accessible name.
+$ariaLabel = ($label !== null ? $label.($fa ? '، ' : ', ') : '').$centerText;
 @endphp
 
 <div {{ $attributes }} data-mds-chart-stage data-mds-chart-donut>
-    <svg viewBox="0 0 {{ $size }} {{ $size }}" fill="none" role="img" aria-hidden="true">
+    <svg viewBox="0 0 {{ $size }} {{ $size }}" fill="none" role="img" aria-label="{{ $ariaLabel }}">
         @php $bearing = 0.0; @endphp
         @foreach ($values as $i => $segment)
             @php

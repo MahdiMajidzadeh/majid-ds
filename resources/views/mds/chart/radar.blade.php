@@ -39,7 +39,7 @@ $shape = implode(' ', array_map(
 @endphp
 
 <div {{ $attributes }} data-mds-chart-stage data-mds-chart-radar>
-    <svg viewBox="0 0 220 150" fill="none" role="img" aria-hidden="true">
+    <svg viewBox="0 0 220 150" fill="none" role="img" aria-label="{{ $fa ? 'نمودار راداری' : 'Radar chart' }}">
         @foreach ([1, 2, 3, 4] as $level)
             <polygon points="{{ $ring($r * $level / 4) }}" stroke="currentColor" stroke-opacity="0.08" />
         @endforeach

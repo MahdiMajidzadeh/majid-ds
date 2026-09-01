@@ -22,7 +22,8 @@ $gradientId = 'mds-chart-fade-'.substr(md5(json_encode([$values, $width, $height
 @endphp
 
 {{-- preserveAspectRatio=none + non-scaling strokes: size it with classes and the line stays 2px crisp. --}}
-<svg {{ $attributes }} viewBox="0 0 {{ $width }} {{ $height }}" preserveAspectRatio="none" fill="none" role="img" aria-hidden="true" data-mds-chart-sparkline>
+{{-- Sparklines show shape, not values — decoration, so hidden from assistive tech. --}}
+<svg {{ $attributes }} viewBox="0 0 {{ $width }} {{ $height }}" preserveAspectRatio="none" fill="none" aria-hidden="true" data-mds-chart-sparkline>
     @if ($points !== [])
         @if ($area)
             <defs>

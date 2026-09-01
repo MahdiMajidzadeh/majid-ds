@@ -888,6 +888,29 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۱۰۰', $html);
     }
 
+    public function test_chart_svgs_are_exposed_to_assistive_tech(): void
+    {
+        // role="img" makes an SVG's inner <text> presentational, so donut and
+        // gauge carry their value in the accessible name; the decorative
+        // sparkline is the only stage that stays aria-hidden.
+        $gauge = $this->render('<mds:chart.gauge :value="72" label="رضایت" />');
+        $this->assertStringContainsString('aria-label="رضایت، ۷۲"', $gauge);
+        $this->assertStringNotContainsString('aria-hidden', $gauge);
+
+        $donut = $this->render('<mds:chart.donut :data="[\'الف\' => 60, \'ب\' => 40]" label="Split" :fa="false" />');
+        $this->assertStringContainsString('aria-label="Split, 100"', $donut);
+
+        $line = $this->render('<mds:chart.line :data="[1, 2]" :fa="false" />');
+        $this->assertStringContainsString('aria-label="Line chart"', $line);
+
+        $bars = $this->render('<mds:chart.bars :data="[1, 2]" />');
+        $this->assertStringContainsString('aria-label="نمودار ستونی"', $bars);
+
+        $sparkline = $this->render('<mds:chart.sparkline :data="[1, 2]" />');
+        $this->assertStringContainsString('aria-hidden="true"', $sparkline);
+        $this->assertStringNotContainsString('role="img"', $sparkline);
+    }
+
     public function test_chart_bars_and_line_survive_a_zero_max(): void
     {
         // A caller-supplied ceiling of zero must clamp, not divide by zero —
