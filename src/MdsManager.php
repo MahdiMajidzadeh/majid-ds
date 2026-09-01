@@ -42,8 +42,8 @@ class MdsManager
         return Persian::fileSize($bytes, $persianDigits);
     }
 
-    public function ago(mixed $date): string
+    public function ago(mixed $date, ?bool $persian = null): string
     {
-        return Persian::ago($date);
+        return Persian::ago($date, $persian);
     }
 }

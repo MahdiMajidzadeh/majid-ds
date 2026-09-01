@@ -788,6 +788,14 @@ class ComponentsTest extends TestCase
         $this->assertSame('۲۹ مرداد ۱۴۰۵', $this->render("@jalali('2026-08-20')"));
     }
 
+    public function test_mds_facade_ago_speaks_both_languages(): void
+    {
+        $date = new \DateTimeImmutable('-3 hours');
+
+        $this->assertSame('۳ ساعت پیش', \MajidDs\Mds::ago($date));
+        $this->assertSame('3 hours ago', \MajidDs\Mds::ago($date, false));
+    }
+
     /*
     | fa=false (per prop or config) switches every built-in string to English —
     | digits and microcopy travel together, so an English app never ships a
