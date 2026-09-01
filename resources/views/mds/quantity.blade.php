@@ -5,6 +5,8 @@
     'step' => 1,
     'size' => null,
     'name' => null,
+    'error' => null,
+    'invalid' => false,
     'fa' => null,
     'incrementLabel' => null,
     'decrementLabel' => null,
@@ -13,6 +15,15 @@
 @php
 // fa picks the built-in strings' language along with the digits.
 $fa ??= config('mds.persian_digits', true);
+
+// An explicit :error wins; otherwise fall back to the validation bag. These
+// primitives sit inside the app's own field, which renders the message — so
+// the error only drives the invalid state here, never a second message block.
+if (blank($error) && $name && isset($errors)) {
+    $error = $errors->first($name) ?: null;
+}
+
+$invalid = $invalid || filled($error);
 
 $incrementLabel ??= $fa ? 'افزایش تعداد' : 'Increase quantity';
 $decrementLabel ??= $fa ? 'کاهش تعداد' : 'Decrease quantity';
@@ -32,7 +43,12 @@ $textClasses = match ($size) {
 @endphp
 
 <div
-    {{ $attributes->whereDoesntStartWith('wire:model')->class('inline-flex items-center rounded-lg border border-zinc-200 bg-white shadow-xs dark:border-white/10 dark:bg-white/10') }}
+    {{ $attributes->whereDoesntStartWith('wire:model')->class([
+        'inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10',
+        'border-red-500 dark:border-red-400' => $invalid,
+        'border-zinc-200 dark:border-white/10' => ! $invalid,
+    ]) }}
+    @if ($invalid) aria-invalid="true" @endif
     x-data="{
         value: {{ $value }},
         min: {{ (int) $min }},

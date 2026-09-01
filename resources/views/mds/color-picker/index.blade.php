@@ -12,12 +12,20 @@
     'size' => null,
     'disabled' => false,
     'invalid' => false,
+    'error' => null,
     'fa' => null,
 ])
 
 @php
 // fa picks the built-in labels' language.
 $fa ??= config('mds.persian_digits', true);
+
+// An explicit :error wins; otherwise fall back to the validation bag...
+if (blank($error) && $name && isset($errors)) {
+    $error = $errors->first($name) ?: null;
+}
+
+$invalid = $invalid || filled($error);
 
 // Default palette (Tailwind 500s + neutrals), used when no :swatches given.
 // Pass :swatches="false" to hide the grid entirely...
@@ -333,6 +341,14 @@ document.addEventListener('alpine:init', () => {
             @endif
         </div>
     </div>
+
+    @if (filled($error))
+        {{-- Same markup as flux:error, without its dependency on the session error bag... --}}
+        <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400" data-flux-error>
+            <mds:icon icon="exclamation-triangle" variant="mini" class="inline size-4" />
+            {{ $error }}
+        </div>
+    @endif
 
     @if ($description)
         <flux:description>{{ $description }}</flux:description>

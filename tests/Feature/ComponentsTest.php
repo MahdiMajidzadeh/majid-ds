@@ -1128,6 +1128,42 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
+    public function test_the_remaining_controls_honour_the_error_contract(): void
+    {
+        $bag = new ViewErrorBag;
+        $bag->put('default', new MessageBag([
+            'shade' => ['یک رنگ انتخاب کنید.'],
+            'qty' => ['تعداد نامعتبر است.'],
+            'score' => ['امتیاز لازم است.'],
+        ]));
+
+        View::share('errors', $bag);
+
+        // color-picker sits in a field of its own, so it renders the message.
+        $picker = $this->render('<mds:color-picker name="shade" />');
+        $this->assertStringContainsString('یک رنگ انتخاب کنید.', $picker);
+        $this->assertStringContainsString('data-flux-error', $picker);
+
+        // quantity and rating.input are primitives placed inside the app's own
+        // field, which already renders the message — a second one would double
+        // up, so the bag only drives their invalid state.
+        $quantity = $this->render('<mds:quantity name="qty" />');
+        $this->assertStringContainsString('aria-invalid="true"', $quantity);
+        $this->assertStringContainsString('border-red-500', $quantity);
+        $this->assertStringNotContainsString('تعداد نامعتبر است.', $quantity);
+
+        $rating = $this->render('<mds:rating.input name="score" />');
+        $this->assertStringContainsString('aria-invalid="true"', $rating);
+
+        // An explicit :error still wins over the bag.
+        $explicit = $this->render('<mds:color-picker name="shade" error="پیام دستی" />');
+        $this->assertStringContainsString('پیام دستی', $explicit);
+        $this->assertStringNotContainsString('یک رنگ انتخاب کنید.', $explicit);
+
+        // And a name with nothing in the bag stays clean.
+        $this->assertStringNotContainsString('aria-invalid', $this->render('<mds:quantity name="other" />'));
+    }
+
     public function test_command_input_is_wired_as_a_combobox(): void
     {
         $html = $this->render('<mds:command>

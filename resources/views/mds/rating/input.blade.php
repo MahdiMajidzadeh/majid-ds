@@ -2,6 +2,8 @@
     'value' => 0,
     'max' => 5,
     'name' => null,
+    'error' => null,
+    'invalid' => false,
     'size' => null,
     'label' => null,
     'fa' => null,
@@ -12,6 +14,14 @@
 @php
 // fa picks the built-in label's language.
 $fa ??= config('mds.persian_digits', true);
+
+// An explicit :error wins; otherwise fall back to the validation bag. The
+// message belongs to the surrounding field; here it only marks the state.
+if (blank($error) && $name && isset($errors)) {
+    $error = $errors->first($name) ?: null;
+}
+
+$invalid = $invalid || filled($error);
 
 $label ??= $fa ? 'امتیاز' : 'Rating';
 
@@ -71,6 +81,7 @@ document.addEventListener('alpine:init', () => {
     x-on:keydown.end.prevent="focus(max)"
     role="radiogroup"
     aria-label="{{ $label }}"
+    @if ($invalid) aria-invalid="true" @endif
     data-mds-rating-input
 >
     <input
