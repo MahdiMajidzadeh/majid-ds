@@ -25,9 +25,13 @@ npm run demo:serve                        # live workbench at :8720 (needs demo:
 Pint runs the `laravel` preset and skips Blade views. `src/MdsTagCompiler.php`
 is excluded from it on purpose: the file is a deliberate verbatim fork of
 Flux's own compiler, and staying byte-comparable with upstream is what makes
-a re-sync diff readable. The same reasoning is why PHPStan sits at level 7 —
-level 8 only flags `preg_replace_callback`'s nullable return in that mirrored
-file, which upstream Flux has too.
+a re-sync diff readable. `TagCompilerTest` enforces that — it tokenises both
+copies and fails the moment Flux's three `compile*Tags()` methods stop
+matching ours, so an upstream syntax change surfaces as a failing test rather
+than as `<mds:*>` tags silently reaching the browser as text. The same
+reasoning is why PHPStan sits at level 7 — level 8 only flags
+`preg_replace_callback`'s nullable return in that mirrored file, which
+upstream Flux has too.
 
 `docs/` is a **committed** static site (GitHub Pages serves it as-is, no CI build).
 Any change to a component's view, CSS, or docs content is not done until
