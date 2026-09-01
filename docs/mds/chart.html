@@ -697,9 +697,44 @@
             
         </div>
     
-    <div
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsHeatmap', (config = {}) => ({
+        hover: null,
+        rows: config.rows ?? 7,
+        // The grid is one tab stop, not one per cell — a year of them would
+        // otherwise be 365 stops between the chart and whatever follows it.
+        active: 0,
+
+        cells() {
+            return [...this.$refs.grid.children]
+        },
+
+        move(delta) {
+            const cells = this.cells()
+
+            this.active = Math.min(Math.max(this.active + delta, 0), cells.length - 1)
+            cells[this.active]?.focus()
+        },
+
+        // Weeks run with the page direction, so left and right swap in RTL.
+        column(direction) {
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+
+            this.move((rtl ? -direction : direction) * this.rows)
+        },
+    }))
+})
+</script>
+
+<div
     
-     x-data="{ hover: null }"      data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
+    x-data="mdsHeatmap({ rows: 7 })"
+    x-on:keydown.down.prevent="move(1)"
+    x-on:keydown.up.prevent="move(-1)"
+    x-on:keydown.right.prevent="column(1)"
+    x-on:keydown.left.prevent="column(-1)"
+     data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
     data-mds-chart-heatmap
 >
             <div data-mds-chart-heatmap-labels>
@@ -710,6 +745,7 @@
     
     
     <div
+        x-ref="grid"
         data-mds-chart-heatmap-grid
         style="grid-template-rows: repeat(7, 1fr)"
          x-on:mouseleave="hover = null"     >
@@ -717,495 +753,887 @@
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 0 ? 0 : -1"
+                x-on:focus="active = 0; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 1 ? 0 : -1"
+                x-on:focus="active = 1; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 2 ? 0 : -1"
+                x-on:focus="active = 2; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 3 ? 0 : -1"
+                x-on:focus="active = 3; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 4 ? 0 : -1"
+                x-on:focus="active = 4; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 5 ? 0 : -1"
+                x-on:focus="active = 5; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 6 ? 0 : -1"
+                x-on:focus="active = 6; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 7 ? 0 : -1"
+                x-on:focus="active = 7; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 8 ? 0 : -1"
+                x-on:focus="active = 8; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 9 ? 0 : -1"
+                x-on:focus="active = 9; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 10 ? 0 : -1"
+                x-on:focus="active = 10; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 11 ? 0 : -1"
+                x-on:focus="active = 11; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 12 ? 0 : -1"
+                x-on:focus="active = 12; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 13 ? 0 : -1"
+                x-on:focus="active = 13; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 14 ? 0 : -1"
+                x-on:focus="active = 14; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 15 ? 0 : -1"
+                x-on:focus="active = 15; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 16 ? 0 : -1"
+                x-on:focus="active = 16; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 17 ? 0 : -1"
+                x-on:focus="active = 17; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 18 ? 0 : -1"
+                x-on:focus="active = 18; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 19 ? 0 : -1"
+                x-on:focus="active = 19; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 20 ? 0 : -1"
+                x-on:focus="active = 20; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 21 ? 0 : -1"
+                x-on:focus="active = 21; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 22 ? 0 : -1"
+                x-on:focus="active = 22; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 23 ? 0 : -1"
+                x-on:focus="active = 23; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 24 ? 0 : -1"
+                x-on:focus="active = 24; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 25 ? 0 : -1"
+                x-on:focus="active = 25; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 26 ? 0 : -1"
+                x-on:focus="active = 26; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 27 ? 0 : -1"
+                x-on:focus="active = 27; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 28 ? 0 : -1"
+                x-on:focus="active = 28; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 29 ? 0 : -1"
+                x-on:focus="active = 29; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 30 ? 0 : -1"
+                x-on:focus="active = 30; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 31 ? 0 : -1"
+                x-on:focus="active = 31; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 32 ? 0 : -1"
+                x-on:focus="active = 32; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 33 ? 0 : -1"
+                x-on:focus="active = 33; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 34 ? 0 : -1"
+                x-on:focus="active = 34; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 35 ? 0 : -1"
+                x-on:focus="active = 35; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 36 ? 0 : -1"
+                x-on:focus="active = 36; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 37 ? 0 : -1"
+                x-on:focus="active = 37; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 38 ? 0 : -1"
+                x-on:focus="active = 38; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 39 ? 0 : -1"
+                x-on:focus="active = 39; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 40 ? 0 : -1"
+                x-on:focus="active = 40; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 41 ? 0 : -1"
+                x-on:focus="active = 41; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 42 ? 0 : -1"
+                x-on:focus="active = 42; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 43 ? 0 : -1"
+                x-on:focus="active = 43; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 44 ? 0 : -1"
+                x-on:focus="active = 44; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 45 ? 0 : -1"
+                x-on:focus="active = 45; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 46 ? 0 : -1"
+                x-on:focus="active = 46; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 47 ? 0 : -1"
+                x-on:focus="active = 47; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 48 ? 0 : -1"
+                x-on:focus="active = 48; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 49 ? 0 : -1"
+                x-on:focus="active = 49; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 50 ? 0 : -1"
+                x-on:focus="active = 50; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 51 ? 0 : -1"
+                x-on:focus="active = 51; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 52 ? 0 : -1"
+                x-on:focus="active = 52; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 53 ? 0 : -1"
+                x-on:focus="active = 53; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 54 ? 0 : -1"
+                x-on:focus="active = 54; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 55 ? 0 : -1"
+                x-on:focus="active = 55; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 56 ? 0 : -1"
+                x-on:focus="active = 56; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 57 ? 0 : -1"
+                x-on:focus="active = 57; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 58 ? 0 : -1"
+                x-on:focus="active = 58; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 59 ? 0 : -1"
+                x-on:focus="active = 59; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 60 ? 0 : -1"
+                x-on:focus="active = 60; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 61 ? 0 : -1"
+                x-on:focus="active = 61; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 62 ? 0 : -1"
+                x-on:focus="active = 62; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 63 ? 0 : -1"
+                x-on:focus="active = 63; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 64 ? 0 : -1"
+                x-on:focus="active = 64; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 65 ? 0 : -1"
+                x-on:focus="active = 65; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 66 ? 0 : -1"
+                x-on:focus="active = 66; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 67 ? 0 : -1"
+                x-on:focus="active = 67; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 68 ? 0 : -1"
+                x-on:focus="active = 68; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 69 ? 0 : -1"
+                x-on:focus="active = 69; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 70 ? 0 : -1"
+                x-on:focus="active = 70; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 71 ? 0 : -1"
+                x-on:focus="active = 71; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 72 ? 0 : -1"
+                x-on:focus="active = 72; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 73 ? 0 : -1"
+                x-on:focus="active = 73; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 74 ? 0 : -1"
+                x-on:focus="active = 74; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 75 ? 0 : -1"
+                x-on:focus="active = 75; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 76 ? 0 : -1"
+                x-on:focus="active = 76; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 77 ? 0 : -1"
+                x-on:focus="active = 77; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 78 ? 0 : -1"
+                x-on:focus="active = 78; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 79 ? 0 : -1"
+                x-on:focus="active = 79; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 80 ? 0 : -1"
+                x-on:focus="active = 80; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 81 ? 0 : -1"
+                x-on:focus="active = 81; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 82 ? 0 : -1"
+                x-on:focus="active = 82; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 83 ? 0 : -1"
+                x-on:focus="active = 83; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 84 ? 0 : -1"
+                x-on:focus="active = 84; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="4 items"
+                role="img"
+                aria-label="4 items"
+                x-bind:tabindex="active === 85 ? 0 : -1"
+                x-on:focus="active = 85; hover = '4 items'"
                  x-on:mouseenter="hover = '4 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="11 items"
+                role="img"
+                aria-label="11 items"
+                x-bind:tabindex="active === 86 ? 0 : -1"
+                x-on:focus="active = 86; hover = '11 items'"
                  x-on:mouseenter="hover = '11 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="5 items"
+                role="img"
+                aria-label="5 items"
+                x-bind:tabindex="active === 87 ? 0 : -1"
+                x-on:focus="active = 87; hover = '5 items'"
                  x-on:mouseenter="hover = '5 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="12 items"
+                role="img"
+                aria-label="12 items"
+                x-bind:tabindex="active === 88 ? 0 : -1"
+                x-on:focus="active = 88; hover = '12 items'"
                  x-on:mouseenter="hover = '12 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="6 items"
+                role="img"
+                aria-label="6 items"
+                x-bind:tabindex="active === 89 ? 0 : -1"
+                x-on:focus="active = 89; hover = '6 items'"
                  x-on:mouseenter="hover = '6 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="0 items"
+                role="img"
+                aria-label="0 items"
+                x-bind:tabindex="active === 90 ? 0 : -1"
+                x-on:focus="active = 90; hover = '0 items'"
                  x-on:mouseenter="hover = '0 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="7 items"
+                role="img"
+                aria-label="7 items"
+                x-bind:tabindex="active === 91 ? 0 : -1"
+                x-on:focus="active = 91; hover = '7 items'"
                  x-on:mouseenter="hover = '7 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="1 items"
+                role="img"
+                aria-label="1 items"
+                x-bind:tabindex="active === 92 ? 0 : -1"
+                x-on:focus="active = 92; hover = '1 items'"
                  x-on:mouseenter="hover = '1 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="8 items"
+                role="img"
+                aria-label="8 items"
+                x-bind:tabindex="active === 93 ? 0 : -1"
+                x-on:focus="active = 93; hover = '8 items'"
                  x-on:mouseenter="hover = '8 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="2 items"
+                role="img"
+                aria-label="2 items"
+                x-bind:tabindex="active === 94 ? 0 : -1"
+                x-on:focus="active = 94; hover = '2 items'"
                  x-on:mouseenter="hover = '2 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="9 items"
+                role="img"
+                aria-label="9 items"
+                x-bind:tabindex="active === 95 ? 0 : -1"
+                x-on:focus="active = 95; hover = '9 items'"
                  x-on:mouseenter="hover = '9 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="3 items"
+                role="img"
+                aria-label="3 items"
+                x-bind:tabindex="active === 96 ? 0 : -1"
+                x-on:focus="active = 96; hover = '3 items'"
                  x-on:mouseenter="hover = '3 items'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="10 items"
+                role="img"
+                aria-label="10 items"
+                x-bind:tabindex="active === 97 ? 0 : -1"
+                x-on:focus="active = 97; hover = '10 items'"
                  x-on:mouseenter="hover = '10 items'"             ></span>
             </div>
 
-            <div data-mds-chart-heatmap-callout x-text="hover ?? 'Hover tiles for details'">Hover tiles for details</div>
+            <div data-mds-chart-heatmap-callout aria-live="polite" x-text="hover ?? 'Hover tiles for details'">Hover tiles for details</div>
     </div>
 
     </div></div>

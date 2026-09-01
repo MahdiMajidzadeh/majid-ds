@@ -71,7 +71,7 @@ $textClasses = match ($size) {
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="{{ $textClasses }} text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">{{ $fa ? \MajidDs\Support\Persian::digits($value) : $value }}</span>
+    <span class="{{ $textClasses }} text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">{{ $fa ? \MajidDs\Support\Persian::digits($value) : $value }}</span>
 
     <button
         type="button"

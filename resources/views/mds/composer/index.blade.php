@@ -54,6 +54,11 @@ $count = $text === null ? 0 : mb_strlen($text);
 $counterText = $maxlength === null ? (string) $count : $count.' / '.$maxlength;
 $counterText = $fa ? \MajidDs\Support\Persian::digits($counterText) : $counterText;
 
+// Deterministic id: stable across rebuilds — a random one would also shift
+// the global random sequence Flux draws its own ids from. A same-props
+// collision points at an identical counter, which is harmless.
+$counterId = 'mds-composer-counter-'.substr(md5(json_encode([$name, $placeholder, $maxlength])), 0, 8);
+
 // Grid tracks: [leading actions][input][input][trailing actions]. A row of
 // their own in the stacked layout; one shared row when `inline`...
 $row = $header ? 'row-start-2' : 'row-start-1';
@@ -208,6 +213,7 @@ document.addEventListener('livewire:init', () => {
                     @if ($autofocus) autofocus @endif
                     @if ($disabled) disabled @endif
                     @if ($invalid) aria-invalid="true" @endif
+                    @if ($counter) aria-describedby="{{ $counterId }}" @endif
                     data-flux-control
                     data-mds-composer-input
                     {{ $attributes->whereStartsWith('wire:model') }}
@@ -237,7 +243,7 @@ document.addEventListener('livewire:init', () => {
 
                 @if ($counter)
                     {{-- dir=ltr: «۱۲ / ۵۰۰» reads current-then-limit either way... --}}
-                    <span class="shrink-0 tabular-nums" dir="ltr" x-text="counter">{{ $counterText }}</span>
+                    <span class="shrink-0 tabular-nums" dir="ltr" id="{{ $counterId }}" x-text="counter">{{ $counterText }}</span>
                 @endif
             </div>
         @endif

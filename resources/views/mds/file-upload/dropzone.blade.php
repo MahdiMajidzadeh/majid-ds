@@ -7,8 +7,10 @@
 ])
 
 @php
-// fa (via config) picks the built-in heading's language.
-$heading ??= config('mds.persian_digits', true)
+// fa (via config) picks the built-in strings' language.
+$fa = config('mds.persian_digits', true);
+
+$heading ??= $fa
     ? 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید'
     : 'Drop a file here or click to browse';
 @endphp
@@ -52,6 +54,7 @@ $heading ??= config('mds.persian_digits', true)
                         class="h-full rounded-full bg-accent transition-[width] duration-150"
                         x-bind:style="{ width: Math.round(progress) + '%' }"
                         role="progressbar"
+                        aria-label="{{ $fa ? 'در حال بارگذاری' : 'Uploading' }}"
                         aria-valuemin="0"
                         aria-valuemax="100"
                         x-bind:aria-valuenow="Math.round(progress)"

@@ -105,6 +105,7 @@ document.addEventListener('alpine:init', () => {
         withDays: {{ $days ? 'true' : 'false' }},
     })"
     role="timer"
+    aria-label="{{ $fa ? 'زمان باقی‌مانده' : 'Time remaining' }}"
     data-mds-countdown
 >
     {{--
@@ -123,6 +124,11 @@ document.addEventListener('alpine:init', () => {
 
                 @if ($labels)
                     <span class="text-[10px] text-zinc-500 dark:text-zinc-400">{{ $segment['label'] }}</span>
+                @else
+                    {{-- Without visible labels the boxes read as a bare run of
+                         digits — "۰۲ ۱۵ ۳۰" — so name each unit for screen
+                         readers only. --}}
+                    <span class="sr-only">{{ $segment['label'] }}</span>
                 @endif
             </div>
         @endforeach

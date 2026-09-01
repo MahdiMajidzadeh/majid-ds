@@ -389,6 +389,7 @@ document.addEventListener('alpine:init', () => {
                         class="h-full rounded-full bg-accent transition-[width] duration-150"
                         x-bind:style="{ width: Math.round(progress) + '%' }"
                         role="progressbar"
+                        aria-label="Uploading"
                         aria-valuemin="0"
                         aria-valuemax="100"
                         x-bind:aria-valuenow="Math.round(progress)"

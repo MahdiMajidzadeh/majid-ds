@@ -31,6 +31,10 @@ $total = count($steps);
                 @endif
             </span>
 
+            <span class="sr-only">{{ $fa
+                ? 'مرحله '.\MajidDs\Support\Persian::digits($number).' از '.\MajidDs\Support\Persian::digits($total)
+                : "Step {$number} of {$total}" }}</span>
+
             <span @class([
                 'text-sm whitespace-nowrap',
                 'text-zinc-500 dark:text-zinc-400' => $state === 'completed',

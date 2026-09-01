@@ -205,7 +205,7 @@
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-sm min-w-8 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">2</span>
+    <span class="text-sm min-w-8 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">2</span>
 
     <button
         type="button"
@@ -267,6 +267,7 @@ document.addEventListener('alpine:init', () => {
         withDays: false,
     })"
     role="timer"
+    aria-label="Time remaining"
     data-mds-countdown
 >
     
@@ -275,18 +276,24 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">07</span>
 
+                                    
+                    <span class="sr-only">hours</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">42</span>
 
+                                    
+                    <span class="sr-only">min</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">00</span>
 
+                                    
+                    <span class="sr-only">sec</span>
                             </div>
             </div>
 
@@ -390,6 +397,7 @@ document.addEventListener('alpine:init', () => {
         withDays: false,
     })"
     role="timer"
+    aria-label="زمان باقی‌مانده"
     data-mds-countdown
 >
     
@@ -398,18 +406,24 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">۰۷</span>
 
+                                    
+                    <span class="sr-only">ساعت</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">۴۲</span>
 
+                                    
+                    <span class="sr-only">دقیقه</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">۰۰</span>
 
+                                    
+                    <span class="sr-only">ثانیه</span>
                             </div>
             </div>
 

@@ -1454,7 +1454,7 @@
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۱</span>
+    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">۱</span>
 
     <button
         type="button"
@@ -3645,6 +3645,7 @@ document.addEventListener('alpine:init', () => {
                         class="h-full rounded-full bg-accent transition-[width] duration-150"
                         x-bind:style="{ width: Math.round(progress) + '%' }"
                         role="progressbar"
+                        aria-label="در حال بارگذاری"
                         aria-valuemin="0"
                         aria-valuemax="100"
                         x-bind:aria-valuenow="Math.round(progress)"
@@ -3985,7 +3986,7 @@ document.addEventListener('livewire:init', () => {
                     rows="2"
                     x-ref="input"
                     x-on:input="sync()"
-                                         placeholder="چطور می‌توانم کمکتان کنم؟"                      maxlength="500"                                                                                                     data-flux-control
+                                         placeholder="چطور می‌توانم کمکتان کنم؟"                      maxlength="500"                                                                                                      aria-describedby="mds-composer-counter-032f8fc3"                     data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -4019,7 +4020,7 @@ document.addEventListener('livewire:init', () => {
                 <div class="min-w-0"><span>برای ارسال Ctrl + Enter بزنید.</span></div>
 
                                     
-                    <span class="shrink-0 tabular-nums" dir="ltr" x-text="counter">۰ / ۵۰۰</span>
+                    <span class="shrink-0 tabular-nums" dir="ltr" id="mds-composer-counter-032f8fc3" x-text="counter">۰ / ۵۰۰</span>
                             </div>
             </div>
 </ui-field>
@@ -4073,7 +4074,7 @@ document.addEventListener('livewire:init', () => {
                     rows="2"
                     x-ref="input"
                     x-on:input="sync()"
-                                         placeholder="توضیحی برای این تصویر بنویسید..."                                                                                                                         data-flux-control
+                                         placeholder="توضیحی برای این تصویر بنویسید..."                                                                                                                                             data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -4150,7 +4151,7 @@ document.addEventListener('livewire:init', () => {
                     rows="1"
                     x-ref="input"
                     x-on:input="sync()"
-                                         placeholder="پیام خود را بنویسید..."                                                                                                                         data-flux-control
+                                         placeholder="پیام خود را بنویسید..."                                                                                                                                             data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -4212,7 +4213,7 @@ document.addEventListener('livewire:init', () => {
                     rows="3"
                     x-ref="input"
                     x-on:input="sync()"
-                                         placeholder="مشکل را توضیح دهید..."                                                                                                                         data-flux-control
+                                         placeholder="مشکل را توضیح دهید..."                                                                                                                                             data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -4269,7 +4270,7 @@ document.addEventListener('livewire:init', () => {
                     rows="1"
                     x-ref="input"
                     x-on:input="sync()"
-                     name="prompt"                                                                                                                          aria-invalid="true"                     data-flux-control
+                     name="prompt"                                                                                                                          aria-invalid="true"                                         data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -4329,7 +4330,7 @@ document.addEventListener('livewire:init', () => {
                     rows="1"
                     x-ref="input"
                     x-on:input="sync()"
-                                         placeholder="ابتدا وارد حساب خود شوید"                                                                                  disabled                                         data-flux-control
+                                         placeholder="ابتدا وارد حساب خود شوید"                                                                                  disabled                                                             data-flux-control
                     data-mds-composer-input
                     
                 ></textarea>
@@ -5643,9 +5644,44 @@ document.addEventListener('alpine:init', () => {
             
         </div>
     
-    <div
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsHeatmap', (config = {}) => ({
+        hover: null,
+        rows: config.rows ?? 7,
+        // The grid is one tab stop, not one per cell — a year of them would
+        // otherwise be 365 stops between the chart and whatever follows it.
+        active: 0,
+
+        cells() {
+            return [...this.$refs.grid.children]
+        },
+
+        move(delta) {
+            const cells = this.cells()
+
+            this.active = Math.min(Math.max(this.active + delta, 0), cells.length - 1)
+            cells[this.active]?.focus()
+        },
+
+        // Weeks run with the page direction, so left and right swap in RTL.
+        column(direction) {
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+
+            this.move((rtl ? -direction : direction) * this.rows)
+        },
+    }))
+})
+</script>
+
+<div
     
-     x-data="{ hover: null }"      data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
+    x-data="mdsHeatmap({ rows: 7 })"
+    x-on:keydown.down.prevent="move(1)"
+    x-on:keydown.up.prevent="move(-1)"
+    x-on:keydown.right.prevent="column(1)"
+    x-on:keydown.left.prevent="column(-1)"
+     data-mds-chart-heatmap-color="accent"     data-mds-chart-stage
     data-mds-chart-heatmap
 >
             <div data-mds-chart-heatmap-labels>
@@ -5656,6 +5692,7 @@ document.addEventListener('alpine:init', () => {
     
     
     <div
+        x-ref="grid"
         data-mds-chart-heatmap-grid
         style="grid-template-rows: repeat(7, 1fr)"
          x-on:mouseleave="hover = null"     >
@@ -5663,495 +5700,887 @@ document.addEventListener('alpine:init', () => {
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 0 ? 0 : -1"
+                x-on:focus="active = 0; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 1 ? 0 : -1"
+                x-on:focus="active = 1; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 2 ? 0 : -1"
+                x-on:focus="active = 2; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 3 ? 0 : -1"
+                x-on:focus="active = 3; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 4 ? 0 : -1"
+                x-on:focus="active = 4; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 5 ? 0 : -1"
+                x-on:focus="active = 5; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 6 ? 0 : -1"
+                x-on:focus="active = 6; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 7 ? 0 : -1"
+                x-on:focus="active = 7; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 8 ? 0 : -1"
+                x-on:focus="active = 8; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 9 ? 0 : -1"
+                x-on:focus="active = 9; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 10 ? 0 : -1"
+                x-on:focus="active = 10; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 11 ? 0 : -1"
+                x-on:focus="active = 11; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 12 ? 0 : -1"
+                x-on:focus="active = 12; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 13 ? 0 : -1"
+                x-on:focus="active = 13; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 14 ? 0 : -1"
+                x-on:focus="active = 14; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 15 ? 0 : -1"
+                x-on:focus="active = 15; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 16 ? 0 : -1"
+                x-on:focus="active = 16; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 17 ? 0 : -1"
+                x-on:focus="active = 17; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 18 ? 0 : -1"
+                x-on:focus="active = 18; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 19 ? 0 : -1"
+                x-on:focus="active = 19; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 20 ? 0 : -1"
+                x-on:focus="active = 20; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 21 ? 0 : -1"
+                x-on:focus="active = 21; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 22 ? 0 : -1"
+                x-on:focus="active = 22; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 23 ? 0 : -1"
+                x-on:focus="active = 23; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 24 ? 0 : -1"
+                x-on:focus="active = 24; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 25 ? 0 : -1"
+                x-on:focus="active = 25; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 26 ? 0 : -1"
+                x-on:focus="active = 26; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 27 ? 0 : -1"
+                x-on:focus="active = 27; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 28 ? 0 : -1"
+                x-on:focus="active = 28; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 29 ? 0 : -1"
+                x-on:focus="active = 29; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 30 ? 0 : -1"
+                x-on:focus="active = 30; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 31 ? 0 : -1"
+                x-on:focus="active = 31; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 32 ? 0 : -1"
+                x-on:focus="active = 32; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 33 ? 0 : -1"
+                x-on:focus="active = 33; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 34 ? 0 : -1"
+                x-on:focus="active = 34; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 35 ? 0 : -1"
+                x-on:focus="active = 35; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 36 ? 0 : -1"
+                x-on:focus="active = 36; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 37 ? 0 : -1"
+                x-on:focus="active = 37; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 38 ? 0 : -1"
+                x-on:focus="active = 38; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 39 ? 0 : -1"
+                x-on:focus="active = 39; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 40 ? 0 : -1"
+                x-on:focus="active = 40; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 41 ? 0 : -1"
+                x-on:focus="active = 41; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 42 ? 0 : -1"
+                x-on:focus="active = 42; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 43 ? 0 : -1"
+                x-on:focus="active = 43; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 44 ? 0 : -1"
+                x-on:focus="active = 44; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 45 ? 0 : -1"
+                x-on:focus="active = 45; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 46 ? 0 : -1"
+                x-on:focus="active = 46; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 47 ? 0 : -1"
+                x-on:focus="active = 47; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 48 ? 0 : -1"
+                x-on:focus="active = 48; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 49 ? 0 : -1"
+                x-on:focus="active = 49; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 50 ? 0 : -1"
+                x-on:focus="active = 50; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 51 ? 0 : -1"
+                x-on:focus="active = 51; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 52 ? 0 : -1"
+                x-on:focus="active = 52; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 53 ? 0 : -1"
+                x-on:focus="active = 53; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 54 ? 0 : -1"
+                x-on:focus="active = 54; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 55 ? 0 : -1"
+                x-on:focus="active = 55; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 56 ? 0 : -1"
+                x-on:focus="active = 56; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 57 ? 0 : -1"
+                x-on:focus="active = 57; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 58 ? 0 : -1"
+                x-on:focus="active = 58; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 59 ? 0 : -1"
+                x-on:focus="active = 59; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 60 ? 0 : -1"
+                x-on:focus="active = 60; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 61 ? 0 : -1"
+                x-on:focus="active = 61; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 62 ? 0 : -1"
+                x-on:focus="active = 62; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 63 ? 0 : -1"
+                x-on:focus="active = 63; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 64 ? 0 : -1"
+                x-on:focus="active = 64; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 65 ? 0 : -1"
+                x-on:focus="active = 65; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 66 ? 0 : -1"
+                x-on:focus="active = 66; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 67 ? 0 : -1"
+                x-on:focus="active = 67; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 68 ? 0 : -1"
+                x-on:focus="active = 68; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 69 ? 0 : -1"
+                x-on:focus="active = 69; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 70 ? 0 : -1"
+                x-on:focus="active = 70; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 71 ? 0 : -1"
+                x-on:focus="active = 71; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 72 ? 0 : -1"
+                x-on:focus="active = 72; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 73 ? 0 : -1"
+                x-on:focus="active = 73; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 74 ? 0 : -1"
+                x-on:focus="active = 74; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 75 ? 0 : -1"
+                x-on:focus="active = 75; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 76 ? 0 : -1"
+                x-on:focus="active = 76; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 77 ? 0 : -1"
+                x-on:focus="active = 77; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 78 ? 0 : -1"
+                x-on:focus="active = 78; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 79 ? 0 : -1"
+                x-on:focus="active = 79; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 80 ? 0 : -1"
+                x-on:focus="active = 80; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 81 ? 0 : -1"
+                x-on:focus="active = 81; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 82 ? 0 : -1"
+                x-on:focus="active = 82; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 83 ? 0 : -1"
+                x-on:focus="active = 83; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 84 ? 0 : -1"
+                x-on:focus="active = 84; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۴ مورد"
+                role="img"
+                aria-label="۴ مورد"
+                x-bind:tabindex="active === 85 ? 0 : -1"
+                x-on:focus="active = 85; hover = '۴ مورد'"
                  x-on:mouseenter="hover = '۴ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۱ مورد"
+                role="img"
+                aria-label="۱۱ مورد"
+                x-bind:tabindex="active === 86 ? 0 : -1"
+                x-on:focus="active = 86; hover = '۱۱ مورد'"
                  x-on:mouseenter="hover = '۱۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۵ مورد"
+                role="img"
+                aria-label="۵ مورد"
+                x-bind:tabindex="active === 87 ? 0 : -1"
+                x-on:focus="active = 87; hover = '۵ مورد'"
                  x-on:mouseenter="hover = '۵ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۲ مورد"
+                role="img"
+                aria-label="۱۲ مورد"
+                x-bind:tabindex="active === 88 ? 0 : -1"
+                x-on:focus="active = 88; hover = '۱۲ مورد'"
                  x-on:mouseenter="hover = '۱۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="2"
                 title="۶ مورد"
+                role="img"
+                aria-label="۶ مورد"
+                x-bind:tabindex="active === 89 ? 0 : -1"
+                x-on:focus="active = 89; hover = '۶ مورد'"
                  x-on:mouseenter="hover = '۶ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="0"
                 title="۰ مورد"
+                role="img"
+                aria-label="۰ مورد"
+                x-bind:tabindex="active === 90 ? 0 : -1"
+                x-on:focus="active = 90; hover = '۰ مورد'"
                  x-on:mouseenter="hover = '۰ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۷ مورد"
+                role="img"
+                aria-label="۷ مورد"
+                x-bind:tabindex="active === 91 ? 0 : -1"
+                x-on:focus="active = 91; hover = '۷ مورد'"
                  x-on:mouseenter="hover = '۷ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۱ مورد"
+                role="img"
+                aria-label="۱ مورد"
+                x-bind:tabindex="active === 92 ? 0 : -1"
+                x-on:focus="active = 92; hover = '۱ مورد'"
                  x-on:mouseenter="hover = '۱ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۸ مورد"
+                role="img"
+                aria-label="۸ مورد"
+                x-bind:tabindex="active === 93 ? 0 : -1"
+                x-on:focus="active = 93; hover = '۸ مورد'"
                  x-on:mouseenter="hover = '۸ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۲ مورد"
+                role="img"
+                aria-label="۲ مورد"
+                x-bind:tabindex="active === 94 ? 0 : -1"
+                x-on:focus="active = 94; hover = '۲ مورد'"
                  x-on:mouseenter="hover = '۲ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="3"
                 title="۹ مورد"
+                role="img"
+                aria-label="۹ مورد"
+                x-bind:tabindex="active === 95 ? 0 : -1"
+                x-on:focus="active = 95; hover = '۹ مورد'"
                  x-on:mouseenter="hover = '۹ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="1"
                 title="۳ مورد"
+                role="img"
+                aria-label="۳ مورد"
+                x-bind:tabindex="active === 96 ? 0 : -1"
+                x-on:focus="active = 96; hover = '۳ مورد'"
                  x-on:mouseenter="hover = '۳ مورد'"             ></span>
                     <span
                 data-mds-chart-cell
                 data-level="4"
                 title="۱۰ مورد"
+                role="img"
+                aria-label="۱۰ مورد"
+                x-bind:tabindex="active === 97 ? 0 : -1"
+                x-on:focus="active = 97; hover = '۱۰ مورد'"
                  x-on:mouseenter="hover = '۱۰ مورد'"             ></span>
             </div>
 
-            <div data-mds-chart-heatmap-callout x-text="hover ?? 'برای جزئیات روی خانه‌ها بروید'">برای جزئیات روی خانه‌ها بروید</div>
+            <div data-mds-chart-heatmap-callout aria-live="polite" x-text="hover ?? 'برای جزئیات روی خانه‌ها بروید'">برای جزئیات روی خانه‌ها بروید</div>
     </div>
 
             <div data-mds-chart-footer>
@@ -7007,9 +7436,51 @@ document.addEventListener('alpine:init', () => {
     <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full" data-flux-separator></div>
 
     <div class="flex items-center gap-4">
-        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >ثبت امتیاز:</p>        <div
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >ثبت امتیاز:</p>        <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsRatingInput', (config = {}) => ({
+        value: config.value ?? 0,
+        max: config.max ?? 5,
+        hover: 0,
+
+        commit(n) {
+            this.value = Math.min(Math.max(n, 1), this.max)
+            this.$refs.input.value = this.value
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        // A radiogroup is one tab stop: the checked star takes it, or the
+        // first star when nothing is checked yet.
+        tabindex(n) {
+            return n === (this.value || 1) ? 0 : -1
+        },
+
+        // Arrow keys follow reading order, so left and right swap in RTL.
+        // Read off the root, not the document, so an RTL island inside an
+        // LTR page still mirrors.
+        step(delta) {
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+
+            this.focus((this.value || 1) + (rtl ? -delta : delta))
+        },
+
+        focus(n) {
+            this.commit(n)
+            this.$root.querySelectorAll('[role="radio"]')[this.value - 1]?.focus()
+        },
+    }))
+})
+</script>
+
+<div
     class="inline-flex items-center"
-    x-data="{ value: 3, hover: 0 }"
+    x-data="mdsRatingInput({ value: 3, max: 5 })"
+    x-on:keydown.right.prevent="step(1)"
+    x-on:keydown.left.prevent="step(-1)"
+    x-on:keydown.up.prevent="focus((value || 1) + 1)"
+    x-on:keydown.down.prevent="focus((value || 1) - 1)"
+    x-on:keydown.home.prevent="focus(1)"
+    x-on:keydown.end.prevent="focus(max)"
     role="radiogroup"
     aria-label="امتیاز"
     data-mds-rating-input
@@ -7024,11 +7495,12 @@ document.addEventListener('alpine:init', () => {
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 1; $refs.input.value = 1; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(1)"
             x-on:mouseenter="hover = 1"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 1 : value >= 1) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 1 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(1)"
             role="radio"
             aria-label="۱"
         >
@@ -7037,11 +7509,12 @@ document.addEventListener('alpine:init', () => {
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 2; $refs.input.value = 2; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(2)"
             x-on:mouseenter="hover = 2"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 2 : value >= 2) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 2 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(2)"
             role="radio"
             aria-label="۲"
         >
@@ -7050,11 +7523,12 @@ document.addEventListener('alpine:init', () => {
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 3; $refs.input.value = 3; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(3)"
             x-on:mouseenter="hover = 3"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 3 : value >= 3) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 3 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(3)"
             role="radio"
             aria-label="۳"
         >
@@ -7063,11 +7537,12 @@ document.addEventListener('alpine:init', () => {
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 4; $refs.input.value = 4; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(4)"
             x-on:mouseenter="hover = 4"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 4 : value >= 4) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 4 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(4)"
             role="radio"
             aria-label="۴"
         >
@@ -7076,11 +7551,12 @@ document.addEventListener('alpine:init', () => {
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 5; $refs.input.value = 5; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(5)"
             x-on:mouseenter="hover = 5"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 5 : value >= 5) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 5 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(5)"
             role="radio"
             aria-label="۵"
         >
@@ -7135,7 +7611,7 @@ document.addEventListener('alpine:init', () => {
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-sm min-w-8 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۲</span>
+    <span class="text-sm min-w-8 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">۲</span>
 
     <button
         type="button"
@@ -7186,7 +7662,7 @@ document.addEventListener('alpine:init', () => {
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">۱</span>
+    <span class="text-xs min-w-6 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">۱</span>
 
     <button
         type="button"
@@ -7237,7 +7713,7 @@ document.addEventListener('alpine:init', () => {
         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>
     </button>
 
-    <span class="text-base min-w-10 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" x-text="display()">3</span>
+    <span class="text-base min-w-10 text-center font-semibold tabular-nums text-zinc-800 dark:text-white" aria-live="polite" aria-atomic="true" x-text="display()">3</span>
 
     <button
         type="button"
@@ -7345,6 +7821,8 @@ document.addEventListener('alpine:init', () => {
                                     <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"/></svg>
                             </span>
 
+            <span class="sr-only">مرحله ۱ از ۴</span>
+
             <span class="text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">سبد خرید</span>
         </div>
 
@@ -7354,6 +7832,8 @@ document.addEventListener('alpine:init', () => {
             <span class="flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-medium border-2 border-accent text-accent-content font-semibold">
                                     ۲
                             </span>
+
+            <span class="sr-only">مرحله ۲ از ۴</span>
 
             <span class="text-sm whitespace-nowrap font-semibold text-accent-content">آدرس و زمان ارسال</span>
         </div>
@@ -7365,6 +7845,8 @@ document.addEventListener('alpine:init', () => {
                                     ۳
                             </span>
 
+            <span class="sr-only">مرحله ۳ از ۴</span>
+
             <span class="text-sm whitespace-nowrap text-zinc-400 dark:text-zinc-500">پرداخت</span>
         </div>
 
@@ -7374,6 +7856,8 @@ document.addEventListener('alpine:init', () => {
             <span class="flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-medium border border-zinc-300 text-zinc-400 dark:border-zinc-600 dark:text-zinc-500">
                                     ۴
                             </span>
+
+            <span class="sr-only">مرحله ۴ از ۴</span>
 
             <span class="text-sm whitespace-nowrap text-zinc-400 dark:text-zinc-500">تأیید نهایی</span>
         </div>
@@ -7438,6 +7922,7 @@ document.addEventListener('alpine:init', () => {
         withDays: false,
     })"
     role="timer"
+    aria-label="زمان باقی‌مانده"
     data-mds-countdown
 >
     
@@ -7446,18 +7931,24 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">۰۷</span>
 
+                                    
+                    <span class="sr-only">ساعت</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">۴۲</span>
 
+                                    
+                    <span class="sr-only">دقیقه</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">۰۰</span>
 
+                                    
+                    <span class="sr-only">ثانیه</span>
                             </div>
             </div>
 
@@ -7473,6 +7964,7 @@ document.addEventListener('alpine:init', () => {
         withDays: true,
     })"
     role="timer"
+    aria-label="زمان باقی‌مانده"
     data-mds-countdown
 >
     
@@ -7517,6 +8009,7 @@ document.addEventListener('alpine:init', () => {
         withDays: true,
     })"
     role="timer"
+    aria-label="زمان باقی‌مانده"
     data-mds-countdown
 >
     
@@ -7525,24 +8018,32 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(d)">۰۰</span>
 
+                                    
+                    <span class="sr-only">روز</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">۰۰</span>
 
+                                    
+                    <span class="sr-only">ساعت</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">۰۰</span>
 
+                                    
+                    <span class="sr-only">دقیقه</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">۰۰</span>
 
+                                    
+                    <span class="sr-only">ثانیه</span>
                             </div>
             </div>
 

@@ -1128,6 +1128,76 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
+    public function test_rating_input_is_one_tab_stop_with_arrow_keys(): void
+    {
+        $html = $this->render('<mds:rating.input name="score" :value="3" />');
+
+        // A radiogroup is a single tab stop: the checked star holds it and the
+        // rest are skipped, rather than five stops in a row.
+        $this->assertStringContainsString('x-bind:tabindex="tabindex(1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.right.prevent="step(1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.left.prevent="step(-1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.home.prevent="focus(1)"', $html);
+
+        // Arrow direction is read off the root so an RTL island still mirrors.
+        $this->assertStringContainsString("getComputedStyle(this.\$root).direction === 'rtl'", $html);
+    }
+
+    public function test_heatmap_cells_are_reachable_and_announce(): void
+    {
+        $html = $this->render('<mds:chart.heatmap :data="[1, 2, 3]" />');
+
+        // Roving tabindex — a year of cells must not become 365 tab stops.
+        $this->assertStringContainsString('x-bind:tabindex="active === 0 ? 0 : -1"', $html);
+        $this->assertStringContainsString('x-on:keydown.down.prevent="move(1)"', $html);
+        $this->assertMatchesRegularExpression('/<span[^>]*aria-label="۱ مورد"/', $html);
+        $this->assertMatchesRegularExpression('/data-mds-chart-heatmap-callout[^>]*aria-live="polite"/', $html);
+    }
+
+    public function test_quantity_announces_the_value_as_it_changes(): void
+    {
+        $html = $this->render('<mds:quantity :value="2" />');
+
+        $this->assertMatchesRegularExpression('/<span[^>]*aria-live="polite"[^>]*x-text="display\(\)"/', $html);
+    }
+
+    public function test_countdown_names_itself_and_its_units(): void
+    {
+        // Without visible labels the boxes would read as a bare run of digits.
+        $plain = $this->render('<mds:countdown :until="now()->addHours(2)" />');
+
+        $this->assertStringContainsString('role="timer"', $plain);
+        $this->assertStringContainsString('<span class="sr-only">ساعت</span>', $plain);
+        $this->assertStringContainsString('<span class="sr-only">دقیقه</span>', $plain);
+
+        // With them, the unit is already on screen — no duplicate for AT.
+        $labeled = $this->render('<mds:countdown :until="now()->addHours(2)" labels />');
+
+        $this->assertStringNotContainsString('<span class="sr-only">ساعت</span>', $labeled);
+    }
+
+    public function test_stepper_says_which_step_of_how_many(): void
+    {
+        $html = $this->render('<mds:stepper :steps="[\'سبد\', \'آدرس\', \'پرداخت\']" :current="2" />');
+
+        $this->assertStringContainsString('<span class="sr-only">مرحله ۱ از ۳</span>', $html);
+        $this->assertStringContainsString('<span class="sr-only">مرحله ۳ از ۳</span>', $html);
+    }
+
+    public function test_composer_counter_describes_the_textarea(): void
+    {
+        $html = $this->render('<mds:composer counter :maxlength="500" />');
+
+        $this->assertMatchesRegularExpression('/<textarea[^>]*aria-describedby="(mds-composer-counter-[a-f0-9]{8})"/', $html, 'textarea should point at its counter');
+
+        preg_match('/aria-describedby="(mds-composer-counter-[a-f0-9]{8})"/', $html, $m);
+
+        $this->assertStringContainsString('id="'.$m[1].'"', $html, 'the id it points at should exist');
+
+        // No counter, nothing to describe.
+        $this->assertStringNotContainsString('aria-describedby', $this->render('<mds:composer />'));
+    }
+
     /**
      * Every built-in string ships in both languages, and `fa` — or the
      * `mds.persian_digits` default behind it — picks which. One table feeds
@@ -1166,6 +1236,9 @@ class ComponentsTest extends TestCase
             'discount badge' => ['<mds:discount-badge :percent="25" />', 'درصد تخفیف', '% off'],
             'countdown expired' => ['<mds:countdown :until="now()->subMinute()" />', 'به پایان رسید', 'Expired'],
             'countdown unit label' => ['<mds:countdown :until="now()->addDays(2)" labels />', '>دقیقه</span>', '>min</span>'],
+            'countdown timer name' => ['<mds:countdown :until="now()->addHour()" />', 'aria-label="زمان باقی‌مانده"', 'aria-label="Time remaining"'],
+            'upload progress name' => ['<mds:file-upload><mds:file-upload.dropzone with-progress /></mds:file-upload>', 'aria-label="در حال بارگذاری"', 'aria-label="Uploading"'],
+            'stepper step position' => ['<mds:stepper :steps="[\'a\', \'b\']" :current="1" />', 'مرحله ۱ از ۲', 'Step 1 of 2'],
             'chart bars' => ['<mds:chart.bars :data="[1, 2]" />', 'aria-label="نمودار ستونی"', 'aria-label="Bar chart"'],
             'chart line' => ['<mds:chart.line :data="[1, 2]" />', 'aria-label="نمودار خطی"', 'aria-label="Line chart"'],
             'chart radar' => ['<mds:chart.radar :data="[\'a\' => 1, \'b\' => 2, \'c\' => 3]" />', 'aria-label="نمودار راداری"', 'aria-label="Radar chart"'],

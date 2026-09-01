@@ -1213,6 +1213,7 @@ document.addEventListener('alpine:init', () => {
         withDays: false,
     })"
     role="timer"
+    aria-label="زمان باقی‌مانده"
     data-mds-countdown
 >
     
@@ -1221,18 +1222,24 @@ document.addEventListener('alpine:init', () => {
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(h)">۰۷</span>
 
+                                    
+                    <span class="sr-only">ساعت</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(m)">۴۲</span>
 
+                                    
+                    <span class="sr-only">دقیقه</span>
                             </div>
                                     <span class=" font-bold text-zinc-400 dark:text-zinc-500" aria-hidden="true">:</span>
             
             <div class="flex flex-col items-center gap-1">
                 <span class="flex items-center justify-center rounded-md bg-zinc-800 font-bold tabular-nums text-white dark:bg-white/15 min-w-8 px-1 py-1 text-sm" x-text="seg(s)">۰۰</span>
 
+                                    
+                    <span class="sr-only">ثانیه</span>
                             </div>
             </div>
 

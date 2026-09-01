@@ -269,9 +269,51 @@
     </div>
 </div></section><section id="as-an-input" class="docs-section"><h2>As an input</h2><p class="docs-text"><code>mds:rating.input</code> is a real radio group under the hood, so it works in a plain form and with the keyboard. Its default group label follows the config language — "Rating" here, امتیاز in Persian.</p><div class="docs-example">
     <div class="docs-preview">
-        <div class="docs-preview-inner"><div
+        <div class="docs-preview-inner"><script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsRatingInput', (config = {}) => ({
+        value: config.value ?? 0,
+        max: config.max ?? 5,
+        hover: 0,
+
+        commit(n) {
+            this.value = Math.min(Math.max(n, 1), this.max)
+            this.$refs.input.value = this.value
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        // A radiogroup is one tab stop: the checked star takes it, or the
+        // first star when nothing is checked yet.
+        tabindex(n) {
+            return n === (this.value || 1) ? 0 : -1
+        },
+
+        // Arrow keys follow reading order, so left and right swap in RTL.
+        // Read off the root, not the document, so an RTL island inside an
+        // LTR page still mirrors.
+        step(delta) {
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+
+            this.focus((this.value || 1) + (rtl ? -delta : delta))
+        },
+
+        focus(n) {
+            this.commit(n)
+            this.$root.querySelectorAll('[role="radio"]')[this.value - 1]?.focus()
+        },
+    }))
+})
+</script>
+
+<div
     class="inline-flex items-center"
-    x-data="{ value: 3, hover: 0 }"
+    x-data="mdsRatingInput({ value: 3, max: 5 })"
+    x-on:keydown.right.prevent="step(1)"
+    x-on:keydown.left.prevent="step(-1)"
+    x-on:keydown.up.prevent="focus((value || 1) + 1)"
+    x-on:keydown.down.prevent="focus((value || 1) - 1)"
+    x-on:keydown.home.prevent="focus(1)"
+    x-on:keydown.end.prevent="focus(max)"
     role="radiogroup"
     aria-label="Rating"
     data-mds-rating-input
@@ -286,11 +328,12 @@
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 1; $refs.input.value = 1; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(1)"
             x-on:mouseenter="hover = 1"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 1 : value >= 1) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 1 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(1)"
             role="radio"
             aria-label="1"
         >
@@ -299,11 +342,12 @@
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 2; $refs.input.value = 2; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(2)"
             x-on:mouseenter="hover = 2"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 2 : value >= 2) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 2 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(2)"
             role="radio"
             aria-label="2"
         >
@@ -312,11 +356,12 @@
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 3; $refs.input.value = 3; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(3)"
             x-on:mouseenter="hover = 3"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 3 : value >= 3) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 3 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(3)"
             role="radio"
             aria-label="3"
         >
@@ -325,11 +370,12 @@
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 4; $refs.input.value = 4; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(4)"
             x-on:mouseenter="hover = 4"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 4 : value >= 4) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 4 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(4)"
             role="radio"
             aria-label="4"
         >
@@ -338,11 +384,12 @@
             <button
             type="button"
             class="cursor-pointer p-0.5 transition-transform duration-100 hover:scale-110"
-            x-on:click="value = 5; $refs.input.value = 5; $refs.input.dispatchEvent(new Event('input', { bubbles: true }))"
+            x-on:click="commit(5)"
             x-on:mouseenter="hover = 5"
             x-on:mouseleave="hover = 0"
             x-bind:class="(hover ? hover >= 5 : value >= 5) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
             x-bind:aria-checked="value === 5 ? 'true' : 'false'"
+            x-bind:tabindex="tabindex(5)"
             role="radio"
             aria-label="5"
         >
