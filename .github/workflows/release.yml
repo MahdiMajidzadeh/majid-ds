@@ -1,0 +1,130 @@
+name: release
+
+# Releases are cut by pushing a tag: `git tag v0.4.0 && git push origin v0.4.0`.
+# Nothing publishes on a normal push — only a v* tag reaches these jobs.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# One release at a time; never cancel a half-finished publish.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the version off the tag
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::Tag $GITHUB_REF_NAME is not a semver release tag (expected vX.Y.Z)."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Releasing $version"
+
+      - name: package.json must agree with the tag
+        run: |
+          pkg="$(node -p "require('./package.json').version")"
+          want='${{ steps.version.outputs.version }}'
+
+          if [ "$pkg" != "$want" ]; then
+            echo "::error::package.json says $pkg but the tag says $want — npm would publish the wrong version."
+            echo "::error::Fix with: npm version $want --no-git-tag-version && git commit -am 'Bump to $want', then move the tag."
+            exit 1
+          fi
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          # intl is not optional: without it the Jalali suite silently skips
+          # its cross-check against PHP's own Persian calendar.
+          extensions: intl, mbstring, dom, fileinfo
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-all
+
+      - run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run the test suite
+        run: vendor/bin/phpunit
+
+  packagist:
+    name: Packagist
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      # Packagist has no upload step — it reads tags from the repo. The GitHub
+      # webhook usually syncs within a minute; this call just makes the release
+      # deterministic instead of waiting on it.
+      - name: Nudge Packagist to sync the new tag
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+        run: |
+          if [ -z "$PACKAGIST_TOKEN" ] || [ -z "$PACKAGIST_USERNAME" ]; then
+            echo "No Packagist credentials set — leaving the sync to the GitHub webhook."
+            exit 0
+          fi
+
+          response="$(curl -sS --fail-with-body -X POST \
+            -H 'Content-Type: application/json' \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
+            -d "{\"repository\":{\"url\":\"https://github.com/${GITHUB_REPOSITORY}\"}}")"
+
+          echo "$response"
+
+          # Packagist answers 200 with a JSON body even for some failures.
+          printf '%s' "$response" | grep -q '"status":"success"' || {
+            echo "::error::Packagist did not report success."
+            exit 1
+          }
+
+  npm:
+    name: npm
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Lets npm attach a provenance attestation to the published tarball.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Show what will be published
+        run: npm pack --dry-run
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::NPM_TOKEN is not set — add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          # A prerelease tag (v1.0.0-beta.1) must not become @latest.
+          case '${{ needs.verify.outputs.version }}' in
+            *-*) npm publish --tag next ;;
+            *)   npm publish ;;
+          esac
