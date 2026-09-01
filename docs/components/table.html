@@ -299,26 +299,57 @@
     </div>
 </td>
             <td class="[:where(&amp;)]:py-3 [:where(&amp;)]:px-3 first:ps-0 last:pe-0 text-sm text-end [&amp;&gt;*]:ms-auto text-zinc-500 dark:text-zinc-300  not-in-[tr:first-child]:border-t border-zinc-800/10 dark:border-white/20" data-flux-cell>
-    <div
+    <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsQuantity', (config = {}) => ({
+        value: config.value ?? 0,
+        min: config.min ?? 0,
+        max: config.max ?? null,
+        step: config.step ?? 1,
+        fa: config.fa ?? true,
+
+        display() {
+            return window.mds.digits(this.value, this.fa)
+        },
+
+        set(n) {
+            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+
+            if (n === this.value) return
+
+            this.value = n
+            this.$refs.input.value = n
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<div
     class="inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10"
-        x-data="{
+        x-data="mdsQuantity({
         value: 2,
         min: 1,
         max: null,
         step: 1,
         fa: false,
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input

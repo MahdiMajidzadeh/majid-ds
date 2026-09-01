@@ -2,6 +2,8 @@
     'fa' => null,
 ])
 
+@include('mds::partials.digits')
+
 <div
     {{ $attributes->class('flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800') }}
     x-id="['mds-command-listbox', 'mds-command-option']"
@@ -15,14 +17,12 @@
                 el.id ||= this.$id('mds-command-option', i)
             })
         },
+        // Arabic spellings of Persian letters fold together, and digits of
+        // either script fold to Latin, so typing 'كتاب' or '٢' still matches.
         normalize(s) {
-            return s
-                .toLowerCase()
-                .replace(/[يى]/g, 'ی')
-                .replace(/ك/g, 'ک')
-                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
-                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
-                .trim()
+            return window.mds.latinDigits(
+                s.toLowerCase().replace(/[يى]/g, 'ی').replace(/ك/g, 'ک'),
+            ).trim()
         },
         matches(el) {
             return this.normalize(el.textContent).includes(this.normalize(this.query))

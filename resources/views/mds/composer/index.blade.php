@@ -64,6 +64,8 @@ $counterId = 'mds-composer-counter-'.substr(md5(json_encode([$name, $placeholder
 $row = $header ? 'row-start-2' : 'row-start-1';
 @endphp
 
+@include('mds::partials.digits')
+
 @once
 <script>
 document.addEventListener('alpine:init', () => {
@@ -81,9 +83,7 @@ document.addEventListener('alpine:init', () => {
 
         // Display counter — «۱۲ / ۵۰۰» when there is a limit, «۱۲» otherwise...
         get counter() {
-            const digits = (n) => this.fa
-                ? String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d])
-                : String(n)
+            const digits = (n) => window.mds.digits(n, this.fa)
 
             return this.maxlength === null
                 ? digits(this.count)

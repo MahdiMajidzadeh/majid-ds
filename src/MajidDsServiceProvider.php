@@ -60,6 +60,10 @@ class MajidDsServiceProvider extends ServiceProvider
 
     protected function bootComponentPath(): void
     {
+        // Shared internal partials (mds::partials.*), separate from the
+        // anonymous component namespace below.
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'mds');
+
         // App-level overrides take precedence, mirroring Flux's publish/override flow...
         if (file_exists(resource_path('views/mds'))) {
             Blade::anonymousComponentPath(resource_path('views/mds'), 'mds');

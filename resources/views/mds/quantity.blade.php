@@ -42,6 +42,36 @@ $textClasses = match ($size) {
 };
 @endphp
 
+@include('mds::partials.digits')
+
+@once
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsQuantity', (config = {}) => ({
+        value: config.value ?? 0,
+        min: config.min ?? 0,
+        max: config.max ?? null,
+        step: config.step ?? 1,
+        fa: config.fa ?? true,
+
+        display() {
+            return window.mds.digits(this.value, this.fa)
+        },
+
+        set(n) {
+            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+
+            if (n === this.value) return
+
+            this.value = n
+            this.$refs.input.value = n
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+@endonce
+
 <div
     {{ $attributes->whereDoesntStartWith('wire:model')->class([
         'inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10',
@@ -49,24 +79,13 @@ $textClasses = match ($size) {
         'border-zinc-200 dark:border-white/10' => ! $invalid,
     ]) }}
     @if ($invalid) aria-invalid="true" @endif
-    x-data="{
+    x-data="mdsQuantity({
         value: {{ $value }},
         min: {{ (int) $min }},
         max: {{ $max === null ? 'null' : (int) $max }},
         step: {{ (int) $step }},
         fa: {{ $fa ? 'true' : 'false' }},
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input

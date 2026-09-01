@@ -53,6 +53,8 @@ $segments[] = ['key' => 'm', 'label' => $unitLabels['m'], 'initial' => $seg($ini
 $segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($initial['s'])];
 @endphp
 
+@include('mds::partials.digits')
+
 @once
 <script>
 document.addEventListener('alpine:init', () => {
@@ -89,8 +91,7 @@ document.addEventListener('alpine:init', () => {
         get m() { return Math.floor((this.total % 3600) / 60) },
         get s() { return this.total % 60 },
         seg(n) {
-            const s = String(n).padStart(2, '0')
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+            return window.mds.digits(String(n).padStart(2, '0'), this.fa)
         },
     }))
 })

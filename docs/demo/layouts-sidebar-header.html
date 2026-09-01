@@ -1196,6 +1196,22 @@
 
                             <div class="flex items-center gap-2">
                     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >پایان تا:</p>                    <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,
@@ -1230,8 +1246,7 @@ document.addEventListener('alpine:init', () => {
         get m() { return Math.floor((this.total % 3600) / 60) },
         get s() { return this.total % 60 },
         seg(n) {
-            const s = String(n).padStart(2, '0')
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+            return window.mds.digits(String(n).padStart(2, '0'), this.fa)
         },
     }))
 })

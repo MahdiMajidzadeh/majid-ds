@@ -21,6 +21,8 @@ if (blank($error) && $name && isset($errors)) {
 $invalid = $invalid || filled($error);
 @endphp
 
+@include('mds::partials.digits')
+
 @once
 <script>
 document.addEventListener('alpine:init', () => {
@@ -47,7 +49,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...

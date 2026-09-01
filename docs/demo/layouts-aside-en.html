@@ -1071,6 +1071,22 @@
 
                             <div class="flex items-center gap-2">
                     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >Ends in:</p>                    <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,
@@ -1105,8 +1121,7 @@ document.addEventListener('alpine:init', () => {
         get m() { return Math.floor((this.total % 3600) / 60) },
         get s() { return this.total % 60 },
         seg(n) {
-            const s = String(n).padStart(2, '0')
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+            return window.mds.digits(String(n).padStart(2, '0'), this.fa)
         },
     }))
 })
@@ -1505,26 +1520,41 @@ document.addEventListener('alpine:init', () => {
 </div>
                 </div>
 
-                <div
+                <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mdsQuantity', (config = {}) => ({
+        value: config.value ?? 0,
+        min: config.min ?? 0,
+        max: config.max ?? null,
+        step: config.step ?? 1,
+        fa: config.fa ?? true,
+
+        display() {
+            return window.mds.digits(this.value, this.fa)
+        },
+
+        set(n) {
+            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+
+            if (n === this.value) return
+
+            this.value = n
+            this.$refs.input.value = n
+            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+    }))
+})
+</script>
+
+<div
     class="inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10"
-        x-data="{
+        x-data="mdsQuantity({
         value: 1,
         min: 1,
         max: 3,
         step: 1,
         fa: false,
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input
@@ -1578,24 +1608,13 @@ document.addEventListener('alpine:init', () => {
 
                 <div
     class="inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10"
-        x-data="{
+        x-data="mdsQuantity({
         value: 1,
         min: 1,
         max: 3,
         step: 1,
         fa: false,
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input
@@ -1797,24 +1816,13 @@ document.addEventListener('alpine:init', () => {
 
                 <div
     class="inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10"
-        x-data="{
+        x-data="mdsQuantity({
         value: 1,
         min: 1,
         max: 3,
         step: 1,
         fa: false,
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input
@@ -1868,24 +1876,13 @@ document.addEventListener('alpine:init', () => {
 
                 <div
     class="inline-flex items-center rounded-lg border bg-white shadow-xs dark:bg-white/10 border-zinc-200 dark:border-white/10"
-        x-data="{
+        x-data="mdsQuantity({
         value: 1,
         min: 1,
         max: 3,
         step: 1,
         fa: false,
-        display() {
-            const s = String(this.value)
-            return this.fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
-        },
-        set(n) {
-            n = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
-            if (n === this.value) return
-            this.value = n
-            this.$refs.input.value = n
-            this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
-        },
-    }"
+    })"
     data-mds-quantity
 >
     <input

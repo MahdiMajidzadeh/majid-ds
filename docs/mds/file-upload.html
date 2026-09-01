@@ -45,6 +45,22 @@
         <section id="introduction" class="docs-section"><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
@@ -69,7 +85,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...
@@ -198,6 +214,22 @@ document.addEventListener('alpine:init', () => {
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><div class="w-full max-w-md space-y-4">
     <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
@@ -222,7 +254,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...
@@ -505,6 +537,22 @@ document.addEventListener('alpine:init', () => {
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><div class="w-full max-w-md space-y-4">
     <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
@@ -529,7 +577,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...
@@ -728,6 +776,22 @@ document.addEventListener('alpine:init', () => {
 </div></section><section id="custom-uploader" class="docs-section"><h2>Custom uploader</h2><p class="docs-text">Any markup inside <code>mds:file-upload</code> gets the full upload behaviour. Style the states with the <code>in-data-dragging:</code> and <code>in-data-loading:</code> variants.</p><div class="docs-example">
     <div class="docs-preview">
         <div class="docs-preview-inner"><script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
@@ -752,7 +816,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...
@@ -851,6 +915,22 @@ document.addEventListener('alpine:init', () => {
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner" dir="rtl"><div class="w-full max-w-md space-y-4">
     <script>
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+</script>
+
+<script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
@@ -875,7 +955,7 @@ document.addEventListener('alpine:init', () => {
         get percent() {
             const n = String(Math.round(this.progress))
 
-            return (this.fa ? n.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) + '٪' : n + '%')
+            return window.mds.digits(n, this.fa) + (this.fa ? '٪' : '%')
         },
 
         // Exposed as CSS custom properties for custom progress UIs...

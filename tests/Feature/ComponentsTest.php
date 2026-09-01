@@ -1128,6 +1128,35 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
+    public function test_the_digit_helper_ships_once_for_the_whole_page(): void
+    {
+        // Five views used to inline the same Latin -> Persian replace().
+        $page = $this->render('
+            <mds:quantity :value="2" />
+            <mds:countdown :until="now()->addHour()" />
+            <mds:composer counter />
+            <mds:file-upload />
+            <mds:command><mds:command.items>x</mds:command.items></mds:command>
+        ');
+
+        $this->assertSame(1, substr_count($page, 'window.mds.digits ='));
+        $this->assertSame(1, substr_count($page, 'window.mds.latinDigits ='));
+
+        // And the map itself lives only in that partial — no component view
+        // may grow a private copy again.
+        $views = glob(dirname(__DIR__, 2).'/resources/views/mds/{*.blade.php,*/*.blade.php}', GLOB_BRACE);
+
+        $this->assertNotEmpty($views);
+
+        foreach ($views as $view) {
+            $this->assertStringNotContainsString(
+                '۰۱۲۳۴۵۶۷۸۹',
+                (string) file_get_contents($view),
+                basename(dirname($view)).'/'.basename($view).' inlines the digit map; include mds::partials.digits instead.',
+            );
+        }
+    }
+
     public function test_the_remaining_controls_honour_the_error_contract(): void
     {
         $bag = new ViewErrorBag;
