@@ -1543,9 +1543,17 @@
             <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >Inline:</p>
             <div
     class="flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800 max-w-md"
+    x-id="['mds-command-listbox', 'mds-command-option']"
     x-data="{
         query: '',
         active: 0,
+        init() {
+            // Options need ids for aria-activedescendant, but they arrive as
+            // slot content and cannot know their own index in Blade.
+            this.$root.querySelectorAll('[data-mds-command-item]').forEach((el, i) => {
+                el.id ||= this.$id('mds-command-option', i)
+            })
+        },
         normalize(s) {
             return s
                 .toLowerCase()
@@ -1576,6 +1584,10 @@
         isActive(el) {
             return this.items()[this.active] === el
         },
+        // What the input points at, so arrowing the list is announced.
+        get activeId() {
+            return this.items()[this.active]?.id ?? ''
+        },
     }"
     x-effect="query; active = 0"
     data-mds-command
@@ -1589,6 +1601,11 @@
         x-on:keydown.down.prevent="move(1)"
         x-on:keydown.up.prevent="move(-1)"
         x-on:keydown.enter.prevent="select()"
+        role="combobox"
+        aria-expanded="true"
+        aria-autocomplete="list"
+        x-bind:aria-controls="$id('mds-command-listbox')"
+        x-bind:aria-activedescendant="activeId"
         class="w-full flex-1 bg-transparent py-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500" placeholder="Search commands..."
     >
 
@@ -1605,10 +1622,12 @@
     
     </div>
 
-                <div class="max-h-72 overflow-y-auto p-1.5" role="listbox" data-mds-command-items>
-    <div
+                <div class="max-h-72 overflow-y-auto p-1.5" data-mds-command-items>
+    <div role="listbox" x-bind:id="$id('mds-command-listbox')">
+        <div
     class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
     x-show="query === ''"
+    role="presentation"
     data-mds-command-heading
 >
     Navigation
@@ -1661,6 +1680,7 @@
                     <div
     class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
     x-show="query === ''"
+    role="presentation"
     data-mds-command-heading
 >
     Actions
@@ -1708,8 +1728,10 @@
     <span class="flex-1 truncate">Sign out</span>
 
     </button>
+    </div>
 
-    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" x-show="empty" x-cloak data-mds-command-empty>
+    
+    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" role="status" x-show="empty" x-cloak data-mds-command-empty>
         No results found.
     </div>
 </div>
@@ -1757,9 +1779,17 @@
     >
                     <div
     class="flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800"
+    x-id="['mds-command-listbox', 'mds-command-option']"
     x-data="{
         query: '',
         active: 0,
+        init() {
+            // Options need ids for aria-activedescendant, but they arrive as
+            // slot content and cannot know their own index in Blade.
+            this.$root.querySelectorAll('[data-mds-command-item]').forEach((el, i) => {
+                el.id ||= this.$id('mds-command-option', i)
+            })
+        },
         normalize(s) {
             return s
                 .toLowerCase()
@@ -1790,6 +1820,10 @@
         isActive(el) {
             return this.items()[this.active] === el
         },
+        // What the input points at, so arrowing the list is announced.
+        get activeId() {
+            return this.items()[this.active]?.id ?? ''
+        },
     }"
     x-effect="query; active = 0"
     data-mds-command
@@ -1803,6 +1837,11 @@
         x-on:keydown.down.prevent="move(1)"
         x-on:keydown.up.prevent="move(-1)"
         x-on:keydown.enter.prevent="select()"
+        role="combobox"
+        aria-expanded="true"
+        aria-autocomplete="list"
+        x-bind:aria-controls="$id('mds-command-listbox')"
+        x-bind:aria-activedescendant="activeId"
         class="w-full flex-1 bg-transparent py-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500" placeholder="Search everything..." autofocus="autofocus"
     >
 
@@ -1817,10 +1856,12 @@
         </button>
     </div>
 
-            <div class="max-h-72 overflow-y-auto p-1.5" role="listbox" data-mds-command-items>
-    <div
+            <div class="max-h-72 overflow-y-auto p-1.5" data-mds-command-items>
+    <div role="listbox" x-bind:id="$id('mds-command-listbox')">
+        <div
     class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
     x-show="query === ''"
+    role="presentation"
     data-mds-command-heading
 >
     Offers
@@ -1871,6 +1912,7 @@
                 <div
     class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
     x-show="query === ''"
+    role="presentation"
     data-mds-command-heading
 >
     Account
@@ -1920,8 +1962,10 @@
 
             <kbd class="ms-auto shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-sans text-[11px] text-zinc-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500" dir="ltr">⌘,</kbd>
     </button>
+    </div>
 
-    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" x-show="empty" x-cloak data-mds-command-empty>
+    
+    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" role="status" x-show="empty" x-cloak data-mds-command-empty>
         No results found.
     </div>
 </div>
@@ -1940,6 +1984,30 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsColorPicker', (config) => ({
         open: false,
+
+        toggle(state = null) {
+            const next = state ?? ! this.open
+
+            if (next === this.open) return
+
+            this.open = next
+
+            this.$nextTick(() => {
+                const panel = this.$refs.panel
+
+                // Focus follows the panel, and comes back to whatever opened
+                // it — otherwise Escape drops the reader at the top of the page.
+                if (this.open) {
+                    this.trigger = document.activeElement
+                    panel?.querySelector('input, button')?.focus()
+                } else {
+                    this.trigger?.focus()
+                    this.trigger = null
+                }
+            })
+        },
+
+        trigger: null,
         h: 0, s: 100, v: 100, a: 1,
         empty: true,
         format: config.format ?? 'hex',
@@ -2092,8 +2160,9 @@ document.addEventListener('alpine:init', () => {
     
     <div
         class="relative"
+                x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: '#e11d48', format: 'hex' })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -2107,8 +2176,10 @@ document.addEventListener('alpine:init', () => {
                 <button
                     type="button"
                     class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
-                    x-on:click="open = ! open"
+                    x-on:click="toggle()"
                     x-bind:aria-expanded="open ? 'true' : 'false'"
+                    aria-haspopup="dialog"
+                    x-bind:aria-controls="$id('mds-color-picker-panel')"
                     aria-label="Brand color"
                 >
                     <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -2137,10 +2208,14 @@ document.addEventListener('alpine:init', () => {
         
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="Brand color"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
                             <div class="flex flex-col gap-3">
@@ -2149,7 +2224,7 @@ document.addEventListener('alpine:init', () => {
     dir="ltr"
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
-    role="slider"
+    role="group"
     aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
@@ -2157,6 +2232,31 @@ document.addEventListener('alpine:init', () => {
         class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
         x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
     ></div>
+
+    
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(s)"
+        x-on:input="s = +$event.target.value; empty = false; commit()"
+        aria-label="Saturation"
+        data-mds-color-picker-axis="saturation"
+    >
+
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(v)"
+        x-on:input="v = +$event.target.value; empty = false; commit()"
+        aria-label="Brightness"
+        data-mds-color-picker-axis="brightness"
+    >
 </div>
                     <input
         type="range"
@@ -2389,8 +2489,9 @@ document.addEventListener('alpine:init', () => {
     
     <div
         class="relative"
+                x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: 'rgba(59, 130, 246, 0.5)', format: 'rgba' })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -2404,8 +2505,10 @@ document.addEventListener('alpine:init', () => {
                 <button
                     type="button"
                     class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
-                    x-on:click="open = ! open"
+                    x-on:click="toggle()"
                     x-bind:aria-expanded="open ? 'true' : 'false'"
+                    aria-haspopup="dialog"
+                    x-bind:aria-controls="$id('mds-color-picker-panel')"
                     aria-label="Background color (rgba)"
                 >
                     <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -2424,10 +2527,14 @@ document.addEventListener('alpine:init', () => {
         
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="Background color (rgba)"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
                             <div class="flex flex-col gap-3">
@@ -2436,7 +2543,7 @@ document.addEventListener('alpine:init', () => {
     dir="ltr"
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
-    role="slider"
+    role="group"
     aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
@@ -2444,6 +2551,31 @@ document.addEventListener('alpine:init', () => {
         class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
         x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
     ></div>
+
+    
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(s)"
+        x-on:input="s = +$event.target.value; empty = false; commit()"
+        aria-label="Saturation"
+        data-mds-color-picker-axis="saturation"
+    >
+
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(v)"
+        x-on:input="v = +$event.target.value; empty = false; commit()"
+        aria-label="Brightness"
+        data-mds-color-picker-axis="brightness"
+    >
 </div>
                     <input
         type="range"
@@ -2669,8 +2801,9 @@ document.addEventListener('alpine:init', () => {
     
     <div
         class="relative"
+                x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: '#00c16a', format: 'hex' })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -2684,8 +2817,10 @@ document.addEventListener('alpine:init', () => {
                 <button
                     type="button"
                     class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
-                    x-on:click="open = ! open"
+                    x-on:click="toggle()"
                     x-bind:aria-expanded="open ? 'true' : 'false'"
+                    aria-haspopup="dialog"
+                    x-bind:aria-controls="$id('mds-color-picker-panel')"
                     aria-label="Custom swatches"
                 >
                     <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -2704,10 +2839,14 @@ document.addEventListener('alpine:init', () => {
         
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="Custom swatches"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
                             <div class="flex flex-col gap-3">
@@ -2716,7 +2855,7 @@ document.addEventListener('alpine:init', () => {
     dir="ltr"
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
-    role="slider"
+    role="group"
     aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
@@ -2724,6 +2863,31 @@ document.addEventListener('alpine:init', () => {
         class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
         x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
     ></div>
+
+    
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(s)"
+        x-on:input="s = +$event.target.value; empty = false; commit()"
+        aria-label="Saturation"
+        data-mds-color-picker-axis="saturation"
+    >
+
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(v)"
+        x-on:input="v = +$event.target.value; empty = false; commit()"
+        aria-label="Brightness"
+        data-mds-color-picker-axis="brightness"
+    >
 </div>
                     <input
         type="range"
@@ -2820,8 +2984,9 @@ document.addEventListener('alpine:init', () => {
         <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >Button mode:</p>        <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
     <div
         class="relative"
+                x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: '#8b5cf6', format: 'hex' })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -2834,8 +2999,10 @@ document.addEventListener('alpine:init', () => {
                     <button
                 type="button"
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
-                x-on:click="open = ! open"
+                x-on:click="toggle()"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
+                aria-haspopup="dialog"
+                x-bind:aria-controls="$id('mds-color-picker-panel')"
                 aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
@@ -2844,10 +3011,14 @@ document.addEventListener('alpine:init', () => {
         
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="Pick a color"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
                             <div class="flex flex-col gap-3">
@@ -2856,7 +3027,7 @@ document.addEventListener('alpine:init', () => {
     dir="ltr"
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
-    role="slider"
+    role="group"
     aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
@@ -2864,6 +3035,31 @@ document.addEventListener('alpine:init', () => {
         class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
         x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
     ></div>
+
+    
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(s)"
+        x-on:input="s = +$event.target.value; empty = false; commit()"
+        aria-label="Saturation"
+        data-mds-color-picker-axis="saturation"
+    >
+
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(v)"
+        x-on:input="v = +$event.target.value; empty = false; commit()"
+        aria-label="Brightness"
+        data-mds-color-picker-axis="brightness"
+    >
 </div>
                     <input
         type="range"
@@ -3077,8 +3273,9 @@ document.addEventListener('alpine:init', () => {
         <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
     <div
         class="relative"
+                x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: null, format: 'hex' })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -3091,8 +3288,10 @@ document.addEventListener('alpine:init', () => {
                     <button
                 type="button"
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
-                x-on:click="open = ! open"
+                x-on:click="toggle()"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
+                aria-haspopup="dialog"
+                x-bind:aria-controls="$id('mds-color-picker-panel')"
                 aria-label="Pick a color"
                 data-mds-color-picker-trigger
             >
@@ -3101,10 +3300,14 @@ document.addEventListener('alpine:init', () => {
         
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="Pick a color"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
                             <div class="flex flex-col gap-3">
@@ -3113,7 +3316,7 @@ document.addEventListener('alpine:init', () => {
     dir="ltr"
     x-bind:style="`background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`"
     x-on:pointerdown.prevent="areaDown($event)"
-    role="slider"
+    role="group"
     aria-label="Saturation and brightness"
     data-mds-color-picker-area
 >
@@ -3121,6 +3324,31 @@ document.addEventListener('alpine:init', () => {
         class="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
         x-bind:style="`left: ${s}%; top: ${100 - v}%; background: ${hex}`"
     ></div>
+
+    
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(s)"
+        x-on:input="s = +$event.target.value; empty = false; commit()"
+        aria-label="Saturation"
+        data-mds-color-picker-axis="saturation"
+    >
+
+    <input
+        type="range"
+        class="sr-only"
+        min="0"
+        max="100"
+        step="1"
+        x-bind:value="Math.round(v)"
+        x-on:input="v = +$event.target.value; empty = false; commit()"
+        aria-label="Brightness"
+        data-mds-color-picker-axis="brightness"
+    >
 </div>
                     <input
         type="range"

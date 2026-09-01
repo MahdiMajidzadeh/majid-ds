@@ -1,8 +1,16 @@
 <div
     {{ $attributes->class('flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800') }}
+    x-id="['mds-command-listbox', 'mds-command-option']"
     x-data="{
         query: '',
         active: 0,
+        init() {
+            // Options need ids for aria-activedescendant, but they arrive as
+            // slot content and cannot know their own index in Blade.
+            this.$root.querySelectorAll('[data-mds-command-item]').forEach((el, i) => {
+                el.id ||= this.$id('mds-command-option', i)
+            })
+        },
         normalize(s) {
             return s
                 .toLowerCase()
@@ -32,6 +40,10 @@
         },
         isActive(el) {
             return this.items()[this.active] === el
+        },
+        // What the input points at, so arrowing the list is announced.
+        get activeId() {
+            return this.items()[this.active]?.id ?? ''
         },
     }"
     x-effect="query; active = 0"

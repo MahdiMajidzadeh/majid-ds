@@ -1128,6 +1128,71 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
+    public function test_command_input_is_wired_as_a_combobox(): void
+    {
+        $html = $this->render('<mds:command>
+            <mds:command.input />
+            <mds:command.items>
+                <mds:command.heading>ناوبری</mds:command.heading>
+                <mds:command.item>سفارش‌ها</mds:command.item>
+            </mds:command.items>
+        </mds:command>');
+
+        // Without this pairing, arrowing the list moves a highlight that a
+        // screen reader never hears about.
+        $this->assertMatchesRegularExpression('/<input[^>]*role="combobox"/', $html);
+        $this->assertStringContainsString('x-bind:aria-activedescendant="activeId"', $html);
+        $this->assertStringContainsString("x-bind:aria-controls=\"\$id('mds-command-listbox')\"", $html);
+        $this->assertStringContainsString("x-bind:id=\"\$id('mds-command-listbox')\"", $html);
+
+        // A listbox takes options: the heading is a label and the empty
+        // message is a status, so neither may sit inside it as a child.
+        $this->assertMatchesRegularExpression('/data-mds-command-heading[^>]*role="presentation"|role="presentation"[^>]*data-mds-command-heading/', $html);
+        $this->assertMatchesRegularExpression('/data-mds-command-empty|role="status"/', $html);
+        $this->assertStringContainsString('role="status"', $html);
+    }
+
+    public function test_colour_area_exposes_an_axis_per_value(): void
+    {
+        $html = $this->render('<mds:color-picker type="button" />');
+
+        // Two values cannot be one slider, and dragging is pointer-only — a
+        // native range per axis gives both a name and keyboard control.
+        $this->assertStringNotContainsString('role="slider"', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*type="range"[^>]*data-mds-color-picker-axis="saturation"/', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*type="range"[^>]*data-mds-color-picker-axis="brightness"/', $html);
+    }
+
+    public function test_colour_picker_panel_is_a_dialog_that_manages_focus(): void
+    {
+        $html = $this->render('<mds:color-picker type="button" />');
+
+        $this->assertMatchesRegularExpression('/data-mds-color-picker-panel|role="dialog"/', $html);
+        $this->assertStringContainsString('role="dialog"', $html);
+        $this->assertStringContainsString('aria-haspopup="dialog"', $html);
+        $this->assertStringContainsString("x-bind:aria-controls=\"\$id('mds-color-picker-panel')\"", $html);
+
+        // Escape has to return focus to the trigger, not drop it at the top
+        // of the document.
+        $this->assertStringContainsString('x-on:keydown.escape.window="toggle(false)"', $html);
+        $this->assertStringContainsString('this.trigger?.focus()', $html);
+    }
+
+    public function test_colour_picker_disabled_is_not_merely_cosmetic(): void
+    {
+        $html = $this->render('<mds:color-picker disabled />');
+
+        // The wrapper used to carry `pointer-events-none opacity-50`, which
+        // only stops the mouse: every control stayed in the tab order and
+        // fully operable by keyboard. (The area's thumb keeps its own
+        // pointer-events-none, which is unrelated.)
+        $this->assertStringNotContainsString('pointer-events-none opacity-50', $html);
+        $this->assertStringContainsString('inert', $html);
+        $this->assertStringContainsString('aria-disabled="true"', $html);
+
+        $this->assertStringNotContainsString('inert', $this->render('<mds:color-picker />'));
+    }
+
     public function test_rating_input_is_one_tab_stop_with_arrow_keys(): void
     {
         $html = $this->render('<mds:rating.input name="score" :value="3" />');
@@ -1236,6 +1301,8 @@ class ComponentsTest extends TestCase
             'discount badge' => ['<mds:discount-badge :percent="25" />', 'درصد تخفیف', '% off'],
             'countdown expired' => ['<mds:countdown :until="now()->subMinute()" />', 'به پایان رسید', 'Expired'],
             'countdown unit label' => ['<mds:countdown :until="now()->addDays(2)" labels />', '>دقیقه</span>', '>min</span>'],
+            'colour area saturation' => ['<mds:color-picker type="button" />', 'aria-label="اشباع"', 'aria-label="Saturation"'],
+            'colour area brightness' => ['<mds:color-picker type="button" />', 'aria-label="روشنایی"', 'aria-label="Brightness"'],
             'countdown timer name' => ['<mds:countdown :until="now()->addHour()" />', 'aria-label="زمان باقی‌مانده"', 'aria-label="Time remaining"'],
             'upload progress name' => ['<mds:file-upload><mds:file-upload.dropzone with-progress /></mds:file-upload>', 'aria-label="در حال بارگذاری"', 'aria-label="Uploading"'],
             'stepper step position' => ['<mds:stepper :steps="[\'a\', \'b\']" :current="1" />', 'مرحله ۱ از ۲', 'Step 1 of 2'],

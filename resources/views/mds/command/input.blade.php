@@ -23,6 +23,11 @@ $closeLabel ??= config('mds.persian_digits', true) ? 'بستن' : 'Close';
         x-on:keydown.down.prevent="move(1)"
         x-on:keydown.up.prevent="move(-1)"
         x-on:keydown.enter.prevent="select()"
+        role="combobox"
+        aria-expanded="true"
+        aria-autocomplete="list"
+        x-bind:aria-controls="$id('mds-command-listbox')"
+        x-bind:aria-activedescendant="activeId"
         {{ $attributes->class('w-full flex-1 bg-transparent py-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500') }}
     >
 

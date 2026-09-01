@@ -324,9 +324,17 @@
     >
                     <div
     class="flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-800"
+    x-id="['mds-command-listbox', 'mds-command-option']"
     x-data="{
         query: '',
         active: 0,
+        init() {
+            // Options need ids for aria-activedescendant, but they arrive as
+            // slot content and cannot know their own index in Blade.
+            this.$root.querySelectorAll('[data-mds-command-item]').forEach((el, i) => {
+                el.id ||= this.$id('mds-command-option', i)
+            })
+        },
         normalize(s) {
             return s
                 .toLowerCase()
@@ -357,6 +365,10 @@
         isActive(el) {
             return this.items()[this.active] === el
         },
+        // What the input points at, so arrowing the list is announced.
+        get activeId() {
+            return this.items()[this.active]?.id ?? ''
+        },
     }"
     x-effect="query; active = 0"
     data-mds-command
@@ -370,6 +382,11 @@
         x-on:keydown.down.prevent="move(1)"
         x-on:keydown.up.prevent="move(-1)"
         x-on:keydown.enter.prevent="select()"
+        role="combobox"
+        aria-expanded="true"
+        aria-autocomplete="list"
+        x-bind:aria-controls="$id('mds-command-listbox')"
+        x-bind:aria-activedescendant="activeId"
         class="w-full flex-1 bg-transparent py-3 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500" placeholder="Search everything..." autofocus="autofocus"
     >
 
@@ -384,10 +401,12 @@
         </button>
     </div>
 
-        <div class="max-h-72 overflow-y-auto p-1.5" role="listbox" data-mds-command-items>
-    <div
+        <div class="max-h-72 overflow-y-auto p-1.5" data-mds-command-items>
+    <div role="listbox" x-bind:id="$id('mds-command-listbox')">
+        <div
     class="px-2.5 pb-1 pt-2.5 text-xs font-medium text-zinc-400 dark:text-zinc-500"
     x-show="query === ''"
+    role="presentation"
     data-mds-command-heading
 >
     Account
@@ -422,8 +441,10 @@
 
             <kbd class="ms-auto shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-sans text-[11px] text-zinc-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500" dir="ltr">⌘W</kbd>
     </button>
+    </div>
 
-    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" x-show="empty" x-cloak data-mds-command-empty>
+    
+    <div class="px-2 py-6 text-center text-sm text-zinc-400 dark:text-zinc-500" role="status" x-show="empty" x-cloak data-mds-command-empty>
         No results found.
     </div>
 </div>

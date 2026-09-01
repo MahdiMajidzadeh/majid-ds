@@ -15,6 +15,9 @@
 ])
 
 @php
+// fa (via config) picks the built-in labels' language.
+$fa = config('mds.persian_digits', true);
+
 // Default palette (Tailwind 500s + neutrals), used when no :swatches given.
 // Pass :swatches="false" to hide the grid entirely...
 $defaultSwatches = [
@@ -43,6 +46,30 @@ $triggerSize = match ($size) {
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsColorPicker', (config) => ({
         open: false,
+
+        toggle(state = null) {
+            const next = state ?? ! this.open
+
+            if (next === this.open) return
+
+            this.open = next
+
+            this.$nextTick(() => {
+                const panel = this.$refs.panel
+
+                // Focus follows the panel, and comes back to whatever opened
+                // it — otherwise Escape drops the reader at the top of the page.
+                if (this.open) {
+                    this.trigger = document.activeElement
+                    panel?.querySelector('input, button')?.focus()
+                } else {
+                    this.trigger?.focus()
+                    this.trigger = null
+                }
+            })
+        },
+
+        trigger: null,
         h: 0, s: 100, v: 100, a: 1,
         empty: true,
         format: config.format ?? 'hex',
@@ -192,9 +219,11 @@ document.addEventListener('alpine:init', () => {
     @endif
 
     <div
-        {{ $attributes->whereDoesntStartWith('wire:model')->class(['relative', 'pointer-events-none opacity-50' => $disabled]) }}
+        {{ $attributes->whereDoesntStartWith('wire:model')->class(['relative', 'opacity-50' => $disabled]) }}
+        @if ($disabled) inert aria-disabled="true" @endif
+        x-id="['mds-color-picker-panel']"
         x-data="mdsColorPicker({ value: @js($value), format: @js($format) })"
-        x-on:keydown.escape.window="open = false"
+        x-on:keydown.escape.window="toggle(false)"
         data-mds-color-picker
     >
         <input
@@ -209,9 +238,11 @@ document.addEventListener('alpine:init', () => {
             <button
                 type="button"
                 class="mds-checker size-9 overflow-hidden rounded-lg border border-zinc-200 shadow-xs dark:border-white/10"
-                x-on:click="open = ! open"
+                x-on:click="toggle()"
                 x-bind:aria-expanded="open ? 'true' : 'false'"
-                aria-label="{{ $label ?? (config('mds.persian_digits', true) ? 'انتخاب رنگ' : 'Pick a color') }}"
+                aria-haspopup="dialog"
+                x-bind:aria-controls="$id('mds-color-picker-panel')"
+                aria-label="{{ $label ?? ($fa ? 'انتخاب رنگ' : 'Pick a color') }}"
                 data-mds-color-picker-trigger
             >
                 <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
@@ -225,9 +256,11 @@ document.addEventListener('alpine:init', () => {
                 <button
                     type="button"
                     class="mds-checker size-5 shrink-0 overflow-hidden rounded-md border border-black/10 dark:border-white/20"
-                    x-on:click="open = ! open"
+                    x-on:click="toggle()"
                     x-bind:aria-expanded="open ? 'true' : 'false'"
-                    aria-label="{{ $label ?? (config('mds.persian_digits', true) ? 'انتخاب رنگ' : 'Pick a color') }}"
+                    aria-haspopup="dialog"
+                    x-bind:aria-controls="$id('mds-color-picker-panel')"
+                    aria-label="{{ $label ?? ($fa ? 'انتخاب رنگ' : 'Pick a color') }}"
                 >
                     <span class="block size-full" x-bind:style="empty ? '' : 'background:' + previewCss"></span>
                 </button>
@@ -249,7 +282,7 @@ document.addEventListener('alpine:init', () => {
                         x-show="! empty"
                         x-cloak
                         x-on:click="clear()"
-                        aria-label="{{ config('mds.persian_digits', true) ? 'پاک کردن' : 'Clear' }}"
+                        aria-label="{{ $fa ? 'پاک کردن' : 'Clear' }}"
                     >
                         <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/></svg>
                     </button>
@@ -259,10 +292,14 @@ document.addEventListener('alpine:init', () => {
 
         <div
             class="absolute start-0 top-full z-50 mt-2 w-64 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-ref="panel"
+            x-bind:id="$id('mds-color-picker-panel')"
+            role="dialog"
+            aria-label="{{ $label ?? ($fa ? 'انتخاب رنگ' : 'Pick a color') }}"
             x-show="open"
             x-cloak
             x-transition.opacity.duration.100ms
-            x-on:click.outside="open = false"
+            x-on:click.outside="toggle(false)"
             data-mds-color-picker-panel
         >
             @if ($slot->isNotEmpty())
