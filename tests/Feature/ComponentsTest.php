@@ -118,7 +118,10 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('type="hidden"', $html);
         $this->assertStringContainsString('name="qty"', $html);
         $this->assertStringContainsString('افزایش تعداد', $html);
-        $this->assertStringContainsString('۲', $html);
+
+        // Anchored to the value element: a bare '۲' also matches the Persian
+        // digit map inlined in the Alpine block, so it can never fail.
+        $this->assertStringContainsString('x-text="display()">۲</span>', $html);
     }
 
     public function test_quantity_forwards_wire_model_to_hidden_input(): void
@@ -161,10 +164,19 @@ class ComponentsTest extends TestCase
 
     public function test_countdown_renders_initial_segments(): void
     {
+        // Frozen so the two now() calls — the deadline here and the remaining
+        // total in the view — cannot straddle a second boundary.
+        $this->travelTo('2026-08-24 10:00:00');
+
         $html = $this->render('<mds:countdown :until="now()->addHours(2)" :days="false" />');
 
         $this->assertStringContainsString('data-mds-countdown', $html);
-        $this->assertStringContainsString('۰۱', $html);
+
+        // Anchored to each segment: a bare '۰۱' also matches the Persian digit
+        // map inlined in the Alpine block, so it can never fail.
+        $this->assertStringContainsString('x-text="seg(h)">۰۲</span>', $html);
+        $this->assertStringContainsString('x-text="seg(m)">۰۰</span>', $html);
+        $this->assertStringContainsString('x-text="seg(s)">۰۰</span>', $html);
     }
 
     public function test_countdown_ticks_through_a_shared_alpine_component_that_clears_its_interval(): void
@@ -309,7 +321,7 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-mds-file-upload-dropzone', $html);
         $this->assertStringContainsString('type="file"', $html);
         $this->assertStringContainsString('name="photos[]"', $html);
-        $this->assertStringContainsString('multiple', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*type="file"[^>]*\smultiple[\s>]/', $html);
         $this->assertStringContainsString('accept="image/*"', $html);
         $this->assertStringContainsString('بارگذاری تصاویر', $html);
         $this->assertStringContainsString('حداکثر ۱۰ مگابایت', $html);
@@ -334,8 +346,15 @@ class ComponentsTest extends TestCase
     {
         $html = $this->render('<mds:file-upload disabled />');
 
-        $this->assertStringContainsString('disabled', $html);
+        // Anchored to the input: every render carries Tailwind's `disabled:`
+        // variant classes, so a bare 'disabled' matches with or without it.
+        $this->assertMatchesRegularExpression('/<input[^>]*type="file"[^>]*\sdisabled[\s>]/', $html);
         $this->assertStringContainsString('cursor-not-allowed', $html);
+
+        $plain = $this->render('<mds:file-upload />');
+
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*type="file"[^>]*\sdisabled[\s>]/', $plain);
+        $this->assertStringNotContainsString('cursor-not-allowed', $plain);
     }
 
     public function test_file_upload_renders_error_message(): void
