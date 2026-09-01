@@ -18,11 +18,7 @@ $fa ??= config('mds.persian_digits', true);
 
 // Numbers get thousands separators; strings ("84%", "$48,920") keep their
 // shape and only have their digits localized.
-$stat = match (true) {
-    $value === null => null,
-    is_int($value) || is_float($value) => $fa ? Persian::number($value) : number_format((float) $value),
-    default => $fa ? Persian::digits($value) : (string) $value,
-};
+$stat = $value === null ? null : Persian::auto($value, $fa);
 
 // The sign is the meaning: a leading minus reads as a drop and colors red.
 $deltaDown = $delta !== null && str_starts_with(ltrim((string) $delta), '-');

@@ -18,9 +18,7 @@ $currency ??= config('mds.currency', 'toman');
 
 $label = Persian::currencyLabel($currency, $fa);
 
-$fmt = fn ($n) => $fa
-    ? Persian::number($n, $decimals)
-    : number_format((float) $n, $decimals);
+$fmt = fn ($n) => Persian::format($n, $decimals, $fa);
 
 $percent = ($original !== null && $original > $amount)
     ? (int) round((1 - $amount / $original) * 100)

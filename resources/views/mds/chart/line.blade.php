@@ -37,9 +37,7 @@ $basePoints = Charts::points($second, $x0 + 6, $y0, $plotW - 12, $plotH, $top);
 
 $trace = fn ($pts) => $curve === 'straight' ? Charts::linePath($pts) : Charts::splinePath($pts);
 
-$tick = fn (float $t) => $fa
-    ? Persian::number($t, $t == floor($t) ? 0 : 1)
-    : number_format($t, $t == floor($t) ? 0 : 1);
+$tick = fn (float $t) => Persian::decimal($t, $fa);
 
 // Deterministic gradient id: unique per shape, stable across rebuilds, and a
 // same-data collision references an identical definition — harmless.

@@ -34,10 +34,7 @@ $shades = $count <= 4
     : array_map(fn ($i) => round(1 - 0.85 * $i / ($count - 1), 2), range(0, $count - 1));
 
 $centerValue = $value ?? array_sum($values);
-$centerText = match (true) {
-    is_int($centerValue) || is_float($centerValue) => $fa ? Persian::number($centerValue) : number_format((float) $centerValue),
-    default => $fa ? Persian::digits($centerValue) : (string) $centerValue,
-};
+$centerText = Persian::auto($centerValue, $fa);
 
 // role="img" makes the SVG's own <text> presentational, so the center
 // value has to travel in the accessible name.

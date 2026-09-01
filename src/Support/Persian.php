@@ -47,6 +47,46 @@ class Persian
      * Persian by definition (it backs @toman / @rial) — for output that follows
      * the config, use mds:price.
      */
+    /**
+     * A number in the caller's language: Persian digits and separators, or
+     * Latin ones. The shape every component wants when `fa` decides the
+     * language rather than the call site.
+     */
+    public static function format(mixed $value, int $decimals = 0, ?bool $persian = null): string
+    {
+        $persian ??= (bool) config('mds.persian_digits', true);
+
+        return $persian
+            ? static::number($value, $decimals)
+            : number_format((float) $value, $decimals);
+    }
+
+    /**
+     * A measurement: whole numbers stay whole, fractions keep one place.
+     * Chart axes and tallies read better without a trailing «٫۰».
+     */
+    public static function decimal(mixed $value, ?bool $persian = null): string
+    {
+        $number = (float) $value;
+
+        return static::format($number, $number == floor($number) ? 0 : 1, $persian);
+    }
+
+    /**
+     * A value that may already be a formatted string — «۱۰۰٪», "3.2k" — in
+     * which case only its digits are converted, never its shape.
+     */
+    public static function auto(mixed $value, ?bool $persian = null): string
+    {
+        $persian ??= (bool) config('mds.persian_digits', true);
+
+        if (is_int($value) || is_float($value)) {
+            return static::format($value, 0, $persian);
+        }
+
+        return $persian ? static::digits($value) : (string) $value;
+    }
+
     public static function money(mixed $amount, ?string $currency = null, int $decimals = 0): string
     {
         $currency ??= config('mds.currency', 'toman');

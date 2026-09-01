@@ -15,9 +15,7 @@ $fa ??= config('mds.persian_digits', true);
 
 $max = max((float) $max, 1e-9);
 
-$num = fn ($n) => ($fa
-    ? Persian::number($n, $n == floor($n) ? 0 : 1)
-    : number_format((float) $n, $n == floor($n) ? 0 : 1)).($fa ? Persian::digits($unit) : $unit);
+$num = fn ($n) => Persian::decimal($n, $fa).Persian::auto($unit, $fa);
 
 $percent = fn ($n) => Charts::n(min(100, max(0, (float) $n / $max * 100)));
 @endphp

@@ -101,4 +101,37 @@ class PersianTest extends TestCase
         $this->assertSame('2 days ago', Persian::ago(new \DateTimeImmutable('-2 days'), false));
         $this->assertSame('in 2 days', Persian::ago(new \DateTimeImmutable('+2 days +1 minute'), false));
     }
+
+    public function test_format_picks_the_language(): void
+    {
+        $this->assertSame('۱٬۲۳۴٫۵', Persian::format(1234.5, 1, true));
+        $this->assertSame('1,234.5', Persian::format(1234.5, 1, false));
+
+        // Omitted, it follows the config default.
+        $this->assertSame('۱٬۰۰۰', Persian::format(1000));
+    }
+
+    public function test_decimal_keeps_one_place_only_for_fractions(): void
+    {
+        $this->assertSame('۱۲', Persian::decimal(12, true));
+        $this->assertSame('۱۲٫۵', Persian::decimal(12.5, true));
+        $this->assertSame('12', Persian::decimal(12.0, false));
+        $this->assertSame('12.5', Persian::decimal(12.5, false));
+
+        // A chart axis of whole numbers should not grow a trailing «٫۰».
+        $this->assertSame('۰', Persian::decimal(0, true));
+        $this->assertSame('۱٬۰۰۰', Persian::decimal(1000, true));
+    }
+
+    public function test_auto_converts_numbers_but_only_the_digits_of_a_string(): void
+    {
+        $this->assertSame('۱٬۰۰۰', Persian::auto(1000, true));
+        $this->assertSame('1,000', Persian::auto(1000, false));
+
+        // An already-formatted value keeps its shape: only the digits change,
+        // so punctuation and units survive untouched.
+        $this->assertSame('۱۰۰%', Persian::auto('100%', true));
+        $this->assertSame('3.2k', Persian::auto('3.2k', false));
+        $this->assertSame('۳.۲k', Persian::auto('3.2k', true));
+    }
 }

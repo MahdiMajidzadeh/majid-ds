@@ -18,9 +18,7 @@ use MajidDs\Support\Persian;
 
 $fa ??= config('mds.persian_digits', true);
 
-$num = fn ($n) => $fa
-    ? Persian::number($n, $n == floor($n) ? 0 : 1)
-    : number_format((float) $n, $n == floor($n) ? 0 : 1);
+$num = fn ($n) => Persian::decimal($n, $fa);
 
 // Each item is a value — or an array of layer values, which stacks it.
 $series = array_values(array_map(
@@ -70,9 +68,7 @@ $shades = fn (int $layers) => match (true) {
     $barW = min($grouped ? 12 : 16, $slotW * ($grouped ? 0.3 : 0.4));
     $radius = min(8, $barW / 2);
 
-    $tick = fn (float $t) => $fa
-        ? Persian::number($t, $t == floor($t) ? 0 : 1)
-        : number_format($t, $t == floor($t) ? 0 : 1);
+    $tick = fn (float $t) => Persian::decimal($t, $fa);
     @endphp
 
     <div {{ $attributes }} data-mds-chart-stage data-mds-chart-bars>

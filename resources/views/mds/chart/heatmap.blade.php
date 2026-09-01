@@ -24,9 +24,7 @@ $peak = max([1e-9, ...$values]);
 // Five tones: silent, then four steps of intensity.
 $level = fn (float $v) => $v <= 0 ? 0 : min(4, (int) ceil($v / $peak * 4));
 
-$num = fn ($n) => $fa
-    ? Persian::number($n, $n == floor($n) ? 0 : 1)
-    : number_format((float) $n, $n == floor($n) ? 0 : 1);
+$num = fn ($n) => Persian::decimal($n, $fa);
 @endphp
 
 @once
