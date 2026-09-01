@@ -54,57 +54,57 @@ class Icons
      */
     public const ALIASES = [
         // Controls and navigation...
-        'magnifying-glass'               => 'search-01',
-        'x-mark'                         => 'cancel-01',
-        'x-circle'                       => 'cancel-circle',
-        'plus'                           => 'add-01',
-        'minus'                          => 'remove-01',
-        'arrow-path'                     => 'refresh',
-        'arrow-up-tray'                  => 'upload-01',
-        'arrow-down-tray'                => 'download-01',
-        'arrow-up-circle'                => 'circle-arrow-up-02',
+        'magnifying-glass' => 'search-01',
+        'x-mark' => 'cancel-01',
+        'x-circle' => 'cancel-circle',
+        'plus' => 'add-01',
+        'minus' => 'remove-01',
+        'arrow-path' => 'refresh',
+        'arrow-up-tray' => 'upload-01',
+        'arrow-down-tray' => 'download-01',
+        'arrow-up-circle' => 'circle-arrow-up-02',
         'arrow-right-start-on-rectangle' => 'logout-01',
-        'arrow-left-start-on-rectangle'  => 'login-01',
-        'bars-3'                         => 'menu-01',
-        'ellipsis-horizontal'            => 'more-horizontal',
-        'adjustments-horizontal'         => 'preference-horizontal',
-        'cog-6-tooth'                    => 'settings-02',
-        'squares-2x2'                    => 'dashboard-square-01',
-        'eye-dropper'                    => 'dropper',
-        'cursor-arrow-rays'              => 'cursor-01',
+        'arrow-left-start-on-rectangle' => 'login-01',
+        'bars-3' => 'menu-01',
+        'ellipsis-horizontal' => 'more-horizontal',
+        'adjustments-horizontal' => 'preference-horizontal',
+        'cog-6-tooth' => 'settings-02',
+        'squares-2x2' => 'dashboard-square-01',
+        'eye-dropper' => 'dropper',
+        'cursor-arrow-rays' => 'cursor-01',
         // Feedback...
         'exclamation-triangle' => 'alert-02',
-        'exclamation-circle'   => 'alert-circle',
+        'exclamation-circle' => 'alert-circle',
         'question-mark-circle' => 'help-circle',
         // Files and media...
-        'document'         => 'file-01',
-        'document-text'    => 'file-02',
-        'paper-clip'       => 'attachment-01',
-        'photo'            => 'image-01',
-        'cloud-arrow-up'   => 'cloud-upload',
+        'document' => 'file-01',
+        'document-text' => 'file-02',
+        'paper-clip' => 'attachment-01',
+        'photo' => 'image-01',
+        'cloud-arrow-up' => 'cloud-upload',
         'cloud-arrow-down' => 'cloud-download',
-        'trash'            => 'delete-02',
-        'pencil-square'    => 'pencil-edit-01',
-        'eye-slash'        => 'view-off',
-        'archive-box'      => 'archive-02',
-        'chart-bar'        => 'chart-01',
+        'trash' => 'delete-02',
+        'pencil-square' => 'pencil-edit-01',
+        'eye-slash' => 'view-off',
+        'archive-box' => 'archive-02',
+        'chart-bar' => 'chart-01',
         // People and messaging...
-        'users'                  => 'user-multiple',
+        'users' => 'user-multiple',
         'chat-bubble-left-right' => 'bubble-chat',
-        'chat-bubble-oval-left'  => 'message-01',
-        'paper-airplane'         => 'sent',
-        'microphone'             => 'mic-01',
-        'envelope'               => 'mail-01',
-        'phone'                  => 'call',
-        'device-phone-mobile'    => 'smart-phone-01',
-        'lock-closed'            => 'square-lock-01',
+        'chat-bubble-oval-left' => 'message-01',
+        'paper-airplane' => 'sent',
+        'microphone' => 'mic-01',
+        'envelope' => 'mail-01',
+        'phone' => 'call',
+        'device-phone-mobile' => 'smart-phone-01',
+        'lock-closed' => 'square-lock-01',
         // Commerce...
-        'banknotes'           => 'banknote',
-        'currency-dollar'     => 'dollar-circle',
-        'receipt-percent'     => 'discount-tag-01',
+        'banknotes' => 'banknote',
+        'currency-dollar' => 'dollar-circle',
+        'receipt-percent' => 'discount-tag-01',
         'building-storefront' => 'store-01',
-        'rocket-launch'       => 'rocket-01',
-        'percent-badge'       => 'percent-circle',
+        'rocket-launch' => 'rocket-01',
+        'percent-badge' => 'percent-circle',
         // Odds and ends...
         'language' => 'translate',
         // Everything else...
@@ -118,12 +118,12 @@ class Icons
      * are consulted BEFORE the literal lookup so the heroicon meaning wins.
      */
     public const OVERRIDES = [
-        'arrow-up'    => 'arrow-up-02',
-        'arrow-down'  => 'arrow-down-02',
-        'arrow-left'  => 'arrow-left-02',
+        'arrow-up' => 'arrow-up-02',
+        'arrow-down' => 'arrow-down-02',
+        'arrow-left' => 'arrow-left-02',
         'arrow-right' => 'arrow-right-02',
-        'map-pin'     => 'location-01',
-        'moon'        => 'moon-02',
+        'map-pin' => 'location-01',
+        'moon' => 'moon-02',
     ];
 
     /**
@@ -154,6 +154,8 @@ class Icons
     /**
      * The blade-icons prefixes to try for a style, most specific first. The
      * bundled free set only holds Stroke Rounded, so it is the last resort.
+     *
+     * @return list<string>
      */
     public static function prefixes(string $style): array
     {
@@ -172,6 +174,8 @@ class Icons
 
     /**
      * Resolve an icon to a renderable Svg, or null when no source has it.
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public static function svg(string $name, ?string $variant = null, array $attributes = []): ?Svg
     {

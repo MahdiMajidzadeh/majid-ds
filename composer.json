@@ -31,6 +31,8 @@
         "livewire/flux": "^2.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "phpunit/phpunit": "^11.0|^12.0"
     },
@@ -53,7 +55,15 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit",
+        "lint": "vendor/bin/pint --test",
+        "fix": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
+        "check": [
+            "@lint",
+            "@analyse",
+            "@test"
+        ]
     },
     "config": {
         "sort-packages": true,
@@ -62,5 +72,12 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts-descriptions": {
+        "test": "Run the PHPUnit suite.",
+        "lint": "Check formatting with Pint, changing nothing.",
+        "fix": "Apply Pint formatting.",
+        "analyse": "Run PHPStan/Larastan static analysis.",
+        "check": "Everything CI would run: lint, analyse, test."
+    }
 }

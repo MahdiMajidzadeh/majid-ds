@@ -2,8 +2,6 @@
 
 namespace MajidDs\Support;
 
-use DateTimeInterface;
-
 class Jalali
 {
     public const MONTHS = [
@@ -50,6 +48,8 @@ class Jalali
 
     /**
      * Convert a Gregorian date to Jalali. Returns [year, month, day].
+     *
+     * @return array{0: int, 1: int, 2: int}
      */
     public static function fromGregorian(int $gy, int $gm, int $gd): array
     {
@@ -87,6 +87,8 @@ class Jalali
 
     /**
      * Convert a Jalali date to Gregorian. Returns [year, month, day].
+     *
+     * @return array{0: int, 1: int, 2: int}
      */
     public static function toGregorian(int $jy, int $jm, int $jd): array
     {
@@ -158,7 +160,9 @@ class Jalali
         );
 
         $out = '';
-        $chars = preg_split('//u', $format, -1, PREG_SPLIT_NO_EMPTY);
+        // preg_split returns false on a malformed-UTF-8 format; degrade to
+        // an empty result rather than a TypeError out of count().
+        $chars = preg_split('//u', $format, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         for ($i = 0, $len = count($chars); $i < $len; $i++) {
             $char = $chars[$i];

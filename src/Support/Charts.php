@@ -26,6 +26,7 @@ class Charts
      * value up from the baseline ($y0+$height is the zero line, SVG y grows
      * downward). A single point lands mid-plot.
      *
+     * @param  array<array-key, float|int>  $values
      * @return array<int, array{0: float, 1: float}>
      */
     public static function points(array $values, float $x0, float $y0, float $width, float $height, float $max, float $min = 0): array
@@ -45,7 +46,7 @@ class Charts
     /**
      * A straight polyline through the points.
      *
-     * @param array<int, array{0: float, 1: float}> $points
+     * @param  array<int, array{0: float, 1: float}>  $points
      */
     public static function linePath(array $points): string
     {
@@ -63,7 +64,7 @@ class Charts
      * the curve d3 calls curveMonotoneX): smooth, but it never overshoots the
      * data's range — the signature rounded-but-honest chart line.
      *
-     * @param array<int, array{0: float, 1: float}> $points
+     * @param  array<int, array{0: float, 1: float}>  $points
      */
     public static function splinePath(array $points): string
     {
@@ -172,7 +173,7 @@ class Charts
      * bottom-start], each clamped to what the box can hold — the pill bars
      * and the stacked bars' outer-ends-only rounding.
      *
-     * @param array{0: float, 1: float, 2: float, 3: float} $radii
+     * @param  array{0: float, 1: float, 2: float, 3: float}  $radii
      */
     public static function barPath(float $x, float $y, float $w, float $h, array $radii): string
     {

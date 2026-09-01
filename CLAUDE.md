@@ -12,12 +12,22 @@ only covers what llms.txt doesn't: how to work on the package itself.
 ## Commands
 
 ```bash
-vendor/bin/phpunit                        # full suite (~2s, keep it green)
+composer check                            # lint + analyse + test, in that order
+composer test                             # full suite (~3s, keep it green)
+composer fix                              # apply Pint formatting (composer lint just checks)
+composer analyse                          # PHPStan/Larastan, level 7 over src/
 vendor/bin/phpunit --filter composer      # one component's tests
 npm run docs                              # regenerate the 60 reference pages + docs/assets/site.css
 npm run pages                             # regenerate the 18 static layout-gallery pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
+
+Pint runs the `laravel` preset and skips Blade views. `src/MdsTagCompiler.php`
+is excluded from it on purpose: the file is a deliberate verbatim fork of
+Flux's own compiler, and staying byte-comparable with upstream is what makes
+a re-sync diff readable. The same reasoning is why PHPStan sits at level 7 —
+level 8 only flags `preg_replace_callback`'s nullable return in that mirrored
+file, which upstream Flux has too.
 
 `docs/` is a **committed** static site (GitHub Pages serves it as-is, no CI build).
 Any change to a component's view, CSS, or docs content is not done until

@@ -177,6 +177,7 @@ while ($queue !== []) {
 
     if ($html === null) {
         info('  skipped '.$path.' (not 200)');
+
         continue;
     }
 
@@ -227,7 +228,6 @@ foreach ($pages as $html) {
 }
 
 // ----------------------------------------------------------------- 5. rewrite
-
 
 // Longest paths first, so '/layouts/aside' is never eaten by '/layouts'.
 $paths = array_keys($pages);

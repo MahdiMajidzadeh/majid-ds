@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use MajidDs\Support\Persian;
@@ -12,7 +13,7 @@ use function Orchestra\Testbench\workbench_path;
 | this, so the demo keeps a real clock there.
 */
 if (($testNow = env('MDS_TEST_NOW')) !== null) {
-    Illuminate\Support\Facades\Date::setTestNow($testNow);
+    Date::setTestNow($testNow);
 }
 
 /*
@@ -181,14 +182,14 @@ CODE,
 | real layout uses, so the preview can never drift from the markup.
 */
 $grids = [
-    'header'         => ['cols' => '1fr',         'areas' => ['header', 'main', 'footer'], 'inset' => true],
-    'sidebar'        => ['cols' => '22% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer']],
+    'header' => ['cols' => '1fr',         'areas' => ['header', 'main', 'footer'], 'inset' => true],
+    'sidebar' => ['cols' => '22% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer']],
     'sidebar-header' => ['cols' => '22% 1fr',     'areas' => ['header header', 'sidebar main', 'sidebar footer']],
-    'collapsible'    => ['cols' => '10% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer']],
-    'mobile'         => ['cols' => '22% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer'], 'dashed' => ['sidebar']],
-    'aside'          => ['cols' => '22% 1fr 22%', 'areas' => ['sidebar header header', 'sidebar main aside', 'sidebar footer aside']],
-    'sticky'         => ['cols' => '22% 1fr 22%', 'areas' => ['sidebar header header', 'sidebar main aside', 'sidebar footer aside'], 'pins' => ['header', 'sidebar', 'aside']],
-    'container'      => ['cols' => '1fr',         'areas' => ['header', 'main', 'footer'], 'inset' => true],
+    'collapsible' => ['cols' => '10% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer']],
+    'mobile' => ['cols' => '22% 1fr',     'areas' => ['sidebar header', 'sidebar main', 'sidebar footer'], 'dashed' => ['sidebar']],
+    'aside' => ['cols' => '22% 1fr 22%', 'areas' => ['sidebar header header', 'sidebar main aside', 'sidebar footer aside']],
+    'sticky' => ['cols' => '22% 1fr 22%', 'areas' => ['sidebar header header', 'sidebar main aside', 'sidebar footer aside'], 'pins' => ['header', 'sidebar', 'aside']],
+    'container' => ['cols' => '1fr',         'areas' => ['header', 'main', 'footer'], 'inset' => true],
 ];
 
 foreach ($layouts as $slug => $meta) {
@@ -249,7 +250,6 @@ View::composer(['demo', 'layouts.*'], function ($view) use ($locales) {
         'mdsNum' => fn (mixed $value, int $decimals = 0) => $locales[$locale]['digits']
             ? Persian::number($value, $decimals)
             : number_format((float) $value, $decimals),
-
 
         /*
         | Where the "docs" link points. The docs page is a static file with no

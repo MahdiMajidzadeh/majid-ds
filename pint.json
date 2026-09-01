@@ -1,0 +1,10 @@
+{
+    "preset": "laravel",
+    "exclude": [
+        "docs",
+        "workbench/public"
+    ],
+    "notPath": [
+        "src/MdsTagCompiler.php"
+    ]
+}

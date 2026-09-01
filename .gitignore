@@ -5,3 +5,4 @@ composer.lock
 workbench/public/demo.css
 .DS_Store
 .phpunit.result.cache
+/.phpstan.cache

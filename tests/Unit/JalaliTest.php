@@ -130,4 +130,11 @@ class JalaliTest extends TestCase
         $this->assertSame('پنجشنبه ۲۹ مرداد', Jalali::format('2026-08-20 14:30:00', 'l j F'));
         $this->assertSame('۱۴:۳۰', Jalali::format('2026-08-20 14:30:00', 'H:i'));
     }
+
+    public function test_format_degrades_on_a_malformed_utf8_format(): void
+    {
+        // preg_split('//u') returns false on invalid UTF-8; that used to reach
+        // count() as a TypeError instead of simply producing nothing.
+        $this->assertSame('', Jalali::format('2026-08-20', "\xFF"));
+    }
 }

@@ -26,7 +26,11 @@ chdir($root);
 
 require $root.'/vendor/autoload.php';
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ViewErrorBag;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use Orchestra\Testbench\Foundation\Config;
 
@@ -57,7 +61,7 @@ $app = Testbench::createFromConfig(
     options: ['enables_package_discoveries' => true, 'load_environment_variables' => false],
 );
 
-$app->make(Illuminate\Contracts\Http\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
 /*
 | Freeze the clock so rebuilds are byte-identical. Several previews call now()
@@ -65,13 +69,13 @@ $app->make(Illuminate\Contracts\Http\Kernel::class)->bootstrap();
 | dirties those committed pages even when nothing changed. The pinned instant
 | is arbitrary but fixed — change it only if a preview needs a different era.
 */
-Illuminate\Support\Facades\Date::setTestNow('2026-08-24 10:00:00');
+Date::setTestNow('2026-08-24 10:00:00');
 
 /*
 | A real request gets $errors from ShareErrorsFromSession. There is no request
 | here, so share an empty bag — flux:error reads it unconditionally.
 */
-Illuminate\Support\Facades\View::share('errors', new Illuminate\Support\ViewErrorBag);
+View::share('errors', new ViewErrorBag);
 
 /*
 | The Demo pages render the workbench's demo cards partial in place, so the
@@ -80,7 +84,7 @@ Illuminate\Support\Facades\View::share('errors', new Illuminate\Support\ViewErro
 | live demo. The en.json keys are Persian strings, so registering them can
 | never change what an English snippet on any other page renders.
 */
-Illuminate\Support\Facades\View::addLocation($root.'/workbench/resources/views');
+View::addLocation($root.'/workbench/resources/views');
 $app->make('translation.loader')->addJsonPath($root.'/workbench/lang');
 
 /** Render one Blade snippet to the markup a real page would contain. */

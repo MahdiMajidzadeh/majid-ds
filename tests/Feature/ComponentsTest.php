@@ -3,6 +3,10 @@
 namespace MajidDs\Tests\Feature;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
+use MajidDs\Mds;
 use MajidDs\Tests\TestCase;
 
 class ComponentsTest extends TestCase
@@ -302,11 +306,11 @@ class ComponentsTest extends TestCase
 
     public function test_file_upload_falls_back_to_the_validation_error_bag(): void
     {
-        $bag = new \Illuminate\Support\ViewErrorBag;
-        $bag->put('default', new \Illuminate\Support\MessageBag(['photos' => ['هر فایل باید کمتر از ۱۰ مگابایت باشد.']]));
+        $bag = new ViewErrorBag;
+        $bag->put('default', new MessageBag(['photos' => ['هر فایل باید کمتر از ۱۰ مگابایت باشد.']]));
 
         // ShareErrorsFromSession shares the bag view-wide; mirror that here...
-        \Illuminate\Support\Facades\View::share('errors', $bag);
+        View::share('errors', $bag);
 
         $html = $this->render('<mds:file-upload name="photos" multiple />');
 
@@ -485,10 +489,10 @@ class ComponentsTest extends TestCase
 
     public function test_composer_falls_back_to_the_validation_error_bag(): void
     {
-        $bag = new \Illuminate\Support\ViewErrorBag;
-        $bag->put('default', new \Illuminate\Support\MessageBag(['prompt' => ['پیام نمی‌تواند خالی باشد.']]));
+        $bag = new ViewErrorBag;
+        $bag->put('default', new MessageBag(['prompt' => ['پیام نمی‌تواند خالی باشد.']]));
 
-        \Illuminate\Support\Facades\View::share('errors', $bag);
+        View::share('errors', $bag);
 
         $html = $this->render('<mds:composer name="prompt" />');
 
@@ -792,8 +796,8 @@ class ComponentsTest extends TestCase
     {
         $date = new \DateTimeImmutable('-3 hours');
 
-        $this->assertSame('۳ ساعت پیش', \MajidDs\Mds::ago($date));
-        $this->assertSame('3 hours ago', \MajidDs\Mds::ago($date, false));
+        $this->assertSame('۳ ساعت پیش', Mds::ago($date));
+        $this->assertSame('3 hours ago', Mds::ago($date, false));
     }
 
     /*
@@ -846,7 +850,6 @@ class ComponentsTest extends TestCase
 
         $this->assertStringContainsString('159 KB', $html);
     }
-
 
     public function test_chart_card_renders_persian_stat_delta_and_footer(): void
     {

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string ago(mixed $date, ?bool $persian = null)
  * @method static string fileSize(mixed $bytes, ?bool $persianDigits = null)
  *
- * @see \MajidDs\MdsManager
+ * @see MdsManager
  */
 class Mds extends Facade
 {
