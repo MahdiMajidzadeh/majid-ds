@@ -59,7 +59,9 @@ Any change to a component's view, CSS, or docs content is not done until
   everything else lands on the wrapper: `$attributes->whereDoesntStartWith('wire:model')`.
 - `$fa ??= config('mds.persian_digits', true)` — every numeric output respects it,
   and so does every built-in string (labels, empty states, aria-labels): Persian
-  when on, English when off. A new hardcoded string must ship both languages.
+  when on, English when off. A new hardcoded string must ship both languages,
+  and both belong in the `microcopy()` table in `ComponentsTest` — one row feeds
+  the Persian and the English sweep, so neither language can fall behind.
 - Validation: explicit `error` prop wins, else fall back to `$errors->first($name)`.
   Don't use `flux:error` (it needs the session bag); copy its markup instead.
 - RTL-first via logical properties (`ms-`, `end-`, `border-inline-start`) — never

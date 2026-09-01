@@ -8,6 +8,7 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use MajidDs\Mds;
 use MajidDs\Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ComponentsTest extends TestCase
 {
@@ -1127,40 +1128,71 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('۸۴', $html);
     }
 
-    public function test_microcopy_follows_the_persian_digits_config(): void
+    /**
+     * Every built-in string ships in both languages, and `fa` — or the
+     * `mds.persian_digits` default behind it — picks which. One table feeds
+     * both directions, so the languages cannot drift apart the way they did
+     * while each was a hand-kept list: Persian is the kit's default and was
+     * the less covered of the two.
+     *
+     * Needles are anchored where a bare word would lie. `items` is inside
+     * `items-center`, `min` inside `min-w-8`, and `رنگ` (Hue) inside
+     * `انتخاب رنگ` (Pick a color).
+     *
+     * @return array<string, array{0: string, 1: string, 2: string}>
+     */
+    public static function microcopy(): array
+    {
+        return [
+            'command empty state' => ['<mds:command><mds:command.items>x</mds:command.items></mds:command>', 'نتیجه‌ای یافت نشد.', 'No results found.'],
+            'command clear' => ['<mds:command.input clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'command close' => ['<mds:command.input closable />', 'aria-label="بستن"', 'aria-label="Close"'],
+            'file upload dropzone' => ['<mds:file-upload><mds:file-upload.dropzone /></mds:file-upload>', 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید', 'Drop a file here or click to browse'],
+            'file item remove' => ['<mds:file-item.remove />', 'aria-label="حذف فایل"', 'aria-label="Remove file"'],
+            'quantity increase' => ['<mds:quantity :value="1" />', 'aria-label="افزایش تعداد"', 'aria-label="Increase quantity"'],
+            'quantity decrease' => ['<mds:quantity :value="1" />', 'aria-label="کاهش تعداد"', 'aria-label="Decrease quantity"'],
+            'rating input' => ['<mds:rating.input name="score" />', 'aria-label="امتیاز"', 'aria-label="Rating"'],
+            'rating star digit' => ['<mds:rating.input name="score" :value="3" />', 'aria-label="۳"', 'aria-label="3"'],
+            'stepper' => ['<mds:stepper :steps="[\'a\', \'b\']" :current="1" />', 'aria-label="مراحل"', 'aria-label="Steps"'],
+            'color picker trigger' => ['<mds:color-picker type="button" />', 'aria-label="انتخاب رنگ"', 'aria-label="Pick a color"'],
+            'color picker clear' => ['<mds:color-picker clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'color picker area' => ['<mds:color-picker type="button" />', 'aria-label="اشباع و روشنایی"', 'aria-label="Saturation and brightness"'],
+            'color picker hue' => ['<mds:color-picker type="button" />', 'aria-label="رنگ"', 'aria-label="Hue"'],
+            'color picker opacity' => ['<mds:color-picker type="button" alpha />', 'aria-label="شفافیت"', 'aria-label="Opacity"'],
+            'color picker dropper' => ['<mds:color-picker type="button" dropper />', 'aria-label="قطره‌چکان"', 'aria-label="Eyedropper"'],
+            'price original' => ['<mds:price :amount="800" :original="1000" currency="none" />', 'aria-label="قیمت قبلی"', 'aria-label="Original price"'],
+            'price currency' => ['<mds:price :amount="800" currency="toman" />', 'تومان', 'Toman'],
+            'product card unavailable' => ['<mds:product-card title="x" unavailable />', 'ناموجود', 'Out of stock'],
+            'discount badge' => ['<mds:discount-badge :percent="25" />', 'درصد تخفیف', '% off'],
+            'countdown expired' => ['<mds:countdown :until="now()->subMinute()" />', 'به پایان رسید', 'Expired'],
+            'countdown unit label' => ['<mds:countdown :until="now()->addDays(2)" labels />', '>دقیقه</span>', '>min</span>'],
+            'chart bars' => ['<mds:chart.bars :data="[1, 2]" />', 'aria-label="نمودار ستونی"', 'aria-label="Bar chart"'],
+            'chart line' => ['<mds:chart.line :data="[1, 2]" />', 'aria-label="نمودار خطی"', 'aria-label="Line chart"'],
+            'chart radar' => ['<mds:chart.radar :data="[\'a\' => 1, \'b\' => 2, \'c\' => 3]" />', 'aria-label="نمودار راداری"', 'aria-label="Radar chart"'],
+            'chart heatmap idle' => ['<mds:chart.heatmap :data="[1, 2, 3]" />', 'برای جزئیات روی خانه‌ها بروید', 'Hover tiles for details'],
+            'chart heatmap unit' => ['<mds:chart.heatmap :data="[1, 2, 3]" />', 'مورد"', 'items"'],
+        ];
+    }
+
+    #[DataProvider('microcopy')]
+    public function test_microcopy_is_persian_by_default(string $template, string $persian, string $english): void
+    {
+        $html = $this->render($template);
+
+        $this->assertStringContainsString($persian, $html);
+        $this->assertStringNotContainsString($english, $html);
+    }
+
+    #[DataProvider('microcopy')]
+    public function test_microcopy_switches_to_english(string $template, string $persian, string $english): void
     {
         config(['mds.persian_digits' => false]);
 
         try {
-            $this->assertStringContainsString('No results found.',
-                $this->render('<mds:command><mds:command.items>x</mds:command.items></mds:command>'));
+            $html = $this->render($template);
 
-            $this->assertStringContainsString('Drop a file here or click to browse',
-                $this->render('<mds:file-upload><mds:file-upload.dropzone /></mds:file-upload>'));
-
-            $this->assertStringContainsString('aria-label="Increase quantity"',
-                $this->render('<mds:quantity :value="1" />'));
-
-            $this->assertStringContainsString('aria-label="Rating"',
-                $this->render('<mds:rating.input name="score" />'));
-
-            $this->assertStringContainsString('aria-label="Steps"',
-                $this->render('<mds:stepper :steps="[\'Cart\', \'Payment\']" :current="1" />'));
-
-            $this->assertStringContainsString('aria-label="Remove file"',
-                $this->render('<mds:file-item.remove />'));
-
-            $this->assertStringContainsString('aria-label="Pick a color"',
-                $this->render('<mds:color-picker type="button" />'));
-
-            $this->assertStringContainsString('aria-label="Original price"',
-                $this->render('<mds:price :amount="800" :original="1000" currency="none" />'));
-
-            $this->assertStringContainsString('Toman',
-                $this->render('<mds:price :amount="800" currency="toman" />'));
-
-            $this->assertStringContainsString('aria-label="3"',
-                $this->render('<mds:rating.input name="score" :value="3" />'));
+            $this->assertStringContainsString($english, $html);
+            $this->assertStringNotContainsString($persian, $html);
         } finally {
             config(['mds.persian_digits' => true]);
         }
