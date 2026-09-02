@@ -135,6 +135,7 @@ paint and a no-JS post never sit outside the bounds. The displayed value is `ari
 ### <mds:product-card>
 Props: `title` string='' · `image` string|null · `href` string|null · `amount`/`original` number|null · `currency` · `rating` float|null · `reviews` int|null · `badge` string|null (corner flux:badge text) · `badge-color` string='lime' (any Flux badge color) · `unavailable` bool=false (grayscale + «ناموجود», or "Out of stock" when fa is off) · `fa`.
 Slot = actions area (e.g. add-to-cart flux:button). Composes flux:card + mds:rating + mds:price + mds:discount-badge.
+With no `amount` and not `unavailable`, the price row is omitted entirely — a card is never shown at «۰ تومان» by accident.
 
 ### <mds:stepper> — checkout steps
 Props: `steps` array=[] (labels in order) · `current` int=1 (1-based active index) · `fa`.

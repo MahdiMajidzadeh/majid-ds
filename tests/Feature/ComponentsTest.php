@@ -1147,6 +1147,18 @@ class ComponentsTest extends TestCase
         $card = $this->render('<mds:product-card title="x" :amount="-10" :original="0" />');
         $this->assertStringNotContainsString('data-mds-discount-badge', $card);
 
+        // A card with no amount used to pass null through to mds:price, which
+        // defeated its default and advertised the product at «۰ تومان».
+        $unpriced = $this->render('<mds:product-card title="x" />');
+        $this->assertStringNotContainsString('data-mds-price', $unpriced);
+        $this->assertStringNotContainsString('تومان', $unpriced);
+
+        // Out of stock still says so without an amount…
+        $this->assertStringContainsString('ناموجود', $this->render('<mds:product-card title="x" unavailable />'));
+
+        // …and a priced card still prices.
+        $this->assertStringContainsString('data-mds-price', $this->render('<mds:product-card title="x" :amount="1000" />'));
+
         // A badge with nothing to say used to render «۰٪».
         $this->assertSame('', trim($this->render('<mds:discount-badge />')));
         $this->assertStringContainsString('۲۰٪', $this->render('<mds:discount-badge :percent="20" />'));

@@ -56,19 +56,24 @@ $percent = (! $unavailable && $original !== null && $amount !== null && $origina
         <mds:rating :value="$rating" :count="$reviews" size="sm" :fa="$fa" />
     @endif
 
-    <div class="mt-auto flex items-center justify-between gap-2">
-        @if ($unavailable)
-            <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $fa ? 'ناموجود' : 'Out of stock' }}</span>
-        @else
-            @if ($percent !== null)
-                <mds:discount-badge :percent="$percent" :fa="$fa" />
+    {{-- No price and not out of stock: nothing to say, so no footer row. Passing
+         a null amount through to mds:price used to defeat its default and
+         advertise the product at «۰ تومان». --}}
+    @if ($unavailable || $amount !== null)
+        <div class="mt-auto flex items-center justify-between gap-2">
+            @if ($unavailable)
+                <span class="text-sm font-medium text-zinc-400 dark:text-zinc-500">{{ $fa ? 'ناموجود' : 'Out of stock' }}</span>
             @else
-                <span></span>
-            @endif
+                @if ($percent !== null)
+                    <mds:discount-badge :percent="$percent" :fa="$fa" />
+                @else
+                    <span></span>
+                @endif
 
-            <mds:price :amount="$amount" :original="$original" :currency="$currency" :fa="$fa" :badge="false" />
-        @endif
-    </div>
+                <mds:price :amount="$amount" :original="$original" :currency="$currency" :fa="$fa" :badge="false" />
+            @endif
+        </div>
+    @endif
 
     @if ($slot->isNotEmpty())
         <div data-mds-product-card-actions>
