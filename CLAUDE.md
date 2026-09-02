@@ -35,7 +35,12 @@ upstream Flux has too.
 
 `docs/` is a **committed** static site (GitHub Pages serves it as-is, no CI build).
 Any change to a component's view, CSS, or docs content is not done until
-`npm run docs` and (if the demo shows it) `npm run pages` have been re-run.
+`npm run docs` and (if the demo shows it) `npm run pages` have been re-run —
+and until `llms.txt` describes it. That file is the API contract agents
+generate code against, and `LlmsTxtTest` fails the build when a prop, helper,
+config key or directive exists in code but not there (see step 5 below). It
+checks names, not prose: when behaviour changes — keyboard handling, what an
+`error` renders, an ARIA role — update the sentence too.
 
 ## Map
 
@@ -112,7 +117,12 @@ Any change to a component's view, CSS, or docs content is not done until
    includes it, and the docs' Demo / RTL demo pages embed it at build time).
 5. `llms.txt` section (props · slots · behavior · Livewire contract) and a
    README section; bump the page/component counts in README and
-   `bin/docs/guides.php` if it's a Pro alternative.
+   `bin/docs/guides.php` if it's a Pro alternative. `LlmsTxtTest` enforces the
+   llms.txt half: every `@props` key of every view must appear in that
+   component's section, every `### <mds:*>` heading must have a view, every
+   public static method on the Support classes and every config key and
+   directive must be named — so a new prop, helper or key fails
+   `composer check` until llms.txt says so.
 6. `npm run docs && npm run pages && vendor/bin/phpunit`.
 
 ## Verifying visually
