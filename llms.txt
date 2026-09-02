@@ -109,11 +109,13 @@ Renders role="img" with `aria-label="{value} / {max}"` (digits follow `fa`). RTL
 
 ### <mds:rating.input> — interactive stars
 Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string|null='امتیاز' / 'Rating' by fa ·
-`error` / `invalid` (see Validation contract — state only, no message) · `fa` bool|null=config.
+`reverse` bool=false (flips Arrow Left/Right) · `error` / `invalid` (see Validation contract — state only, no message) · `fa` bool|null=config.
 role="radiogroup" (aria-label = `label`, `aria-invalid` when invalid); each star is `role="radio"` + `aria-checked` + a digit aria-label.
-Keyboard: ONE tab stop (the checked star, or the first when unset — roving tabindex); Arrow Left/Right step through stars and mirror in
-RTL (direction read off the component, so an RTL island inside an LTR page mirrors too); Arrow Up/Down also step; Home/End jump to 1/max.
-Arrows both move focus and commit the value. Hover preview; integer values; wire:model forwarded to the hidden input.
+Keyboard: ONE tab stop (the checked star, or the first when unset — roving tabindex). Arrow Right / Arrow Down = next star,
+Arrow Left / Arrow Up = previous, Home/End = 1/max — the ARIA radio-group pattern, and the SAME mapping in RTL and LTR: nothing is
+inferred from the page direction. In an RTL page the stars are laid out right-to-left, so Right moves the highlight visually leftward;
+set `reverse` when you want Right to follow the visual row instead. Arrows both move focus and commit the value.
+Hover preview; integer values; wire:model forwarded to the hidden input.
 
 ### <mds:price>
 Props: `amount` number=0 · `original` number|null=null (compare-at; when > amount renders strikethrough + auto badge) · `currency` toman|rial|none|literal|null=config · `decimals` int=0 · `size` sm|lg|default · `fa` bool|null=config · `badge` bool=true (auto discount badge on/off).

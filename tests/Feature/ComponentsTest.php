@@ -1307,12 +1307,20 @@ class ComponentsTest extends TestCase
         // A radiogroup is a single tab stop: the checked star holds it and the
         // rest are skipped, rather than five stops in a row.
         $this->assertStringContainsString('x-bind:tabindex="tabindex(1)"', $html);
-        $this->assertStringContainsString('x-on:keydown.right.prevent="step(1)"', $html);
-        $this->assertStringContainsString('x-on:keydown.left.prevent="step(-1)"', $html);
         $this->assertStringContainsString('x-on:keydown.home.prevent="focus(1)"', $html);
 
-        // Arrow direction is read off the root so an RTL island still mirrors.
-        $this->assertStringContainsString("getComputedStyle(this.\$root).direction === 'rtl'", $html);
+        // Down/Right = next, Up/Left = previous — the ARIA radio-group pattern.
+        // Up/Down were once wired the other way round.
+        $this->assertStringContainsString('x-on:keydown.down.prevent="step(1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.up.prevent="step(-1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.right.prevent="horizontal(1)"', $html);
+        $this->assertStringContainsString('x-on:keydown.left.prevent="horizontal(-1)"', $html);
+
+        // Arrows map the same way in RTL and LTR: nothing is read off the page
+        // direction. Callers opt into a flipped horizontal pair explicitly.
+        $this->assertStringNotContainsString('getComputedStyle', $html);
+        $this->assertStringContainsString('reverse: false', $html);
+        $this->assertStringContainsString('reverse: true', $this->render('<mds:rating.input name="score" reverse />'));
     }
 
     public function test_heatmap_cells_are_reachable_and_announce(): void

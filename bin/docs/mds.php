@@ -378,6 +378,7 @@ $pages['rating'] = [
             ['name', 'Field name for a plain form.'],
             ['size', 'Options: <code>sm</code>, <code>lg</code>.'],
             ['label', 'Accessible group label. Default: "Rating", or امتیاز in Persian (follows the config).'],
+            ['reverse', 'Flips Arrow Left/Right. By default Right is always <em>next</em>, in RTL and LTR alike; set this when Right should follow the visual order of an RTL star row.'],
             ['wire:model', 'Binds to a Livewire property.'],
         ]],
     ],

@@ -304,6 +304,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('mdsRatingInput', (config = {}) => ({
         value: config.value ?? 0,
         max: config.max ?? 5,
+        reverse: config.reverse ?? false,
         hover: 0,
 
         commit(n) {
@@ -318,13 +319,16 @@ document.addEventListener('alpine:init', () => {
             return n === (this.value || 1) ? 0 : -1
         },
 
-        // Arrow keys follow reading order, so left and right swap in RTL.
-        // Read off the root, not the document, so an RTL island inside an
-        // LTR page still mirrors.
+        // Arrow keys map the same way in RTL and LTR: Right/Down = next,
+        // Left/Up = previous. Nothing is inferred from the page direction —
+        // `reverse` flips the horizontal pair for callers who want Right to
+        // follow the visual order of an RTL star row instead.
         step(delta) {
-            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            this.focus((this.value || 1) + delta)
+        },
 
-            this.focus((this.value || 1) + (rtl ? -delta : delta))
+        horizontal(delta) {
+            this.step(this.reverse ? -delta : delta)
         },
 
         focus(n) {
@@ -337,11 +341,11 @@ document.addEventListener('alpine:init', () => {
 
 <div
     class="inline-flex items-center"
-    x-data="mdsRatingInput({ value: 3, max: 5 })"
-    x-on:keydown.right.prevent="step(1)"
-    x-on:keydown.left.prevent="step(-1)"
-    x-on:keydown.up.prevent="focus((value || 1) + 1)"
-    x-on:keydown.down.prevent="focus((value || 1) - 1)"
+    x-data="mdsRatingInput({ value: 3, max: 5, reverse: false })"
+    x-on:keydown.right.prevent="horizontal(1)"
+    x-on:keydown.left.prevent="horizontal(-1)"
+    x-on:keydown.down.prevent="step(1)"
+    x-on:keydown.up.prevent="step(-1)"
     x-on:keydown.home.prevent="focus(1)"
     x-on:keydown.end.prevent="focus(max)"
     role="radiogroup"
@@ -535,7 +539,7 @@ document.addEventListener('alpine:init', () => {
     <tbody><tr><td><span class="docs-prop">value</span></td><td>The rating. Default: <code>0</code>.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">count</span></td><td>Review count shown after the stars.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">show-value</span></td><td>Shows the numeric value. Default: <code>true</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits. Default: <code>config('mds.persian_digits')</code>.</td></tr></tbody>
 </table></div><div id="mds-rating-input" class="docs-ref-block"><h3>mds:rating.input</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
-    <tbody><tr><td><span class="docs-prop">value</span></td><td>Pre-selected rating.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Accessible group label. Default: "Rating", or امتیاز in Persian (follows the config).</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
+    <tbody><tr><td><span class="docs-prop">value</span></td><td>Pre-selected rating.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Number of stars. Default: <code>5</code>.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form.</td></tr><tr><td><span class="docs-prop">size</span></td><td>Options: <code>sm</code>, <code>lg</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Accessible group label. Default: "Rating", or امتیاز in Persian (follows the config).</td></tr><tr><td><span class="docs-prop">reverse</span></td><td>Flips Arrow Left/Right. By default Right is always <em>next</em>, in RTL and LTR alike; set this when Right should follow the visual order of an RTL star row.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds to a Livewire property.</td></tr></tbody>
 </table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/product-card.html"><span class="docs-related-name">mds:product-card</span><span class="docs-related-lede">A whole product tile: image, title, price, rating and a badge.</span></a><a class="docs-related-card" href="../mds/price.html"><span class="docs-related-name">mds:price</span><span class="docs-related-lede">Money in Toman or Rial — separators, currency label and discount badge from one amount.</span></a></div></section>
     </main>
 
