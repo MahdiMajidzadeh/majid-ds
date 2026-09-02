@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+| The committed config. Drop a local phpunit.xml beside it to override
+| (gitignored). Strict on purpose: a skipped test used to be the only signal
+| that ext-intl was missing, and it was a silent one — the Jalali suite's
+| cross-check against PHP's own Persian calendar just disappeared with a
+| green result. The fail-on-* rules are scoped by <source> to src/, so a
+| deprecation or notice from vendor code on any Laravel in the matrix cannot
+| fail the build; only ours can.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnSkipped="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+         failOnPhpunitDeprecation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         displayDetailsOnSkippedTests="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+
+    <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+
+    <php>
+        <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
+        <env name="APP_ENV" value="testing"/>
+        <!-- Persian::toDateTime() and Jalali::format() read the clock; pin it so a
+             contributor's date.timezone cannot make a test machine-dependent. -->
+        <ini name="date.timezone" value="UTC"/>
+        <ini name="error_reporting" value="-1"/>
+        <!-- Off on purpose. PHPUnit reports errors through its own events, and
+             its error handler returns false — with display_errors on, PHP would
+             also print every deprecation into the test's output, tripping
+             beStrictAboutOutputDuringTests and polluting rendered strings. -->
+        <ini name="display_errors" value="0"/>
+    </php>
+</phpunit>

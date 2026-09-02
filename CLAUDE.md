@@ -33,6 +33,12 @@ reasoning is why PHPStan sits at level 7 — level 8 only flags
 `preg_replace_callback`'s nullable return in that mirrored file, which
 upstream Flux has too.
 
+`phpunit.xml.dist` is the committed test config and is strict on purpose —
+skipped, risky, output, and any deprecation/notice/warning raised from `src/`
+all fail the run (vendor noise is scoped out by `<source>`). A `markTestSkipped`
+is therefore never a quiet fallback: fix the environment or fix the test. Drop
+a local `phpunit.xml` beside it to override; it is gitignored.
+
 `docs/` is a **committed** static site (GitHub Pages serves it as-is, no CI build).
 Any change to a component's view, CSS, or docs content is not done until
 `npm run docs` and (if the demo shows it) `npm run pages` have been re-run —

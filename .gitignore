@@ -1,6 +1,7 @@
 /vendor
 /node_modules
 /.phpunit.cache
+/phpunit.xml
 composer.lock
 workbench/public/demo.css
 .DS_Store
