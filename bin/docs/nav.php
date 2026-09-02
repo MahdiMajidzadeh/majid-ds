@@ -12,7 +12,7 @@
 |
 | The Components group lists only the Flux components whose views actually ship
 | in the free tier. Flux's Pro-only components are absent on purpose; the
-| overview page says so, and names the five that have mds replacements.
+| overview page says so, and names the six that have mds replacements.
 */
 
 return [

@@ -386,7 +386,7 @@ The free **Stroke Rounded** set (6,200 icons) ships with the `afatmustafa/blade-
 
 If you only ever use `<mds:icon>` and want a hard guarantee that heroicons never render — for example to keep the heroicons set out of the page entirely — set `'strict' => true` under `icons` in `config/mds.php`. An unmapped name then renders nothing instead of falling back.
 
-`:stroke` is opt-in on purpose: 453 of the free icons vary their stroke weight deliberately, and forcing one width would flatten them.
+`:stroke` is opt-in on purpose: 478 of the free icons vary their stroke weight deliberately, and forcing one width would flatten them.
 
 **Pro styles.** Only Stroke Rounded is free. The other eight styles are never bundled — register your own licensed export and they resolve by name:
 

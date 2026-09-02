@@ -43,7 +43,7 @@ Any change to a component's view, CSS, or docs content is not done until
 |---|---|
 | `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`, `@mdsFonts`), component path, publishing |
 | `src/MdsTagCompiler.php` | compiles `<mds:x>` → Blade components, mirrors Flux's own compiler — rarely touched |
-| `src/Support/{Persian,Jalali,Icons}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons |
+| `src/Support/{Persian,Jalali,Icons,Charts}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons; `Charts` is the SVG geometry behind `mds:chart.*` |
 | `resources/views/mds/` | the components — anonymous Blade views, subcomponents in subdirs (`command/item.blade.php` = `<mds:command.item>`) |
 | `resources/css/mds.css` | the kit's CSS layer; component rules MUST stay in `@layer components` (unlayered rules beat Tailwind utilities) |
 | `bin/docs/` | docs content as PHP arrays, one file per group (`mds.php`, `flux.php`, `nav.php`…); `bin/build-docs.php` renders each snippet through real Blade |

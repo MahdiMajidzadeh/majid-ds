@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap's hover callout).
+4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -59,7 +59,7 @@ Facade `MajidDs\Mds`:
 - `Mds::ago($date, ?bool $persian = null): string` — «۳ ساعت پیش» / «۲ روز دیگر»; `false` -> "3 hours ago" / "in 2 days"
 - `Mds::fileSize($bytes, ?bool $persianDigits = null): string` — «۱۵۹ کیلوبایت» / «۱٫۵ مگابایت»; `false` -> "159 KB" / "1.5 MB"
 
-`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `money` (always Persian), `currencyLabel($currency, ?bool $persian = null)` (تومان/ریال or Toman/Rial), `ago($date, ?bool $persian = null)`, `fileSize($bytes, ?bool $persianDigits = null)` (1024-based, 1 decimal below 100 and none for whole numbers; Persian units بایت/کیلوبایت/… or English B/KB/MB/GB/TB), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
+`MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `format($value, int $decimals = 0, ?bool $persian = null)` (a number in the caller's language — Persian digits+separators or Latin), `decimal($value, ?bool $persian = null)` (whole numbers stay whole, fractions keep one place — chart axes and tallies), `auto($value, ?bool $persian = null)` (int|float -> `format()`; a string keeps its shape and only its digits convert: '100%' -> '۱۰۰%'), `money` (always Persian), `currencyLabel($currency, ?bool $persian = null)` (تومان/ریال or Toman/Rial), `ago($date, ?bool $persian = null)`, `fileSize($bytes, ?bool $persianDigits = null)` (1024-based, 1 decimal below 100 and none for whole numbers; Persian units بایت/کیلوبایت/… or English B/KB/MB/GB/TB), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
 
 `MajidDs\Support\Jalali` (static, dependency-free, intl-verified):
 - `fromGregorian(int $gy, int $gm, int $gd): array{0:int,1:int,2:int}` — e.g. (2026,8,20) -> [1405,5,29]
@@ -69,33 +69,66 @@ Facade `MajidDs\Mds`:
 - Format tokens: Y y n m j d F(month name) l/D(weekday name) + time passthroughs H G h g i s v, A/a (قبل‌ازظهر/بعدازظهر or AM/PM). Backslash escapes a token.
 - Constants: `Jalali::MONTHS` (1-indexed Persian month names), `Jalali::WEEKDAYS` (keyed by PHP `w`, 0=Sunday).
 
+`MajidDs\Support\Charts` (static, dependency-free SVG geometry behind the `mds:chart.*` stages; public because published views call it):
+- `n(float $value): string` — coordinate rounded to 4 places (keeps rebuilds byte-identical)
+- `points(array $values, float $x0, float $y0, float $width, float $height, float $max, float $min = 0): array` — series -> [[x, y], …] on a plot box
+- `linePath(array $points): string` / `splinePath(array $points): string` — polyline, or a monotone cubic spline that never overshoots
+- `closePath(string $path, float $left, float $right, float $baseline): string` — closes a trace down to the baseline for an area fill
+- `polarPoint(float $cx, float $cy, float $r, float $bearing): array` · `arcPath(float $cx, float $cy, float $r, float $from, float $to): string` (bearings in degrees, 0 = 12 o'clock)
+- `capDegrees(float $strokeWidth, float $r): float` — how far a round stroke cap overhangs an arc end, in degrees
+- `barPath(float $x, float $y, float $w, float $h, array $radii): string` — rect with per-corner radii, clamped to the box
+- `niceMax(float $max): float` · `ticks(float $max): array` — a "nice" axis ceiling and five ticks 0..ceiling
+
 ## Livewire/form binding contract
 
 Components with values render a hidden `<input>`; `wire:model` attributes are forwarded to it and it dispatches
 bubbling `input` events on every change. Hidden values are ALWAYS Latin digits / machine formats regardless of
 Persian display. Applies to: quantity, rating.input, color-picker. `name="..."` enables plain form posts.
 
+## Validation contract
+
+Five controls take `error` string|null and `invalid` bool=false. An explicit `error` wins; when omitted and `name` is set, it
+falls back to `$errors->first($name)` (file-upload also tries `$errors->first("$name.*")`, the shape `photos.*` rules produce).
+Any error makes the control `invalid`. What that renders differs by design:
+- **composer, color-picker, file-upload** sit in their own `flux:field`, so they render the message (flux:error markup, `role="alert"`).
+- **quantity, rating.input** are primitives placed inside the app's own field, which already renders `flux:error` — so `error` only
+  drives their state (`aria-invalid="true"`, red border on the stepper) and NO message block. Render the message in the surrounding field.
+
+## `fa` inheritance
+
+`fa` on a wrapper reaches the mds subcomponents it renders or wraps (via `@aware`), so `<mds:file-upload :fa="false">` renders an English
+dropzone and `<mds:product-card :fa="false">` an English price/rating/badge. Carriers: chart -> every `chart.*` stage; color-picker ->
+area/slider/dropper; command -> input/items; file-upload -> dropzone; file-item -> remove; product-card -> price/rating/discount-badge;
+price -> discount-badge. An explicit `:fa` on the child still wins. Subcomponents therefore all accept `fa` themselves.
+
 ## Components
 
 ### <mds:rating> — star display
 Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5 · `count` int|null=null (review count) · `size` sm|lg|default · `show-value` bool=true · `fa` bool|null=config.
-Renders role="img" with aria-label. RTL-correct partial fill.
+Renders role="img" with `aria-label="{value} / {max}"` (digits follow `fa`). RTL-correct partial fill. Inherits `fa` from product-card.
 
 ### <mds:rating.input> — interactive stars
-Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string|null='امتیاز' / 'Rating' by config language.
-role="radiogroup"; hover preview; integer values; wire:model forwarded.
+Props: `value` int=0 · `max` int=5 · `name` string|null · `size` sm|lg|default · `label` string|null='امتیاز' / 'Rating' by fa ·
+`error` / `invalid` (see Validation contract — state only, no message) · `fa` bool|null=config.
+role="radiogroup" (aria-label = `label`, `aria-invalid` when invalid); each star is `role="radio"` + `aria-checked` + a digit aria-label.
+Keyboard: ONE tab stop (the checked star, or the first when unset — roving tabindex); Arrow Left/Right step through stars and mirror in
+RTL (direction read off the component, so an RTL island inside an LTR page mirrors too); Arrow Up/Down also step; Home/End jump to 1/max.
+Arrows both move focus and commit the value. Hover preview; integer values; wire:model forwarded to the hidden input.
 
 ### <mds:price>
 Props: `amount` number=0 · `original` number|null=null (compare-at; when > amount renders strikethrough + auto badge) · `currency` toman|rial|none|literal|null=config · `decimals` int=0 · `size` sm|lg|default · `fa` bool|null=config · `badge` bool=true (auto discount badge on/off).
 Discount percent = round((1 - amount/original) * 100).
 
 ### <mds:discount-badge>
-Props: `percent` int|null · `amount`+`original` number|null (computes percent when `percent` omitted) · `size` sm|lg|default · `fa`.
-Red pill, Persian percent sign ٪.
+Props: `percent` int|null · `amount`+`original` number|null (computes percent when `percent` omitted and original > 0) · `size` sm|lg|default · `fa` (inherited from price/product-card).
+Red pill, Persian percent sign ٪, `aria-label` «۲۵ درصد تخفیف» / "25% off". Renders NOTHING when no percent can be determined.
 
 ### <mds:quantity> — cart stepper
-Props: `value` int|null=min · `min` int=1 · `max` int|null=null · `step` int=1 · `size` sm|lg|default · `name` · `fa` · `increment-label` / `decrement-label` (default 'افزایش تعداد'/'کاهش تعداد', or 'Increase quantity'/'Decrease quantity' when fa is off).
-`+` sits at inline-start (right in RTL). Buttons disable at bounds. Hidden input = Latin digits.
+Props: `value` int|null=min · `min` int=1 · `max` int|null=null · `step` int=1 · `size` sm|lg|default · `name` · `fa` ·
+`increment-label` / `decrement-label` (default 'افزایش تعداد'/'کاهش تعداد', or 'Increase quantity'/'Decrease quantity' when fa is off) ·
+`error` / `invalid` (see Validation contract — red border + `aria-invalid`, no message).
+`+` sits at inline-start (right in RTL). Buttons disable at bounds. `value` is clamped to [min, max] on the server too, so the first
+paint and a no-JS post never sit outside the bounds. The displayed value is `aria-live="polite"`. Hidden input = Latin digits.
 
 ### <mds:product-card>
 Props: `title` string='' · `image` string|null · `href` string|null · `amount`/`original` number|null · `currency` · `rating` float|null · `reviews` int|null · `badge` string|null (corner flux:badge text) · `badge-color` string='lime' (any Flux badge color) · `unavailable` bool=false (grayscale + «ناموجود», or "Out of stock" when fa is off) · `fa`.
@@ -104,11 +137,15 @@ Slot = actions area (e.g. add-to-cart flux:button). Composes flux:card + mds:rat
 ### <mds:stepper> — checkout steps
 Props: `steps` array=[] (labels in order) · `current` int=1 (1-based active index) · `fa`.
 States: completed (check, accent) / current (aria-current="step") / upcoming (muted). data-mds-stepper-step attr per state.
+Each step carries an sr-only «مرحله ۲ از ۴» / "Step 2 of 4" so a reader hears the position, not just the label.
 
 ### <mds:countdown>
 Props: `until` DateTime|string REQUIRED · `days` bool=true (false = hours accumulate) · `labels` bool=false ·
 `size` sm|lg|default · `fa` · `expired-text` string|null='به پایان رسید' / 'Expired' by fa.
-Server-renders initial segments (no blank flash), ticks via Alpine.
+Server-renders initial segments (no blank flash), ticks via a shared `Alpine.data('mdsCountdown')`; the interval stops at zero and
+on component teardown (Livewire morph / wire:navigate), so nothing keeps ticking off-screen.
+Accessibility: root is `role="timer"` with `aria-label` «زمان باقی‌مانده» / "Time remaining"; in the plain (unlabeled) variant each
+box gets an sr-only unit (روز/ساعت/دقیقه/ثانیه or days/hours/min/sec) so it does not read as a bare run of digits.
 Direction contract: plain variant is dir="ltr" wall-clock (۰۷:۴۱:۵۵ hours-first); `labels` variant is RTL boxes
 (days rightmost) with روز/ساعت/دقیقه/ثانیه labels — Iranian e-commerce convention — or days/hours/min/sec when fa is off. Do not override.
 
@@ -119,7 +156,7 @@ The calendar is always Jalali; `fa=false` switches the language: Latin digits, t
 English weekday names, and English `ago` phrases ("2 days ago").
 
 ### <mds:empty-state>
-Props: `icon` string|null (heroicon name) · `title` string|null · `description` string|null. Slot = action buttons.
+Props: `icon` string|null (rendered through `<mds:icon>`, so a Hugeicons name wins and a heroicon name still resolves) · `title` string|null · `description` string|null. Slot = action buttons.
 
 ### <mds:preview-card> — hover preview of a link's destination
 Compound: `<mds:preview-card>` (root) + `<mds:preview-card.trigger>` + `<mds:preview-card.content>`.
@@ -152,13 +189,17 @@ Do not put unique or essential content in it; keep that on the linked page.
 ```
 
 ### <mds:command> — command palette (open version of Flux Pro's flux:command)
-Wrapper holds state. Compose:
-- `<mds:command.input>` props: `icon`='magnifying-glass' · `clearable` bool=false · `closable` bool=false (closes containing <dialog>/Flux modal) · `clear-label` / `close-label` (default 'پاک کردن'/'بستن', or 'Clear'/'Close' when persian_digits is off) · plus any input attrs (placeholder, autofocus).
-- `<mds:command.items>` props: `empty` (no-results text; default 'نتیجه‌ای یافت نشد.', or 'No results found.' when persian_digits is off). Scrollable listbox.
+Wrapper holds state (shared `Alpine.data('mdsCommand')`). Props: `fa` bool|null=config (inherited by input/items). Compose:
+- `<mds:command.input>` props: `icon`='magnifying-glass' · `clearable` bool=false · `closable` bool=false (closes containing <dialog>/Flux modal) · `clear-label` / `close-label` (default 'پاک کردن'/'بستن', or 'Clear'/'Close' by fa) · `fa` · plus any input attrs (placeholder, autofocus). Pass a `placeholder` or `aria-label`: the combobox has no built-in name.
+- `<mds:command.items>` props: `empty` (no-results text; default 'نتیجه‌ای یافت نشد.', or 'No results found.' by fa) · `fa`. Scrollable wrapper around the listbox.
 - `<mds:command.item>` props: `icon` · `icon-variant`='micro' · `kbd` string|null (rendered LTR at inline-end) · `href` (renders <a>; else <button type="button">). wire:click / x-on:click pass through.
 - `<mds:command.heading>` — group label, auto-hides while a query is typed.
 Behavior: live filter with Persian normalization (Arabic ي/ك -> ی/ک; Persian/Arabic-Indic digits -> Latin before matching);
-ArrowUp/ArrowDown move active item; Enter clicks it; hover syncs active state; built-in empty state.
+ArrowUp/ArrowDown move the active item; Enter clicks it; hover syncs active state; built-in empty state.
+ARIA contract: the input is `role="combobox"` `aria-expanded="true"` `aria-autocomplete="list"` with `aria-controls` -> the listbox
+and `aria-activedescendant` -> the active option (option ids are assigned at init). Items sit in `role="listbox"`, each `role="option"`
++ `aria-selected`; the heading is `role="presentation"`; the empty message is a `role="status"` region OUTSIDE the listbox.
+Limitation: the option list is read once at init. Items added later by a Livewire update are not searchable until the palette is re-rendered.
 Global ⌘K pattern (Flux free modal): `<flux:modal.trigger name="search" shortcut="cmd.k"><flux:input as="button" .../></flux:modal.trigger>`
 + `<flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"><mds:command>...</mds:command></flux:modal>`.
 
@@ -181,7 +222,8 @@ Behavior (Alpine): the textarea grows from `rows` to `max-rows` and then scrolls
 Shift+Enter as the newline; an open IME composition keeps its Enter. Auto-growing, the counter and bare-Enter submit all
 belong to the built-in textarea, so an `input` slot brings its own (Ctrl/Cmd+Enter still works). Livewire clearing the
 bound property from the server re-syncs the height and counter through a `morph.updated` hook.
-Counter renders `mb_strlen` characters (not bytes) as «۱۲ / ۵۰۰», `dir="ltr"` so current-then-limit reads the same either way.
+Counter renders `mb_strlen` characters (not bytes) as «۱۲ / ۵۰۰», `dir="ltr"` so current-then-limit reads the same either way, and
+is linked from the textarea via `aria-describedby` (not a live region — it would fire on every keystroke).
 Disabled applies `inert` + `aria-disabled` to the whole box (action buttons included) and dims the slots.
 Focus: the root shows an accent ring via `has-[:focus-visible]`, so typing in the textarea rings the box, a mouse click on
 an action button does not.
@@ -207,14 +249,20 @@ public function send() { /* persist $this->message ... */ $this->message = ''; }
 Props: `value` string|null (any supported color string; normalized to `format`) · `name` · `format` hex|hexa|rgb|rgba|hsl|hsla='hex'
 (alpha formats add an alpha slider) · `type` input|button='input' · `label`/`description` (flux:field chrome) · `placeholder` ·
 `swatches` array|false|null=20-color default palette (items: hex string or [value, label]) · `dropper` bool=false (EyeDropper API;
-auto-hidden if unsupported) · `clearable` bool=false · `size` sm · `disabled` bool=false · `invalid` bool=false.
+auto-hidden if unsupported) · `clearable` bool=false · `size` sm · `disabled` bool=false · `invalid` bool=false ·
+`error` string|null (see Validation contract — renders the message) · `fa` bool|null=config (inherited by area/slider/dropper).
 wire:model forwarded to hidden input (emits input events). Parses pasted hex(3/6/8-digit)/rgb(a)/hsl(a) strings.
+Accessibility: the popover is `role="dialog"` (named by `label`, else «انتخاب رنگ» / "Pick a color"); the trigger has `aria-expanded`,
+`aria-haspopup="dialog"` and `aria-controls`; opening moves focus into the panel and closing (Escape / outside click) returns it to
+the trigger. `disabled` applies `inert` + `aria-disabled` to the whole control, so nothing inside stays tabbable.
 Slot replaces the default popover layout; subcomponents share state:
-- `<mds:color-picker.area />` — saturation/value canvas (pointer drag, always LTR)
-- `<mds:color-picker.slider channel="hue|alpha" />` — native range inputs (keyboard accessible)
+- `<mds:color-picker.area />` — saturation/brightness canvas, always LTR. Pointer drag on the canvas; keyboard via two visually-hidden
+  native `<input type="range">` inside it (`data-mds-color-picker-axis="saturation|brightness"`, labelled «اشباع»/«روشنایی» or
+  "Saturation"/"Brightness") wrapped in `role="group"` — two values are not one slider, so it does not claim `role="slider"`. Props: `fa`.
+- `<mds:color-picker.slider channel="hue|alpha" />` — native range inputs (keyboard accessible; labelled «رنگ»/«شفافیت» or "Hue"/"Opacity"). Props: `fa`.
 - `<mds:color-picker.input placeholder="#000000" />` — parses on change
 - `<mds:color-picker.swatches>` + `<mds:color-picker.swatch value="#..." label="..." />`
-- `<mds:color-picker.dropper />` (`label` defaults to 'قطره‌چکان' / 'Eyedropper' by config language)
+- `<mds:color-picker.dropper />` — props: `label` (default 'قطره‌چکان' / 'Eyedropper' by fa) · `fa`
 RTL note: canvas/sliders stay physically LTR (universal convention); field chrome follows page direction.
 
 ### <mds:file-upload> — file upload (open version of Flux Pro's flux:file-upload)
@@ -233,7 +281,8 @@ Tailwind's `in-data-dragging:` / `in-data-loading:` prefixes. Also sets CSS cust
 ### <mds:file-upload.dropzone>
 Props: `heading` string|null (default 'فایل را اینجا رها کنید یا برای انتخاب کلیک کنید', or 'Drop a file here or click to browse' when persian_digits is off) · `text` string|null (size/format hint) ·
 `icon` string='cloud-arrow-up' · `inline` bool=false (compact horizontal layout) · `with-progress` bool=false (progress bar + percent
-while uploading, replacing `text`; pair it with `text` so the idle state still reads).
+while uploading, replacing `text`; pair it with `text` so the idle state still reads) · `fa` bool|null (inherited from file-upload).
+The progress bar is `role="progressbar"` with `aria-valuemin/max/now` and `aria-label` «در حال بارگذاری» / "Uploading".
 Dashed border, accent border + tint while dragging, accent ring while the input is focus-visible, spinner swap while loading.
 Must be rendered inside `<mds:file-upload>` (it reads that component's Alpine state).
 
@@ -245,7 +294,7 @@ Named slot `actions` (inline-end) for buttons; default slot renders under the te
 Sits OUTSIDE `<mds:file-upload>` — render one per uploaded file yourself (see the Livewire snippet below).
 
 ### <mds:file-item.remove>
-Props: `icon` string='x-mark' · `label` string|null='حذف فایل' / 'Remove file' by config language (becomes `aria-label`). `wire:click` / `x-on:click` pass through.
+Props: `icon` string='x-mark' · `label` string|null='حذف فایل' / 'Remove file' by fa (becomes `aria-label`) · `fa` bool|null (inherited from file-item). `wire:click` / `x-on:click` pass through.
 
 Livewire contract (same as Flux):
 ```php
@@ -266,22 +315,6 @@ public function removePhoto($i) { $this->photos[$i]->delete(); unset($this->phot
 </div>
 ```
 
-## CSS layer (resources/css/mds.css)
-
-- `@theme { --font-sans: 'Vazirmatn', ... }` — font-sans becomes Persian-ready.
-- `[x-cloak] { display: none !important }`.
-- `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
-- `.mds-checker` — checkerboard backdrop for transparent colors.
-- `.mds-range` — gradient range-slider styling (color-picker hue/alpha).
-- `@layer components { [data-mds-icon] ... }` — icon default size (1.5rem) and the opt-in `--mds-icon-stroke` rule.
-- `@layer components { [data-mds-timeline] ... }` — the timeline grid, connector lines and indicator states.
-  It MUST stay inside `@layer components`: cascade layers outrank specificity, so unlayered rules would beat
-  Tailwind's `@layer utilities` and swallow classes users put on an indicator (e.g. `bg-green-500`).
-- `@layer components { [data-mds-chart] ... }` — chart card chrome, stages, tracks and the heatmap tone ladder.
-  The chart ink is currentColor: the stage sets zinc-950/white and every fill/stroke is an opacity step of it,
-  so a text utility (`text-accent`) on a stage recolors the whole chart. Knobs: `--mds-chart-radius` (card,
-  1.5rem), `--mds-chart-stage` (stage background, also the halo behind line dots).
-
 ### <mds:icon> — Hugeicons (replaces heroicons across the kit)
 Props: `icon` / `name` string (interchangeable, matching flux:icon) · `variant` string|null (either a Flux variant
 `outline|solid|mini|micro` or a Hugeicons style `stroke-rounded|solid-rounded|twotone-rounded|duotone-rounded|
@@ -299,8 +332,10 @@ unless `mds.icons.strict` is `true`, in which case it renders nothing instead of
 `exclamation-triangle` -> `alert-02`, `photo` -> `image-01`, `trash` -> `delete-02`, `users` -> `user-multiple`,
 `banknotes` -> `banknote`, `paper-airplane` -> `sent`, `microphone` -> `mic-01`) · `OVERRIDES` (6 names Hugeicons also has but draws differently: `arrow-up|down|left|right`
 are chevrons there, `moon` is full not crescent, `map-pin` is a pin on a map) · `STYLES` · `VARIANTS` ·
-`style(?string $variant): string` · `prefixes(string $style): array` · `svg(string $name, ?string $variant, array $attributes): ?Svg`.
-NOTE: `stroke` is opt-in because 453 free icons vary stroke weight on purpose — do not force a global width.
+`FREE_SET` ('hugeicons', the blade-icons set name of the bundled free set) · `PRO_PREFIX` ('mds-hugeicons', Pro sets register as `{PRO_PREFIX}-{style}`) ·
+`available(): bool` (a Hugeicons source is registered) · `style(?string $variant): string` · `prefixes(string $style): list<string>` ·
+`svg(string $name, ?string $variant, array<string, mixed> $attributes): ?Svg` (attribute values are escaped by `<mds:icon>` before this call — blade-icons does not).
+NOTE: `stroke` is opt-in because 478 free icons vary stroke weight on purpose — do not force a global width.
 NOTE: `<flux:*>` components (button, badge, navbar, callout, ...) resolve their own `icon` prop internally and keep
 rendering heroicons. Only `mds:*` components and `<mds:icon>` use Hugeicons.
 
@@ -363,7 +398,10 @@ The card chrome; the `mds:chart.*` stages below draw the charts and also work st
 Props: `label` string (uppercase kicker) · `badge` string (pill next to it) · `value` int|float|string (big stat;
 numbers get separators, strings keep their shape with localized digits) · `unit` string (faint suffix) ·
 `delta` string (change readout — green, red when it starts with `-`) · `footer-start`/`footer-end` string ·
-`fa` bool|null=config (inherited by the stages inside via @aware).
+`fa` bool|null=config (inherited by the stages inside via @aware — see `fa` inheritance).
+Accessibility: every SVG stage is `role="img"` with a bilingual `aria-label` — bars/line/radar name the chart type («نمودار ستونی» /
+"Bar chart"…); donut and gauge fold `label` + the value into the name because `role="img"` makes the SVG's own text presentational.
+sparkline is decorative (`aria-hidden`).
 Slots: `header` (trailing side of the header row) · `footer` (replaces the footer props) · default (the stages).
 Ink contract: every stage's ink is currentColor at fixed opacity steps — `class="text-accent"` on a stage
 recolors the whole chart. Direction contract: the SVG plot plane is always LTR (like the color-picker canvas);
@@ -402,8 +440,10 @@ Props: `items` array of ['label' => string, 'value' => number, 'target' => numbe
 ### <mds:chart.heatmap> — activity grid (HTML, RTL-native)
 Props: `data` number[] (column-major: every `rows` values are one column/week) · `rows` int=7 ·
 `labels` string[] (spread across the top) · `color` accent|null (tone ladder base; default the ink) ·
-`unit` string|null='مورد' / 'items' by fa · `callout` bool=true (Alpine hover readout row; cells keep a
+`unit` string|null='مورد' / 'items' by fa · `callout` bool=true (readout row under the grid, `aria-live="polite"`; cells keep a
 `title` fallback without Alpine) · `fa`. Values grade into 5 tones of the base via color-mix.
+Keyboard: the grid is ONE tab stop (roving tabindex — a year of cells is not 365 stops); Arrow Up/Down walk a column, Left/Right jump
+columns and mirror in RTL. Each cell is `role="img"` with `aria-label` «۳ مورد» / "3 items"; focus and hover both update the callout.
 
 ### <mds:chart.sparkline> — bare inline spline (SVG)
 Props: `data` number[] (auto-fits its own range — shape, not scale) · `area` bool=false ·
@@ -415,6 +455,32 @@ No fa (it renders no text). KPI card recipe = mds:chart with `delta` + a sparkli
     <mds:chart.sparkline :data="[30, 45, 35, 60, 50, 85, 75, 95]" area class="h-16" />
 </mds:chart>
 ```
+
+## CSS layer (resources/css/mds.css)
+
+- `@theme { --font-sans: 'Vazirmatn', ... }` — font-sans becomes Persian-ready.
+- `[x-cloak] { display: none !important }` — the ONE rule kept outside `@layer components` on purpose: it must beat whatever the
+  component sets while Alpine boots. Everything below is inside `@layer components`, so any Tailwind utility a caller adds wins
+  (a test walks the stylesheet's top level and fails on any other unlayered rule).
+- `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
+- `.mds-checker` — checkerboard backdrop for transparent colors; tokens `--mds-checker-dark` / `--mds-checker-light`, with a `.dark` pairing.
+- `.mds-range` — gradient range-slider styling (color-picker hue/alpha); thumb via `--mds-thumb` (dark pairing), and its own
+  `:focus-visible` ring because `appearance: none` drops the native one.
+- `[data-mds-icon] ...` — icon default size (1.5rem) and the opt-in `--mds-icon-stroke` rule.
+- `[data-mds-timeline] ...` — the timeline grid, connector lines and indicator states. Cascade layers outrank specificity, so if this
+  were unlayered it would swallow classes users put on an indicator (e.g. `bg-green-500`).
+- `[data-mds-chart] ...` — chart card chrome, stages, tracks and the heatmap tone ladder.
+  The chart ink is currentColor: the stage sets zinc-950/white and every fill/stroke is an opacity step of it,
+  so a text utility (`text-accent`) on a stage recolors the whole chart. Knobs: `--mds-chart-radius` (card,
+  1.5rem), `--mds-chart-stage` (stage background, also the halo behind line dots).
+
+## Shared script (resources/views/partials/digits.blade.php)
+
+`@include('mds::partials.digits')` registers `window.mds.digits(value, fa = true)` (Latin -> Persian digits, display-only) and
+`window.mds.latinDigits(value)` (Persian/Arabic-Indic -> Latin, for reading typed input back). It is wrapped in `@once('mds-digits')`,
+so however many components pull it in, it is emitted once per page. Included by quantity, countdown, composer, file-upload and
+command; it is the JS twin of `Persian::digits()` / `latinDigits()`. Served from the package's `mds::` view namespace — it is not
+part of the `mds-views` publish tag and needs no publishing.
 
 ## Page layouts (Flux grid; demo: workbench /layouts)
 
@@ -449,9 +515,9 @@ changes; child order picks the arrangement. In RTL the sidebar lands on the righ
 - Dates shown to users: Jalali via <mds:jalali-date> or Mds::jalali(); machine values stay Gregorian ISO.
 - Keep phone/OTP/code inputs LTR: type="tel" or data-ltr attribute.
 - Persian digits are display-only; anything submitted/bound stays Latin (the components already guarantee this).
-- Flux free components available alongside: avatar, badge, brand, breadcrumbs, button, callout, card, checkbox,
-  dropdown/menu, field, heading, icon, input, modal, navbar, otp, pagination, profile, progress, radio, select,
-  separator, skeleton, switch, table, text, textarea, toast, tooltip. Flux Pro-only components NOT available
+- Flux free components available alongside (32): avatar, badge, brand, breadcrumbs, button, callout, card, checkbox,
+  dropdown/menu, field, heading, icon, input, modal, navbar, navlist, navmenu, otp-input, pagination, profile, progress,
+  radio, select, separator, skeleton, switch, table, text, textarea, toast, toggle, tooltip. Flux Pro-only components NOT available
   unless licensed: autocomplete, calendar, date-picker, editor, tabs, etc. — use mds:command,
   mds:color-picker, mds:file-upload, mds:timeline and mds:chart instead of flux:command / flux:color-picker /
   flux:file-upload / flux:timeline / flux:chart (different API: mds:chart is server-rendered SVG, not a
