@@ -202,7 +202,9 @@ ArrowUp/ArrowDown move the active item; Enter clicks it; hover syncs active stat
 ARIA contract: the input is `role="combobox"` `aria-expanded="true"` `aria-autocomplete="list"` with `aria-controls` -> the listbox
 and `aria-activedescendant` -> the active option (option ids are assigned at init). Items sit in `role="listbox"`, each `role="option"`
 + `aria-selected`; the heading is `role="presentation"`; the empty message is a `role="status"` region OUTSIDE the listbox.
-Limitation: the option list is read once at init. Items added later by a Livewire update are not searchable until the palette is re-rendered.
+The option list is cached for speed but follows the DOM: a MutationObserver on the palette re-scans when a Livewire morph or an
+Alpine `x-for` adds, removes or relabels items, keeping the cursor on the same item where it survives. Server-filtered palettes
+therefore work; `refresh()` on the Alpine component is public should a consumer ever need to force a re-scan.
 Global ⌘K pattern (Flux free modal): `<flux:modal.trigger name="search" shortcut="cmd.k"><flux:input as="button" .../></flux:modal.trigger>`
 + `<flux:modal name="search" variant="bare" class="my-[12vh] w-full max-w-[30rem]"><mds:command>...</mds:command></flux:modal>`.
 

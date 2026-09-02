@@ -1240,11 +1240,24 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('x-data="mdsCommand()"', $html);
         $this->assertStringContainsString("Alpine.data('mdsCommand'", $html);
 
-        // The option list is read once into `options`, and each item carries
-        // its normalised text, so a keystroke no longer re-queries the DOM
-        // and re-normalises every option for every other option.
+        // The option list is cached in `options` with each item's normalised
+        // text, so a keystroke no longer re-queries the DOM and re-normalises
+        // every option for every other option.
         $this->assertStringContainsString('this.options = [', $html);
         $this->assertStringContainsString('el.dataset.mdsHaystack', $html);
+
+        // …but the cache follows the DOM: a MutationObserver on the root
+        // re-scans when a Livewire morph or an x-for adds, removes or relabels
+        // items, and is disconnected on teardown. Once, items added after init
+        // were unsearchable and unselectable.
+        $this->assertStringContainsString('new MutationObserver(', $html);
+        $this->assertStringContainsString('childList: true, subtree: true, characterData: true', $html);
+        $this->assertStringContainsString('this.observer?.disconnect()', $html);
+        $this->assertStringContainsString('refresh() {', $html);
+
+        // Ids come from a running serial, not the array index — an item
+        // inserted mid-list must not collide with a neighbour's id.
+        $this->assertStringContainsString('this.$id(\'mds-command-option\', this.serial++)', $html);
     }
 
     public function test_command_input_is_wired_as_a_combobox(): void

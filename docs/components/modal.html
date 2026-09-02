@@ -376,22 +376,66 @@ document.addEventListener('alpine:init', () => {
         active: 0,
         activeId: '',
         options: [],
+        serial: 0,
+        observer: null,
+        pending: false,
 
         init() {
-            // Read the option list once. It is slot content and does not
-            // change between keystrokes, but matches() and isActive() run for
-            // every option on every reactive pass — re-querying the DOM and
+            // The option list is cached: matches() and isActive() run for every
+            // option on every reactive pass, and re-querying the DOM and
             // re-normalising all of it there made each keystroke quadratic.
+            this.refresh()
+
+            // But the cache must follow the DOM. Items arrive as slot content
+            // and a Livewire morph — or an x-for — can add, remove or relabel
+            // them later, so watch the subtree and re-scan when it changes.
+            // Attributes are not observed: our own id and data-* writes below
+            // would otherwise feed straight back into the observer.
+            this.observer = new MutationObserver(() => this.schedule())
+            this.observer.observe(this.$root, { childList: true, subtree: true, characterData: true })
+
+            this.$watch('query', () => { this.active = 0; this.sync() })
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        // A morph that touches twenty items fires twenty mutations — collapse
+        // them into one re-scan on the next microtask.
+        schedule() {
+            if (this.pending) return
+
+            this.pending = true
+
+            queueMicrotask(() => {
+                this.pending = false
+                this.refresh()
+            })
+        },
+
+        // Re-read the options and keep the cursor on the same item if it is
+        // still there. Public: a consumer that mutates the list in a way the
+        // observer cannot see (none known) can call it directly.
+        refresh() {
+            const keep = this.activeId
+
             this.options = [...this.$root.querySelectorAll('[data-mds-command-item]')]
 
-            this.options.forEach((el, i) => {
-                el.id ||= this.$id('mds-command-option', i)
+            this.options.forEach(el => {
                 // Options need ids for aria-activedescendant, and they cannot
-                // know their own index from inside a Blade slot.
+                // know their own index from inside a Blade slot. A running
+                // serial, not the array index: an item inserted mid-list must
+                // not take an id an existing neighbour already holds.
+                el.id ||= this.$id('mds-command-option', this.serial++)
                 el.dataset.mdsHaystack = this.normalize(el.textContent)
             })
 
-            this.$watch('query', () => { this.active = 0; this.sync() })
+            const found = this.items()
+            const still = keep ? found.findIndex(el => el.id === keep) : -1
+
+            if (still !== -1) this.active = still
 
             this.sync()
         },
