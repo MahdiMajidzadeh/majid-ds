@@ -228,9 +228,11 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-mds-command-item', $html);
         $this->assertStringContainsString('⌘O', $html);
         $this->assertStringContainsString('سفارش‌های من', $html);
-        // An item with href renders as a link, others as buttons...
-        $this->assertStringContainsString('href="/support"', $html);
-        $this->assertStringContainsString('type="button"', $html);
+        // An item with href renders as a link, others as buttons. Anchored to
+        // the item itself: the input's clear button also carries type="button",
+        // so a bare needle matched even when every item was a link.
+        $this->assertMatchesRegularExpression('/<a\s[^>]*href="\/support"[^>]*data-mds-command-item/', $html);
+        $this->assertMatchesRegularExpression('/<button\s[^>]*type="button"[^>]*data-mds-command-item/', $html);
         // Default empty-state message ships with the items container...
         $this->assertStringContainsString('نتیجه‌ای یافت نشد.', $html);
     }
@@ -261,8 +263,11 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('رنگ اصلی', $html);
         // The default palette ships 20 swatches...
         $this->assertSame(20, substr_count($html, 'data-mds-color-picker-swatch') - substr_count($html, 'data-mds-color-picker-swatches'));
-        // The Alpine data component script is emitted...
-        $this->assertStringContainsString('mdsColorPicker', $html);
+        // The shared Alpine component is registered, not only referenced: the
+        // x-data usage alone satisfied a bare 'mdsColorPicker' needle even with
+        // the @once registration gone.
+        $this->assertStringContainsString("Alpine.data('mdsColorPicker'", $html);
+        $this->assertStringContainsString('x-data="mdsColorPicker(', $html);
     }
 
     public function test_color_picker_custom_swatches_alpha_format_and_button_type(): void
@@ -495,10 +500,19 @@ class ComponentsTest extends TestCase
 
     public function test_composer_input_variant_swaps_the_corner_radius(): void
     {
-        $html = $this->render('<mds:composer variant="input" />');
+        // The default keeps the card radius and only *prefixes* rounded-lg onto
+        // its buttons ([&_[data-flux-button]]:rounded-lg), so a bare needle
+        // matched both variants and could never fail. Only the input variant
+        // carries an unprefixed rounded-lg on the root.
+        $bare = '/(?<![:\]])\brounded-lg\b/';
 
-        $this->assertStringContainsString('rounded-lg', $html);
-        $this->assertStringNotContainsString('rounded-2xl', $html);
+        $input = $this->render('<mds:composer variant="input" />');
+        $this->assertMatchesRegularExpression($bare, $input);
+        $this->assertStringNotContainsString('rounded-2xl', $input);
+
+        $default = $this->render('<mds:composer />');
+        $this->assertStringContainsString('rounded-2xl', $default);
+        $this->assertDoesNotMatchRegularExpression($bare, $default);
     }
 
     public function test_composer_submit_prop_only_accepts_the_two_known_modes(): void
@@ -897,8 +911,10 @@ class ComponentsTest extends TestCase
     public function test_countdown_english_labels_and_expiry(): void
     {
         $labeled = $this->render('<mds:countdown :until="now()->addDays(2)" labels :fa="false" />');
+        // Anchored to the label element: a bare 'min' also matches every
+        // min-w-* class in the render, so it could never fail.
         foreach (['days', 'hours', 'min', 'sec'] as $label) {
-            $this->assertStringContainsString($label, $labeled);
+            $this->assertStringContainsString(">{$label}</span>", $labeled);
         }
 
         $expired = $this->render('<mds:countdown :until="now()->subMinute()" :fa="false" />');
