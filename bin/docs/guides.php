@@ -166,11 +166,11 @@ return [
             ],
             [
                 'name' => 'Layout',
-                'text' => 'Set the document direction and load the font. <code>@mdsFonts</code> emits the Vazirmatn <code>&lt;link&gt;</code> tags — self-host them for production traffic from Iran.',
+                'text' => 'Set the document direction and load your font. The kit ships no font and sets none — the <a href="theming.html#fonts">Fonts</a> section of the theming guide shows how to pick a Persian face and either self-host it or load it from Google Fonts.',
                 'code' => <<<'BLADE'
                 <html lang="fa" dir="rtl">
                 <head>
-                    @mdsFonts
+                    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
                     @fluxAppearance
                 </head>
                 <body>
@@ -251,12 +251,24 @@ return [
                 'align' => 'stretch',
             ],
             [
-                'name' => 'Typography',
-                'text' => 'The kit points Tailwind\'s <code>--font-sans</code> at Vazirmatn, so Persian and Latin text share one family, one scale and one weight ramp. Override it like any other theme token.',
+                'name' => 'Fonts',
+                'text' => 'The kit ships no font and sets none — typography belongs to your app. Every <code>mds:*</code> component renders in Tailwind\'s <code>font-sans</code>, so this one token styles the whole kit. Point it at a Persian face in your <code>app.css</code> after the kit\'s import; Vazirmatn is the recommended default because Persian and Latin share one family and one scale. Then load the face: <strong>self-host</strong> it (put the <code>woff2</code> files under <code>public/fonts</code> and declare an <code>@font-face</code> — the safe choice for traffic from Iran, where Google Fonts is slow or blocked), or add the Google Fonts <code>&lt;link&gt;</code> to <code>&lt;head&gt;</code>. Any other Persian face works the same way. This documentation loads Vazirmatn for itself; your app decides for itself.',
                 'code' => <<<'BLADE'
+                /* resources/css/app.css, after the kit's import */
                 @theme {
-                    --font-sans: 'IRANSansX', 'Vazirmatn', ui-sans-serif, sans-serif;
+                    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
                 }
+
+                /* self-hosted (recommended for Iran) … */
+                @font-face {
+                    font-family: 'Vazirmatn';
+                    src: url('/fonts/Vazirmatn[wght].woff2') format('woff2');
+                    font-weight: 100 900;
+                    font-display: swap;
+                }
+
+                /* … or Google Fonts, in <head>:
+                <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"> */
                 BLADE,
                 'render' => <<<'BLADE'
                 <div dir="rtl" class="space-y-1">
@@ -369,7 +381,6 @@ return [
                 ['@toman', 'Amount plus تومان. Always Persian.'],
                 ['@rial', 'Amount plus ریال. Always Persian.'],
                 ['@jalali', 'Jalali date: <code>@jalali($date, $format = \'j F Y\')</code>. Follows <code>mds.persian_digits</code> — Persian names and digits when on, <code>29 Mordad 1405</code> when off.'],
-                ['@mdsFonts', 'The Vazirmatn <code>&lt;link&gt;</code> tags, for <code>&lt;head&gt;</code>.'],
             ]],
             ['name' => 'MajidDs\\Support\\Persian', 'props' => [
                 ['digits($value)', 'Latin and Arabic-Indic digits to Persian.'],

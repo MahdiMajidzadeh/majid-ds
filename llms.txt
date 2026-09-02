@@ -18,7 +18,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    `@source '../../vendor/mahdimajidzadeh/ds/resources/views';`  <- REQUIRED: Tailwind v4 skips gitignored
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
-3. Layout: `<html lang="fa" dir="rtl">`; `@mdsFonts` + `@fluxAppearance` in <head>; `@fluxScripts` before </body>.
+3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts.
 4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
@@ -36,6 +36,18 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
 
 Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views/mds/, app copies override package), `mds-assets` (mds.css copy).
 
+## Fonts
+
+The kit ships and loads NO font, and sets no `--font-sans` — the app owns typography. For Persian text set a Persian face as
+Tailwind's sans family in resources/css/app.css, after the kit's import:
+    `@theme { --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif; }`
+Vazirmatn (SIL OFL) is the recommended default: one family, Persian and Latin on one scale. Two ways to load it:
+- Self-hosted (recommended for traffic from Iran, where Google Fonts is slow or blocked; also avoids third-party requests):
+  put the woff2 files under public/fonts and declare `@font-face { font-family: 'Vazirmatn'; src: url('/fonts/Vazirmatn[wght].woff2') format('woff2'); font-weight: 100 900; font-display: swap; }`.
+- Google Fonts: `<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">` in <head>.
+Every mds component renders in the page's `font-sans`, so this one token styles the whole kit. (The `@mdsFonts` directive that used
+to emit the Google Fonts tags was removed — replace it with one of the two above.)
+
 ## Blade directives
 
 - `@fa($value)` -> Persian digits only ("order 123" -> "order ۱۲۳")
@@ -43,7 +55,6 @@ Publish tags: `mds-config` (config), `mds-views` (Blade views -> resources/views
 - `@toman($amount)` -> ۲٬۵۰۰٬۰۰۰ تومان
 - `@rial($amount)` -> ۹۹۰ ریال
 - `@jalali($date)` -> ۲۹ مرداد ۱۴۰۵ (fixed 'j F Y'; custom formats via Mds::jalali())
-- `@mdsFonts` -> Vazirmatn <link> tags (put in <head>)
 
 `@fa`/`@faNum`/`@toman`/`@rial` are Persian by definition (they ignore `mds.persian_digits`);
 `@jalali` follows the config like the components — "29 Mordad 1405" when it is off.
@@ -463,7 +474,7 @@ No fa (it renders no text). KPI card recipe = mds:chart with `delta` + a sparkli
 
 ## CSS layer (resources/css/mds.css)
 
-- `@theme { --font-sans: 'Vazirmatn', ... }` — font-sans becomes Persian-ready.
+- No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.
 - `[x-cloak] { display: none !important }` — the ONE rule kept outside `@layer components` on purpose: it must beat whatever the
   component sets while Alpine boots. Everything below is inside `@layer components`, so any Tailwind utility a caller adds wins
   (a test walks the stylesheet's top level and fails on any other unlayered rule).

@@ -52,7 +52,7 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
 
 | Path | What |
 |---|---|
-| `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`, `@mdsFonts`), component path, publishing |
+| `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`), component path, publishing — no font, the app owns typography |
 | `src/MdsTagCompiler.php` | compiles `<mds:x>` → Blade components, mirrors Flux's own compiler — rarely touched |
 | `src/Support/{Persian,Jalali,Icons,Charts}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons; `Charts` is the SVG geometry behind `mds:chart.*` |
 | `resources/views/mds/` | the components — anonymous Blade views, subcomponents in subdirs (`command/item.blade.php` = `<mds:command.item>`) |

@@ -89,7 +89,7 @@
         </button>
         <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;subtle&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;moon&quot;</span> <span class="t-attr">x-data</span> <span class="t-attr">x-on:click</span><span class="t-equals">=</span><span class="t-string">&quot;$flux.dark = ! $flux.dark&quot;</span> <span class="t-attr">aria-label</span><span class="t-equals">=</span><span class="t-string">&quot;Toggle dark mode&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="typography" class="docs-section"><h2>Typography</h2><p class="docs-text">The kit points Tailwind's <code>--font-sans</code> at Vazirmatn, so Persian and Latin text share one family, one scale and one weight ramp. Override it like any other theme token.</p><div class="docs-example">
+</div></section><section id="fonts" class="docs-section"><h2>Fonts</h2><p class="docs-text">The kit ships no font and sets none — typography belongs to your app. Every <code>mds:*</code> component renders in Tailwind's <code>font-sans</code>, so this one token styles the whole kit. Point it at a Persian face in your <code>app.css</code> after the kit's import; Vazirmatn is the recommended default because Persian and Latin share one family and one scale. Then load the face: <strong>self-host</strong> it (put the <code>woff2</code> files under <code>public/fonts</code> and declare an <code>@font-face</code> — the safe choice for traffic from Iran, where Google Fonts is slow or blocked), or add the Google Fonts <code>&lt;link&gt;</code> to <code>&lt;head&gt;</code>. Any other Persian face works the same way. This documentation loads Vazirmatn for itself; your app decides for itself.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><div dir="rtl" class="space-y-1">
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-2xl [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>وزیرمتن</div>
@@ -103,9 +103,21 @@
                 <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
             </svg>
         </button>
-        <pre><code><span class="t-directive">@theme</span><span class="t-text"> </span><span class="t-text">{</span><span class="t-text">
-    --font-sans: &#039;IRANSansX&#039;, &#039;Vazirmatn&#039;, ui-sans-serif, sans-serif;
-}</span></code></pre>
+        <pre><code><span class="t-text">/* resources/css/app.css, after the kit&#039;s import */
+</span><span class="t-directive">@theme</span><span class="t-text"> </span><span class="t-text">{</span><span class="t-text">
+    --font-sans: &#039;Vazirmatn&#039;, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* self-hosted (recommended for Iran) … */
+</span><span class="t-directive">@font</span><span class="t-text">-face </span><span class="t-text">{</span><span class="t-text">
+    font-family: &#039;Vazirmatn&#039;;
+    src: url(&#039;/fonts/Vazirmatn[wght].woff2&#039;) format(&#039;woff2&#039;);
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+/* … or Google Fonts, in </span><span class="t-punct">&lt;</span><span class="t-tag">head</span><span class="t-punct">&gt;</span><span class="t-text">:
+</span><span class="t-punct">&lt;</span><span class="t-tag">link</span> <span class="t-attr">href</span><span class="t-equals">=</span><span class="t-string">&quot;https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&amp;display=swap&quot;</span> <span class="t-attr">rel</span><span class="t-equals">=</span><span class="t-string">&quot;stylesheet&quot;</span><span class="t-punct">&gt;</span><span class="t-text"> */</span></code></pre>
     </div>
 </div></section><section id="customising-a-component" class="docs-section"><h2>Customising a component</h2><p class="docs-text">Publish the views and edit them. Published views win over the package's, so you can change one component without forking anything.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
@@ -126,7 +138,7 @@
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#accent-color">Accent color</a><a href="#dark-mode">Dark mode</a><a href="#typography">Typography</a><a href="#customising-a-component">Customising a component</a></nav>
+        <nav><a href="#accent-color">Accent color</a><a href="#dark-mode">Dark mode</a><a href="#fonts">Fonts</a><a href="#customising-a-component">Customising a component</a></nav>
     </aside>
 </div>
 

@@ -2,6 +2,7 @@
 
 namespace MajidDs\Tests\Unit;
 
+use Illuminate\Support\Facades\Blade;
 use MajidDs\Tests\TestCase;
 
 class StylesheetTest extends TestCase
@@ -48,5 +49,24 @@ class StylesheetTest extends TestCase
                 "[{$found}] sits outside @layer, so no utility class can override it. Move it into @layer components.",
             );
         }
+    }
+
+    /**
+     * The kit ships no font and imposes none. It used to set --font-sans to
+     * Vazirmatn and register an @mdsFonts directive that hot-linked Google
+     * Fonts — the wrong default for an audience that often cannot reach it.
+     * Typography belongs to the app; the docs guide says how.
+     */
+    public function test_the_kit_ships_no_font(): void
+    {
+        // Comments are stripped first: the header is allowed to *mention* --font-sans
+        // to point readers at the theming guide. Only rules count as shipping a font.
+        $css = (string) preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents(dirname(__DIR__, 2).'/resources/css/mds.css'));
+
+        foreach (['--font-sans', '@font-face', 'fonts.googleapis', 'Vazirmatn\'', 'Vazirmatn"'] as $needle) {
+            $this->assertStringNotContainsString($needle, $css, "mds.css sets or loads a font ({$needle}); the app owns typography.");
+        }
+
+        $this->assertArrayNotHasKey('mdsFonts', Blade::getCustomDirectives(), 'The @mdsFonts directive was removed on purpose.');
     }
 }

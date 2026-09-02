@@ -27,7 +27,7 @@ $pages['avatar'] = [
         ],
         [
             'name' => 'Initials',
-            'text' => 'Pass <code>initials</code> directly, or pass a <code>name</code> and Flux derives the initials from it. Persian names work as-is — the letters are rendered by the same Vazirmatn face as the rest of the page.',
+            'text' => 'Pass <code>initials</code> directly, or pass a <code>name</code> and Flux derives the initials from it. Persian names work as-is — the letters render in the page\'s <code>font-sans</code>, the same face as the rest of the page.',
             'code' => <<<'BLADE'
             <flux:avatar initials="MM" />
             <flux:avatar name="Sara Rezaei" />
@@ -991,7 +991,7 @@ $pages['heading'] = [
         ],
         [
             'name' => 'With Persian text',
-            'text' => 'Headings pick up Vazirmatn from the <code>--font-sans</code> token the kit sets, so Persian and Latin headings share one type scale.',
+            'text' => 'Headings render in your <code>--font-sans</code> — this documentation sets it to Vazirmatn — so Persian and Latin headings share one type scale.',
             'code' => <<<'BLADE'
             <div dir="rtl" class="space-y-1">
                 <flux:heading size="xl">سفارش‌های من</flux:heading>
@@ -2201,7 +2201,7 @@ $pages['text'] = [
         ],
         [
             'name' => 'Persian body copy',
-            'text' => 'The kit points Tailwind\'s <code>--font-sans</code> at Vazirmatn, so Persian text and Latin text share one scale and one weight ramp.',
+            'text' => 'Persian and Latin text share whatever you set as <code>--font-sans</code> — one scale, one weight ramp. The kit sets no font; this documentation chooses Vazirmatn.',
             'code' => <<<'BLADE'
             <div dir="rtl">
                 <flux:text>مرسوله شما امروز از انبار تهران ارسال می‌شود.</flux:text>

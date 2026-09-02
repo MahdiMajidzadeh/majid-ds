@@ -100,12 +100,6 @@ class MajidDsServiceProvider extends ServiceProvider
         // @jalali($date, $format = 'j F Y') — render a date in the Jalali calendar...
         Blade::directive('jalali', fn ($expression) => "<?php echo e(\\MajidDs\\Support\\Jalali::format({$expression})); ?>");
 
-        // @mdsFonts — <link> tags for the Vazirmatn font (put in <head>)...
-        Blade::directive('mdsFonts', fn () => <<<'HTML'
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
-        HTML);
     }
 
     protected function bootPublishing(): void

@@ -21,7 +21,7 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 
 | Area | What Majid DS adds |
 |---|---|
-| Typography | Vazirmatn font wired into Tailwind's `--font-sans` (`@mdsFonts` directive for the `<link>` tags) |
+| Typography | Font-agnostic: every component renders in your `--font-sans`. Set a Persian face (Vazirmatn is the recommended default) — see [Fonts](#fonts). |
 | Icons | [Hugeicons](https://hugeicons.com) via `<mds:icon>`, replacing heroicons across every `mds:*` component (heroicon names still work) |
 | Numbers | Persian digits (۰۱۲۳), Persian separators (٬ / ٫), `@fa` / `@faNum` directives |
 | Money | `<mds:price>`, `@toman` / `@rial` directives, configurable default currency |
@@ -114,14 +114,19 @@ composer require mahdimajidzadeh/ds
 @source '../../vendor/mahdimajidzadeh/ds/resources/views';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* The kit sets no font — choose the Persian face your app ships (see Fonts). */
+@theme {
+    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+}
 ```
 
-**2. Layout** — set the document direction and load the font:
+**2. Layout** — set the document direction and load your font:
 
 ```blade
 <html lang="fa" dir="rtl">
 <head>
-    @mdsFonts   {{-- Vazirmatn <link> tags; self-host for production traffic from Iran --}}
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
     @fluxAppearance
 </head>
 <body>
@@ -132,6 +137,38 @@ composer require mahdimajidzadeh/ds
 ```
 
 That's it. `<flux:*>` and `<mds:*>` components now work side by side.
+
+### Fonts
+
+The kit ships no font and sets none — typography belongs to your app. Every `mds:*` component renders in Tailwind's
+`font-sans`, so one token styles the whole kit. For Persian text point it at a Persian face in your `app.css`, after the
+kit's import; [Vazirmatn](https://github.com/rastikerdar/vazirmatn) (SIL OFL) is the recommended default because Persian
+and Latin share one family and one scale:
+
+```css
+@theme {
+    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+}
+```
+
+Then load the face, one of two ways:
+
+- **Self-hosted** — recommended for production traffic from Iran, where Google Fonts is slow or blocked, and it avoids a
+  third-party request everywhere else. Put the `woff2` files under `public/fonts` and declare them:
+
+  ```css
+  @font-face {
+      font-family: 'Vazirmatn';
+      src: url('/fonts/Vazirmatn[wght].woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+  }
+  ```
+
+- **Google Fonts** — a single `<link>` in `<head>`, as in the layout in step 2 above.
+
+Any other Persian face (IRANSansX, Yekan Bakh, Sahel…) works the same way: name it in `--font-sans` and load it.
+The `@mdsFonts` directive that used to emit the Google Fonts tags is gone — replace it with one of these.
 
 ## Components
 

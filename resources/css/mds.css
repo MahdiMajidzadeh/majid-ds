@@ -9,15 +9,12 @@
 |   @import '../../vendor/livewire/flux/dist/flux.css';
 |   @import '../../vendor/mahdimajidzadeh/ds/resources/css/mds.css';
 |
-| Then load the Vazirmatn font in your layout's <head> with the @mdsFonts
-| Blade directive (or self-host it — recommended for production traffic
-| from Iran, where Google Fonts can be slow or blocked).
+| The kit sets no font. Point Tailwind's --font-sans at the Persian face
+| your app ships (Vazirmatn is a good default) in your own @theme block —
+| see the Fonts section of the theming guide. Self-hosting it is the safe
+| choice for traffic from Iran, where Google Fonts can be slow or blocked.
 |
 */
-
-@theme {
-    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-}
 
 /* Alpine's x-cloak (used by mds components) — hide until Alpine boots... */
 [x-cloak] {

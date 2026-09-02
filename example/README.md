@@ -22,6 +22,11 @@ composer require mahdimajidzadeh/ds
 @source '../../vendor/mahdimajidzadeh/ds/resources/views';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* The kit sets no font — pick the Persian face your app ships. */
+@theme {
+    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+}
 ```
 
 ## 3. resources/views/components/layouts/app.blade.php
@@ -33,7 +38,9 @@ composer require mahdimajidzadeh/ds
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    @mdsFonts
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     @fluxAppearance
 </head>

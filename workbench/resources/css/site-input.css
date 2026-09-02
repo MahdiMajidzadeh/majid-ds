@@ -28,6 +28,11 @@
 @import '../../../vendor/livewire/flux/dist/flux.css';
 @import '../../../resources/css/mds.css';
 
+/* The kit ships no font; the docs and demo choose Vazirmatn for themselves. */
+@theme {
+    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ------------------------------------------------------------------ tokens */
