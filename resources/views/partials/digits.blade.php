@@ -5,7 +5,7 @@
     pull it in, it is emitted a single time.
 --}}
 @once('mds-digits')
-<script>
+<script @mdsNonce>
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.

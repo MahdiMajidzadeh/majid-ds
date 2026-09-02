@@ -34,7 +34,7 @@ $starClasses = match ($size) {
 @endphp
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsRatingInput', (config = {}) => ({
         value: config.value ?? 0,

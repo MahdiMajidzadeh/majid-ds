@@ -170,6 +170,33 @@ Then load the face, one of two ways:
 Any other Persian face (IRANSansX, Yekan Bakh, Sahel…) works the same way: name it in `--font-sans` and load it.
 The `@mdsFonts` directive that used to emit the Google Fonts tags is gone — replace it with one of these.
 
+### Content Security Policy
+
+The interactive components register their Alpine behaviour in inline `<script>` blocks. Under a policy with
+`script-src 'nonce-…'` the kit needs the nonce, and it reads the one you register with Laravel — the same registry
+Livewire's own tags read, and Flux takes it as an option — so one line per request covers the page:
+
+```php
+// in your CSP middleware
+$nonce = Vite::useCspNonce(); // generates one; or pass your own
+
+$response = $next($request);
+$response->headers->set('Content-Security-Policy', "script-src 'self' 'nonce-{$nonce}' 'unsafe-eval'; style-src 'self' 'unsafe-inline'");
+```
+
+```blade
+@fluxAppearance(['nonce' => Vite::cspNonce()])
+...
+@fluxScripts(['nonce' => Vite::cspNonce()])
+
+<script @mdsNonce>…</script>   {{-- your own inline scripts can carry the same nonce --}}
+```
+
+Every `<script>` the kit renders carries `@mdsNonce`, which echoes `Mds::cspNonce()` or nothing. Two more things a
+strict policy needs: `'unsafe-eval'` in `script-src`, because Alpine's standard build (the one Livewire bundles)
+evaluates `x-data` expressions, and `'unsafe-inline'` in `style-src`, because the kit renders inline `style`
+attributes for chart geometry, colour swatches and hidden-until-Alpine states. Nonces cover scripts only.
+
 ## Components
 
 ### `<mds:price>`

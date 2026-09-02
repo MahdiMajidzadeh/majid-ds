@@ -48,7 +48,7 @@ $textClasses = match ($size) {
 @include('mds::partials.digits')
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsQuantity', (config = {}) => ({
         value: config.value ?? 0,

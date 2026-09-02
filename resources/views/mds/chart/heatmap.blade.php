@@ -28,7 +28,7 @@ $num = fn ($n) => Persian::decimal($n, $fa);
 @endphp
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsHeatmap', (config = {}) => ({
         hover: null,

@@ -100,6 +100,12 @@ class MajidDsServiceProvider extends ServiceProvider
         // @jalali($date, $format = 'j F Y') — render a date in the Jalali calendar...
         Blade::directive('jalali', fn ($expression) => "<?php echo e(\\MajidDs\\Support\\Jalali::format({$expression})); ?>");
 
+        // @mdsNonce — `nonce="…"` for an inline <script> when the app registered a
+        // CSP nonce (Vite::useCspNonce()), otherwise nothing. Every <script> in the
+        // kit's views carries it — CspNonceTest fails when one is missing — and an
+        // app may use it in its own layout for the same nonce.
+        Blade::directive('mdsNonce', fn () => "<?php echo (\$__mdsNonce = \\MajidDs\\Mds::cspNonce()) ? 'nonce=\"'.e(\$__mdsNonce).'\"' : ''; ?>");
+
     }
 
     protected function bootPublishing(): void

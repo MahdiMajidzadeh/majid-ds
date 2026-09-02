@@ -52,7 +52,7 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
 
 | Path | What |
 |---|---|
-| `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`), component path, publishing — no font, the app owns typography |
+| `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`, `@mdsNonce`), component path, publishing — no font, the app owns typography |
 | `src/MdsTagCompiler.php` | compiles `<mds:x>` → Blade components, mirrors Flux's own compiler — rarely touched |
 | `src/Support/{Persian,Jalali,Icons,Charts}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons; `Charts` is the SVG geometry behind `mds:chart.*` |
 | `resources/views/mds/` | the components — anonymous Blade views, subcomponents in subdirs (`command/item.blade.php` = `<mds:command.item>`) |
@@ -78,9 +78,10 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
 - RTL-first via logical properties (`ms-`, `end-`, `border-inline-start`) — never
   `ml-`/`left-`. Dark mode via `dark:` variants. Accent via `--color-accent` tokens.
 - Root elements carry `data-mds-<name>` attributes — tests and user CSS hook on them.
-- Interactivity is Alpine, inlined in an `@once <script>` block registering
+- Interactivity is Alpine, inlined in an `@once <script @mdsNonce>` block registering
   `Alpine.data('mdsX', ...)`. Hidden inputs hold Latin-digit machine values and
-  dispatch bubbling `input` events; Persian rendering is display-only.
+  dispatch bubbling `input` events; Persian rendering is display-only. Every
+  `<script>` tag takes `@mdsNonce` — `CspNonceTest` fails the build when one is bare.
 - Icons go through `<mds:icon>`. A heroicon name used anywhere in the kit must
   resolve: add it to `Icons::ALIASES` if Hugeicons lacks the name — `IconsTest`
   fails the build if an alias target doesn't exist in the bundled free set.

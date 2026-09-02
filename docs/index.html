@@ -174,7 +174,7 @@
 >Monday 2 Shahrivar 1405</time>
 </div>
     <div class="flex items-center gap-4">
-        <script>
+        <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -190,7 +190,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsQuantity', (config = {}) => ({
         value: config.value ?? 0,
@@ -256,7 +256,7 @@ document.addEventListener('alpine:init', () => {
         <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19.002 12L5.00001 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
     </button>
 </div>
-        <script>
+        <script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,
@@ -386,7 +386,7 @@ document.addEventListener('alpine:init', () => {
     data-mds-jalali-date
 >دوشنبه ۲ شهریور ۱۴۰۵</time>
 </div>
-    <script>
+    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -402,7 +402,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,

@@ -4,7 +4,7 @@
 ])
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,

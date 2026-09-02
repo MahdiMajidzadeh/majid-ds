@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string jalali(mixed $date, string $format = 'j F Y', ?bool $persianDigits = null)
  * @method static string ago(mixed $date, ?bool $persian = null)
  * @method static string fileSize(mixed $bytes, ?bool $persianDigits = null)
+ * @method static string|null cspNonce()
  *
  * @see MdsManager
  */

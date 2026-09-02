@@ -56,7 +56,7 @@ $segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($ini
 @include('mds::partials.digits')
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,

@@ -1214,7 +1214,7 @@
             <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>پیشنهاد شگفت‌انگیز</div>
 
                             <div class="flex items-center gap-2">
-                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >پایان تا:</p>                    <script>
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >پایان تا:</p>                    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1230,7 +1230,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,

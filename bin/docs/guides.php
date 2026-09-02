@@ -184,6 +184,35 @@ return [
                 'note' => 'That is it. <code>flux:*</code> and <code>mds:*</code> components now work side by side.',
             ],
             [
+                'name' => 'Content Security Policy',
+                'text' => 'The interactive components register their Alpine behaviour in inline <code>&lt;script&gt;</code> blocks, so under a policy with <code>script-src \'nonce-…\'</code> the kit needs the nonce. Register it with Laravel once per request — <code>Vite::useCspNonce()</code> — and every kit script picks it up through <code>@mdsNonce</code>. That is the registry Livewire\'s own tags read too, and Flux\'s two directives take it as an option, so one line covers the page. Two more things a strict policy needs: Alpine\'s standard build, the one Livewire bundles, evaluates <code>x-data</code> expressions and so requires <code>\'unsafe-eval\'</code> in <code>script-src</code>; and the kit\'s server-rendered inline <code>style</code> attributes (chart geometry, colour swatches, hidden-until-Alpine states) need <code>\'unsafe-inline\'</code> in <code>style-src</code>. Nonces cover scripts only.',
+                'code' => <<<'BLADE'
+                // app/Http/Middleware/AddContentSecurityPolicy.php
+                public function handle(Request $request, Closure $next): Response
+                {
+                    $nonce = Vite::useCspNonce(); // generates one; or pass your own
+
+                    $response = $next($request);
+                    $response->headers->set(
+                        'Content-Security-Policy',
+                        "script-src 'self' 'nonce-{$nonce}' 'unsafe-eval'; style-src 'self' 'unsafe-inline'",
+                    );
+
+                    return $response;
+                }
+
+                {{-- the layout: Livewire and the kit read the nonce by themselves; Flux takes it as an option --}}
+                @fluxAppearance(['nonce' => Vite::cspNonce()])
+                ...
+                @fluxScripts(['nonce' => Vite::cspNonce()])
+
+                {{-- your own inline scripts can carry the same nonce --}}
+                <script @mdsNonce>…</script>
+                BLADE,
+                'render' => '<div class="w-full text-xs text-zinc-500">One registration per request — <code>Vite::useCspNonce()</code> — covers Livewire, Flux and every <code>mds:*</code> script.</div>',
+                'align' => 'stretch',
+            ],
+            [
                 'name' => 'Requirements',
                 'text' => 'PHP 8.2+, Laravel 11, 12 or 13, Livewire 3, <code>livewire/flux</code> ^2.0 and Tailwind CSS v4.',
             ],
@@ -381,6 +410,7 @@ return [
                 ['@toman', 'Amount plus تومان. Always Persian.'],
                 ['@rial', 'Amount plus ریال. Always Persian.'],
                 ['@jalali', 'Jalali date: <code>@jalali($date, $format = \'j F Y\')</code>. Follows <code>mds.persian_digits</code> — Persian names and digits when on, <code>29 Mordad 1405</code> when off.'],
+                ['@mdsNonce', 'Inside a <code>&lt;script</code> tag: the <code>nonce</code> attribute for the CSP nonce registered with <code>Vite::useCspNonce()</code>, or nothing. Every script in the kit carries it — see <a href="installation.html#content-security-policy">Content Security Policy</a>.'],
             ]],
             ['name' => 'MajidDs\\Support\\Persian', 'props' => [
                 ['digits($value)', 'Latin and Arabic-Indic digits to Persian.'],

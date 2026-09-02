@@ -2,6 +2,7 @@
 
 namespace MajidDs;
 
+use Illuminate\Foundation\Vite;
 use MajidDs\Support\Jalali;
 use MajidDs\Support\Persian;
 
@@ -45,5 +46,23 @@ class MdsManager
     public function ago(mixed $date, ?bool $persian = null): string
     {
         return Persian::ago($date, $persian);
+    }
+
+    /**
+     * The Content-Security-Policy nonce for the kit's inline <script> blocks.
+     *
+     * Read from the registry the app already fills for Laravel — Vite::useCspNonce(),
+     * which Livewire's own script tags read too — so one call in the app's CSP
+     * middleware covers the whole page. Null when no nonce is registered; the
+     *
+     * @mdsNonce directive then emits nothing.
+     */
+    public function cspNonce(): ?string
+    {
+        if (! app()->bound(Vite::class)) {
+            return null;
+        }
+
+        return app(Vite::class)->cspNonce();
     }
 }

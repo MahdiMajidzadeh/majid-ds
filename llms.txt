@@ -18,7 +18,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    `@source '../../vendor/mahdimajidzadeh/ds/resources/views';`  <- REQUIRED: Tailwind v4 skips gitignored
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
-3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts.
+3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
 4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
@@ -48,6 +48,17 @@ Vazirmatn (SIL OFL) is the recommended default: one family, Persian and Latin on
 Every mds component renders in the page's `font-sans`, so this one token styles the whole kit. (The `@mdsFonts` directive that used
 to emit the Google Fonts tags was removed — replace it with one of the two above.)
 
+## Content Security Policy
+
+The interactive components register Alpine in inline `<script>` blocks, so a `script-src 'nonce-…'` policy needs the nonce.
+Register it once per request with Laravel — `$nonce = Vite::useCspNonce();` in the CSP middleware — and the kit's scripts
+carry it: every `<script>` in the kit renders `@mdsNonce`, which echoes `Mds::cspNonce()` (= `Vite::cspNonce()`) or nothing.
+Livewire's `@livewireScripts` read the same registry; Flux takes it as an option: `@fluxAppearance(['nonce' => Vite::cspNonce()])`
+and `@fluxScripts(['nonce' => Vite::cspNonce()])`. There is no kit-specific setter or config key on purpose.
+A strict policy also needs `'unsafe-eval'` in script-src (Alpine's standard build, bundled by Livewire, evaluates `x-data`
+expressions) and `'unsafe-inline'` in style-src (the kit renders inline `style` attributes: chart geometry, colour swatches,
+hidden-until-Alpine states). Nonces cover scripts only.
+
 ## Blade directives
 
 - `@fa($value)` -> Persian digits only ("order 123" -> "order ۱۲۳")
@@ -55,6 +66,7 @@ to emit the Google Fonts tags was removed — replace it with one of the two abo
 - `@toman($amount)` -> ۲٬۵۰۰٬۰۰۰ تومان
 - `@rial($amount)` -> ۹۹۰ ریال
 - `@jalali($date)` -> ۲۹ مرداد ۱۴۰۵ (fixed 'j F Y'; custom formats via Mds::jalali())
+- `@mdsNonce` -> `nonce="…"` for an inline `<script>` when the app registered a CSP nonce with `Vite::useCspNonce()`, else nothing. Every `<script>` in the kit carries it — see Content Security Policy
 
 `@fa`/`@faNum`/`@toman`/`@rial` are Persian by definition (they ignore `mds.persian_digits`);
 `@jalali` follows the config like the components — "29 Mordad 1405" when it is off.
@@ -69,6 +81,7 @@ Facade `MajidDs\Mds`:
 - `Mds::jalali($date, string $format = 'j F Y', ?bool $persianDigits = null): string`
 - `Mds::ago($date, ?bool $persian = null): string` — «۳ ساعت پیش» / «۲ روز دیگر»; `false` -> "3 hours ago" / "in 2 days"
 - `Mds::fileSize($bytes, ?bool $persianDigits = null): string` — «۱۵۹ کیلوبایت» / «۱٫۵ مگابایت»; `false` -> "159 KB" / "1.5 MB"
+- `Mds::cspNonce(): ?string` — the nonce registered with `Vite::useCspNonce()`, or null (what `@mdsNonce` echoes)
 
 `MajidDs\Support\Persian` (static): `digits`, `latinDigits` (Persian->Latin, for input normalization), `number`, `format($value, int $decimals = 0, ?bool $persian = null)` (a number in the caller's language — Persian digits+separators or Latin), `decimal($value, ?bool $persian = null)` (whole numbers stay whole, fractions keep one place — chart axes and tallies), `auto($value, ?bool $persian = null)` (int|float -> `format()`; a string keeps its shape and only its digits convert: '100%' -> '۱۰۰%'), `money` (always Persian), `currencyLabel($currency, ?bool $persian = null)` (تومان/ریال or Toman/Rial), `ago($date, ?bool $persian = null)`, `fileSize($bytes, ?bool $persianDigits = null)` (1024-based, 1 decimal below 100 and none for whole numbers; Persian units بایت/کیلوبایت/… or English B/KB/MB/GB/TB), `toDateTime` (DateTime|string|int -> DateTimeImmutable).
 

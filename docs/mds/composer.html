@@ -45,7 +45,7 @@
         <section id="introduction" class="docs-section"><p class="docs-text">A textarea that grows with what you type, an action bar around it, and <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> to submit the surrounding form. The preview is live — type a few lines into it.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><form wire:submit="send">
-    <script>
+    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -61,7 +61,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -244,7 +244,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div><div class="docs-note">The action bar is plain <code>flux:button</code>s, so they follow your accent colour. <code>square</code> plus an <code>mds:icon</code> slot keeps the buttons icon-only while drawing Hugeicons rather than heroicons.</div></section><section id="with-a-header" class="docs-section"><h2>With a header</h2><p class="docs-text">The <code>header</code> slot sits above the input — attachments, a reply-to line, a model picker.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -260,7 +260,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -448,7 +448,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div></section><section id="inline" class="docs-section"><h2>Inline</h2><p class="docs-text">One row: the actions sit beside the input instead of under it. Pair it with <code>rows="1"</code>.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -464,7 +464,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -656,7 +656,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </ui-field>
 
-    <script>
+    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -672,7 +672,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -842,7 +842,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div></section><section id="height" class="docs-section"><h2>Height</h2><p class="docs-text"><code>rows</code> is the height it starts at, <code>max-rows</code> the height it stops growing at — past that the input scrolls.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -858,7 +858,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1000,7 +1000,7 @@ document.addEventListener('livewire:init', () => {
 </div></section><section id="submit-behavior" class="docs-section"><h2>Submit behavior</h2><p class="docs-text">By default <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> submits and <code>Enter</code> makes a new line. <code>submit="enter"</code> promotes the bare <code>Enter</code> to sending, and <code>Shift</code> + <code>Enter</code> takes over the new line. <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> sends either way.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><form wire:submit="send">
-    <script>
+    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1016,7 +1016,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1177,7 +1177,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div><div class="docs-note">Either way the key press calls <code>form.requestSubmit()</code>, so <code>wire:submit</code> and native validation behave exactly as they would on a click. An open IME candidate window keeps its <code>Enter</code>.</div></section><section id="character-counter" class="docs-section"><h2>Character counter</h2><p class="docs-text">Not in Flux: <code>maxlength</code> caps the message and <code>counter</code> shows how much of it is used.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1193,7 +1193,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1357,7 +1357,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div><div class="docs-note">The count is in characters, not bytes — a four-letter Persian word like «سلام» counts as 4, not 8.</div></section><section id="footer" class="docs-section"><h2>Footer</h2><p class="docs-text">The <code>footer</code> slot runs under the action bar, sharing its row with the counter.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1373,7 +1373,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1541,7 +1541,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 </div></section><section id="a-different-input" class="docs-section"><h2>A different input</h2><p class="docs-text">The <code>input</code> slot replaces the textarea. Flux fills it with its Pro editor; anything that collects text works — here a plain <code>flux:textarea</code> keeps its own resize handle.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
-        <div class="docs-preview-inner"><script>
+        <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1557,7 +1557,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1717,7 +1717,7 @@ document.addEventListener('livewire:init', () => {
 </div><div class="docs-note">Auto-growing, the counter and <code>submit="enter"</code> all belong to the built-in textarea, so a replacement brings its own. <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> keeps working either way.</div></section><section id="disabled-and-invalid" class="docs-section"><h2>Disabled and invalid</h2><p class="docs-text">A disabled composer is <code>inert</code> — the whole box, action buttons included, stops taking input. Validation errors come from the error bag for <code>name</code>, or from an explicit <code>error</code>.</p><div class="docs-example">
     <div class="docs-preview docs-preview-stretch">
         <div class="docs-preview-inner"><div class="w-full space-y-4">
-    <script>
+    <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1733,7 +1733,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
@@ -1981,7 +1981,7 @@ document.addEventListener('livewire:init', () => {
     </div>
 
     <form wire:submit="send">
-        <script>
+        <script >
 window.mds = window.mds || {}
 
 // Display-only: machine values stay Latin in the hidden inputs.
@@ -1997,7 +1997,7 @@ window.mds.latinDigits = (value) => String(value)
     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 </script>
 
-<script>
+<script >
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,

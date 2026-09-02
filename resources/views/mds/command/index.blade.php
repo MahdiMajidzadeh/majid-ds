@@ -5,7 +5,7 @@
 @include('mds::partials.digits')
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsCommand', () => ({
         query: '',

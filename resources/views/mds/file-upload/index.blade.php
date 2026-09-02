@@ -24,7 +24,7 @@ $invalid = $invalid || filled($error);
 @include('mds::partials.digits')
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,

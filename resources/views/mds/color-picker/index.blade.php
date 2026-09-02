@@ -51,7 +51,7 @@ $triggerSize = match ($size) {
 @endphp
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsColorPicker', (config) => ({
         open: false,

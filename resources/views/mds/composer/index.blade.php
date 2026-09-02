@@ -67,7 +67,7 @@ $row = $header ? 'row-start-2' : 'row-start-1';
 @include('mds::partials.digits')
 
 @once
-<script>
+<script @mdsNonce>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
