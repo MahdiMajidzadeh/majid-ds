@@ -27,7 +27,8 @@ $classes = match ($size) {
 {{-- Nothing to say without a discount: (int) null used to render «۰٪». --}}
 @if ($percent !== null)
 <span
-    {{ $attributes->class("inline-flex items-center justify-center rounded-full bg-red-500 font-bold text-white tabular-nums {$classes}") }}
+    {{-- red-600, not 500: white on red-500 is 3.8:1, under AA for 10-12px text. The dark pair mirrors the timeline indicator. --}}
+    {{ $attributes->class("inline-flex items-center justify-center rounded-full bg-red-600 font-bold text-white tabular-nums dark:bg-red-400 dark:text-red-950 {$classes}") }}
     aria-label="{{ $fa ? \MajidDs\Support\Persian::digits($percent).' درصد تخفیف' : $percent.'% off' }}"
     data-mds-discount-badge
 >{{ $fa ? \MajidDs\Support\Persian::digits($percent).'٪' : $percent.'%' }}</span>
