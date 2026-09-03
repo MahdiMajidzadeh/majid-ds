@@ -69,7 +69,6 @@
         "fix": "vendor/bin/pint",
         "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
         "check": [
-            "@lint",
             "@analyse",
             "@test"
         ]
@@ -81,9 +80,9 @@
     "prefer-stable": true,
     "scripts-descriptions": {
         "test": "Run the PHPUnit suite.",
-        "lint": "Check formatting with Pint, changing nothing.",
+        "lint": "Check formatting with Pint, changing nothing. CI runs this; locally, prefer `composer fix`.",
         "fix": "Apply Pint formatting.",
         "analyse": "Run PHPStan/Larastan static analysis.",
-        "check": "Everything CI would run: lint, analyse, test."
+        "check": "The local loop: analyse, then test. Formatting is CI's job — run `composer fix` before pushing if you like, but nothing here waits on it."
     }
 }

@@ -86,10 +86,15 @@ jobs:
 
       - run: composer test
 
-  quality:
-    name: Lint and static analysis
+  pint:
+    name: Formatting
     runs-on: ubuntu-latest
 
+    # Formatting is enforced here and nowhere else. `composer check` runs
+    # analyse and test only, so the local edit-run loop never waits on a
+    # formatter — a style slip should cost a named check on the pull request,
+    # not a second on every run all day. One PHP version is enough: Pint's
+    # rules do not vary by runtime.
     steps:
       - uses: actions/checkout@v4
 
@@ -103,10 +108,35 @@ jobs:
         env:
           COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
-      # One version is enough for both: Pint's rules do not vary by PHP, and
-      # PHPStan is pinned to level 7 over src/ regardless of the runtime.
-      - run: composer lint
+      - name: Check formatting
+        run: |
+          if ! composer lint; then
+            echo "::error::Formatting is off. Run 'composer fix' and commit the result."
+            exit 1
+          fi
 
+  analyse:
+    name: Static analysis
+    runs-on: ubuntu-latest
+
+    # Separate from formatting on purpose: PHPStan finding something real and
+    # Pint wanting a different line break are not the same news, and reading
+    # one should not mean scrolling past the other.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, mbstring, dom, libxml
+          coverage: none
+
+      - uses: ramsey/composer-install@v3
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+      # Pinned to level 7 over src/ regardless of the runtime — see CLAUDE.md
+      # for why level 8 is not on.
       - run: composer analyse
 
   docs:

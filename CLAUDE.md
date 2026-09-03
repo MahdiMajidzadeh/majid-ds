@@ -12,15 +12,22 @@ only covers what llms.txt doesn't: how to work on the package itself.
 ## Commands
 
 ```bash
-composer check                            # lint + analyse + test, in that order
+composer check                            # analyse + test — the local loop, no formatter
 composer test                             # full suite (~3s, keep it green)
-composer fix                              # apply Pint formatting (composer lint just checks)
+composer fix                              # apply Pint formatting (CI enforces it; composer lint only checks)
 composer analyse                          # PHPStan/Larastan, level 7 over src/
 vendor/bin/phpunit --filter composer      # one component's tests
 npm run docs                              # regenerate the 74 reference pages + docs/assets/site.css
 npm run pages                             # regenerate the 18 static layout-gallery pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
+
+Formatting is a CI concern, not a local one. `composer check` runs analyse and
+test only, so the edit-run loop never waits on a formatter that cannot tell you
+anything a reviewer would care about; the Pint job on CI is what enforces the
+style, and `composer fix` applies it in one pass whenever you want it. Nothing
+is lost — a formatting slip fails a named check on the pull request instead of
+slowing down every local run before it.
 
 Pint runs the `laravel` preset and skips Blade views. `src/MdsTagCompiler.php`
 is excluded from it on purpose: the file is a deliberate verbatim fork of
