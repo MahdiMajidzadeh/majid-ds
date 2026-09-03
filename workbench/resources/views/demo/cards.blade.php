@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
         <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
         <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
@@ -1257,6 +1258,51 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
 
     <flux:callout icon="information-circle">
         <flux:callout.text>{{ __('مقدار همیشه متن است، نه شناسه — پس با wire:model.live می‌توانید فهرست را روی سرور بسازید؛ کامپوننت پس از هر morph فهرست خود را دوباره می‌خواند.') }}</flux:callout.text>
+    </flux:callout>
+</flux:card>
+
+{{-- ============================== MDS: Carousel ============================== --}}
+<flux:card id="carousel" class="space-y-6">
+    <flux:heading size="lg">{{ __('اسلایدشو — mds:carousel') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Carousel (که در Flux فقط در نسخه Pro موجود است) — روی scroll snap ساخته شده، پس روی موبایل با انگشت کشیده می‌شود و در صفحه راست‌به‌چپ بدون هیچ تنظیمی درست حرکت می‌کند.') }}</flux:text>
+
+    <div class="space-y-2">
+        <flux:text class="text-sm font-medium">{{ __('بنر اصلی، با چرخش خودکار:') }}</flux:text>
+
+        <mds:carousel :label="__('پیشنهاد شگفت‌انگیز')" autoplay :interval="4000" aspect="aspect-[21/9]">
+            <mds:carousel.item>
+                <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-600 text-2xl font-semibold text-white">{{ __('جشنواره پاییزه') }}</div>
+            </mds:carousel.item>
+            <mds:carousel.item>
+                <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-amber-500 to-rose-600 text-2xl font-semibold text-white">{{ __('ارسال رایگان') }}</div>
+            </mds:carousel.item>
+            <mds:carousel.item>
+                <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-emerald-500 to-teal-700 text-2xl font-semibold text-white">{{ __('تازه‌های دیجیتال') }}</div>
+            </mds:carousel.item>
+        </mds:carousel>
+    </div>
+
+    <div class="space-y-2">
+        <flux:text class="text-sm font-medium">{{ __('نوار کالاها، سه اسلاید در هر نما:') }}</flux:text>
+
+        <mds:carousel :label="__('پیشنهاد ویژه برای شما')" per-view="3" gap="gap-4" :loop="false">
+            <mds:carousel.item>
+                <mds:product-card :title="__('گوشی موبایل سامسونگ Galaxy S25')" :amount="61990000" :original="68000000" :rating="4.6" :reviews="1240" />
+            </mds:carousel.item>
+            <mds:carousel.item>
+                <mds:product-card :title="__('هدفون بی‌سیم AirSound Pro')" :amount="18900000" :rating="4.8" :reviews="512" :badge="__('جدید')" />
+            </mds:carousel.item>
+            <mds:carousel.item>
+                <mds:product-card :title="__('ساعت هوشمند Fit Band 8')" :amount="3450000" :original="3990000" :rating="4.2" :reviews="88" />
+            </mds:carousel.item>
+            <mds:carousel.item>
+                <mds:product-card :title="__('شارژر سریع ۶۵ وات')" :amount="1290000" :rating="4.4" :reviews="203" />
+            </mds:carousel.item>
+        </mds:carousel>
+    </div>
+
+    <flux:callout icon="information-circle">
+        <flux:callout.text>{{ __('نوار اسلایدها با Tab قابل تمرکز است: کلیدهای چپ و راست بر اساس چیزی که می‌بینید کار می‌کنند، پس در صفحه راست‌به‌چپ کلید راست یعنی اسلاید قبلی. چرخش خودکار با نشانگر ماوس، تمرکز کیبورد یا تب پنهان متوقف می‌شود.') }}</flux:callout.text>
     </flux:callout>
 </flux:card>
 

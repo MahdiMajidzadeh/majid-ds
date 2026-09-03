@@ -595,5 +595,14 @@
     "حداقل دو حرف بنویسید...": "Type at least two characters...",
     "کالایی با این نام پیدا نشد.": "No product by that name.",
     "شارژر سریع ۶۵ وات": "65 W fast charger",
-    "مقدار همیشه متن است، نه شناسه — پس با wire:model.live می‌توانید فهرست را روی سرور بسازید؛ کامپوننت پس از هر morph فهرست خود را دوباره می‌خواند.": "The value is always text, never an id — so wire:model.live lets you build the list on the server; the component re-reads its own options after every morph."
+    "مقدار همیشه متن است، نه شناسه — پس با wire:model.live می‌توانید فهرست را روی سرور بسازید؛ کامپوننت پس از هر morph فهرست خود را دوباره می‌خواند.": "The value is always text, never an id — so wire:model.live lets you build the list on the server; the component re-reads its own options after every morph.",
+    "اسلایدشو": "Slideshow",
+    "اسلایدشو — mds:carousel": "Slideshow — mds:carousel",
+    "نسخه آزاد از کامپوننت Carousel (که در Flux فقط در نسخه Pro موجود است) — روی scroll snap ساخته شده، پس روی موبایل با انگشت کشیده می‌شود و در صفحه راست‌به‌چپ بدون هیچ تنظیمی درست حرکت می‌کند.": "An open version of the Carousel component (Pro-only in Flux) — built on scroll snapping, so it swipes natively on a phone and runs right-to-left with nothing to configure.",
+    "بنر اصلی، با چرخش خودکار:": "The main banner, rotating on its own:",
+    "جشنواره پاییزه": "Autumn sale",
+    "تازه‌های دیجیتال": "New in electronics",
+    "نوار کالاها، سه اسلاید در هر نما:": "A product strip, three slides per view:",
+    "پیشنهاد ویژه برای شما": "Recommended for you",
+    "نوار اسلایدها با Tab قابل تمرکز است: کلیدهای چپ و راست بر اساس چیزی که می‌بینید کار می‌کنند، پس در صفحه راست‌به‌چپ کلید راست یعنی اسلاید قبلی. چرخش خودکار با نشانگر ماوس، تمرکز کیبورد یا تب پنهان متوقف می‌شود.": "Tab reaches the slide strip: the left and right arrows follow what you see, so in an RTL page Right is the previous slide. Auto-rotation stops for a hovering pointer, for keyboard focus inside it, and for a hidden tab."
 }

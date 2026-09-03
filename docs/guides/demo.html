@@ -191,6 +191,9 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#carousel" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class=" flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Slideshow</div>
+    </a>
         <a href="#autocomplete" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -11623,6 +11626,829 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="carousel" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Slideshow — mds:carousel</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of the Carousel component (Pro-only in Flux) — built on scroll snapping, so it swipes natively on a phone and runs right-to-left with nothing to configure.</p>
+    <div class="space-y-2">
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >The main banner, rotating on its own:</p>
+        <script >
+window.mds = window.mds || {}
+
+window.mds.registerCarousel = (Alpine) => {
+    if (window.mds.carouselRegistered) return
+    window.mds.carouselRegistered = true
+
+    Alpine.data('mdsCarousel', (config = {}) => ({
+        active: config.start ?? 0,
+        total: config.total ?? 0,
+        perView: Math.max(1, config.perView ?? 1),
+        loop: config.loop ?? true,
+        autoplay: config.autoplay ?? false,
+        interval: Math.max(500, config.interval ?? 5000),
+        fa: config.fa ?? true,
+        labels: config.labels ?? {},
+        status: '',
+        playing: false,
+        reduced: false,
+        hovered: false,
+        focused: false,
+        scrolling: false,
+        items: [],
+        visible: null,
+        observer: null,
+        watcher: null,
+        motion: null,
+        timer: null,
+        settle: null,
+
+        init() {
+            // Reduced motion disables auto-rotation outright (the user can
+            // still press play) and makes every programmatic scroll instant.
+            this.motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+            this.reduced = this.motion.matches
+            this.onMotion = () => {
+                this.reduced = this.motion.matches
+
+                if (this.reduced) this.playing = false
+            }
+            this.motion.addEventListener('change', this.onMotion)
+
+            this.playing = this.autoplay && ! this.reduced
+
+            // The server derived the gap from the class name; the computed
+            // value is the truth (responsive gaps, unusual classes).
+            const gap = getComputedStyle(this.$refs.track).columnGap
+
+            if (gap && gap !== 'normal') this.$refs.track.style.setProperty('--mds-carousel-gap', gap)
+
+            this.refresh()
+
+            // Slides arrive as slot content, and a Livewire morph or an x-for
+            // can add or remove them later — re-scan when the track changes.
+            this.watcher = new MutationObserver(() => this.refresh())
+            this.watcher.observe(this.$refs.track, { childList: true })
+
+            // The scroll position cannot be server-rendered: jump to `start`.
+            if (this.active > 0) this.$nextTick(() => this.go(this.active, 'auto'))
+
+            if (this.autoplay) this.timer = setInterval(() => this.tick(), this.interval)
+        },
+
+        destroy() {
+            clearInterval(this.timer)
+            clearTimeout(this.settle)
+            this.observer?.disconnect()
+            this.watcher?.disconnect()
+            this.motion?.removeEventListener('change', this.onMotion)
+            this.observer = this.watcher = this.motion = this.timer = this.settle = null
+        },
+
+        // Only direct children: a carousel nested inside a slide keeps its own.
+        refresh() {
+            this.items = [...this.$refs.track.querySelectorAll(':scope > [data-mds-carousel-item]')]
+            this.total = this.items.length
+            this.active = Math.min(this.active, this.last)
+
+            // Slides cannot know their own position from inside a Blade slot.
+            this.items.forEach((el, i) => el.setAttribute('aria-label', this.format(this.labels.item, i + 1)))
+
+            this.announce()
+
+            // Swipes, trackpad scrolls and buttons all end in the same place:
+            // the active slide is the first one at least 60% inside the track.
+            this.observer?.disconnect()
+            this.visible = new Set()
+            this.observer = new IntersectionObserver((entries) => this.observe(entries), { root: this.$refs.track, threshold: 0.6 })
+            this.items.forEach(el => this.observer.observe(el))
+        },
+
+        observe(entries) {
+            for (const entry of entries) {
+                const i = this.items.indexOf(entry.target)
+
+                if (i === -1) continue
+
+                entry.isIntersecting ? this.visible.add(i) : this.visible.delete(i)
+            }
+
+            // Mid-swipe neither neighbour qualifies — keep the last answer.
+            if (! this.visible.size) return
+
+            const first = Math.min(...this.visible)
+
+            if (first !== this.active) {
+                this.active = first
+                this.announce()
+            }
+        },
+
+        // The last position a view can start from, and how many there are.
+        get last() { return Math.max(0, this.total - this.perView) },
+        get pages() { return this.last + 1 },
+        get atStart() { return ! this.loop && this.active <= 0 },
+        get atEnd() { return ! this.loop && this.active >= this.last },
+
+        // scrollIntoView follows the writing direction, so RTL needs no
+        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        go(i, behavior = null) {
+            if (! this.total) return
+
+            i = this.loop
+                ? ((i % this.pages) + this.pages) % this.pages
+                : Math.max(0, Math.min(i, this.last))
+
+            const el = this.items[i]
+
+            if (! el) return
+
+            this.active = i
+            this.announce()
+
+            el.scrollIntoView({
+                inline: 'start',
+                block: 'nearest',
+                behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
+            })
+        },
+
+        next() { this.go(this.active + 1) },
+        prev() { this.go(this.active - 1) },
+
+        toggle() {
+            this.playing = ! this.playing
+        },
+
+        // One interval, many reasons to sit a beat out: paused by the user,
+        // a pointer over the slides, focus inside them, a swipe in progress
+        // or a hidden tab. A non-looping show stops at the end.
+        tick() {
+            if (! this.playing || this.hovered || this.focused || this.scrolling || document.hidden) return
+
+            if (! this.loop && this.active >= this.last) {
+                this.playing = false
+
+                return
+            }
+
+            this.next()
+        },
+
+        scrolled() {
+            this.scrolling = true
+            clearTimeout(this.settle)
+            this.settle = setTimeout(() => { this.scrolling = false }, 150)
+        },
+
+        // Horizontal arrows follow the VISUAL order: in RTL the next slide
+        // sits to the left. Text fields inside a slide keep their arrows.
+        keydown(event) {
+            if (event.altKey || event.ctrlKey || event.metaKey) return
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable) return
+
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+
+            const handlers = {
+                ArrowRight: () => rtl ? this.prev() : this.next(),
+                ArrowLeft: () => rtl ? this.next() : this.prev(),
+                Home: () => this.go(0),
+                End: () => this.go(this.last),
+            }
+
+            if (! handlers[event.key]) return
+
+            event.preventDefault()
+            handlers[event.key]()
+        },
+
+        format(template, n) {
+            return String(template ?? '')
+                .replace('{n}', window.mds.digits(n, this.fa))
+                .replace('{total}', window.mds.digits(this.total, this.fa))
+        },
+
+        // Idempotent: the live region only speaks when the text changes, so
+        // go() and the observer agreeing on a slide does not announce twice.
+        announce() {
+            const text = this.format(this.labels.status, this.active + 1)
+
+            if (text !== this.status) this.status = text
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerCarousel(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerCarousel(window.Alpine))
+}
+</script>
+
+<div
+    class="relative w-full"
+    x-id="['mds-carousel-track']"
+    x-data="mdsCarousel({
+        start: 0,
+        total: 3,
+        perView: 1,
+        loop: true,
+        autoplay: true,
+        interval: 4000,
+        fa: false,
+        labels: JSON.parse('{\u0022status\u0022:\u0022Slide {n} of {total}\u0022,\u0022item\u0022:\u0022{n} of {total}\u0022,\u0022dot\u0022:\u0022Go to slide {n}\u0022,\u0022pause\u0022:\u0022Pause\u0022,\u0022play\u0022:\u0022Play\u0022}'),
+    })"
+    x-on:keydown="keydown($event)"
+    x-on:mouseenter="hovered = true"
+    x-on:mouseleave="hovered = false"
+    x-on:focusin="focused = true"
+    x-on:focusout="focused = false"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Flash deals"
+    data-mds-carousel
+>
+    <div class="relative">
+        <div
+            class="flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden motion-safe:scroll-smooth focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent gap-0 aspect-[21/9]"
+            style="--mds-carousel-per-view: 1; --mds-carousel-gap: 0px"
+            x-ref="track"
+            x-bind:id="$id('mds-carousel-track')"
+            x-on:scroll.passive="scrolled()"
+            tabindex="0"
+            data-mds-carousel-track
+        >
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-600 text-2xl font-semibold text-white">Autumn sale</div>
+</div>
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-amber-500 to-rose-600 text-2xl font-semibold text-white">Free shipping</div>
+</div>
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-emerald-500 to-teal-700 text-2xl font-semibold text-white">New in electronics</div>
+</div>
+        </div>
+
+                    
+            <button
+                type="button"
+                class="absolute top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-zinc-800 shadow-sm backdrop-blur transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-900/70 dark:text-white dark:hover:bg-zinc-900 start-2"
+                x-on:click="prev()"
+                x-bind:disabled="atStart"
+                x-bind:aria-controls="$id('mds-carousel-track')"
+                                aria-label="Previous"
+                data-mds-carousel-prev
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 rtl:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18C15 18 9.00001 13.5811 9 12C8.99999 10.4188 15 6 15 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 ltr:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.00005 18C9.00005 18 15 13.5811 15 12C15 10.4188 9 6 9 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </button>
+
+            <button
+                type="button"
+                class="absolute top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-zinc-800 shadow-sm backdrop-blur transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-900/70 dark:text-white dark:hover:bg-zinc-900 end-2"
+                x-on:click="next()"
+                x-bind:disabled="atEnd"
+                x-bind:aria-controls="$id('mds-carousel-track')"
+                                aria-label="Next"
+                data-mds-carousel-next
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 rtl:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.00005 18C9.00005 18 15 13.5811 15 12C15 10.4188 9 6 9 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 ltr:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18C15 18 9.00001 13.5811 9 12C8.99999 10.4188 15 6 15 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </button>
+        
+                    
+            <button
+                type="button"
+                class="absolute bottom-2 end-2 z-10 flex size-8 items-center justify-center rounded-full bg-white/80 text-zinc-800 shadow-sm backdrop-blur transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-zinc-900/70 dark:text-white dark:hover:bg-zinc-900"
+                x-on:click="toggle()"
+                x-bind:aria-label="playing ? labels.pause : labels.play"
+                aria-label="Pause"
+                data-mds-carousel-toggle
+            >
+                <span x-show="playing"><svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7C4 5.58579 4 4.87868 4.43934 4.43934C4.87868 4 5.58579 4 7 4C8.41421 4 9.12132 4 9.56066 4.43934C10 4.87868 10 5.58579 10 7V17C10 18.4142 10 19.1213 9.56066 19.5607C9.12132 20 8.41421 20 7 20C5.58579 20 4.87868 20 4.43934 19.5607C4 19.1213 4 18.4142 4 17V7Z" stroke="currentColor" stroke-width="1.5" /><path d="M14 7C14 5.58579 14 4.87868 14.4393 4.43934C14.8787 4 15.5858 4 17 4C18.4142 4 19.1213 4 19.5607 4.43934C20 4.87868 20 5.58579 20 7V17C20 18.4142 20 19.1213 19.5607 19.5607C19.1213 20 18.4142 20 17 20C15.5858 20 14.8787 20 14.4393 19.5607C14 19.1213 14 18.4142 14 17V7Z" stroke="currentColor" stroke-width="1.5" /></svg>
+</span>
+                <span x-show="! playing" x-cloak><svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361C10.296 18.8709 8.6812 19.7884 7.37983 19.4196C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787C5 17.6139 5 15.7426 5 12C5 8.2574 5 6.3861 5.95624 5.42132C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042C8.6812 4.21165 10.296 5.12907 13.5257 6.96393C16.8667 8.86197 18.5371 9.811 18.8906 11.154C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</span>
+            </button>
+            </div>
+
+            <div class="mt-3 flex items-center justify-center gap-1.5" data-mds-carousel-indicators>
+                            <button
+                    type="button"
+                    class="flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    x-on:click="go(0)"
+                    x-bind:aria-current="active === 0 ? 'true' : null"
+                     aria-current="true"                     aria-label="Go to slide 1"
+                    data-mds-carousel-dot
+                >
+                    <span
+                        class="block h-2 rounded-full transition-all w-5 bg-accent"
+                        x-bind:class="{ 'w-5 bg-accent': active === 0, 'w-2 bg-zinc-300 dark:bg-white/30': active !== 0 }"
+                    ></span>
+                </button>
+                            <button
+                    type="button"
+                    class="flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    x-on:click="go(1)"
+                    x-bind:aria-current="active === 1 ? 'true' : null"
+                                        aria-label="Go to slide 2"
+                    data-mds-carousel-dot
+                >
+                    <span
+                        class="block h-2 rounded-full transition-all w-2 bg-zinc-300 dark:bg-white/30"
+                        x-bind:class="{ 'w-5 bg-accent': active === 1, 'w-2 bg-zinc-300 dark:bg-white/30': active !== 1 }"
+                    ></span>
+                </button>
+                            <button
+                    type="button"
+                    class="flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    x-on:click="go(2)"
+                    x-bind:aria-current="active === 2 ? 'true' : null"
+                                        aria-label="Go to slide 3"
+                    data-mds-carousel-dot
+                >
+                    <span
+                        class="block h-2 rounded-full transition-all w-2 bg-zinc-300 dark:bg-white/30"
+                        x-bind:class="{ 'w-5 bg-accent': active === 2, 'w-2 bg-zinc-300 dark:bg-white/30': active !== 2 }"
+                    ></span>
+                </button>
+                    </div>
+    
+    
+    <div
+        class="sr-only"
+        aria-live="off"
+        aria-atomic="true"
+        x-bind:aria-live="playing ? 'off' : 'polite'"
+        x-text="status"
+        data-mds-carousel-status>Slide 1 of 3</div>
+</div>
+    </div>
+
+    <div class="space-y-2">
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >A product strip, three slides per view:</p>
+        <div
+    class="relative w-full"
+    x-id="['mds-carousel-track']"
+    x-data="mdsCarousel({
+        start: 0,
+        total: 4,
+        perView: 3,
+        loop: false,
+        autoplay: false,
+        interval: 5000,
+        fa: false,
+        labels: JSON.parse('{\u0022status\u0022:\u0022Slide {n} of {total}\u0022,\u0022item\u0022:\u0022{n} of {total}\u0022,\u0022dot\u0022:\u0022Go to slide {n}\u0022,\u0022pause\u0022:\u0022Pause\u0022,\u0022play\u0022:\u0022Play\u0022}'),
+    })"
+    x-on:keydown="keydown($event)"
+    x-on:mouseenter="hovered = true"
+    x-on:mouseleave="hovered = false"
+    x-on:focusin="focused = true"
+    x-on:focusout="focused = false"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Recommended for you"
+    data-mds-carousel
+>
+    <div class="relative">
+        <div
+            class="flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden motion-safe:scroll-smooth focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent gap-4 "
+            style="--mds-carousel-per-view: 3; --mds-carousel-gap: calc(var(--spacing) * 4)"
+            x-ref="track"
+            x-bind:id="$id('mds-carousel-track')"
+            x-on:scroll.passive="scrolled()"
+            tabindex="0"
+            data-mds-carousel-track
+        >
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-4 [:where(&amp;)]:rounded-lg group relative flex flex-col gap-3" data-mds-product-card="data-mds-product-card" data-flux-card>
+    <div class="relative">
+        
+        <a  class="block">
+                            <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 dark:bg-white/5 dark:text-zinc-600">
+                    <svg aria-hidden="true" data-mds-icon="" class="size-10" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" /><path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" stroke-width="1.5" /></svg>
+                </div>
+                    </a>
+    </div>
+
+    <a  class="block">
+        <h3 class="line-clamp-2 min-h-10 text-sm/5 font-medium text-zinc-800 dark:text-white">Samsung Galaxy S25</h3>
+    </a>
+
+            <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="4.6 / 5"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 92.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
+
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">4.6</span>
+    
+            <span class="text-xs text-zinc-400 dark:text-zinc-500">(1,240)</span>
+    </div>
+    
+    
+            <div class="mt-auto flex items-center justify-between gap-2">
+                                                <span
+    
+    class="inline-flex items-center justify-center rounded-full bg-red-600 font-bold text-white tabular-nums dark:bg-red-400 dark:text-red-950 px-2 py-0.5 text-xs"
+    aria-label="9% off"
+    data-mds-discount-badge
+>9%</span>
+                
+                <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">68,000,000</del>
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">61,990,000</span>
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
+                    </div>
+    </div>
+</div>
+                    </div>
+</div>
+</div>
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-4 [:where(&amp;)]:rounded-lg group relative flex flex-col gap-3" data-mds-product-card="data-mds-product-card" data-flux-card>
+    <div class="relative">
+                    <div class="absolute start-0 top-0 z-10">
+                <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-lime-800 [&amp;_button]:text-lime-800! dark:text-lime-200 dark:[&amp;_button]:text-lime-200! bg-lime-400/25 dark:bg-lime-400/40 [&amp;:is(button)]:hover:bg-lime-400/35 dark:[button]:hover:bg-lime-400/50">
+        New
+    </div>
+            </div>
+        
+        <a  class="block">
+                            <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 dark:bg-white/5 dark:text-zinc-600">
+                    <svg aria-hidden="true" data-mds-icon="" class="size-10" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" /><path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" stroke-width="1.5" /></svg>
+                </div>
+                    </a>
+    </div>
+
+    <a  class="block">
+        <h3 class="line-clamp-2 min-h-10 text-sm/5 font-medium text-zinc-800 dark:text-white">AirSound Pro wireless headphones</h3>
+    </a>
+
+            <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="4.8 / 5"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 96.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
+
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">4.8</span>
+    
+            <span class="text-xs text-zinc-400 dark:text-zinc-500">(512)</span>
+    </div>
+    
+    
+            <div class="mt-auto flex items-center justify-between gap-2">
+                                                <span></span>
+                
+                <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">18,900,000</span>
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
+                    </div>
+    </div>
+</div>
+                    </div>
+</div>
+</div>
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-4 [:where(&amp;)]:rounded-lg group relative flex flex-col gap-3" data-mds-product-card="data-mds-product-card" data-flux-card>
+    <div class="relative">
+        
+        <a  class="block">
+                            <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 dark:bg-white/5 dark:text-zinc-600">
+                    <svg aria-hidden="true" data-mds-icon="" class="size-10" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" /><path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" stroke-width="1.5" /></svg>
+                </div>
+                    </a>
+    </div>
+
+    <a  class="block">
+        <h3 class="line-clamp-2 min-h-10 text-sm/5 font-medium text-zinc-800 dark:text-white">Fit Band 8 smartwatch</h3>
+    </a>
+
+            <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="4.2 / 5"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 84.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
+
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">4.2</span>
+    
+            <span class="text-xs text-zinc-400 dark:text-zinc-500">(88)</span>
+    </div>
+    
+    
+            <div class="mt-auto flex items-center justify-between gap-2">
+                                                <span
+    
+    class="inline-flex items-center justify-center rounded-full bg-red-600 font-bold text-white tabular-nums dark:bg-red-400 dark:text-red-950 px-2 py-0.5 text-xs"
+    aria-label="14% off"
+    data-mds-discount-badge
+>14%</span>
+                
+                <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+                    <del class="text-xs leading-4 text-zinc-400 dark:text-zinc-500" aria-label="Original price">3,990,000</del>
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">3,450,000</span>
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
+                    </div>
+    </div>
+</div>
+                    </div>
+</div>
+</div>
+            <div
+    class="min-w-0 shrink-0 snap-start"
+    style="flex: 0 0 calc((100% - (var(--mds-carousel-per-view, 1) - 1) * var(--mds-carousel-gap, 0px)) / var(--mds-carousel-per-view, 1))"
+    role="group"
+    aria-roledescription="slide"
+    data-mds-carousel-item
+>
+    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-4 [:where(&amp;)]:rounded-lg group relative flex flex-col gap-3" data-mds-product-card="data-mds-product-card" data-flux-card>
+    <div class="relative">
+        
+        <a  class="block">
+                            <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-zinc-100 text-zinc-300 dark:bg-white/5 dark:text-zinc-600">
+                    <svg aria-hidden="true" data-mds-icon="" class="size-10" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" /><path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" stroke-width="1.5" /></svg>
+                </div>
+                    </a>
+    </div>
+
+    <a  class="block">
+        <h3 class="line-clamp-2 min-h-10 text-sm/5 font-medium text-zinc-800 dark:text-white">65 W fast charger</h3>
+    </a>
+
+            <div
+    class="inline-flex items-center gap-1.5"
+    role="img"
+    aria-label="4.4 / 5"
+    data-mds-rating
+>
+    <div class="inline-grid align-middle">
+        <div class="flex items-center gap-0.5 text-zinc-300 dark:text-zinc-600 [grid-area:1/1]">
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            
+            <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+
+        <div class="flex overflow-hidden [grid-area:1/1]" style="width: 88.0000%">
+            <div class="flex items-center gap-0.5 shrink-0 text-amber-400">
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="size-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.363-1.118l-2.8-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </div>
+        </div>
+    </div>
+
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-200">4.4</span>
+    
+            <span class="text-xs text-zinc-400 dark:text-zinc-500">(203)</span>
+    </div>
+    
+    
+            <div class="mt-auto flex items-center justify-between gap-2">
+                                                <span></span>
+                
+                <div class="inline-flex items-center gap-2" data-mds-price>
+    
+    <div class="flex flex-col items-end">
+        
+        <div class="flex items-baseline gap-1">
+            <span class="text-base font-bold tabular-nums text-zinc-800 dark:text-white">1,290,000</span>
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Toman</span>
+                    </div>
+    </div>
+</div>
+                    </div>
+</div>
+</div>
+        </div>
+
+                    
+            <button
+                type="button"
+                class="absolute top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-zinc-800 shadow-sm backdrop-blur transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-900/70 dark:text-white dark:hover:bg-zinc-900 start-2"
+                x-on:click="prev()"
+                x-bind:disabled="atStart"
+                x-bind:aria-controls="$id('mds-carousel-track')"
+                 disabled                 aria-label="Previous"
+                data-mds-carousel-prev
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 rtl:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18C15 18 9.00001 13.5811 9 12C8.99999 10.4188 15 6 15 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 ltr:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.00005 18C9.00005 18 15 13.5811 15 12C15 10.4188 9 6 9 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </button>
+
+            <button
+                type="button"
+                class="absolute top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-zinc-800 shadow-sm backdrop-blur transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 dark:bg-zinc-900/70 dark:text-white dark:hover:bg-zinc-900 end-2"
+                x-on:click="next()"
+                x-bind:disabled="atEnd"
+                x-bind:aria-controls="$id('mds-carousel-track')"
+                                aria-label="Next"
+                data-mds-carousel-next
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 rtl:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.00005 18C9.00005 18 15 13.5811 15 12C15 10.4188 9 6 9 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                <svg aria-hidden="true" data-mds-icon="" class="size-5 ltr:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18C15 18 9.00001 13.5811 9 12C8.99999 10.4188 15 6 15 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </button>
+        
+            </div>
+
+            <div class="mt-3 flex items-center justify-center gap-1.5" data-mds-carousel-indicators>
+                            <button
+                    type="button"
+                    class="flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    x-on:click="go(0)"
+                    x-bind:aria-current="active === 0 ? 'true' : null"
+                     aria-current="true"                     aria-label="Go to slide 1"
+                    data-mds-carousel-dot
+                >
+                    <span
+                        class="block h-2 rounded-full transition-all w-5 bg-accent"
+                        x-bind:class="{ 'w-5 bg-accent': active === 0, 'w-2 bg-zinc-300 dark:bg-white/30': active !== 0 }"
+                    ></span>
+                </button>
+                            <button
+                    type="button"
+                    class="flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    x-on:click="go(1)"
+                    x-bind:aria-current="active === 1 ? 'true' : null"
+                                        aria-label="Go to slide 2"
+                    data-mds-carousel-dot
+                >
+                    <span
+                        class="block h-2 rounded-full transition-all w-2 bg-zinc-300 dark:bg-white/30"
+                        x-bind:class="{ 'w-5 bg-accent': active === 1, 'w-2 bg-zinc-300 dark:bg-white/30': active !== 1 }"
+                    ></span>
+                </button>
+                    </div>
+    
+    
+    <div
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+        x-bind:aria-live="playing ? 'off' : 'polite'"
+        x-text="status"
+        data-mds-carousel-status>Slide 1 of 4</div>
+</div>
+    </div>
+
+    <div class="@container p-2 flex border rounded-xl border-(--callout-border) bg-(--callout-background) [&amp;_[data-slot=heading]]:text-(--callout-heading) [&amp;_[data-slot=text]]:text-(--callout-text) [--callout-border:var(--color-zinc-200)] dark:[--callout-border:color-mix(in_oklab,var(--color-white),transparent_95%)] [--callout-background:var(--color-white)] dark:[--callout-background:color-mix(in_oklab,var(--color-zinc-400),transparent_90%)] [--callout-heading:var(--color-zinc-800)] dark:[--callout-heading:var(--color-zinc-200)] [--callout-text:var(--color-zinc-500)] dark:[--callout-text:var(--color-zinc-300)] [--callout-icon:var(--color-zinc-400)] dark:[--callout-icon:var(--color-zinc-400)]" data-flux-callout>
+            <div class="ps-2 py-2 pe-0 flex items-baseline">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 inline-block size-5 text-[var(--callout-icon)] dark:text-[var(--callout-icon)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd"/>
+</svg>
+
+                </div>
+    
+    <div class="ps-2 flex-1 ">
+        <div class="flex-1 py-2 pe-3 @md:pe-4 flex flex-col justify-center gap-2" data-slot="content">
+            
+            
+            <div class="text-sm" data-slot="text">
+    Tab reaches the slide strip: the left and right arrows follow what you see, so in an RTL page Right is the previous slide. Auto-rotation stops for a hovering pointer, for keyboard focus inside it, and for a hidden tab.
+</div>
+        </div>
+
+            </div>
+
+    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -13623,7 +14449,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

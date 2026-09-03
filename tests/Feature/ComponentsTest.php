@@ -1652,6 +1652,16 @@ class ComponentsTest extends TestCase
             // needle is the sentence (as with the 'command empty state' row) rather
             // than a >…< anchor — ComponentsTest does not collapse whitespace.
             'autocomplete empty state' => ['<mds:autocomplete empty />', 'موردی یافت نشد.', 'No matches.'],
+            'carousel role description' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-roledescription="اسلایدشو"', 'aria-roledescription="carousel"'],
+            'carousel label' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="اسلایدشو"', 'aria-label="Slideshow"'],
+            'carousel slide' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-roledescription="اسلاید"', 'aria-roledescription="slide"'],
+            'carousel previous' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="قبلی"', 'aria-label="Previous"'],
+            'carousel next' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="بعدی"', 'aria-label="Next"'],
+            'carousel pause' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="توقف"', 'aria-label="Pause"'],
+            // The play label only shows after a click; it travels in the x-data config, quotes escaped by Js::from().
+            'carousel play' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', '\\u0022play\\u0022:\\u0022پخش\\u0022', '\\u0022play\\u0022:\\u0022Play\\u0022'],
+            'carousel dot' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="رفتن به اسلاید ۱"', 'aria-label="Go to slide 1"'],
+            'carousel status' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item><mds:carousel.item>y</mds:carousel.item></mds:carousel>', 'data-mds-carousel-status>اسلاید ۱ از ۲<', 'data-mds-carousel-status>Slide 1 of 2<'],
         ];
     }
 

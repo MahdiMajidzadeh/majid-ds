@@ -101,6 +101,7 @@ return [
             'time-picker' => 'mds:time-picker',
             'tabs' => 'mds:tabs',
             'autocomplete' => 'mds:autocomplete',
+            'carousel' => 'mds:carousel',
         ],
     ],
 ];

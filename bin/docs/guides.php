@@ -41,6 +41,7 @@ $demoAnchors = [
     'time-picker' => 'Time picker',
     'tabs' => 'Tabs',
     'autocomplete' => 'Autocomplete',
+    'carousel' => 'Carousel',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

@@ -3009,4 +3009,169 @@ $pages['autocomplete'] = [
     'related' => ['input', 'select', 'command'],
 ];
 
+// ---------------------------------------------------------- mds:carousel
+
+// Paste into bin/docs/mds.php (keep the file's slug order in sync with bin/docs/nav.php).
+// Nav entry:  'carousel' => 'mds:carousel',
+
+// -------------------------------------------------------------- mds:carousel
+
+$pages['carousel'] = [
+    'group' => 'mds',
+    'title' => 'mds:carousel',
+    'lede' => 'A slide strip with controls, dots and autoplay — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Carousel is Pro-only. This is a working replacement built on CSS scroll snapping rather than transform arithmetic, which is what makes it swipe natively on a phone and — more to the point here — run right-to-left with nothing to configure. The preview is live: drag it, or focus the strip and use the arrow keys.',
+            'code' => <<<'BLADE'
+            <mds:carousel label="Featured banners" aspect="aspect-[21/9]" class="max-w-2xl">
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-sky-500 to-indigo-600 text-2xl font-semibold text-white">Autumn sale</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-500 to-rose-600 text-2xl font-semibold text-white">Free shipping</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-700 text-2xl font-semibold text-white">New arrivals</div>
+                </mds:carousel.item>
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The strip itself is focusable, so <code>Tab</code> reaches it and <code>Home</code>/<code>End</code> jump to the ends. The horizontal arrows follow what you see rather than the index: in an RTL page <code>→</code> is the previous slide.',
+        ],
+        [
+            'name' => 'Several slides at once',
+            'text' => '<code>per-view</code> is how many slides fit, <code>gap</code> the space between them — a Tailwind gap class, because the item width is computed from it. With five slides three at a time there are three positions, and the dots count positions, not slides.',
+            'code' => <<<'BLADE'
+            <mds:carousel per-view="3" gap="gap-4" label="Categories">
+                @foreach (['Mobile', 'Laptops', 'Headphones', 'Watches', 'Cameras'] as $category)
+                    <mds:carousel.item>
+                        <div class="flex h-28 items-center justify-center rounded-xl bg-zinc-100 text-sm font-medium text-zinc-700 dark:bg-white/10 dark:text-zinc-200">{{ $category }}</div>
+                    </mds:carousel.item>
+                @endforeach
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Autoplay',
+            'text' => 'Rotation with a pause button beside the slides. It steps aside for the reader: a tick is skipped while the pointer is over the carousel, while focus is inside it, mid-swipe, and while the tab is in the background. Under <code>prefers-reduced-motion</code> it starts paused instead.',
+            'code' => <<<'BLADE'
+            <mds:carousel autoplay :interval="3000" aspect="aspect-[21/9]" label="Deals" class="max-w-2xl">
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-fuchsia-500 to-purple-700 text-2xl font-semibold text-white">Today only</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-500 to-red-600 text-2xl font-semibold text-white">Up to 60% off</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-700 text-2xl font-semibold text-white">Members' prices</div>
+                </mds:carousel.item>
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The live region that announces «Slide 2 of 3» goes quiet while the carousel is rotating on its own — a region that speaks every three seconds is noise. It comes back the moment the reader takes over.',
+        ],
+        [
+            'name' => 'Without looping',
+            'text' => '<code>:loop="false"</code> makes the strip finite: the previous and next buttons disable at the ends — the first one already disabled in the server-rendered HTML, before Alpine boots — and autoplay stops on the last slide instead of starting over.',
+            'code' => <<<'BLADE'
+            <mds:carousel :loop="false" per-view="2" gap="gap-3" label="Steps">
+                @foreach (['Cart', 'Address', 'Payment', 'Done'] as $step)
+                    <mds:carousel.item>
+                        <div class="flex h-24 items-center justify-center rounded-xl border border-zinc-200 text-sm font-medium dark:border-white/10">{{ $step }}</div>
+                    </mds:carousel.item>
+                @endforeach
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Controls, indicators and the starting slide',
+            'text' => 'Turn either chrome off with <code>:controls="false"</code> and <code>:indicators="false"</code> — a touch-first strip that is simply scrolled, say. <code>start</code> picks the position it opens on.',
+            'code' => <<<'BLADE'
+            <div class="w-full space-y-8">
+                <mds:carousel :controls="false" per-view="4" gap="gap-3" label="Brands">
+                    @foreach (['Samsung', 'Xiaomi', 'Apple', 'Nokia', 'Huawei', 'Sony'] as $brand)
+                        <mds:carousel.item>
+                            <div class="flex h-16 items-center justify-center rounded-lg bg-zinc-100 text-xs font-medium dark:bg-white/10">{{ $brand }}</div>
+                        </mds:carousel.item>
+                    @endforeach
+                </mds:carousel>
+
+                <mds:carousel :indicators="false" :start="2" aspect="aspect-[4/1]" label="Starts on the third slide">
+                    @foreach (['One', 'Two', 'Three', 'Four'] as $slide)
+                        <mds:carousel.item>
+                            <div class="flex h-full w-full items-center justify-center bg-zinc-800 text-lg font-semibold text-white dark:bg-white/10">{{ $slide }}</div>
+                        </mds:carousel.item>
+                    @endforeach
+                </mds:carousel>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'A product strip',
+            'text' => 'What a storefront actually reaches for: <code>mds:product-card</code> slides, several per view, with a gap between them.',
+            'code' => <<<'BLADE'
+            <mds:carousel per-view="3" gap="gap-4" :loop="false" label="Recommended for you">
+                <mds:carousel.item>
+                    <mds:product-card title="Galaxy S24 Ultra 512GB" :amount="61990000" :original="68000000" :rating="4.6" :reviews="1240" />
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <mds:product-card title="Sony WH-1000XM5 headphones" :amount="18900000" :rating="4.8" :reviews="512" badge="New" />
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <mds:product-card title="Xiaomi Redmi Watch 5" :amount="3450000" :original="3990000" :rating="4.2" :reviews="88" />
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <mds:product-card title="Anker 65W charger" :amount="1290000" :rating="4.4" :reviews="203" />
+                </mds:carousel.item>
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => 'The same markup in an RTL page. Nothing is mirrored by hand: the strip is a native scroller, so it starts at the right edge and «next» moves left; the chevrons swap; and <code>:fa="true"</code> (or <code>config(\'mds.persian_digits\')</code>, on by default in a real app) puts the button labels, the dot labels and the «اسلاید ۱ از ۳» announcement into Persian.',
+            'code' => <<<'BLADE'
+            <mds:carousel :fa="true" label="پیشنهاد شگفت‌انگیز" autoplay :interval="4000" aspect="aspect-[21/9]" class="max-w-2xl">
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-600 text-2xl font-semibold text-white">جشنواره پاییزه</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-amber-500 to-rose-600 text-2xl font-semibold text-white">ارسال رایگان</div>
+                </mds:carousel.item>
+                <mds:carousel.item>
+                    <div class="flex h-full w-full items-center justify-center bg-gradient-to-bl from-emerald-500 to-teal-700 text-2xl font-semibold text-white">تازه‌های دیجیتال</div>
+                </mds:carousel.item>
+            </mds:carousel>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:carousel', 'props' => [
+            ['label', 'Accessible name for the carousel region. Default: "Slideshow", or اسلایدشو in Persian.'],
+            ['autoplay', 'Rotates on its own, and adds a pause/play button. Default: <code>false</code>.'],
+            ['interval', 'Milliseconds between slides. Default: <code>5000</code>, floor <code>500</code>.'],
+            ['loop', 'Wraps around at the ends. Default: <code>true</code>.'],
+            ['indicators', 'Shows the dots. Default: <code>true</code>.'],
+            ['controls', 'Shows the previous/next buttons. Default: <code>true</code>.'],
+            ['per-view', 'Slides visible at once. Default: <code>1</code>.'],
+            ['gap', 'Tailwind gap class for the strip, e.g. <code>gap-4</code>. Default: <code>gap-0</code>.'],
+            ['start', 'Position the carousel opens on. Default: <code>0</code>.'],
+            ['aspect', 'Aspect-ratio class for the strip, e.g. <code>aspect-video</code>.'],
+            ['fa', 'Persian labels and digits. Default: <code>config(\'mds.persian_digits\')</code>.'],
+        ]],
+        ['name' => 'mds:carousel.item', 'props' => [
+            ['fa', 'Inherited from the carousel.'],
+        ], 'text' => 'One slide. The default slot is any content — an image, a card, a whole panel.'],
+    ],
+    'related' => ['product-card', 'card'],
+];
+
 return $pages;

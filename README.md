@@ -711,6 +711,24 @@ An open implementation of Flux Pro's autocomplete: a real `flux:input` that keep
 
 Props: `value`, `name`, `label`, `description`, `placeholder`, `icon`, `clearable`, `min-chars` (default `0`), `empty` (bare attribute for the built-in "no matches" line, or your own string), `strict`, `size` (`sm`/`xs`), `disabled`, `invalid`, `error`, `fa`; `autocomplete.item` takes `value`, `disabled`, `fa`. `wire:model` binds the text and reaches the input itself, so a Livewire-filtered list works — the component re-scans its options after every morph.
 
+### `<mds:carousel>`
+
+An open implementation of Flux Pro's carousel: a scroll-snap slide strip with previous/next buttons, indicator dots, optional autoplay and full keyboard support — and because it scrolls natively, a Persian storefront's hero and product strips move the right way in RTL with no extra configuration. Slides are plain slot content (an image, an `mds:product-card`), and `per-view` shows several at once:
+
+```blade
+<mds:carousel label="محصولات ویژه" aspect="aspect-video" autoplay>
+    <mds:carousel.item><img src="/banners/1.jpg" alt="جشنواره پاییزه" class="h-full w-full object-cover"></mds:carousel.item>
+    <mds:carousel.item><img src="/banners/2.jpg" alt="ارسال رایگان" class="h-full w-full object-cover"></mds:carousel.item>
+</mds:carousel>
+
+<mds:carousel per-view="3" gap="gap-4" :loop="false">
+    <mds:carousel.item><mds:product-card title="…" :amount="1890000" /></mds:carousel.item>
+    …
+</mds:carousel>
+```
+
+Props: `label` (the region's accessible name), `autoplay`, `interval` (ms, default `5000`), `loop` (default `true`), `indicators` and `controls` (default `true`), `per-view` (default `1`), `gap` (a Tailwind gap class), `start` (initial slide), `aspect` (an aspect-ratio class for the track), `fa`; `carousel.item` takes `fa`. Autoplay pauses on hover, focus and hidden tabs and starts paused under `prefers-reduced-motion`; arrow keys follow the visual direction.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

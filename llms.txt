@@ -801,6 +801,56 @@ public function getCitiesProperty() { return City::where('name', 'like', "%{$thi
 </mds:autocomplete>
 ```
 
+### <mds:carousel> — slide strip with controls, dots and autoplay (open version of Flux Pro's flux:carousel)
+A CSS scroll-snap track (`snap-x snap-mandatory`, scrollbar hidden): native swiping on touch and trackpads, and RTL for
+free — the strip scrolls the other way with no direction arithmetic. Props: `label` string|null (the region's
+`aria-label`; default 'اسلایدشو', or 'Slideshow' by fa) · `autoplay` bool=false · `interval` int=5000 (ms between slides,
+floor 500) · `loop` bool=true (after the last position comes the first; `false` disables the edge buttons and stops
+autoplay at the end) · `indicators` bool=true (one dot per start position) · `controls` bool=true (previous/next
+buttons) · `per-view` int=1 (slides visible at once; sets `--mds-carousel-per-view` on the track, and each item is
+`flex: 0 0 calc((100% - (n - 1) * gap) / n)`) · `gap` string|null (a Tailwind gap class for the track, default `gap-0`;
+the length is derived from the class name for the first paint — `gap-4`, `gap-x-4`, `gap-px`, `gap-[10px]` — published as
+`--mds-carousel-gap` and corrected from the computed style at init) · `start` int=0 (initial position, clamped to the
+last one) · `aspect` string|null (an aspect-ratio class for the track, e.g. `aspect-video`; slot content then sizes with
+`h-full w-full object-cover`) · `fa` bool|null=config (picks the language of the built-in strings and the digits;
+inherited by items). Everything else lands on the root `[data-mds-carousel]` div; there is no `wire:model`.
+- `<mds:carousel.item>` props: `fa` bool|null (inherited). Default slot = any content (an image, an mds:product-card).
+  Renders `role="group" aria-roledescription="اسلاید"/"slide"`; Alpine writes `aria-label` «{n} از {total}» / "{n} of
+  {total}" at init, since a slot cannot know its own position. Attributes land on the item.
+Behavior (Alpine `mdsCarousel`): the active slide is the first one at least 60% inside the track
+(IntersectionObserver rooted on the track), so swipes, trackpad scrolls, buttons, dots and keys all agree. `go(i)` calls
+`scrollIntoView({ inline: 'start' })` — smooth, or instant under `prefers-reduced-motion`. With `per-view` n and N slides
+there are N - n + 1 positions; the dots, `loop` and End all count positions, not slides. A MutationObserver on the track
+re-scans when a Livewire morph or an `x-for` adds or removes slides (only direct children, so a nested carousel keeps its
+own); the dots are server-rendered and follow a Livewire re-render. Keyboard, on the whole region: ArrowLeft/ArrowRight
+follow the VISUAL order (`getComputedStyle().direction` read at keydown, so Right is «previous» in RTL), Home/End jump to
+the edges; a modifier key, or a text field / contenteditable inside a slide, keeps its own arrows. Autoplay is one
+`setInterval`, and a tick is skipped while the pointer is over the carousel, focus is inside it, a swipe is still
+settling or the tab is hidden; `prefers-reduced-motion: reduce` starts it paused (the play button still works) and
+switching the preference on mid-show pauses it. A pause/play button appears only with `autoplay`; its label switches
+between 'توقف'/'Pause' and 'پخش'/'Play' (a changing label, so no `aria-pressed`). Intervals, timeouts, both observers and
+the media-query listener are cleared in `destroy()`.
+ARIA contract: root `role="region" aria-roledescription="اسلایدشو"/"carousel" aria-label`; the track is a focusable
+scroller (`tabindex="0"`) whose id the buttons point at with `aria-controls` (runtime `$id`); previous/next buttons are
+labelled 'قبلی'/'Previous' and 'بعدی'/'Next', sit at inline-start/inline-end in both directions and show the chevron that
+points that way (`rtl:hidden`/`ltr:hidden`), disabled at the ends when `loop` is off; dots are buttons labelled
+'رفتن به اسلاید {n}'/'Go to slide {n}' with `aria-current="true"` on the active one; a visually hidden live region
+announces «اسلاید ۲ از ۵» / "Slide 2 of 5" when the USER moves, and is `aria-live="off"` while auto-rotating (WAI-ARIA
+carousel guidance — a region that speaks every few seconds is noise). CSS hooks: `[data-mds-carousel]`, `-track`,
+`-item`, `-prev`, `-next`, `-toggle`, `-indicators`, `-dot`, `-status`.
+```blade
+<mds:carousel label="محصولات ویژه" aspect="aspect-video" autoplay :interval="4000">
+    <mds:carousel.item><img src="/banners/1.jpg" alt="جشنواره پاییزه" class="h-full w-full object-cover"></mds:carousel.item>
+    <mds:carousel.item><img src="/banners/2.jpg" alt="ارسال رایگان" class="h-full w-full object-cover"></mds:carousel.item>
+</mds:carousel>
+
+<mds:carousel per-view="3" gap="gap-4" :loop="false" :indicators="false" :start="0">
+    @foreach ($products as $product)
+        <mds:carousel.item><mds:product-card :title="$product->title" :amount="$product->price" /></mds:carousel.item>
+    @endforeach
+</mds:carousel>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.
