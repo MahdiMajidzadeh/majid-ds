@@ -19,9 +19,14 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
-4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
+4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
+   ONE exception: `wire:key` must be written on the `<x-mds::…>` spelling. Livewire's wire:key precompiler rewrites the
+   opening tag before the namespaced compiler sees it, and the tag then fails to compile ("unexpected token endif").
+   This is not specific to this kit — `<flux:badge wire:key="…">` fails the same way on the same Livewire version — so the
+   kit does not work around it: `MdsTagCompiler` is a deliberate mirror of Flux's own compiler and `TagCompilerTest`
+   fails the build when the two diverge. In a loop write `<x-mds::kanban.card wire:key="card-{{ $id }}">`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
 
 ## Config (config/mds.php; publish tag `mds-config`)
@@ -558,7 +563,7 @@ link). At runtime the real trigger button gets `aria-haspopup="dialog"`, `aria-e
 panel — a generic wrapper `<span>` never carries them. Markers for tests and CSS: `data-mds-popover` (root),
 `data-mds-popover-trigger`, `data-mds-popover-content`, `data-mds-popover-close`, `data-mds-popover-arrow`.
 Livewire contract: the popover holds no value, so there is no `wire:model`. Every attribute lands on the root, so
-`x-on:mds-popover-close="$wire.save()"` and `wire:key` work as usual; `wire:click` on buttons inside the content is ordinary
+`x-on:mds-popover-close="$wire.save()"` works as usual (`wire:key` needs the `<x-mds::popover>` spelling — see Setup contract 5); `wire:click` on buttons inside the content is ordinary
 markup. One caveat comes with the teleport: Alpine moves the panel out of the Livewire component's DOM and into `<body>` as
 soon as it initialises (it is always there, hidden by `x-show`, not created on open), and Livewire's morph follows teleported
 nodes — the same mechanism `<mds:preview-card>` already relies on.
@@ -607,7 +612,7 @@ is `aria-hidden`. Keyboard: Tab reaches each heading, Enter and Space toggle it 
 WAI-ARIA accordion pattern's required set; the optional Up/Down/Home/End roving between headings is deliberately not
 implemented, because it would mean taking the summary's native semantics away.
 Livewire contract: no `wire:model` — the accordion holds no value. `wire:click` and `x-on:click` on a heading pass through, and
-attributes land on each part's own root, so `wire:key` belongs on `<mds:accordion.item>` in a loop. A morph that changes the
+attributes land on each part's own root, so `wire:key` belongs on the item in a loop — written as `<x-mds::accordion.item wire:key="…">` (see Setup contract 5). A morph that changes the
 `open` attribute fires the native `toggle` event and Alpine re-reads it (`this.expanded = this.$el.open` at init as well), so a
 server-driven `expanded` stays in sync. Style descendants off the state with `in-data-expanded:` /
 `group-open/mds-accordion:` — the item is `group/mds-accordion`.

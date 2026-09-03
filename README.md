@@ -29,13 +29,13 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>`, `<mds:preview-card>` |
-| Pro alternatives | `<mds:command>` (⌘K palette), `<mds:composer>` (chat/prompt input), `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, and `<mds:chart>` — open versions of Flux Pro-only components |
+| Pro alternatives | Eighteen of Flux's nineteen Pro-only components, rebuilt open: `<mds:command>` (⌘K palette), `<mds:composer>`, `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, `<mds:chart>`, `<mds:popover>`, `<mds:accordion>`, `<mds:slider>`, `<mds:time-picker>`, `<mds:tabs>`, `<mds:autocomplete>`, `<mds:carousel>`, `<mds:context>`, `<mds:pillbox>`, `<mds:editor>`, `<mds:calendar>` (Jalali) and `<mds:kanban>` |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 61 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 73 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -44,7 +44,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 61 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 73 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
 ```
 
@@ -60,14 +60,14 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
 | Components | The 32 free Flux components bundled with this package |
-| mds components | All 17 `mds:*` components, including the six Flux Pro alternatives |
+| mds components | All 30 `mds:*` components, including the eighteen Flux Pro alternatives |
 
-**Flux Pro components are not documented.** Nineteen of the components on fluxui.dev —
-Accordion, Autocomplete, Calendar, Carousel, Chart, Composer, Context, Date picker,
-Editor, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and the rest — ship no code
-in the free tier, so there is nothing to preview or reference. Six of them have `mds:*`
-replacements (Command, Composer, Color picker, File upload, Timeline, Chart); for the
-others, see Flux's own docs.
+**Flux Pro components are not documented — because the kit replaces them.** Nineteen of
+the components on fluxui.dev ship no code in the free tier, so there is nothing to preview
+or reference from Flux itself. Eighteen of the nineteen now have an open `mds:*` version
+built here: Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command,
+Composer, Context, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time
+picker and Timeline. Only Date picker is still missing; for it, see Flux's own docs.
 
 ### How the docs are built
 

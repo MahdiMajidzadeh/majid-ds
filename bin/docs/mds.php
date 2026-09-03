@@ -3445,7 +3445,7 @@ $pages['pillbox'] = [
             ['disabled', 'Shown but not selectable. Default: <code>false</code>.'],
         ]],
     ],
-    'related' => ['command', 'input'],
+    'related' => ['command', 'input', 'autocomplete'],
 ];
 
 // ------------------------------------------------------------ mds:editor

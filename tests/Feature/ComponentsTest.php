@@ -879,6 +879,23 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-mds-rating', $html);
     }
 
+    /**
+     * `wire:key` in a loop has to be written on the `<x-mds::…>` spelling.
+     * Livewire's wire:key precompiler rewrites the opening tag before the
+     * namespaced compiler sees it, so the colon spelling no longer compiles.
+     * That is upstream behaviour, not ours — a `<flux:…>` tag fails the same
+     * way — and the kit deliberately does not work around it, because
+     * MdsTagCompiler mirrors Flux's compiler byte for byte. This pins the
+     * spelling the docs tell people to use, so it cannot rot silently.
+     */
+    public function test_wire_key_works_on_the_x_mds_spelling(): void
+    {
+        $html = $this->render('<x-mds::command><x-mds::command.items><x-mds::command.item wire:key="a">Item</x-mds::command.item></x-mds::command.items></x-mds::command>');
+
+        $this->assertStringContainsString('wire:key="a"', $html);
+        $this->assertStringContainsString('data-mds-command-item', $html);
+    }
+
     public function test_blade_directives(): void
     {
         $this->assertSame('۱۲۳', $this->render('@fa(123)'));

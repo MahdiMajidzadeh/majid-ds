@@ -63,18 +63,18 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
-        <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
-        <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
-        <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
-        <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
-        <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
-        <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
-        <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
-        <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
-        <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
-        <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
-        <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
         <flux:navbar.item href="#popover" icon="chat-bubble-oval-left">{{ __('پاپ‌اور') }}</flux:navbar.item>
+        <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
+        <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
+        <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
+        <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
+        <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
+        <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
+        <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
+        <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
+        <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
+        <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
+        <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
