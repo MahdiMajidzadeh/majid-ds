@@ -3330,4 +3330,122 @@ $pages['context'] = [
     'related' => ['dropdown', 'tooltip'],
 ];
 
+// ----------------------------------------------------------- mds:pillbox
+
+// bin/docs/mds.php — paste this block in with the other $pages entries, and
+// add `'pillbox' => 'mds:pillbox',` (or the nav's own row shape) to bin/docs/nav.php.
+
+$pages['pillbox'] = [
+    'group' => 'mds',
+    'title' => 'mds:pillbox',
+    'lede' => 'A multi-select whose chosen values become removable pills — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Pillbox is Pro-only. This is a working replacement: type to filter, click or press <code>Enter</code> to take a value, and every choice becomes a pill you can drop again. The preview is live — the list opens when the field takes focus.',
+            'code' => <<<'BLADE'
+            <mds:pillbox label="Categories" placeholder="Choose categories..." class="max-w-md" clearable>
+                <mds:pillbox.option value="mobile">Mobile phones</mds:pillbox.option>
+                <mds:pillbox.option value="books">Books &amp; magazines</mds:pillbox.option>
+                <mds:pillbox.option value="home">Home appliances</mds:pillbox.option>
+                <mds:pillbox.option value="beauty">Beauty &amp; health</mds:pillbox.option>
+                <mds:pillbox.option value="sports">Sports &amp; travel</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'A starting selection',
+            'text' => 'Pass <code>value</code> an array — or a comma-separated string, for a plain form — and those values arrive as pills. A value with no matching option keeps its own text.',
+            'code' => <<<'BLADE'
+            <mds:pillbox name="tags" label="Tags" :value="['php', 'js']" class="max-w-md" clearable>
+                <mds:pillbox.option value="php">PHP</mds:pillbox.option>
+                <mds:pillbox.option value="js">JavaScript</mds:pillbox.option>
+                <mds:pillbox.option value="go">Go</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Capped, disabled and empty',
+            'text' => 'A <code>max</code> locks every unchosen option once the cap is reached — the chosen ones stay removable. A single option can be <code>disabled</code> on its own, and <code>empty</code> sets the line shown when the filter matches nothing.',
+            'code' => <<<'BLADE'
+            <mds:pillbox label="Up to two" :value="['sun']" max="2" empty="Nothing by that name." class="max-w-md">
+                <mds:pillbox.option value="sun">Sunday</mds:pillbox.option>
+                <mds:pillbox.option value="mon">Monday</mds:pillbox.option>
+                <mds:pillbox.option value="tue">Tuesday</mds:pillbox.option>
+                <mds:pillbox.option value="wed" disabled>Wednesday (full)</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Livewire and validation',
+            'text' => 'The machine value is a visually hidden <code>&lt;select multiple&gt;</code>, which Livewire reads as an array, so <code>wire:model</code> goes straight on the component. An <code>error</code> — or the message the validation bag holds for <code>name</code> — is rendered under the field and marks it invalid.',
+            'code' => <<<'BLADE'
+            <mds:pillbox
+                wire:model.live="skills"
+                name="skills"
+                label="Skills"
+                description="Pick at least one."
+                error="Choose a skill."
+                class="max-w-md"
+            >
+                <mds:pillbox.option value="design">Design</mds:pillbox.option>
+                <mds:pillbox.option value="code">Code</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Disabled',
+            'code' => <<<'BLADE'
+            <mds:pillbox label="Locked" :value="['php']" disabled class="max-w-md">
+                <mds:pillbox.option value="php">PHP</mds:pillbox.option>
+                <mds:pillbox.option value="go">Go</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => 'The built-in microcopy — the field\'s accessible name, the clear and remove labels, the no-match line and the announced count — follows <code>config(\'mds.persian_digits\')</code>, which is on by default in a real app and off in these docs. <code>:fa="true"</code> forces it on for one pillbox. Search folds Arabic ي/ك into ی/ک and Persian digits into Latin, so «کتاب» matches «كتاب».',
+            'code' => <<<'BLADE'
+            <mds:pillbox :fa="true" label="دسته‌بندی‌ها" placeholder="انتخاب کنید..." :value="['mobile']" max="3" clearable class="max-w-md">
+                <mds:pillbox.option value="mobile">گوشی موبایل</mds:pillbox.option>
+                <mds:pillbox.option value="books">کتاب و مجله</mds:pillbox.option>
+                <mds:pillbox.option value="home">لوازم خانگی</mds:pillbox.option>
+                <mds:pillbox.option value="beauty">زیبایی و سلامت</mds:pillbox.option>
+                <mds:pillbox.option value="sports" disabled>ورزش و سفر</mds:pillbox.option>
+            </mds:pillbox>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:pillbox', 'props' => [
+            ['value', 'The chosen values: an array, or a comma-separated string.'],
+            ['name', 'Posts as <code>name[]</code>, and is the key the validation bag is read with. Defaults to the <code>wire:model</code> value.'],
+            ['label', 'Field label. It also names the listbox.'],
+            ['description', 'Helper text under the field.'],
+            ['placeholder', 'Placeholder shown while nothing is chosen.'],
+            ['search-label', 'Accessible name of the text field. Default: the label, else "Search" / جستجو.'],
+            ['clearable', 'Adds a clear-all button. Default: <code>false</code>.'],
+            ['max', 'Most values that may be chosen. Unbounded when absent.'],
+            ['empty', 'Line shown when the filter matches nothing. Default: "No matches." / موردی یافت نشد. — <code>:empty="false"</code> hides the popup instead.'],
+            ['disabled', 'Default: <code>false</code>.'],
+            ['invalid', 'Marks the field invalid without a message.'],
+            ['error', 'Message to show; falls back to <code>$errors->first($name)</code>.'],
+            ['fa', 'Language of the built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
+        ]],
+        ['name' => 'mds:pillbox.option', 'props' => [
+            ['value', 'The value this row selects. Default: the row\'s own text.'],
+            ['disabled', 'Shown but not selectable. Default: <code>false</code>.'],
+        ]],
+    ],
+    'related' => ['command', 'input'],
+];
+
 return $pages;

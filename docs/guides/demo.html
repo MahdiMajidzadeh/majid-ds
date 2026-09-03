@@ -191,6 +191,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#pillbox" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>چندانتخابی</div>
+    </a>
         <a href="#context" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -12897,6 +12908,963 @@ else { document.addEventListener('alpine:init', () => window.mds.registerContext
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="pillbox" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Pillbox — mds:pillbox</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of the Pillbox component (Pro-only in Flux) — multi-select with removable pills, Persian search and a selection cap.</p>
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >Up to three categories:</p>
+            <script >
+window.mds = window.mds || {}
+
+/*
+| WAI-ARIA combobox with a multi-selectable listbox popup. The text field
+| filters; ArrowUp/ArrowDown move a virtual cursor (aria-activedescendant)
+| and Enter or a click TOGGLES that option, so the popup stays open for the
+| next pick. Chosen values become pills in the control; the machine value is
+| a visually hidden multiple select, which is what Livewire reads.
+*/
+window.mds.registerPillbox = (Alpine) => {
+    if (window.mds.pillboxRegistered) return
+    window.mds.pillboxRegistered = true
+
+    Alpine.data('mdsPillbox', (config = {}) => ({
+        ready: false,
+        open: false,
+        query: '',
+        active: -1,
+        activeId: '',
+        selected: config.selected ?? [],
+        labels: {},
+        options: [],
+        serial: 0,
+        observer: null,
+        selectObserver: null,
+        pending: false,
+        picking: false,
+        max: config.max ?? null,
+        hasEmpty: config.hasEmpty ?? false,
+        disabled: config.disabled ?? false,
+        removeLabel: config.removeLabel ?? '',
+        statusSuffix: config.statusSuffix ?? '',
+        fa: config.fa ?? true,
+
+        init() {
+            // The option list is cached — matches(), isSelected() and
+            // isDisabled() run for every option on every reactive pass — but
+            // it must follow the DOM: a Livewire morph (server-side search)
+            // or an x-for adds, removes and relabels options after init.
+            // Attributes are not observed there: our own id and data-* writes
+            // would feed straight back.
+            this.refresh()
+
+            // Alpine is running, so the x-for pills take over from the
+            // server-rendered ones.
+            this.ready = true
+
+            this.observer = new MutationObserver(() => this.schedule())
+            this.observer.observe(this.list(), { childList: true, subtree: true, characterData: true })
+
+            // Morph re-sync: when the server changes the bound property,
+            // Livewire patches the hidden select's options and Alpine state
+            // does not follow by itself.
+            if (this.$refs.select) {
+                this.selectObserver = new MutationObserver(() => this.adopt())
+                this.selectObserver.observe(this.$refs.select, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['selected', 'value'],
+                })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.selectObserver?.disconnect()
+            this.observer = null
+            this.selectObserver = null
+        },
+
+        list() {
+            return this.$refs.list ?? this.$root
+        },
+
+        // Read the hidden select back into Alpine state. Our own commit()
+        // drops its records first, so this only ever runs for a server patch.
+        adopt() {
+            const next = [...(this.$refs.select?.options ?? [])].filter(option => option.selected).map(option => option.value)
+
+            if (JSON.stringify(next) === JSON.stringify(this.selected)) return
+
+            this.selected = next
+            this.sync()
+        },
+
+        // A morph that touches twenty options fires twenty mutations —
+        // collapse them into one re-scan on the next microtask.
+        schedule() {
+            if (this.pending) return
+
+            this.pending = true
+
+            queueMicrotask(() => {
+                this.pending = false
+                this.refresh()
+            })
+        },
+
+        // Re-read the options, keep the cursor on the same one if it is still
+        // there, and rebuild the value to label map the pills are drawn from.
+        refresh() {
+            const keep = this.activeId
+
+            this.options = [...this.list().querySelectorAll('[data-mds-pillbox-option]')]
+            this.labels = {}
+
+            this.options.forEach(el => {
+                // A running serial, not the array index: an option inserted
+                // mid-list must not take an id a neighbour already holds.
+                el.id ||= this.$id('mds-pillbox-option', this.serial++)
+                el.dataset.mdsHaystack = this.normalize(this.label(el))
+                this.labels[this.value(el)] = this.label(el)
+            })
+
+            const found = this.enabled()
+
+            this.active = keep ? found.findIndex(el => el.id === keep) : -1
+
+            this.sync()
+        },
+
+        // Arabic spellings of Persian letters fold together, and digits of
+        // either script fold to Latin, so typing 'كتاب' or '٢' still matches.
+        normalize(s) {
+            return window.mds.latinDigits(
+                String(s).toLowerCase().replace(/[يى]/g, 'ی').replace(/ك/g, 'ک'),
+            ).trim()
+        },
+
+        // The visible text of an option — live, so a server-relabelled option
+        // brings its new text along — falling back to the rendered attribute.
+        label(el) {
+            const text = (el.querySelector('[data-mds-pillbox-label]') ?? el).textContent.trim()
+
+            return text !== '' ? text : (el.dataset.label ?? '')
+        },
+
+        value(el) {
+            return el.dataset.value ?? this.label(el)
+        },
+
+        matches(el) {
+            return (el.dataset.mdsHaystack ?? '').includes(this.normalize(this.query))
+        },
+
+        items() {
+            const needle = this.normalize(this.query)
+
+            return this.options.filter(el => (el.dataset.mdsHaystack ?? '').includes(needle))
+        },
+
+        // Disabled options stay visible but the cursor skips them.
+        enabled() {
+            return this.items().filter(el => ! this.isDisabled(el))
+        },
+
+        isSelected(el) {
+            return this.selected.includes(this.value(el))
+        },
+
+        // Marked disabled by the caller, or unreachable because the cap is
+        // full — an already-chosen option can always be taken off again.
+        isDisabled(el) {
+            return el.dataset.disabled !== undefined || (this.full && ! this.isSelected(el))
+        },
+
+        isActive(el) {
+            return el.id !== '' && el.id === this.activeId
+        },
+
+        get full() {
+            return this.max !== null && this.selected.length >= this.max
+        },
+
+        get pills() {
+            return this.selected.map(value => ({ value, label: this.labels[value] ?? value }))
+        },
+
+        // Announced politely: a pill appearing or leaving is otherwise silent
+        // for a screen reader whose focus stays in the text field.
+        get status() {
+            return window.mds.digits(this.selected.length, this.fa) + this.statusSuffix
+        },
+
+        // What aria-expanded reports and x-show paints: open, and either
+        // something to show or an empty line to show instead.
+        get expanded() {
+            return this.open && ! this.disabled && (this.items().length > 0 || this.hasEmpty)
+        },
+
+        get empty() {
+            return this.expanded && this.items().length === 0
+        },
+
+        // One pass per change instead of one per option: clamp the cursor,
+        // remember which id it points at, and let isActive() be a compare.
+        sync() {
+            const found = this.enabled()
+
+            if (this.active >= found.length) this.active = found.length - 1
+
+            this.activeId = this.active >= 0 ? found[this.active].id : ''
+        },
+
+        show() {
+            if (this.picking || this.disabled) return
+
+            this.open = true
+        },
+
+        // Clicking the control anywhere but on a pill's remove button puts
+        // the caret in the field and drops the list open.
+        activate() {
+            if (this.disabled) return
+
+            this.focusInput()
+            this.open = true
+        },
+
+        type(event) {
+            this.query = event.target.value
+            this.open = true
+            this.active = -1
+            this.sync()
+        },
+
+        // The list closes when focus leaves. Clicks inside the popup prevent
+        // mousedown, so the input never blurs for them and this does not run.
+        blur() {
+            this.open = false
+        },
+
+        keydown(event) {
+            if (event.isComposing) return
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault()
+                    this.move(1)
+                    break
+                case 'ArrowUp':
+                    event.preventDefault()
+                    this.move(-1)
+                    break
+                case 'Enter':
+                    // Only while the list is open: a closed pillbox is an
+                    // ordinary field and Enter submits its form.
+                    if (! this.expanded) return
+                    event.preventDefault()
+                    if (this.active >= 0) this.toggle(this.enabled()[this.active])
+                    break
+                case 'Escape':
+                    if (! this.open) return
+                    event.preventDefault()
+                    event.stopPropagation()
+                    this.open = false
+                    break
+                case 'Home':
+                case 'End':
+                    if (! this.expanded) return
+                    event.preventDefault()
+                    this.jump(event.key === 'Home' ? 0 : -1)
+                    break
+                case 'Backspace':
+                    // Only on an empty query, where Backspace has nothing to
+                    // delete: then it takes the last pill off.
+                    if (event.target.value !== '' || ! this.selected.length) return
+                    event.preventDefault()
+                    this.remove(this.selected[this.selected.length - 1])
+                    break
+                case 'Tab':
+                    this.open = false
+                    break
+            }
+        },
+
+        // Arrow keys wrap; from "nothing active" Down takes the first and Up
+        // the last option. They also open a closed list.
+        move(delta) {
+            if (this.disabled) return
+
+            this.open = true
+
+            const found = this.enabled()
+
+            if (! found.length) return
+
+            this.active = this.active < 0
+                ? (delta > 0 ? 0 : found.length - 1)
+                : (this.active + delta + found.length) % found.length
+
+            this.reveal(found)
+        },
+
+        jump(index) {
+            const found = this.enabled()
+
+            if (! found.length) return
+
+            this.active = index < 0 ? found.length - 1 : Math.min(index, found.length - 1)
+
+            this.reveal(found)
+        },
+
+        reveal(found) {
+            this.activeId = found[this.active].id
+
+            this.$nextTick(() => found[this.active]?.scrollIntoView({ block: 'nearest' }))
+        },
+
+        point(el) {
+            const index = this.enabled().indexOf(el)
+
+            if (index === -1) return
+
+            this.active = index
+            this.activeId = el.id
+        },
+
+        // Enter and a click do the same thing, and neither closes the popup:
+        // picking a second value is the point of a pillbox.
+        toggle(el) {
+            if (! el || this.disabled || this.isDisabled(el)) return
+
+            const value = this.value(el)
+
+            this.selected = this.isSelected(el)
+                ? this.selected.filter(v => v !== value)
+                : [...this.selected, value]
+
+            this.commit()
+            this.focusInput()
+            this.open = true
+        },
+
+        remove(value) {
+            if (this.disabled) return
+
+            this.selected = this.selected.filter(v => v !== value)
+
+            this.commit()
+
+            // The button that was clicked is gone with its pill; focus would
+            // fall to the body if we did not take it back.
+            this.focusInput()
+        },
+
+        clear() {
+            if (this.disabled) return
+
+            this.selected = []
+
+            this.commit()
+            this.focusInput()
+        },
+
+        // Livewire reads a multiple select as an array — rebuild its options
+        // from the selection, all of them selected, then say so twice: an
+        // input event for wire:model, a change event for a listening form.
+        commit() {
+            const el = this.$refs.select
+
+            if (el) {
+                el.replaceChildren(...this.selected.map(value => {
+                    const option = document.createElement('option')
+
+                    option.value = value
+                    option.textContent = this.labels[value] ?? value
+                    option.selected = true
+
+                    return option
+                }))
+
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+                el.dispatchEvent(new Event('change', { bubbles: true }))
+
+                // Our own rewrite is a mutation too; drop it before the
+                // observer sees it, or every commit would re-adopt itself.
+                this.selectObserver?.takeRecords()
+            }
+
+            this.sync()
+        },
+
+        // Return focus without the focus handler reopening the list.
+        focusInput() {
+            this.picking = true
+            this.$refs.input?.focus()
+            this.picking = false
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPillbox(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPillbox(window.Alpine))
+}
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Categories
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-id="['mds-pillbox-listbox', 'mds-pillbox-option']"
+        x-data="mdsPillbox({
+            selected: JSON.parse('[\u0022mobile\u0022]'),
+            max: 3,
+            hasEmpty: true,
+            disabled: false,
+            removeLabel: 'Remove',
+            statusSuffix: ' selected',
+            fa: false,
+        })"
+                        data-mds-pillbox
+    >
+        
+        <select
+            multiple
+            class="sr-only"
+            tabindex="-1"
+            aria-hidden="true"
+            x-ref="select"
+                                    
+            data-mds-pillbox-select
+        >
+                            <option value="mobile" selected>Mobile phones</option>
+                    </select>
+
+        <div
+            class="flex w-full flex-wrap items-center gap-1.5 rounded-lg border bg-white px-2 py-1.5 shadow-xs dark:bg-white/10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent border-zinc-200 dark:border-white/10 cursor-text"
+            x-on:click="activate()"
+            data-mds-pillbox-control
+        >
+            
+            <span class="contents" x-show="! ready" data-mds-pillbox-initial>
+                                    <span class="inline-flex max-w-full items-center gap-1 rounded-md bg-zinc-100 py-0.5 ps-2 pe-1 text-sm text-zinc-800 dark:bg-white/10 dark:text-white" data-mds-pillbox-pill>
+                        <span class="truncate" data-mds-pillbox-pill-label>Mobile phones</span>
+
+                                                    <button
+                                type="button"
+                                class="shrink-0 rounded-sm p-0.5 text-zinc-400 hover:text-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-100"
+                                x-on:click.stop="remove('mobile')"
+                                x-on:mousedown.prevent
+                                aria-label="Remove Mobile phones"
+                                data-mds-pillbox-remove
+                            >
+                                <svg aria-hidden="true" data-mds-icon="" class="size-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                            </button>
+                                            </span>
+                            </span>
+
+            <template x-for="pill in pills" :key="pill.value">
+                <span class="inline-flex max-w-full items-center gap-1 rounded-md bg-zinc-100 py-0.5 ps-2 pe-1 text-sm text-zinc-800 dark:bg-white/10 dark:text-white" data-mds-pillbox-pill>
+                    <span class="truncate" x-text="pill.label" data-mds-pillbox-pill-label></span>
+
+                                            <button
+                            type="button"
+                            class="shrink-0 rounded-sm p-0.5 text-zinc-400 hover:text-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-100"
+                            x-on:click.stop="remove(pill.value)"
+                            x-on:mousedown.prevent
+                            x-bind:aria-label="removeLabel + ' ' + pill.label"
+                            data-mds-pillbox-remove
+                        >
+                            <svg aria-hidden="true" data-mds-icon="" class="size-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                        </button>
+                                    </span>
+            </template>
+
+            
+            <input
+                type="text"
+                class="min-w-24 flex-1 bg-transparent py-0.5 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed dark:text-white dark:placeholder:text-zinc-500"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-label="Categories"
+                                 x-bind:placeholder="pills.length ? '' : 'Choose...'"                                                                 x-ref="input"
+                x-bind:aria-expanded="expanded ? 'true' : 'false'"
+                x-bind:aria-controls="$id('mds-pillbox-listbox')"
+                x-bind:aria-activedescendant="activeId"
+                x-on:focus="show()"
+                x-on:blur="blur()"
+                x-on:input="type($event)"
+                x-on:keydown="keydown($event)"
+                data-mds-pillbox-input
+            >
+
+                            <button
+                    type="button"
+                    class="shrink-0 rounded p-1 text-zinc-400 hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-200"
+                    x-show="pills.length > 0"
+                    x-cloak
+                    x-on:click.stop="clear()"
+                    x-on:mousedown.prevent
+                    aria-label="Clear"
+                    data-mds-pillbox-clear
+                >
+                    <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                </button>
+            
+            
+            <span
+                class="pointer-events-none shrink-0 text-zinc-400 transition-transform motion-reduce:transition-none dark:text-zinc-500"
+                x-bind:class="expanded && 'rotate-180'"
+                aria-hidden="true"
+                data-mds-pillbox-chevron
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </span>
+        </div>
+
+        
+        <span class="sr-only" role="status" aria-live="polite" x-text="status" data-mds-pillbox-status>1 selected</span>
+
+        
+        <div
+            class="absolute start-0 end-0 top-full z-50 mt-1 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-show="expanded"
+            x-cloak
+            x-transition:enter="transition duration-100 ease-out motion-reduce:transition-none"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition duration-75 ease-in motion-reduce:transition-none"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            x-on:mousedown.prevent
+            data-mds-pillbox-popup
+        >
+            <div
+                class="max-h-60 overflow-auto"
+                role="listbox"
+                aria-multiselectable="true"
+                x-ref="list"
+                x-bind:id="$id('mds-pillbox-listbox')"
+                 aria-label="Categories"                 data-mds-pillbox-list
+            >
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="mobile"
+    data-label="Mobile phones"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Mobile phones</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="books"
+    data-label="Books &amp;amp; magazines"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Books &amp; magazines</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="home"
+    data-label="Home appliances"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Home appliances</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="beauty"
+    data-label="Beauty &amp;amp; health"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Beauty &amp; health</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="fashion"
+    data-label="Fashion"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Fashion</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="sports"
+    data-label="Sports &amp;amp; travel"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Sports &amp; travel</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+            </div>
+
+                            
+                <div class="px-2.5 py-2 text-sm text-zinc-400 dark:text-zinc-500" role="status" x-show="empty" x-cloak data-mds-pillbox-empty>No matches.</div>
+                    </div>
+    </div>
+</ui-field>
+        </div>
+
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >Product tags:</p>
+            <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Product tags
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="relative"
+        x-id="['mds-pillbox-listbox', 'mds-pillbox-option']"
+        x-data="mdsPillbox({
+            selected: JSON.parse('[\u0022free-shipping\u0022,\u0022original\u0022]'),
+            max: null,
+            hasEmpty: true,
+            disabled: false,
+            removeLabel: 'Remove',
+            statusSuffix: ' selected',
+            fa: false,
+        })"
+                        data-mds-pillbox
+    >
+        
+        <select
+            multiple
+            class="sr-only"
+            tabindex="-1"
+            aria-hidden="true"
+            x-ref="select"
+                                    
+            data-mds-pillbox-select
+        >
+                            <option value="free-shipping" selected>Free shipping</option>
+                            <option value="original" selected>Authentic</option>
+                    </select>
+
+        <div
+            class="flex w-full flex-wrap items-center gap-1.5 rounded-lg border bg-white px-2 py-1.5 shadow-xs dark:bg-white/10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent border-zinc-200 dark:border-white/10 cursor-text"
+            x-on:click="activate()"
+            data-mds-pillbox-control
+        >
+            
+            <span class="contents" x-show="! ready" data-mds-pillbox-initial>
+                                    <span class="inline-flex max-w-full items-center gap-1 rounded-md bg-zinc-100 py-0.5 ps-2 pe-1 text-sm text-zinc-800 dark:bg-white/10 dark:text-white" data-mds-pillbox-pill>
+                        <span class="truncate" data-mds-pillbox-pill-label>Free shipping</span>
+
+                                                    <button
+                                type="button"
+                                class="shrink-0 rounded-sm p-0.5 text-zinc-400 hover:text-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-100"
+                                x-on:click.stop="remove('free-shipping')"
+                                x-on:mousedown.prevent
+                                aria-label="Remove Free shipping"
+                                data-mds-pillbox-remove
+                            >
+                                <svg aria-hidden="true" data-mds-icon="" class="size-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                            </button>
+                                            </span>
+                                    <span class="inline-flex max-w-full items-center gap-1 rounded-md bg-zinc-100 py-0.5 ps-2 pe-1 text-sm text-zinc-800 dark:bg-white/10 dark:text-white" data-mds-pillbox-pill>
+                        <span class="truncate" data-mds-pillbox-pill-label>Authentic</span>
+
+                                                    <button
+                                type="button"
+                                class="shrink-0 rounded-sm p-0.5 text-zinc-400 hover:text-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-100"
+                                x-on:click.stop="remove('original')"
+                                x-on:mousedown.prevent
+                                aria-label="Remove Authentic"
+                                data-mds-pillbox-remove
+                            >
+                                <svg aria-hidden="true" data-mds-icon="" class="size-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                            </button>
+                                            </span>
+                            </span>
+
+            <template x-for="pill in pills" :key="pill.value">
+                <span class="inline-flex max-w-full items-center gap-1 rounded-md bg-zinc-100 py-0.5 ps-2 pe-1 text-sm text-zinc-800 dark:bg-white/10 dark:text-white" data-mds-pillbox-pill>
+                    <span class="truncate" x-text="pill.label" data-mds-pillbox-pill-label></span>
+
+                                            <button
+                            type="button"
+                            class="shrink-0 rounded-sm p-0.5 text-zinc-400 hover:text-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent dark:hover:text-zinc-100"
+                            x-on:click.stop="remove(pill.value)"
+                            x-on:mousedown.prevent
+                            x-bind:aria-label="removeLabel + ' ' + pill.label"
+                            data-mds-pillbox-remove
+                        >
+                            <svg aria-hidden="true" data-mds-icon="" class="size-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                        </button>
+                                    </span>
+            </template>
+
+            
+            <input
+                type="text"
+                class="min-w-24 flex-1 bg-transparent py-0.5 text-sm text-zinc-800 outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed dark:text-white dark:placeholder:text-zinc-500"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-label="Product tags"
+                                 x-bind:placeholder="pills.length ? '' : 'Search...'"                                                                 x-ref="input"
+                x-bind:aria-expanded="expanded ? 'true' : 'false'"
+                x-bind:aria-controls="$id('mds-pillbox-listbox')"
+                x-bind:aria-activedescendant="activeId"
+                x-on:focus="show()"
+                x-on:blur="blur()"
+                x-on:input="type($event)"
+                x-on:keydown="keydown($event)"
+                data-mds-pillbox-input
+            >
+
+            
+            
+            <span
+                class="pointer-events-none shrink-0 text-zinc-400 transition-transform motion-reduce:transition-none dark:text-zinc-500"
+                x-bind:class="expanded && 'rotate-180'"
+                aria-hidden="true"
+                data-mds-pillbox-chevron
+            >
+                <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+            </span>
+        </div>
+
+        
+        <span class="sr-only" role="status" aria-live="polite" x-text="status" data-mds-pillbox-status>2 selected</span>
+
+        
+        <div
+            class="absolute start-0 end-0 top-full z-50 mt-1 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-zinc-800"
+            x-show="expanded"
+            x-cloak
+            x-transition:enter="transition duration-100 ease-out motion-reduce:transition-none"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition duration-75 ease-in motion-reduce:transition-none"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            x-on:mousedown.prevent
+            data-mds-pillbox-popup
+        >
+            <div
+                class="max-h-60 overflow-auto"
+                role="listbox"
+                aria-multiselectable="true"
+                x-ref="list"
+                x-bind:id="$id('mds-pillbox-listbox')"
+                 aria-label="Product tags"                 data-mds-pillbox-list
+            >
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="free-shipping"
+    data-label="Free shipping"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Free shipping</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="original"
+    data-label="Authentic"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Authentic</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="warranty"
+    data-label="Warranty"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Warranty</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-pointer"
+    role="option"
+    aria-selected="false"
+    data-value="in-stock"
+    data-label="In stock"
+        x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>In stock</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+                <div
+    class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-zinc-700 select-none dark:text-zinc-200 cursor-not-allowed opacity-50"
+    role="option"
+    aria-selected="false"
+    data-value="discounted"
+    data-label="Discounted"
+     data-disabled aria-disabled="true"     x-show="matches($el)"
+    x-bind:class="{ 'bg-zinc-100 dark:bg-white/10': isActive($el), 'cursor-not-allowed opacity-50': isDisabled($el) }"
+    x-bind:aria-selected="isSelected($el) ? 'true' : 'false'"
+    x-bind:aria-disabled="isDisabled($el) ? 'true' : null"
+    x-on:click="toggle($el)"
+    x-on:mouseenter="point($el)"
+    data-mds-pillbox-option
+>
+    <span class="flex-1 truncate" data-mds-pillbox-label>Discounted</span>
+
+    
+    <span class="shrink-0 text-accent-content" x-show="isSelected($el.parentElement)" x-cloak data-mds-pillbox-check>
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13.2592L7.58583 15.9568C8.2525 16.6523 8.58583 17.0001 9.00004 17.0001C9.41425 17.0001 9.74759 16.6523 10.4143 15.9568L19 7.00006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+</div>
+            </div>
+
+                            
+                <div class="px-2.5 py-2 text-sm text-zinc-400 dark:text-zinc-500" role="status" x-show="empty" x-cloak data-mds-pillbox-empty>No tags found.</div>
+                    </div>
+    </div>
+
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60" data-flux-description>
+    Tags appear next to the title on the product page.
+</ui-description>
+</ui-field>
+        </div>
+    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -14897,7 +15865,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

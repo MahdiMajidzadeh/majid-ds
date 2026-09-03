@@ -43,6 +43,7 @@ $demoAnchors = [
     'autocomplete' => 'Autocomplete',
     'carousel' => 'Carousel',
     'context' => 'Context menu',
+    'pillbox' => 'Pillbox',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

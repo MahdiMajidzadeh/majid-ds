@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
         <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
         <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
         <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
@@ -1352,6 +1353,51 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text class="text-sm">{!! __('منوی راست‌کلیک یک میان‌بر است، نه تنها راه: همان عملیات را جایی دیدنی هم بگذارید — یک <code>flux:dropdown</code> یا دکمه‌های ردیف.') !!}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Pillbox ============================== --}}
+<flux:card id="pillbox" class="space-y-4">
+    <flux:heading size="lg">{{ __('جعبه برچسب — mds:pillbox') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Pillbox (که در Flux فقط در نسخه Pro موجود است) — انتخاب چندتایی با پیل‌های قابل حذف، جستجوی فارسی و سقف انتخاب.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('حداکثر سه دسته‌بندی:') }}</flux:text>
+
+            <mds:pillbox
+                :label="__('دسته‌بندی‌ها')"
+                :placeholder="__('انتخاب کنید...')"
+                :value="['mobile']"
+                max="3"
+                clearable
+            >
+                <mds:pillbox.option value="mobile">{{ __('گوشی موبایل') }}</mds:pillbox.option>
+                <mds:pillbox.option value="books">{{ __('کتاب و مجله') }}</mds:pillbox.option>
+                <mds:pillbox.option value="home">{{ __('لوازم خانگی') }}</mds:pillbox.option>
+                <mds:pillbox.option value="beauty">{{ __('زیبایی و سلامت') }}</mds:pillbox.option>
+                <mds:pillbox.option value="fashion">{{ __('مد و پوشاک') }}</mds:pillbox.option>
+                <mds:pillbox.option value="sports">{{ __('ورزش و سفر') }}</mds:pillbox.option>
+            </mds:pillbox>
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('برچسب‌های محصول:') }}</flux:text>
+
+            <mds:pillbox
+                :label="__('برچسب‌های محصول')"
+                :description="__('برچسب‌ها در صفحه محصول کنار عنوان نمایش داده می‌شوند.')"
+                :placeholder="__('جستجو...')"
+                :empty="__('برچسبی پیدا نشد.')"
+                :value="['free-shipping', 'original']"
+            >
+                <mds:pillbox.option value="free-shipping">{{ __('ارسال رایگان') }}</mds:pillbox.option>
+                <mds:pillbox.option value="original">{{ __('اصل و اورجینال') }}</mds:pillbox.option>
+                <mds:pillbox.option value="warranty">{{ __('گارانتی') }}</mds:pillbox.option>
+                <mds:pillbox.option value="in-stock">{{ __('موجود در انبار') }}</mds:pillbox.option>
+                <mds:pillbox.option value="discounted" disabled>{{ __('تخفیف‌دار') }}</mds:pillbox.option>
+            </mds:pillbox>
+        </div>
+    </div>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

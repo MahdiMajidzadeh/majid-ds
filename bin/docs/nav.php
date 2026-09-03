@@ -103,6 +103,7 @@ return [
             'autocomplete' => 'mds:autocomplete',
             'carousel' => 'mds:carousel',
             'context' => 'mds:context',
+            'pillbox' => 'mds:pillbox',
         ],
     ],
 ];

@@ -895,6 +895,47 @@ body, so a Livewire morph of the wrapped content never touches it.
 </mds:context>
 ```
 
+### <mds:pillbox> — multi-select with removable pills (open version of Flux Pro's flux:pillbox)
+A combobox that keeps its chosen values as pills inside the control and filters a listbox of options as you type.
+Props: `value` array|string|null (initial selection; an array, or a comma-separated string for plain forms) ·
+`name` string|null (posts as `name[]`; also the key `$errors` is read with — defaults to the `wire:model` value) ·
+`label` / `description` (flux:field chrome; `label` also names the listbox) · `placeholder` string|null (shown while
+nothing is chosen) · `search-label` string|null (accessible name of the text field; defaults to `label`, else
+'جستجو'/'Search' by fa) · `clearable` bool=false (a clear-all button, hidden while the selection is empty) ·
+`max` int|null (selection cap; while it is reached every unchosen option goes `aria-disabled`) · `empty`
+string|bool=true (no-match line: `true` = 'موردی یافت نشد.'/'No matches.' by fa, a string replaces it, `false`
+hides the popup instead) · `disabled` bool=false · `invalid` bool=false · `error` string|null (explicit message;
+when omitted and `name` is set, falls back to `$errors->first($name)`) · `fa` bool|null=config (inherited by
+options).
+- `<mds:pillbox.option>` props: `value` string|null (defaults to the slot's text, so `PHP` selects "PHP") ·
+  `disabled` bool=false · `fa`. Renders `role="option"` with `data-value` and a flattened `data-label`; markup
+  inside the slot still renders, and a check icon marks a chosen row.
+Behavior: typing filters with Persian normalization (Arabic ي/ك -> ی/ک; Persian/Arabic-Indic digits -> Latin before
+matching); ArrowUp/ArrowDown move the active option and wrap, Home/End jump, Enter or a click TOGGLES it and the
+popup stays open (picking a second value is the point), Escape closes, Tab closes, Backspace on an empty query
+takes the last pill off. Each pill has its own remove button ('حذف X'/'Remove X'); horizontal arrows are left to
+the text caret on purpose. Disabled options stay visible but the cursor skips them. The option list is cached for
+speed and follows the DOM: a MutationObserver on the listbox re-scans when a Livewire morph or an `x-for` adds,
+removes or relabels options, keeping the cursor where it survives; `refresh()` on the Alpine component forces it.
+ARIA contract: the text field is `role="combobox"` `aria-autocomplete="list"` with `aria-expanded`, `aria-controls`
+-> the listbox and `aria-activedescendant` -> the active option (ids assigned at init). The popup holds
+`role="listbox"` `aria-multiselectable="true"`; every option carries `aria-selected` plus a check icon, so
+selection is never colour alone, and `aria-disabled` where it cannot be taken. A visually hidden `role="status"`
+region announces the count («۲ مورد انتخاب شده» / "2 selected"); the no-match line is a second `role="status"`
+OUTSIDE the listbox. The error message is `role="alert"` and is wired to the field with `aria-describedby`.
+Livewire contract: the machine value is a visually hidden `<select multiple name="…[]">` whose selected options
+mirror the pills — Livewire reads a multiple select as an array — and it is the element `wire:model*` is forwarded
+to (the wrapper drops it). Every change rebuilds those options and dispatches a bubbling `input` AND `change`
+event. A MutationObserver on that select re-reads it into Alpine state when the server rewrites the selection, so
+`$this->tags = [...]` repaints the pills.
+```blade
+<mds:pillbox wire:model.live="tags" label="برچسب‌ها" placeholder="انتخاب کنید..." max="3" clearable>
+    <mds:pillbox.option value="mobile">گوشی موبایل</mds:pillbox.option>
+    <mds:pillbox.option value="books">کتاب و مجله</mds:pillbox.option>
+    <mds:pillbox.option value="home" disabled>لوازم خانگی</mds:pillbox.option>
+</mds:pillbox>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

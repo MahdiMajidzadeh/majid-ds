@@ -619,5 +619,18 @@
     "ذخیره تصویر": "Save image",
     "کپی پیوند": "Copy link",
     "انتخاب به‌عنوان کاور": "Set as cover",
-    "منوی راست‌کلیک یک میان‌بر است، نه تنها راه: همان عملیات را جایی دیدنی هم بگذارید — یک <code>flux:dropdown</code> یا دکمه‌های ردیف.": "A context menu is a shortcut, never the only path: keep the same actions somewhere visible too — a <code>flux:dropdown</code> or the row's own buttons."
+    "منوی راست‌کلیک یک میان‌بر است، نه تنها راه: همان عملیات را جایی دیدنی هم بگذارید — یک <code>flux:dropdown</code> یا دکمه‌های ردیف.": "A context menu is a shortcut, never the only path: keep the same actions somewhere visible too — a <code>flux:dropdown</code> or the row's own buttons.",
+    "جعبه برچسب — mds:pillbox": "Pillbox — mds:pillbox",
+    "نسخه آزاد از کامپوننت Pillbox (که در Flux فقط در نسخه Pro موجود است) — انتخاب چندتایی با پیل‌های قابل حذف، جستجوی فارسی و سقف انتخاب.": "An open version of the Pillbox component (Pro-only in Flux) — multi-select with removable pills, Persian search and a selection cap.",
+    "حداکثر سه دسته‌بندی:": "Up to three categories:",
+    "زیبایی و سلامت": "Beauty & health",
+    "ورزش و سفر": "Sports & travel",
+    "برچسب‌های محصول:": "Product tags:",
+    "برچسب‌های محصول": "Product tags",
+    "برچسب‌ها در صفحه محصول کنار عنوان نمایش داده می‌شوند.": "Tags appear next to the title on the product page.",
+    "برچسبی پیدا نشد.": "No tags found.",
+    "اصل و اورجینال": "Authentic",
+    "گارانتی": "Warranty",
+    "موجود در انبار": "In stock",
+    "تخفیف‌دار": "Discounted"
 }

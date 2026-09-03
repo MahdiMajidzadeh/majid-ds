@@ -752,6 +752,20 @@ The menu's start edge sits at the pointer — its right edge on an RTL page, lik
 
 Props: `disabled`, `long-press`, `focusable` (a tab stop for content with nothing focusable), `fa`. `mds:context.menu` takes `fa`.
 
+### `<mds:pillbox>`
+
+An open implementation of Flux Pro's pillbox: a multi-select whose chosen values sit in the control as removable pills, over a filterable listbox of options. Search folds Arabic ي/ك and Arabic-Indic digits into their Persian forms, the keyboard drives the whole widget (arrows, Enter to toggle, Backspace to drop the last pill), and the value Livewire reads is a visually hidden `<select multiple>`, so `wire:model` binds an array:
+
+```blade
+<mds:pillbox wire:model.live="tags" label="برچسب‌ها" placeholder="انتخاب کنید..." max="3" clearable>
+    <mds:pillbox.option value="mobile">گوشی موبایل</mds:pillbox.option>
+    <mds:pillbox.option value="books">کتاب و مجله</mds:pillbox.option>
+    <mds:pillbox.option value="home" disabled>لوازم خانگی</mds:pillbox.option>
+</mds:pillbox>
+```
+
+Props: `value` (array or comma-separated string) · `name` · `label` · `description` · `placeholder` · `search-label` · `clearable` · `max` · `empty` · `disabled` · `invalid` · `error` · `fa`; `<mds:pillbox.option>` takes `value` and `disabled`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

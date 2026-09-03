@@ -1662,6 +1662,11 @@ class ComponentsTest extends TestCase
             'carousel play' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', '\\u0022play\\u0022:\\u0022پخش\\u0022', '\\u0022play\\u0022:\\u0022Play\\u0022'],
             'carousel dot' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="رفتن به اسلاید ۱"', 'aria-label="Go to slide 1"'],
             'carousel status' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item><mds:carousel.item>y</mds:carousel.item></mds:carousel>', 'data-mds-carousel-status>اسلاید ۱ از ۲<', 'data-mds-carousel-status>Slide 1 of 2<'],
+            'pillbox search' => ['<mds:pillbox />', 'aria-label="جستجو"', 'aria-label="Search"'],
+            'pillbox clear' => ['<mds:pillbox clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'pillbox remove' => ['<mds:pillbox value="php"><mds:pillbox.option value="php">PHP</mds:pillbox.option></mds:pillbox>', 'aria-label="حذف PHP"', 'aria-label="Remove PHP"'],
+            'pillbox empty' => ['<mds:pillbox />', '-empty>موردی یافت نشد.<', '-empty>No matches.<'],
+            'pillbox status' => ['<mds:pillbox />', 'data-mds-pillbox-status>۰ مورد انتخاب شده<', 'data-mds-pillbox-status>0 selected<'],
         ];
     }
 
