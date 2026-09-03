@@ -159,6 +159,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>نمودار</div>
     </a>
+        <a href="#kanban" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>برد کانبان</div>
+    </a>
         <a href="#calendar" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -18407,6 +18418,1020 @@ if (window.Alpine) {
 </div>
 
 
+
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="kanban" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>تخته کانبان — mds:kanban</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >نسخه آزاد از کامپوننت Kanban (که در Flux فقط در نسخه Pro موجود است) — کشیدن با ماوس و لمس، جابه‌جایی کامل با کیبورد و اعلام هر حرکت برای صفحه‌خوان.</p>    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >برای جابه‌جایی با کیبورد روی یک کارت تمرکز کنید و کلید فاصله را بزنید؛ سپس با کلیدهای جهت‌نما جابه‌جا کنید و دوباره فاصله را بزنید.</p>
+    <div x-data="{ last: '' }" x-on:mds-kanban-moved="last = $event.detail.card + ' → ' + $event.detail.to">
+        <script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after alpine:init has fired.
+window.mds.registerKanban = (Alpine) => {
+    if (window.mds.kanbanRegistered) return
+    window.mds.kanbanRegistered = true
+
+    Alpine.data('mdsKanban', (config = {}) => ({
+        fa: config.fa ?? true,
+        disabled: config.disabled ?? false,
+
+        // key -> number of cards. Reactive, so the column headings and the
+        // region labels re-render themselves as cards move; the DOM order of
+        // the cards is the state, this is only what is derived from it.
+        counts: {},
+        announcement: '',
+
+        grabbed: null,  // the card a keyboard move is carrying
+        origin: null,   // where it was picked up, for Escape
+        drag: null,     // pointer drag bookkeeping
+        focused: null,  // the roving tabindex holder
+        moving: false,  // guards the blur our own DOM moves cause
+        observer: null,
+        queued: false,
+
+        init() {
+            this.refresh()
+
+            // The hidden selects must agree with the cards from the first
+            // paint on: an app may render them from a different source.
+            this.write(false)
+
+            // Cards and options both arrive as slot content, so a Livewire
+            // morph (or an x-for) can add, remove or reorder either one.
+            // resync() is a fixed point — it returns without writing once the
+            // two agree — so our own writes cannot loop back through it.
+            this.observer = new MutationObserver(() => this.schedule())
+            this.observer.observe(this.$root, { childList: true, subtree: true })
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+            this.drag = null
+            this.grabbed = null
+        },
+
+        schedule() {
+            if (this.queued) return
+
+            this.queued = true
+
+            queueMicrotask(() => {
+                this.queued = false
+                this.resync()
+            })
+        },
+
+        // ---- reading the board ------------------------------------------
+
+        lists() {
+            return [...this.$root.querySelectorAll('[data-mds-kanban-cards]')]
+        },
+
+        cards() {
+            return [...this.$root.querySelectorAll('[data-mds-kanban-card]')]
+        },
+
+        cardsIn(list) {
+            return [...list.querySelectorAll(':scope > [data-mds-kanban-card]')]
+        },
+
+        columnOf(el) {
+            return el.closest('[data-mds-kanban-column]')
+        },
+
+        listIn(column) {
+            return column.querySelector('[data-mds-kanban-cards]')
+        },
+
+        keyOf(column) {
+            return column ? (column.dataset.mdsKanbanColumn ?? '') : ''
+        },
+
+        idOf(card) {
+            return card.dataset.mdsKanbanCard ?? ''
+        },
+
+        titleOf(card) {
+            return card.dataset.mdsKanbanCardTitle
+                || card.textContent.replace(/\s+/g, ' ').trim().slice(0, 80)
+        },
+
+        headingOf(column) {
+            const heading = column?.querySelector('[data-mds-kanban-heading]')
+
+            return heading ? heading.textContent.trim() : this.keyOf(column)
+        },
+
+        digits(value) {
+            return window.mds.digits(value, this.fa)
+        },
+
+        // ---- derived state ----------------------------------------------
+
+        refresh() {
+            this.lists().forEach(list => {
+                this.counts[this.keyOf(this.columnOf(list))] = this.cardsIn(list).length
+            })
+
+            const cards = this.cards()
+
+            if (! cards.includes(this.focused)) this.focused = cards[0] ?? null
+
+            cards.forEach(card => { card.tabIndex = card === this.focused ? 0 : -1 })
+        },
+
+        count(column) {
+            return this.counts[this.keyOf(column)] ?? 0
+        },
+
+        limitOf(column) {
+            const limit = Number(column.dataset.mdsKanbanLimit)
+
+            return Number.isFinite(limit) && limit > 0 ? limit : null
+        },
+
+        over(column) {
+            const limit = this.limitOf(column)
+
+            return limit !== null && this.count(column) > limit
+        },
+
+        // The count badge and the region name, in the column's own language:
+        // each column carries its own templates, because fa is per component.
+        countText(column) {
+            const n = this.count(column)
+            const limit = this.limitOf(column)
+            const template = limit !== null
+                ? column.dataset.mdsKanbanCountLimit
+                : (n === 1 ? column.dataset.mdsKanbanCountOne : column.dataset.mdsKanbanCount)
+
+            return String(template ?? '')
+                .split(':n').join(this.digits(n))
+                .split(':limit').join(this.digits(limit ?? ''))
+        },
+
+        regionLabel(column) {
+            const parts = [this.headingOf(column), this.countText(column)]
+
+            if (this.over(column)) parts.push(column.dataset.mdsKanbanOverText ?? '')
+
+            return parts.filter(Boolean).join(' — ')
+        },
+
+        // ---- the hidden controls ----------------------------------------
+
+        // One visually hidden multi-select per column mirrors that column's
+        // card order. Livewire reads a multiple select as an array, so the
+        // bound property round-trips as the ordered list of ids.
+        write(notify = true) {
+            this.lists().forEach(list => {
+                const select = this.columnOf(list)?.querySelector('[data-mds-kanban-state]')
+
+                if (! select) return
+
+                const ids = this.cardsIn(list).map(card => this.idOf(card))
+                const now = [...select.options].map(option => option.value)
+                const same = now.length === ids.length
+                    && now.every((value, i) => value === ids[i])
+                    && [...select.options].every(option => option.selected)
+
+                if (same) return
+
+                select.replaceChildren(...ids.map(id => new Option(id, id, true, true)))
+
+                if (notify) {
+                    select.dispatchEvent(new Event('input', { bubbles: true }))
+                    select.dispatchEvent(new Event('change', { bubbles: true }))
+                }
+            })
+        },
+
+        // The morph half of the contract: the server changed a bound array,
+        // Livewire patched the options, and the cards have to follow.
+        resync() {
+            this.lists().forEach(list => {
+                const select = this.columnOf(list)?.querySelector('[data-mds-kanban-state]')
+
+                if (! select) return
+
+                const wanted = [...select.selectedOptions].map(option => option.value)
+                const now = this.cardsIn(list).map(card => this.idOf(card))
+
+                if (wanted.length === now.length && wanted.every((value, i) => value === now[i])) return
+
+                const cards = this.cards()
+
+                wanted.forEach(id => {
+                    const card = cards.find(card => this.idOf(card) === id)
+
+                    if (card) list.appendChild(card)
+                })
+            })
+
+            this.refresh()
+
+            // Whatever the two disagreed about, the cards are the state — so
+            // fold the result back into the selects without telling Livewire.
+            this.write(false)
+        },
+
+        // ---- announcements -----------------------------------------------
+
+        announce(kind, card) {
+            const template = this.$refs.live?.dataset[kind]
+
+            if (! template) return
+
+            const list = card.closest('[data-mds-kanban-cards]')
+            const column = this.columnOf(card)
+            const cards = list ? this.cardsIn(list) : []
+
+            this.announcement = String(template)
+                .split(':card').join(this.titleOf(card))
+                .split(':column').join(this.headingOf(column))
+                .split(':index').join(this.digits(cards.indexOf(card) + 1))
+                .split(':total').join(this.digits(cards.length))
+        },
+
+        // ---- moving a card ------------------------------------------------
+
+        // Re-inserting the focused card blurs it, and that blur must not be
+        // read as "focus left the board" — hence the flag onBlur() checks.
+        placeAt(list, card, index) {
+            const others = this.cardsIn(list).filter(el => el !== card)
+
+            this.moving = true
+            list.insertBefore(card, others[index] ?? null)
+        },
+
+        // Everything a completed move owes the outside world: the derived
+        // state, the hidden selects, one descriptive event per card moved.
+        settle(card, from, index) {
+            this.refresh()
+
+            const list = card.closest('[data-mds-kanban-cards]')
+            const to = this.keyOf(this.columnOf(card))
+            const at = list ? this.cardsIn(list).indexOf(card) : -1
+            const moved = to !== from || at !== index
+
+            this.write(moved)
+
+            if (moved) {
+                this.$root.dispatchEvent(new CustomEvent('mds-kanban-moved', {
+                    bubbles: true,
+                    detail: { card: this.idOf(card), from, to, index: at },
+                }))
+            }
+
+            return moved
+        },
+
+        // ---- keyboard ------------------------------------------------------
+
+        onFocus(e) {
+            const card = e.target.closest('[data-mds-kanban-card]')
+
+            if (! card || ! this.$root.contains(card)) return
+
+            // Focus left the card being carried — that ends the move without
+            // stealing the focus back.
+            if (this.grabbed && card !== this.grabbed) this.cancel(false)
+
+            this.focused = card
+            this.cards().forEach(el => { el.tabIndex = el === this.focused ? 0 : -1 })
+        },
+
+        // Focus left the board altogether while a card was being carried —
+        // put it back where it came from rather than leaving it in limbo.
+        onBlur(e) {
+            if (! this.grabbed || this.moving) return
+
+            const to = e.relatedTarget
+
+            if (to && this.$root.contains(to)) return
+
+            this.cancel(false)
+        },
+
+        onKey(e) {
+            const card = e.target.closest('[data-mds-kanban-card]')
+
+            if (! card || ! this.$root.contains(card)) return
+
+            const carrying = this.grabbed === card
+
+            if (e.key === 'Escape') {
+                if (! carrying) return
+
+                e.preventDefault()
+
+                return this.cancel()
+            }
+
+            if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
+                // Enter belongs to a link or a button inside the card.
+                if (e.target !== card) return
+
+                e.preventDefault()
+
+                return carrying ? this.drop() : this.pickUp(card)
+            }
+
+            // Horizontal keys follow the VISUAL order: on an RTL page the
+            // first column is the rightmost one, so ArrowRight walks back.
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const step = {
+                ArrowRight: rtl ? -1 : 1,
+                ArrowLeft: rtl ? 1 : -1,
+            }[e.key]
+
+            if (step !== undefined) {
+                e.preventDefault()
+
+                return carrying ? this.moveAcross(step) : this.focusAcross(card, step)
+            }
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault()
+
+                const delta = e.key === 'ArrowDown' ? 1 : -1
+
+                return carrying ? this.moveDown(delta) : this.focusDown(card, delta)
+            }
+
+            if (e.key === 'Home' || e.key === 'End') {
+                e.preventDefault()
+
+                return carrying ? this.moveEnd(e.key === 'Home') : this.focusEnd(card, e.key === 'Home')
+            }
+        },
+
+        movable(card) {
+            return ! this.disabled && card.dataset.disabled === undefined
+        },
+
+        pickUp(card) {
+            if (! this.movable(card)) return
+
+            const list = card.closest('[data-mds-kanban-cards]')
+
+            if (! list) return
+
+            this.grabbed = card
+            this.origin = {
+                list,
+                next: card.nextElementSibling,
+                key: this.keyOf(this.columnOf(card)),
+                index: this.cardsIn(list).indexOf(card),
+            }
+
+            card.setAttribute('data-grabbed', '')
+            this.announce('grab', card)
+        },
+
+        drop() {
+            const card = this.grabbed
+
+            if (! card) return
+
+            card.removeAttribute('data-grabbed')
+            this.grabbed = null
+
+            this.settle(card, this.origin.key, this.origin.index)
+            this.origin = null
+            this.announce('drop', card)
+            card.focus()
+        },
+
+        cancel(refocus = true) {
+            const card = this.grabbed
+
+            if (! card) return
+
+            const { list, next } = this.origin
+
+            this.moving = true
+            list.insertBefore(card, next && next.parentElement === list ? next : null)
+
+            card.removeAttribute('data-grabbed')
+            this.grabbed = null
+            this.origin = null
+
+            this.refresh()
+            this.announce('cancel', card)
+
+            if (refocus) card.focus()
+
+            this.moving = false
+        },
+
+        // Re-inserting an element drops the focus, so every move takes it back.
+        after(card) {
+            this.refresh()
+            this.announce('move', card)
+            card.focus()
+            card.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+            this.moving = false
+        },
+
+        moveDown(delta) {
+            const card = this.grabbed
+            const list = card.closest('[data-mds-kanban-cards]')
+            const cards = this.cardsIn(list)
+            const at = cards.indexOf(card)
+            const to = Math.min(Math.max(at + delta, 0), cards.length - 1)
+
+            if (to === at) return
+
+            this.placeAt(list, card, to)
+            this.after(card)
+        },
+
+        moveEnd(first) {
+            const card = this.grabbed
+            const list = card.closest('[data-mds-kanban-cards]')
+
+            this.placeAt(list, card, first ? 0 : this.cardsIn(list).length - 1)
+            this.after(card)
+        },
+
+        moveAcross(step) {
+            const card = this.grabbed
+            const lists = this.lists()
+            const list = card.closest('[data-mds-kanban-cards]')
+            const to = lists.indexOf(list) + step
+
+            if (to < 0 || to >= lists.length) return
+
+            const at = this.cardsIn(list).indexOf(card)
+
+            this.placeAt(lists[to], card, Math.min(at, this.cardsIn(lists[to]).length))
+            this.after(card)
+        },
+
+        focus(card) {
+            if (! card) return
+
+            this.focused = card
+            card.focus()
+            card.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+        },
+
+        focusDown(card, delta) {
+            const cards = this.cardsIn(card.closest('[data-mds-kanban-cards]'))
+
+            this.focus(cards[cards.indexOf(card) + delta])
+        },
+
+        focusEnd(card, first) {
+            const cards = this.cardsIn(card.closest('[data-mds-kanban-cards]'))
+
+            this.focus(first ? cards[0] : cards[cards.length - 1])
+        },
+
+        focusAcross(card, step) {
+            const lists = this.lists()
+            const list = card.closest('[data-mds-kanban-cards]')
+            const at = this.cardsIn(list).indexOf(card)
+
+            // Walk on past empty columns rather than stopping dead in one.
+            for (let i = lists.indexOf(list) + step; i >= 0 && i < lists.length; i += step) {
+                const cards = this.cardsIn(lists[i])
+
+                if (cards.length) return this.focus(cards[Math.min(at, cards.length - 1)])
+            }
+        },
+
+        // ---- pointer -------------------------------------------------------
+
+        pointerDown(e) {
+            if (this.drag || this.grabbed || e.button !== 0) return
+
+            const card = e.target.closest('[data-mds-kanban-card]')
+
+            if (! card || ! this.$root.contains(card) || ! this.movable(card)) return
+
+            const handle = e.target.closest('[data-mds-kanban-handle]')
+
+            // Touch drags start on the handle only: the handle is the one
+            // patch of the card that turns off touch scrolling, so the rest
+            // of the board still scrolls under a finger.
+            if (e.pointerType === 'touch' && ! handle) return
+
+            // A press on something interactive is a press on that thing.
+            if (! handle && e.target.closest('a, button, input, select, textarea, [contenteditable]')) return
+
+            const list = card.closest('[data-mds-kanban-cards]')
+
+            if (! list) return
+
+            this.drag = {
+                el: card,
+                pointer: e.pointerId,
+                x: e.clientX,
+                y: e.clientY,
+                active: false,
+                list,
+                next: card.nextElementSibling,
+                key: this.keyOf(this.columnOf(card)),
+                index: this.cardsIn(list).indexOf(card),
+            }
+
+            try { card.setPointerCapture(e.pointerId) } catch (_) {}
+        },
+
+        pointerMove(e) {
+            if (! this.drag || e.pointerId !== this.drag.pointer) return
+
+            const dx = e.clientX - this.drag.x
+            const dy = e.clientY - this.drag.y
+
+            if (! this.drag.active) {
+                if (Math.hypot(dx, dy) < 5) return
+
+                this.drag.active = true
+                this.drag.el.setAttribute('data-dragging', '')
+                this.drag.el.style.pointerEvents = 'none'
+                this.drag.el.style.position = 'relative'
+                this.drag.el.style.zIndex = '30'
+                this.$root.classList.add('select-none')
+                document.getSelection()?.removeAllRanges()
+            }
+
+            e.preventDefault()
+            this.drag.el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)'
+            this.dragOver(e.clientX, e.clientY)
+        },
+
+        // Live reordering: the card itself is moved into place as it travels,
+        // so the gap under the pointer is the real drop position.
+        dragOver(x, y) {
+            const card = this.drag.el
+            const under = document.elementFromPoint(x, y)
+            const list = under?.closest('[data-mds-kanban-cards]')
+
+            if (! list || ! this.$root.contains(list)) return
+
+            let before = null
+
+            for (const other of this.cardsIn(list)) {
+                if (other === card) continue
+
+                const rect = other.getBoundingClientRect()
+
+                if (y < rect.top + rect.height / 2) { before = other; break }
+            }
+
+            if (card.parentElement === list && (before ? card.nextElementSibling === before : this.cardsIn(list).at(-1) === card)) return
+
+            // Both rects carry the same transform, so their difference is the
+            // layout shift alone: fold it into the origin and the card does
+            // not jump under the finger.
+            const was = card.getBoundingClientRect()
+
+            list.insertBefore(card, before)
+
+            const now = card.getBoundingClientRect()
+
+            this.drag.x += now.left - was.left
+            this.drag.y += now.top - was.top
+
+            card.style.transform = 'translate(' + (x - this.drag.x) + 'px, ' + (y - this.drag.y) + 'px)'
+            this.refresh()
+        },
+
+        pointerUp(e) {
+            if (! this.drag || e.pointerId !== this.drag.pointer) return
+
+            const { el, active, key, index } = this.drag
+
+            this.release()
+
+            if (! active) return
+
+            this.settle(el, key, index)
+            this.announce('drop', el)
+        },
+
+        pointerCancel(e) {
+            if (! this.drag || e.pointerId !== this.drag.pointer) return
+
+            const { el, active, list, next } = this.drag
+
+            this.release()
+
+            if (! active) return
+
+            list.insertBefore(el, next && next.parentElement === list ? next : null)
+            this.refresh()
+            this.announce('cancel', el)
+        },
+
+        release() {
+            const card = this.drag.el
+
+            try { card.releasePointerCapture(this.drag.pointer) } catch (_) {}
+
+            card.style.transform = ''
+            card.style.pointerEvents = ''
+            card.style.position = ''
+            card.style.zIndex = ''
+            card.removeAttribute('data-dragging')
+            this.$root.classList.remove('select-none')
+            this.drag = null
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerKanban(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerKanban(window.Alpine))
+}
+</script>
+
+<div
+    class="flex w-full items-start gap-4 overflow-x-auto pb-2"
+    role="group"
+    aria-label="تخته کانبان"
+    x-data="mdsKanban({ fa: true, disabled: false })"
+    x-id="['mds-kanban-hint']"
+    x-on:keydown="onKey($event)"
+    x-on:focusin="onFocus($event)"
+    x-on:focusout="onBlur($event)"
+    x-on:pointerdown="pointerDown($event)"
+    x-on:pointermove.window="pointerMove($event)"
+    x-on:pointerup.window="pointerUp($event)"
+    x-on:pointercancel.window="pointerCancel($event)"
+    x-on:dragstart.prevent
+        data-mds-kanban
+>
+    <div
+    class="flex w-72 shrink-0 flex-col self-stretch rounded-xl border bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10"
+    role="region"
+    aria-label="انجام‌نشده — ۳ کارت"
+    x-bind:aria-label="regionLabel($el)"
+            x-bind:data-mds-kanban-over="over($el) ? '' : false"
+        data-mds-kanban-count=":n کارت"
+    data-mds-kanban-count-one=":n کارت"
+    data-mds-kanban-count-limit=":n از :limit کارت"
+    data-mds-kanban-over-text="بیش از حد مجاز"
+    data-mds-kanban-column="todo"
+>
+    <div class="flex items-center gap-2 border-b border-zinc-200 px-3 py-2.5 dark:border-white/10" data-mds-kanban-header>
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-zinc-800 dark:text-white" data-mds-kanban-heading>انجام‌نشده</span>
+
+        
+        <span
+            class="inline-flex shrink-0 items-center gap-1 text-red-600 dark:text-red-400"
+            x-show="over($el.closest('[data-mds-kanban-column]'))"
+             style="display: none"             data-mds-kanban-warning
+        >
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+            <span class="sr-only">بیش از حد مجاز</span>
+        </span>
+
+        <span
+            class="shrink-0 rounded-full px-2 py-0.5 text-xs tabular-nums bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+            
+            x-bind:class="{
+                'bg-red-100 font-medium text-red-700 dark:bg-red-400/10 dark:text-red-400': over($el.closest('[data-mds-kanban-column]')),
+                'bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300': ! over($el.closest('[data-mds-kanban-column]')),
+            }"
+            x-text="countText($el.closest('[data-mds-kanban-column]'))"
+            data-mds-kanban-count-badge
+        >۳ کارت</span>
+
+            </div>
+
+    <ul role="list" class="flex min-h-24 flex-1 flex-col gap-2 p-2" data-mds-kanban-cards>
+        <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+         data-mds-kanban-card-title="طراحی صفحه پرداخت"     data-mds-kanban-card="1"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>طراحی صفحه پرداخت</span>
+        
+        تا پنج‌شنبه
+    </span>
+</li>
+                <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+         data-mds-kanban-card-title="رفع باگ سبد خرید"     data-mds-kanban-card="2"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>رفع باگ سبد خرید</span>
+        
+        
+    </span>
+</li>
+                <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+         data-mds-kanban-card-title="مهاجرت به تیلویند ۴"     data-mds-kanban-card="3"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>مهاجرت به تیلویند ۴</span>
+        
+        
+    </span>
+</li>
+
+        
+        <li
+            class="pointer-events-none rounded-lg border border-dashed border-zinc-300 px-3 py-6 text-center text-xs text-zinc-400 dark:border-white/15 dark:text-zinc-500"
+            x-show="count($el.closest('[data-mds-kanban-column]')) === 0"
+             style="display: none"             aria-hidden="true"
+            data-mds-kanban-empty
+        >کارتی نیست</li>
+    </ul>
+
+    
+    <select
+        multiple
+        hidden
+        tabindex="-1"
+        aria-hidden="true"
+                data-mds-kanban-state="todo"
+        
+    >
+                    <option value="1" selected>1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3" selected>3</option>
+            </select>
+
+    </div>
+
+            <div
+    class="flex w-72 shrink-0 flex-col self-stretch rounded-xl border bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10"
+    role="region"
+    aria-label="در حال انجام — ۱ از ۲ کارت"
+    x-bind:aria-label="regionLabel($el)"
+            x-bind:data-mds-kanban-over="over($el) ? '' : false"
+     data-mds-kanban-limit="2"     data-mds-kanban-count=":n کارت"
+    data-mds-kanban-count-one=":n کارت"
+    data-mds-kanban-count-limit=":n از :limit کارت"
+    data-mds-kanban-over-text="بیش از حد مجاز"
+    data-mds-kanban-column="doing"
+>
+    <div class="flex items-center gap-2 border-b border-zinc-200 px-3 py-2.5 dark:border-white/10" data-mds-kanban-header>
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-zinc-800 dark:text-white" data-mds-kanban-heading>در حال انجام</span>
+
+        
+        <span
+            class="inline-flex shrink-0 items-center gap-1 text-red-600 dark:text-red-400"
+            x-show="over($el.closest('[data-mds-kanban-column]'))"
+             style="display: none"             data-mds-kanban-warning
+        >
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+            <span class="sr-only">بیش از حد مجاز</span>
+        </span>
+
+        <span
+            class="shrink-0 rounded-full px-2 py-0.5 text-xs tabular-nums bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+            
+            x-bind:class="{
+                'bg-red-100 font-medium text-red-700 dark:bg-red-400/10 dark:text-red-400': over($el.closest('[data-mds-kanban-column]')),
+                'bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300': ! over($el.closest('[data-mds-kanban-column]')),
+            }"
+            x-text="countText($el.closest('[data-mds-kanban-column]'))"
+            data-mds-kanban-count-badge
+        >۱ از ۲ کارت</span>
+
+                    <span class="shrink-0" data-mds-kanban-actions><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-6 text-xs rounded-md gap-1 w-6 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button" aria-label="افزودن کارت">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/>
+</svg>
+    </button></span>
+            </div>
+
+    <ul role="list" class="flex min-h-24 flex-1 flex-col gap-2 p-2" data-mds-kanban-cards>
+        <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+         data-mds-kanban-card-title="انتشار نسخه ۲.۱"     data-mds-kanban-card="4"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>انتشار نسخه ۲.۱</span>
+        
+        در انتظار تست
+    </span>
+</li>
+
+        
+        <li
+            class="pointer-events-none rounded-lg border border-dashed border-zinc-300 px-3 py-6 text-center text-xs text-zinc-400 dark:border-white/15 dark:text-zinc-500"
+            x-show="count($el.closest('[data-mds-kanban-column]')) === 0"
+             style="display: none"             aria-hidden="true"
+            data-mds-kanban-empty
+        >کارتی نیست</li>
+    </ul>
+
+    
+    <select
+        multiple
+        hidden
+        tabindex="-1"
+        aria-hidden="true"
+                data-mds-kanban-state="doing"
+        
+    >
+                    <option value="4" selected>4</option>
+            </select>
+
+    </div>
+
+            <div
+    class="flex w-72 shrink-0 flex-col self-stretch rounded-xl border bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10"
+    role="region"
+    aria-label="انجام شده — ۲ کارت"
+    x-bind:aria-label="regionLabel($el)"
+            x-bind:data-mds-kanban-over="over($el) ? '' : false"
+        data-mds-kanban-count=":n کارت"
+    data-mds-kanban-count-one=":n کارت"
+    data-mds-kanban-count-limit=":n از :limit کارت"
+    data-mds-kanban-over-text="بیش از حد مجاز"
+    data-mds-kanban-column="done"
+>
+    <div class="flex items-center gap-2 border-b border-zinc-200 px-3 py-2.5 dark:border-white/10" data-mds-kanban-header>
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-zinc-800 dark:text-white" data-mds-kanban-heading>انجام شده</span>
+
+        
+        <span
+            class="inline-flex shrink-0 items-center gap-1 text-red-600 dark:text-red-400"
+            x-show="over($el.closest('[data-mds-kanban-column]'))"
+             style="display: none"             data-mds-kanban-warning
+        >
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+            <span class="sr-only">بیش از حد مجاز</span>
+        </span>
+
+        <span
+            class="shrink-0 rounded-full px-2 py-0.5 text-xs tabular-nums bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300"
+            
+            x-bind:class="{
+                'bg-red-100 font-medium text-red-700 dark:bg-red-400/10 dark:text-red-400': over($el.closest('[data-mds-kanban-column]')),
+                'bg-zinc-200/70 text-zinc-600 dark:bg-white/10 dark:text-zinc-300': ! over($el.closest('[data-mds-kanban-column]')),
+            }"
+            x-text="countText($el.closest('[data-mds-kanban-column]'))"
+            data-mds-kanban-count-badge
+        >۲ کارت</span>
+
+            </div>
+
+    <ul role="list" class="flex min-h-24 flex-1 flex-col gap-2 p-2" data-mds-kanban-cards>
+        <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+         data-mds-kanban-card-title="افزودن تست‌های واحد"     data-mds-kanban-card="5"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>افزودن تست‌های واحد</span>
+        
+        
+    </span>
+</li>
+                <li
+    class="group relative flex items-start gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-700 shadow-xs transition-shadow dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent data-grabbed:shadow-lg data-grabbed:ring-2 data-grabbed:ring-accent data-dragging:shadow-lg data-dragging:opacity-90 opacity-60"
+    role="listitem"
+    tabindex="0"
+    aria-roledescription="کارت جابه‌جایی‌پذیر"
+    x-bind:aria-describedby="$id('mds-kanban-hint')"
+     data-disabled aria-disabled="true"      data-mds-kanban-card-title="بازبینی متن‌های فارسی"     data-mds-kanban-card="6"
+>
+    
+    <span
+        class="mt-0.5 shrink-0 touch-none text-zinc-300 dark:text-zinc-600 cursor-not-allowed"
+        aria-hidden="true"
+        title="دستگیره جابه‌جایی"
+        data-mds-kanban-handle
+    >
+        <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </span>
+
+    <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-zinc-800 dark:text-white" data-mds-kanban-card-heading>بازبینی متن‌های فارسی</span>
+        
+        قفل شده
+    </span>
+</li>
+
+        
+        <li
+            class="pointer-events-none rounded-lg border border-dashed border-zinc-300 px-3 py-6 text-center text-xs text-zinc-400 dark:border-white/15 dark:text-zinc-500"
+            x-show="count($el.closest('[data-mds-kanban-column]')) === 0"
+             style="display: none"             aria-hidden="true"
+            data-mds-kanban-empty
+        >کارتی نیست</li>
+    </ul>
+
+    
+    <select
+        multiple
+        hidden
+        tabindex="-1"
+        aria-hidden="true"
+                data-mds-kanban-state="done"
+        
+    >
+                    <option value="5" selected>5</option>
+                    <option value="6" selected>6</option>
+            </select>
+
+    </div>
+
+    <div class="sr-only" x-bind:id="$id('mds-kanban-hint')" data-mds-kanban-hint>برای برداشتن کارت کلید فاصله یا Enter را بزنید، با کلیدهای جهت‌نما جابه‌جا کنید، دوباره فاصله را برای رها کردن و Esc را برای لغو بزنید.</div>
+
+    <div
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        x-ref="live"
+        x-text="announcement"
+        data-grab="«:card» برداشته شد. جایگاه :index از :total در ستون «:column»."
+        data-move="«:card» به جایگاه :index از :total در ستون «:column» رفت."
+        data-drop="«:card» در جایگاه :index از :total در ستون «:column» رها شد."
+        data-cancel="جابه‌جایی «:card» لغو شد."
+        data-mds-kanban-live
+    ></div>
+</div>
+
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 mt-3 text-sm" data-flux-text >آخرین جابه‌جایی:
+            <span x-show="last" x-text="last" x-cloak></span>
+            <span x-show="! last">هنوز جابه‌جایی‌ای انجام نشده است.</span></p>    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>آیکون‌ها — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >آیکون‌های <a href="https://hugeicons.com" class="underline">Hugeicons</a> جایگزین heroicons در همه اجزای mds شده‌اند. مجموعه رایگان Stroke Rounded (۶٬۲۰۰ آیکون) همراه بسته می‌آید؛ نام‌های heroicons هم از طریق نقشه معادل‌ها کار می‌کنند.</p>
@@ -20423,7 +21448,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#editor" class="docs-toc-sub">Editor</a><a href="#calendar" class="docs-toc-sub">Calendar</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#editor" class="docs-toc-sub">Editor</a><a href="#calendar" class="docs-toc-sub">Calendar</a><a href="#kanban" class="docs-toc-sub">Kanban</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

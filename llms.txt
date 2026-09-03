@@ -1050,6 +1050,75 @@ Example:
 <mds:calendar calendar="gregorian" :start-day="0" static :value="$order->shipped_at" />
 ```
 
+### <mds:kanban> — drag-and-drop board (open version of Flux Pro's flux:kanban)
+Board shell: holds the shared `Alpine.data('mdsKanban')` state, the polite live region and the keyboard hint every card is
+described by. No third-party JS — the dragging is Pointer Events in the kit's own inline Alpine.
+Props: `label` string|null (accessible name of the board; default 'تخته کانبان' / 'Kanban board' by fa) · `disabled`
+bool=false (nothing can be moved; adds `aria-disabled` + `data-disabled`) · `fa` bool|null=config (inherited by columns and cards).
+Compose:
+- `<mds:kanban.column>` props: `key` string|null (the column's id in the board state and in the moved event; falls back to
+  `name`, then to a hash of `heading`) · `heading` string|null (visible title; also the column name the announcements read) ·
+  `name` string|null (form name of the hidden control, `[]` auto-appended) · `limit` int|null (WIP limit: the badge reads
+  «۳ از ۵ کارت», and going over adds `data-mds-kanban-over`, a warning icon and the words «بیش از حد مجاز» / 'Over limit' to
+  the region name — never colour alone) · `empty` string|null (placeholder for an empty column; default 'کارتی نیست' /
+  'No cards') · `error` string|null (explicit message; when omitted and `name` is set, falls back to `$errors->first($name)`
+  then `$errors->first("$name.*")`) · `invalid` bool=false · `fa` bool|null (inherited). Named slot `actions` sits at the
+  inline-end of the header (an “add card” button).
+- `<mds:kanban.card>` props: `key` string|int|null (the card's id in the board state; derived from the card's own content when
+  omitted, deterministically) · `heading` string|null (bold title line, and the card's name in the announcements — the text
+  content is the fallback) · `disabled` bool=false (cannot be picked up or dragged; still focusable and readable) · `fa`
+  bool|null (inherited). Renders an `<li>`, so it belongs inside a column.
+Behavior: pointer drags are live — the card itself is moved through the DOM as it travels, so the gap under the pointer is the
+real drop position; the transform is re-based after every insertion, so the card never jumps out from under the cursor.
+A drag starts after 5px of movement; a mouse or pen may start it anywhere on the card (except on a link, button or field
+inside it), a finger only on the drag handle, which is the one patch of the card with `touch-action: none` so the board still
+scrolls elsewhere. `pointercancel` puts the card back. Keyboard: focus a card (roving tabindex, so the board is one tab stop),
+Space or Enter picks it up, ArrowUp/ArrowDown move it within the column, ArrowLeft/ArrowRight move it to the next column in
+the VISUAL order (`getComputedStyle().direction` is read at keydown, so RTL is mirrored), Home/End send it to the top or the
+bottom, Space or Enter drops it and Escape — or moving focus off the card — puts it back. Without a card in hand the same keys
+move the focus instead, skipping past empty columns. Card counts, region names and the WIP badge re-render from the DOM after
+every change.
+ARIA contract: the board is `role="group"` named by `label`; each column is a `role="region"` whose name is
+«heading — N cards» (and « — بیش از حد مجاز» when over the limit); cards sit in a `role="list"`, each `role="listitem"` with
+`aria-roledescription` «کارت جابه‌جایی‌پذیر» / 'Draggable card', `tabindex` managed as a roving tabindex, and
+`aria-describedby` pointing at the sr-only keyboard hint (the id is assigned by Alpine's `$id`, so two boards on a page never
+collide). Every pick-up, move, drop and cancellation is announced in a single `role="status" aria-live="polite"` region, in
+Persian or English by `fa`, with the position as «جایگاه ۲ از ۵». The drag handle is decoration (`aria-hidden`) — the card
+itself is the focusable, movable thing. The hidden state controls are `hidden` + `aria-hidden`, so they are neither tab stops
+nor read out.
+Livewire contract: one visually hidden `<select multiple>` per column holds that column's card ids as ordered `<option>`s,
+and `wire:model` on the column is forwarded to it (everything else lands on the column region) — Livewire reads a multiple
+select as an array, so the bound property IS the ordered list of ids. Bind one property slice per column
+(`wire:model="board.todo"`), never one binding for the whole board. Alpine rewrites the options and dispatches bubbling
+`input` + `change` after each completed move, and a `MutationObserver` on the board re-reads the options after a morph and
+re-orders the cards to match — so a server-side change of the array round-trips. The board also dispatches a bubbling
+`mds-kanban-moved` CustomEvent whose `detail` is `{ card, from, to, index }` (ids as strings, `index` 0-based in the target
+column), so an app can persist one move without diffing the whole board. Give every card a `wire:key` so a morph keeps it —
+written on the `<x-mds::kanban.card>` spelling of the tag, because Livewire's `wire:key` precompiler rewrites the tag before
+the `mds:` compiler sees it (see Tag syntaxes above; the same applies to every `<mds:…>` tag).
+```blade
+<mds:kanban>
+    @foreach ($columns as $key => $column)
+        <mds:kanban.column :key="$key" :heading="$column['title']" :limit="$column['limit'] ?? null"
+                           :name="'board.'.$key" wire:model="board.{{ $key }}">
+            <x-slot name="actions"><flux:button size="xs" variant="ghost" wire:click="add('{{ $key }}')">+</flux:button></x-slot>
+
+            @foreach ($column['cards'] as $card)
+                <x-mds::kanban.card :key="$card['id']" :heading="$card['title']" wire:key="card-{{ $card['id'] }}">
+                    <span class="text-xs text-zinc-500">{{ $card['assignee'] }}</span>
+                </x-mds::kanban.card>
+            @endforeach
+        </mds:kanban.column>
+    @endforeach
+</mds:kanban>
+```
+```php
+public array $board = ['todo' => ['1', '2'], 'doing' => ['3'], 'done' => []];
+```
+The event bubbles to `window`, so a single move can also be persisted on its own — with
+`x-on:mds-kanban-moved="$wire.moved($event.detail)"` on any ancestor, or Livewire's
+`#[On('mds-kanban-moved')] public function moved($card, $from, $to, $index) { … }` — and then no `wire:model` is needed at all.
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

@@ -3753,4 +3753,154 @@ $pages['calendar'] = [
     'related' => ['jalali-date', 'mds-input', 'field'],
 ];
 
+// ------------------------------------------------------------ mds:kanban
+
+// bin/docs/mds.php — paste as-is, and add 'kanban' to bin/docs/nav.php's mds group.
+
+$pages['kanban'] = [
+    'group' => 'mds',
+    'title' => 'mds:kanban',
+    'lede' => 'A drag-and-drop board that also works entirely from the keyboard — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Kanban component is Pro-only. This is a working replacement with no third-party JavaScript: the dragging is Pointer Events in the kit\'s own Alpine. The preview is live — drag a card with the mouse, or click one and press <kbd>Space</kbd>, then the arrow keys.',
+            'code' => <<<'BLADE'
+            <mds:kanban>
+                <mds:kanban.column key="todo" heading="To do">
+                    <mds:kanban.card key="1" heading="Design the checkout page">Due Thursday</mds:kanban.card>
+                    <mds:kanban.card key="2" heading="Fix the cart badge">Reported twice this week</mds:kanban.card>
+                    <mds:kanban.card key="3" heading="Migrate to Tailwind 4"></mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="doing" heading="In progress">
+                    <mds:kanban.card key="4" heading="Release 2.1">Waiting on QA</mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="done" heading="Done">
+                    <mds:kanban.card key="5" heading="Add unit tests"></mds:kanban.card>
+                </mds:kanban.column>
+            </mds:kanban>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'The keyboard',
+            'text' => 'Drag-and-drop that only works with a mouse is half a component. The board is one tab stop (a roving <code>tabindex</code>); from there <kbd>Space</kbd> or <kbd>Enter</kbd> picks a card up, the arrow keys move it — up and down inside the column, left and right between columns — <kbd>Home</kbd> and <kbd>End</kbd> send it to the top or the bottom, <kbd>Space</kbd> drops it and <kbd>Esc</kbd> puts it back. Every step is announced in a polite live region: “Fix the cart badge” moved to position 2 of 3 in “In progress”. The horizontal keys follow what you see rather than the source order, so on an RTL page they are mirrored.',
+            'code' => <<<'BLADE'
+            <mds:kanban label="Sprint board">
+                <mds:kanban.column key="todo" heading="To do">
+                    <mds:kanban.card key="1" heading="Write the release notes"></mds:kanban.card>
+                    <mds:kanban.card key="2" heading="Review the Persian copy"></mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="doing" heading="In progress">
+                    <mds:kanban.card key="3" heading="Fix the cart badge"></mds:kanban.card>
+                </mds:kanban.column>
+            </mds:kanban>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Work-in-progress limits',
+            'text' => 'A column with a <code>limit</code> counts against it — «2 of 3 cards» — and says so when it goes over: the badge turns red <em>and</em> gains a warning icon, and the column\'s accessible name ends with “Over limit”. Nothing here is carried by colour alone. Drag a third card into the middle column to see it.',
+            'code' => <<<'BLADE'
+            <mds:kanban>
+                <mds:kanban.column key="todo" heading="To do">
+                    <mds:kanban.card key="1" heading="Write the release notes"></mds:kanban.card>
+                    <mds:kanban.card key="2" heading="Review the Persian copy"></mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="doing" heading="In progress" limit="2">
+                    <mds:kanban.card key="3" heading="Fix the cart badge"></mds:kanban.card>
+                    <mds:kanban.card key="4" heading="Release 2.1"></mds:kanban.card>
+                </mds:kanban.column>
+            </mds:kanban>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Empty columns, locked cards, a locked board',
+            'text' => 'An empty column keeps its drop zone and says so. A card marked <code>disabled</code> stays readable and focusable but cannot be picked up or dragged; <code>disabled</code> on the board itself freezes everything. Both are stated in the markup (<code>aria-disabled</code>), not only in the styling.',
+            'code' => <<<'BLADE'
+            <mds:kanban>
+                <mds:kanban.column key="backlog" heading="Backlog" empty="Nothing waiting">
+                    <mds:kanban.card key="1" heading="Ship the invoice PDF" disabled>Locked until billing lands</mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="todo" heading="To do" />
+            </mds:kanban>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Livewire',
+            'text' => 'Each column carries a hidden multiple <code>&lt;select&gt;</code> holding its card ids in order, and <code>wire:model</code> on the column is forwarded to it — Livewire reads a multiple select as an array, so the bound property <em>is</em> the ordered list. Bind one slice of the board per column. The board also fires a bubbling <code>mds-kanban-moved</code> event whose detail is <code>{ card, from, to, index }</code>, so a single move can be persisted without diffing anything. A server-side change of the arrays travels the other way: a <code>MutationObserver</code> re-reads the options after the morph and re-orders the cards to match.',
+            'code' => <<<'BLADE'
+            <div x-data="{ last: '' }" x-on:mds-kanban-moved="last = $event.detail.card + ' → ' + $event.detail.to">
+                <mds:kanban>
+                    <mds:kanban.column key="todo" heading="To do" name="board.todo" wire:model="board.todo">
+                        <mds:kanban.card key="1" heading="Write the release notes"></mds:kanban.card>
+                        <mds:kanban.card key="2" heading="Review the Persian copy"></mds:kanban.card>
+                    </mds:kanban.column>
+
+                    <mds:kanban.column key="doing" heading="In progress" name="board.doing" wire:model="board.doing">
+                        <mds:kanban.card key="3" heading="Fix the cart badge"></mds:kanban.card>
+                    </mds:kanban.column>
+                </mds:kanban>
+
+                <p class="mt-3 text-sm text-zinc-500">Last move: <span x-text="last || '—'"></span></p>
+            </div>
+            BLADE,
+            'note' => 'The Blade above is the whole client half; on the server it is <code>public array $board = [\'todo\' => [\'1\', \'2\'], \'doing\' => [\'3\']];</code>. Give each card a <code>wire:key</code> using the <code>&lt;x-mds::kanban.card&gt;</code> spelling — Livewire rewrites <code>wire:key</code> before the <code>mds:</code> tag compiler sees the tag.',
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => 'On an RTL page the columns run right to left and the arrow keys follow them: <kbd>←</kbd> moves a card to the next column, not the previous one. The built-in strings — the board\'s name, the keyboard hint, the card count, the empty placeholder and every announcement — follow <code>config(\'mds.persian_digits\')</code>, which is on by default in a real app and off in these docs, so this example forces it back on with <code>:fa="true"</code>.',
+            'code' => <<<'BLADE'
+            <mds:kanban :fa="true">
+                <mds:kanban.column key="todo" heading="انجام‌نشده">
+                    <mds:kanban.card key="1" heading="طراحی صفحه پرداخت">تا پنج‌شنبه</mds:kanban.card>
+                    <mds:kanban.card key="2" heading="رفع باگ سبد خرید"></mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="doing" heading="در حال انجام" limit="2">
+                    <mds:kanban.card key="3" heading="انتشار نسخه ۲.۱"></mds:kanban.card>
+                </mds:kanban.column>
+
+                <mds:kanban.column key="done" heading="انجام شده" />
+            </mds:kanban>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:kanban', 'props' => [
+            ['label', 'Accessible name of the board. Default: "Kanban board", or تخته کانبان in Persian.'],
+            ['disabled', 'Freezes the board — nothing can be picked up or dragged. Default: <code>false</code>.'],
+            ['fa', 'Persian digits and strings. Default: <code>config(\'mds.persian_digits\')</code>; inherited by columns and cards.'],
+        ]],
+        ['name' => 'mds:kanban.column', 'props' => [
+            ['key', 'The column\'s id in the board state and in the <code>mds-kanban-moved</code> event. Falls back to <code>name</code>, then to a hash of <code>heading</code>.'],
+            ['heading', 'Visible column title, and the column name the announcements read out.'],
+            ['name', 'Form name of the hidden control; <code>[]</code> is appended, and it is the key the error bag is read with.'],
+            ['limit', 'Work-in-progress limit. The badge reads "2 of 3 cards" and going over flags the column.'],
+            ['empty', 'Placeholder for an empty column. Default: "No cards", or کارتی نیست in Persian.'],
+            ['error', 'Validation message under the column. Falls back to the error bag when <code>name</code> is set.'],
+            ['invalid', 'Marks the column invalid without a message. Default: <code>false</code>.'],
+            ['fa', 'Persian digits and strings; inherited from the board.'],
+        ]],
+        ['name' => 'mds:kanban.card', 'props' => [
+            ['key', 'The card\'s id in the board state. Derived from the card\'s own content when omitted.'],
+            ['heading', 'Bold title line, and the card\'s name in the announcements.'],
+            ['disabled', 'The card cannot be moved — still focusable and readable. Default: <code>false</code>.'],
+            ['fa', 'Persian digits and strings; inherited from the board.'],
+        ]],
+    ],
+    'related' => ['timeline', 'card'],
+];
+
 return $pages;

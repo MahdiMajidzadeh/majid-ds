@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
         <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
         <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
         <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
@@ -1506,6 +1507,44 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     <flux:callout icon="information-circle" variant="secondary">
         <flux:callout.text>{{ __('کلیدهای جهت‌دار روی شبکه کار می‌کنند: چپ و راست یک روز — به همان سمتی که فلش نشان می‌دهد، حتی در صفحه‌ی راست‌چین — بالا و پایین یک هفته، Home و End ابتدا و انتهای هفته، PageUp و PageDown یک ماه و با Shift یک سال.') }}</flux:callout.text>
     </flux:callout>
+</flux:card>
+
+{{-- ============================== MDS: Kanban ============================== --}}
+{{-- workbench/resources/views/demo/cards.blade.php — paste as-is, and add
+     an id="kanban" entry to the demo navbar's table of contents. --}}
+<flux:card id="kanban" class="space-y-4">
+    <flux:heading size="lg">{{ __('تخته کانبان — mds:kanban') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Kanban (که در Flux فقط در نسخه Pro موجود است) — کشیدن با ماوس و لمس، جابه‌جایی کامل با کیبورد و اعلام هر حرکت برای صفحه‌خوان.') }}</flux:text>
+    <flux:text class="text-sm">{{ __('برای جابه‌جایی با کیبورد روی یک کارت تمرکز کنید و کلید فاصله را بزنید؛ سپس با کلیدهای جهت‌نما جابه‌جا کنید و دوباره فاصله را بزنید.') }}</flux:text>
+
+    <div x-data="{ last: '' }" x-on:mds-kanban-moved="last = $event.detail.card + ' → ' + $event.detail.to">
+        <mds:kanban>
+            <mds:kanban.column key="todo" :heading="__('انجام‌نشده')">
+                <mds:kanban.card key="1" :heading="__('طراحی صفحه پرداخت')">{{ __('تا پنج‌شنبه') }}</mds:kanban.card>
+                <mds:kanban.card key="2" :heading="__('رفع باگ سبد خرید')"></mds:kanban.card>
+                <mds:kanban.card key="3" :heading="__('مهاجرت به تیلویند ۴')"></mds:kanban.card>
+            </mds:kanban.column>
+
+            <mds:kanban.column key="doing" :heading="__('در حال انجام')" limit="2">
+                <x-slot name="actions">
+                    <flux:button size="xs" variant="ghost" icon="plus" :aria-label="__('افزودن کارت')" />
+                </x-slot>
+
+                <mds:kanban.card key="4" :heading="__('انتشار نسخه ۲.۱')">{{ __('در انتظار تست') }}</mds:kanban.card>
+            </mds:kanban.column>
+
+            <mds:kanban.column key="done" :heading="__('انجام شده')">
+                <mds:kanban.card key="5" :heading="__('افزودن تست‌های واحد')"></mds:kanban.card>
+                <mds:kanban.card key="6" :heading="__('بازبینی متن‌های فارسی')" disabled>{{ __('قفل شده') }}</mds:kanban.card>
+            </mds:kanban.column>
+        </mds:kanban>
+
+        <flux:text class="mt-3 text-sm">
+            {{ __('آخرین جابه‌جایی:') }}
+            <span x-show="last" x-text="last" x-cloak></span>
+            <span x-show="! last">{{ __('هنوز جابه‌جایی‌ای انجام نشده است.') }}</span>
+        </flux:text>
+    </div>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

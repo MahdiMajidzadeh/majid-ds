@@ -806,6 +806,27 @@ An open implementation of Flux Pro's calendar, and the one place the two are del
 
 Props: `value`, `mode` (`single` | `multiple` | `range`), `min`, `max`, `unavailable`, `months` (1–12), `calendar` (`jalali` | `gregorian`), `start-day` (0 Sunday – 6 Saturday), `week-numbers`, `fixed-weeks`, `selectable-header`, `with-today`, `static`, `size` (`sm` | `lg`), `name`, `label`, `invalid`, `error`, `fa`, `wire:model` (forwarded to the hidden control — one input, a multiple `<select>`, or `x.start` / `x.end`).
 
+### `<mds:kanban>`
+
+An open implementation of Flux Pro's kanban board: columns of draggable cards, with the dragging written in the kit's own Alpine on Pointer Events — no SortableJS, no CDN script, nothing extra to install. It is fully operable from the keyboard (focus a card, <kbd>Space</kbd> to pick it up, arrows to move it, <kbd>Space</kbd> to drop, <kbd>Esc</kbd> to cancel), every move is announced in a polite live region in Persian or English, and on an RTL page the columns — and the left/right keys — run right to left.
+
+```blade
+<mds:kanban>
+    <mds:kanban.column key="todo" heading="انجام‌نشده" name="board.todo" wire:model="board.todo">
+        <mds:kanban.card key="1" heading="طراحی صفحه پرداخت">تا پنج‌شنبه</mds:kanban.card>
+        <mds:kanban.card key="2" heading="رفع باگ سبد خرید" />
+    </mds:kanban.column>
+
+    <mds:kanban.column key="doing" heading="در حال انجام" limit="2" name="board.doing" wire:model="board.doing">
+        <mds:kanban.card key="3" heading="انتشار نسخه ۲.۱" />
+    </mds:kanban.column>
+</mds:kanban>
+```
+
+Each column keeps its card ids in a hidden multiple `<select>`, so `wire:model` on a column binds an ordered array (`public array $board = ['todo' => ['1', '2'], 'doing' => ['3']];`) and a server-side change of that array moves the cards back. The board also fires a bubbling `mds-kanban-moved` event with `{ card, from, to, index }`, so one move can be persisted without diffing the whole board.
+
+Props: `label`, `disabled`, `fa` · `mds:kanban.column`: `key`, `heading`, `name`, `limit`, `empty`, `error`, `invalid`, `fa` (plus an `actions` slot) · `mds:kanban.card`: `key`, `heading`, `disabled`, `fa`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

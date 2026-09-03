@@ -1698,6 +1698,20 @@ class ComponentsTest extends TestCase
             'calendar weekday name' => ['<mds:calendar />', 'abbr="شنبه"', 'abbr="Saturday"'],
             'calendar month name' => ['<mds:calendar value="2026-08-20" />', '>مرداد ۱۴۰۵<', '>Mordad 1405<'],
             'calendar spoken date' => ['<mds:calendar value="2026-08-20" />', 'aria-label="پنجشنبه ۲۹ مرداد ۱۴۰۵"', 'aria-label="Thursday 29 Mordad 1405"'],
+            'kanban board name' => ['<mds:kanban />', 'aria-label="تخته کانبان"', 'aria-label="Kanban board"'],
+            'kanban keyboard hint' => ['<mds:kanban />', 'data-mds-kanban-hint>برای برداشتن کارت کلید فاصله', 'data-mds-kanban-hint>Press Space or Enter to pick up a card'],
+            // The announcement templates ride on the live region as data attributes —
+            // :card and :column are filled in by Alpine as a card is carried.
+            'kanban pick up announcement' => ['<mds:kanban />', 'data-grab="«:card» برداشته شد.', 'data-grab="“:card” picked up.'],
+            'kanban drop announcement' => ['<mds:kanban />', 'data-drop="«:card» در جایگاه', 'data-drop="“:card” dropped at position'],
+            'kanban cancel announcement' => ['<mds:kanban />', 'data-cancel="جابه‌جایی «:card» لغو شد."', 'data-cancel="Move of “:card” cancelled."'],
+            'kanban column count' => ['<mds:kanban><mds:kanban.column key="a" heading="X" /></mds:kanban>', 'aria-label="X — ۰ کارت"', 'aria-label="X — 0 cards"'],
+            'kanban column count singular' => ['<mds:kanban><mds:kanban.column key="a" heading="X"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'aria-label="X — ۱ کارت"', 'aria-label="X — 1 card"'],
+            'kanban column limit' => ['<mds:kanban><mds:kanban.column key="a" heading="X" limit="3"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'aria-label="X — ۱ از ۳ کارت"', 'aria-label="X — 1 of 3 cards"'],
+            'kanban over limit' => ['<mds:kanban><mds:kanban.column key="a" limit="1"><mds:kanban.card key="1">y</mds:kanban.card><mds:kanban.card key="2">z</mds:kanban.card></mds:kanban.column></mds:kanban>', '<span class="sr-only">بیش از حد مجاز</span>', '<span class="sr-only">Over limit</span>'],
+            'kanban empty column' => ['<mds:kanban><mds:kanban.column key="a" /></mds:kanban>', '>کارتی نیست</li>', '>No cards</li>'],
+            'kanban card role' => ['<mds:kanban><mds:kanban.column key="a"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'aria-roledescription="کارت جابه‌جایی‌پذیر"', 'aria-roledescription="Draggable card"'],
+            'kanban drag handle' => ['<mds:kanban><mds:kanban.column key="a"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'title="دستگیره جابه‌جایی"', 'title="Drag handle"'],
         ];
     }
 

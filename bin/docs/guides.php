@@ -46,6 +46,7 @@ $demoAnchors = [
     'pillbox' => 'Pillbox',
     'editor' => 'Editor',
     'calendar' => 'Calendar',
+    'kanban' => 'Kanban',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

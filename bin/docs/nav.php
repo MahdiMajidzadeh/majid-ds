@@ -106,6 +106,7 @@ return [
             'pillbox' => 'mds:pillbox',
             'editor' => 'mds:editor',
             'calendar' => 'mds:calendar',
+            'kanban' => 'mds:kanban',
         ],
     ],
 ];
