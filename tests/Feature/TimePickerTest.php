@@ -140,8 +140,8 @@ class TimePickerTest extends TestCase
         $this->assertStringContainsString('>۱۲:۰۰ ق.ظ</li>', $html);
         $this->assertStringContainsString('>۱۲:۰۰ ب.ظ</li>', $html);
         $this->assertStringContainsString('>۱۱:۳۰ ب.ظ</li>', $html);
-        $this->assertStringContainsString("am: 'ق.ظ'", $html);
-        $this->assertStringContainsString("pm: 'ب.ظ'", $html);
+        $this->assertStringContainsString("am: 'ق.ظ'", $this->jsDecoded($html));
+        $this->assertStringContainsString("pm: 'ب.ظ'", $this->jsDecoded($html));
 
         // The machine value stays 24-hour.
         $this->assertMatchesRegularExpression('/<input[^>]*type="hidden"[^>]*\svalue="14:30"/', $html);

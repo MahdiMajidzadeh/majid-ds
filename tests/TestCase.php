@@ -48,6 +48,39 @@ abstract class TestCase extends Orchestra
         parent::tearDown();
     }
 
+    /**
+     * Decode the `\uXXXX` escapes Blade's `@js()` / `Js::from()` emits, so an
+     * assertion about a built-in Persian string reads the same on every
+     * supported Laravel.
+     *
+     * Laravel 12 escapes non-ASCII into a JSON string (ق.ظ becomes
+     * \u0642.\u0638) and Laravel 13 emits it literally. Both are the same
+     * JavaScript string and both components behave identically; only the bytes
+     * in the page differ. Eight assertions matched the literal form, so they
+     * passed on 13 and failed on 12 while nothing was actually wrong — the kind
+     * of version-specific test that makes a matrix look like a product bug.
+     */
+    protected function jsDecoded(string $html): string
+    {
+        // Two passes, the longer form first. Laravel 12 renders a Js::from()
+        // payload as JSON.parse('…') — a JSON string inside a JavaScript string
+        // literal — so a Persian letter arrives double-escaped as \\u0627,
+        // while a plain @js() attribute escapes an ellipsis once as \u2026.
+        // Decoding the single form first would consume half of the double one
+        // and leave a stray backslash in front of every letter.
+        $html = (string) preg_replace_callback(
+            '/\\\\\\\\u([0-9a-fA-F]{4})/',
+            fn (array $m): string => mb_chr((int) hexdec($m[1]), 'UTF-8'),
+            $html,
+        );
+
+        return (string) preg_replace_callback(
+            '/\\\\u([0-9a-fA-F]{4})/',
+            fn (array $m): string => mb_chr((int) hexdec($m[1]), 'UTF-8'),
+            $html,
+        );
+    }
+
     protected function getPackageProviders($app): array
     {
         return [

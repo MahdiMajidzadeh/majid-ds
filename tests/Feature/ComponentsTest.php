@@ -1726,8 +1726,10 @@ class ComponentsTest extends TestCase
             'carousel previous' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="قبلی"', 'aria-label="Previous"'],
             'carousel next' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="بعدی"', 'aria-label="Next"'],
             'carousel pause' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="توقف"', 'aria-label="Pause"'],
-            // The play label only shows after a click; it travels in the x-data config, quotes escaped by Js::from().
-            'carousel play' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', '\\u0022play\\u0022:\\u0022پخش\\u0022', '\\u0022play\\u0022:\\u0022Play\\u0022'],
+            // The play label only shows after a click, so it travels in the
+            // x-data config rather than the markup; the sweep decodes the JSON
+            // escaping first, so this reads as the JavaScript it becomes.
+            'carousel play' => ['<mds:carousel autoplay><mds:carousel.item>x</mds:carousel.item></mds:carousel>', '"play":"پخش"', '"play":"Play"'],
             'carousel dot' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item></mds:carousel>', 'aria-label="رفتن به اسلاید ۱"', 'aria-label="Go to slide 1"'],
             'carousel status' => ['<mds:carousel><mds:carousel.item>x</mds:carousel.item><mds:carousel.item>y</mds:carousel.item></mds:carousel>', 'data-mds-carousel-status>اسلاید ۱ از ۲<', 'data-mds-carousel-status>Slide 1 of 2<'],
             'pillbox search' => ['<mds:pillbox />', 'aria-label="جستجو"', 'aria-label="Search"'],
@@ -1796,7 +1798,9 @@ class ComponentsTest extends TestCase
     #[DataProvider('microcopy')]
     public function test_microcopy_is_persian_by_default(string $template, string $persian, string $english): void
     {
-        $html = $this->render($template);
+        // Decoded, so a row's needle does not depend on whether this Laravel
+        // escapes non-ASCII inside @js() — see TestCase::jsDecoded().
+        $html = $this->jsDecoded($this->render($template));
 
         $this->assertStringContainsString($persian, $html);
         $this->assertStringNotContainsString($english, $html);
@@ -1808,7 +1812,7 @@ class ComponentsTest extends TestCase
         config(['mds.persian_digits' => false]);
 
         try {
-            $html = $this->render($template);
+            $html = $this->jsDecoded($this->render($template));
 
             $this->assertStringContainsString($english, $html);
             $this->assertStringNotContainsString($persian, $html);

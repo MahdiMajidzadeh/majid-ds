@@ -156,7 +156,8 @@ class PillboxTest extends TestCase
 
     public function test_the_text_field_carries_the_combobox_contract(): void
     {
-        $html = $this->render(self::TAGS);
+        // Decoded: Laravel 12 escapes the ellipsis in the placeholder to \u2026.
+        $html = $this->jsDecoded($this->render(self::TAGS));
 
         $this->assertSame(1, substr_count($html, '<input'));
 
@@ -334,7 +335,7 @@ class PillboxTest extends TestCase
             '/<span class="sr-only" role="status" aria-live="polite" x-text="status" data-mds-pillbox-status>۲ مورد انتخاب شده<\/span>/',
             $html,
         );
-        $this->assertStringContainsString("statusSuffix: ' مورد انتخاب شده',", $html);
+        $this->assertStringContainsString("statusSuffix: ' مورد انتخاب شده',", $this->jsDecoded($html));
         $this->assertStringContainsString('return window.mds.digits(this.selected.length, this.fa) + this.statusSuffix', $html);
 
         $none = $this->render('<mds:pillbox />');

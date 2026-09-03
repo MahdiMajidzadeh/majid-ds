@@ -474,7 +474,7 @@ class EditorTest extends TestCase
 
     public function test_the_link_prompt_follows_fa(): void
     {
-        $this->assertStringContainsString("linkPrompt: 'نشانی پیوند'", $this->render('<mds:editor />'));
+        $this->assertStringContainsString("linkPrompt: 'نشانی پیوند'", $this->jsDecoded($this->render('<mds:editor />')));
         $this->assertStringContainsString("linkPrompt: 'Link URL'", $this->render('<mds:editor :fa="false" />'));
     }
 

@@ -1,0 +1,151 @@
+name: CI
+
+# What this covers, and why only this.
+#
+# composer.json claims PHP 8.2+ on Laravel 12 or 13, and until this workflow
+# existed that claim had only ever been exercised on one laptop, on one
+# combination of the three. Writing it found two real things immediately: the
+# suite failed eight ways on Laravel 12 because its assertions had been written
+# against Laravel 13's JSON escaping, and the Laravel 11 constraint no longer
+# resolved at all because every 11.x release is behind a security advisory.
+#
+# Deliberately NOT here: anything that publishes. Packagist is wired to this
+# repository by webhook and takes the version from the git tag on its own, and
+# GitHub Pages serves docs/ straight off the branch with no build step. A
+# release workflow would be a second, slower way to do what already happens —
+# which is why the one that existed before was reverted.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # A dependency can break the package without the package changing. The
+  # advisory that withdrew Laravel 11 is exactly that kind of event, and
+  # nothing in a pull request would have surfaced it.
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} · Laravel ${{ matrix.laravel }}${{ matrix.dependency-versions == 'lowest' && ' · lowest' || '' }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Testbench 11 requires PHP 8.3, so the Laravel 13 leg cannot run on
+        # 8.2 — the matrix is listed rather than crossed for that reason.
+        include:
+          - { php: '8.2', laravel: 12, testbench: 10, dependency-versions: highest }
+          - { php: '8.3', laravel: 12, testbench: 10, dependency-versions: highest }
+          - { php: '8.4', laravel: 12, testbench: 10, dependency-versions: highest }
+          - { php: '8.3', laravel: 13, testbench: 11, dependency-versions: highest }
+          - { php: '8.4', laravel: 13, testbench: 11, dependency-versions: highest }
+          # The floor of each constraint: the half of a range nobody installs
+          # by accident, and so the half that rots without anyone noticing.
+          - { php: '8.2', laravel: 12, testbench: 10, dependency-versions: lowest }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          # intl is not optional: JalaliTest cross-checks every conversion
+          # against IntlDateFormatter's Persian calendar, and phpunit.xml.dist
+          # sets failOnSkipped — so a missing extension fails the run instead
+          # of quietly skipping the test that proves the arithmetic.
+          extensions: intl, mbstring, dom, libxml
+          coverage: none
+
+      - name: Pin the framework to this leg
+        run: |
+          composer require --dev --no-interaction --no-update \
+            "laravel/framework:^${{ matrix.laravel }}.0" \
+            "orchestra/testbench:^${{ matrix.testbench }}.0"
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          # `highest`, never `locked`: the step above rewrites composer.json
+          # for this leg, so the committed lock no longer matches it.
+          dependency-versions: ${{ matrix.dependency-versions }}
+        env:
+          # livewire/flux's free tier is a plain Packagist package, but its dist
+          # is a GitHub zipball and unauthenticated runners hit the API rate
+          # limit. The runner's own token lifts that — no secret to configure.
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+      - run: composer test
+
+  quality:
+    name: Lint and static analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, mbstring, dom, libxml
+          coverage: none
+
+      - uses: ramsey/composer-install@v3
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+      # One version is enough for both: Pint's rules do not vary by PHP, and
+      # PHPStan is pinned to level 7 over src/ regardless of the runtime.
+      - run: composer lint
+
+      - run: composer analyse
+
+  docs:
+    name: Docs are up to date
+    runs-on: ubuntu-latest
+
+    # docs/ is committed and GitHub Pages serves it as-is, with no build step
+    # anywhere. So a change to a view, to the CSS, or to a docs page that
+    # forgets `npm run docs` ships a site that disagrees with the code, and
+    # nothing downstream would catch it. Both builders are deterministic — they
+    # pin the clock and the CSRF token precisely so this check is possible —
+    # which is what lets a rebuild that dirties git mean something is stale.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, mbstring, dom, libxml
+          coverage: none
+
+      - uses: ramsey/composer-install@v3
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run docs
+
+      - run: npm run pages
+
+      - name: Fail if the committed site is stale
+        run: |
+          if ! git diff --exit-code --stat; then
+            echo "::error::docs/ is behind the source. Run 'npm run docs && npm run pages' and commit the result."
+            exit 1
+          fi

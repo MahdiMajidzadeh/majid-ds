@@ -175,7 +175,7 @@ class SliderTest extends TestCase
         $this->assertStringContainsString('aria-valuetext="۲۵٪"', $persian);
         $this->assertMatchesRegularExpression('/data-mds-slider-value\s*>۲۵٪<\/span>/', $persian);
         $this->assertStringContainsString('x-bind:aria-valuetext="display(low)"', $persian);
-        $this->assertStringContainsString("format: '{value}٪',", $persian);
+        $this->assertStringContainsString("format: '{value}٪',", $this->jsDecoded($persian));
 
         $english = $this->renderEnglish('<mds:slider :value="25" format="{value}%" show-value />');
         $this->assertStringContainsString('aria-valuetext="25%"', $english);

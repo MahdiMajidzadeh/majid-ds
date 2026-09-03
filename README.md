@@ -2,6 +2,8 @@
 
 **An RTL / Persian-first UI kit for Laravel Livewire, built on top of [Flux UI](https://fluxui.dev).**
 
+[![CI](https://github.com/MahdiMajidzadeh/majid-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/MahdiMajidzadeh/majid-ds/actions/workflows/ci.yml)
+
 Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` component exactly as it is, and gain an `<mds:*>` namespace with the pieces Flux doesn't have: Persian typography and digits, Jalali dates, Toman/Rial prices, and e-commerce components (product cards, quantity steppers, deal countdowns, checkout steppers, ratings).
 
 ```blade
@@ -93,9 +95,14 @@ into the Demo and RTL demo pages under Guides.
 
 ## Requirements
 
-- PHP 8.2+, Laravel 11+
+- PHP 8.2+, Laravel 12 or 13
 - Livewire 3 and `livewire/flux` ^2.0 (installed automatically)
 - Tailwind CSS v4
+
+Laravel 11 was supported until its releases were withdrawn behind Composer's
+security advisories: every 11.x version of `laravel/framework` and
+`illuminate/support` is now blocked, so a fresh install cannot resolve it at
+all. Keeping the constraint would have been a promise nothing could satisfy.
 
 ## Installation
 

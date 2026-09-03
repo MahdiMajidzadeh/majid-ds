@@ -131,7 +131,9 @@ class CarouselTest extends TestCase
         $this->assertStringContainsString('data-mds-carousel-toggle', $html);
         $this->assertStringContainsString('aria-label="توقف"', $html);
         // Js::from() escapes the quotes, so the label object survives the attribute.
-        $this->assertStringContainsString('\\u0022pause\\u0022:\\u0022توقف\\u0022,\\u0022play\\u0022:\\u0022پخش\\u0022', $html);
+        // Decoded first: this Laravel may or may not escape the Persian
+        // inside @js() — see TestCase::jsDecoded().
+        $this->assertStringContainsString('"pause":"توقف","play":"پخش"', $this->jsDecoded($html));
         $this->assertStringContainsString('x-bind:aria-label="playing ? labels.pause : labels.play"', $html);
 
         // Silent while rotating, per the WAI-ARIA carousel guidance.
