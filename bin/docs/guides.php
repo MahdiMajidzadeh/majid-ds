@@ -42,6 +42,7 @@ $demoAnchors = [
     'tabs' => 'Tabs',
     'autocomplete' => 'Autocomplete',
     'carousel' => 'Carousel',
+    'context' => 'Context menu',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

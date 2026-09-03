@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
         <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
         <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
         <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
@@ -1304,6 +1305,53 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     <flux:callout icon="information-circle">
         <flux:callout.text>{{ __('نوار اسلایدها با Tab قابل تمرکز است: کلیدهای چپ و راست بر اساس چیزی که می‌بینید کار می‌کنند، پس در صفحه راست‌به‌چپ کلید راست یعنی اسلاید قبلی. چرخش خودکار با نشانگر ماوس، تمرکز کیبورد یا تب پنهان متوقف می‌شود.') }}</flux:callout.text>
     </flux:callout>
+</flux:card>
+
+{{-- ============================== MDS: Context ============================== --}}
+<flux:card id="context" class="space-y-4">
+    <flux:heading size="lg">{{ __('منوی راست‌کلیک — mds:context') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Context (در Flux فقط Pro) — یک flux:menu معمولی که با راست‌کلیک، کلید Shift+F10 یا لمس طولانی کنار نشانگر باز می‌شود.') }}</flux:text>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('روی کارت راست‌کلیک کنید:') }}</flux:text>
+
+            <mds:context>
+                <flux:card class="w-64">
+                    <flux:heading>{{ __('گزارش فصلی.pdf') }}</flux:heading>
+                    <flux:text class="mt-1">{{ __('۲٫۴ مگابایت · برای گزینه‌ها راست‌کلیک کنید') }}</flux:text>
+                </flux:card>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="pencil-square">{{ __('ویرایش') }}</flux:menu.item>
+                        <flux:menu.item icon="document-duplicate">{{ __('تکثیر') }}</flux:menu.item>
+                        <flux:menu.item icon="share">{{ __('هم‌رسانی') }}</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.item icon="trash" variant="danger">{{ __('حذف') }}</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('با کیبورد: Tab تا تصویر، سپس Shift+F10:') }}</flux:text>
+
+            <mds:context focusable class="inline-block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+                <img src="https://picsum.photos/seed/context/240/150" alt="{{ __('نمونه تصویر') }}" class="block h-[150px] w-60 rounded-lg object-cover">
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="arrow-down-tray">{{ __('ذخیره تصویر') }}</flux:menu.item>
+                        <flux:menu.item icon="clipboard">{{ __('کپی پیوند') }}</flux:menu.item>
+                        <flux:menu.item icon="star">{{ __('انتخاب به‌عنوان کاور') }}</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+        </div>
+    </div>
+
+    <flux:text class="text-sm">{!! __('منوی راست‌کلیک یک میان‌بر است، نه تنها راه: همان عملیات را جایی دیدنی هم بگذارید — یک <code>flux:dropdown</code> یا دکمه‌های ردیف.') !!}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

@@ -729,6 +729,29 @@ An open implementation of Flux Pro's carousel: a scroll-snap slide strip with pr
 
 Props: `label` (the region's accessible name), `autoplay`, `interval` (ms, default `5000`), `loop` (default `true`), `indicators` and `controls` (default `true`), `per-view` (default `1`), `gap` (a Tailwind gap class), `start` (initial slide), `aspect` (an aspect-ratio class for the track), `fa`; `carousel.item` takes `fa`. Autoplay pauses on hover, focus and hidden tabs and starts paused under `prefers-reduced-motion`; arrow keys follow the visual direction.
 
+### `<mds:context>`
+
+An open implementation of Flux Pro's context menu, API-compatible with `flux:context`. Wrap any content — a card, a table, an image — and a free-tier `flux:menu` opens at the pointer on right-click, at the focused element on `Shift`+`F10`, and on a half-second press on touch:
+
+```blade
+<mds:context>
+    <flux:card class="w-64">روی این کارت راست‌کلیک کنید</flux:card>
+
+    <mds:context.menu>
+        <flux:menu>
+            <flux:menu.item icon="pencil-square" wire:click="edit">ویرایش</flux:menu.item>
+            <flux:menu.item icon="document-duplicate" wire:click="duplicate">تکثیر</flux:menu.item>
+            <flux:menu.separator />
+            <flux:menu.item icon="trash" variant="danger" wire:click="delete">حذف</flux:menu.item>
+        </flux:menu>
+    </mds:context.menu>
+</mds:context>
+```
+
+The menu's start edge sits at the pointer — its right edge on an RTL page, like native menus — flips when it runs out of room and clamps to the viewport; it is shown into the top layer, so it sits above modals. `Escape`, a click outside, a click on an item, scrolling or leaving the window close it, and focus returns to where it was. Screen-reader and touch users do not discover right-click menus, so keep the same actions reachable somewhere visible as well.
+
+Props: `disabled`, `long-press`, `focusable` (a tab stop for content with nothing focusable), `fa`. `mds:context.menu` takes `fa`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

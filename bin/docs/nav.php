@@ -102,6 +102,7 @@ return [
             'tabs' => 'mds:tabs',
             'autocomplete' => 'mds:autocomplete',
             'carousel' => 'mds:carousel',
+            'context' => 'mds:context',
         ],
     ],
 ];

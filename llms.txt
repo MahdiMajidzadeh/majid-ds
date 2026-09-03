@@ -851,6 +851,50 @@ carousel guidance — a region that speaks every few seconds is noise). CSS hook
 </mds:carousel>
 ```
 
+### <mds:context> — right-click menu around any content (open version of Flux Pro's flux:context)
+Wraps a card, a row, an image — anything — and shows a menu at the pointer on right-click. The menu is the caller's own
+free-tier `<flux:menu>`, so items, separators, checkboxes, radios and submenus are Flux's, unchanged.
+Props: `disabled` bool=false (renders no handlers at all; the native menu comes back) · `long-press` bool=true (on touch, a
+500ms press opens the menu; moving 10px, lifting or scrolling first cancels it; `false` disables the touch path) ·
+`focusable` bool=false (adds `tabindex="0"` to the wrapper — ONLY for content with no focusable element of its own, so
+keyboard users have somewhere to press Shift+F10; content with buttons/links needs nothing) · `fa` bool|null=config
+(inherited by the menu; there are no built-in strings today, so it is a contract, not a switch).
+Slot: the content the menu belongs to, followed by the menu subcomponent. Attributes land on the root `[data-mds-context]`
+div (`class` merges with `relative`).
+- `<mds:context.menu>` props: `fa`. The panel: `<template x-teleport="body">` around a `fixed z-50` div `[data-mds-context-menu]`
+  (`x-show="open"`, `x-cloak`; `class` merges). Its slot is the `<flux:menu>…</flux:menu>`. Teleported, so it inherits the PAGE's
+  `dir` and a block panel is legal inside a `<p>` or a `<span>`.
+Behavior (Alpine `mdsContext`, state `open`/`x`/`y`): opens on `contextmenu` (preventDefault; positioned at the pointer), on the
+keyboard's ContextMenu key or Shift+F10 while focus is inside (positioned at the focused element's bottom-start corner), and on a
+touch long-press. Position is physical viewport pixels on purpose — the anchor is a pointer, not an element: the menu's START edge
+sits at the pointer (left edge on LTR pages, right edge on RTL, like native menus), flips to the other side of the pointer when out
+of room, flips above it near the bottom, then clamps to the viewport (4px). Closes on Escape, Tab, a click/tap outside (pointerdown,
+capture), a click on an item (Flux's `lofi-close-popovers` or any button/link in a custom slot), window blur and any scroll
+(capture); repositions on resize. Focus returns to the element that had it. Flux renders `<flux:menu>` as a `popover="manual"`
+element (hidden until shown), so the component drives the popover API: `showPopover()` on open puts the menu in the TOP LAYER —
+above Flux modals (`<dialog>`) and every clipping ancestor — and the menu element itself is positioned there. A slot that is not a
+popover (a plain div of buttons) is positioned through the wrapper instead.
+ARIA contract: the wrapper claims nothing — no `aria-haspopup` (it is not a button) and no role; `role="menu"` and
+`role="menuitem"` (+ `tabindex="-1"`, hover `data-active`, ArrowUp/Down, typeahead) come from Flux's menu at runtime. Opened by
+pointer, focus goes to the menu container (Escape and arrows work, nothing is pre-highlighted); opened by keyboard, focus goes to
+the first enabled `[role=menuitem|menuitemcheckbox|menuitemradio]`. Screen-reader users do not discover right-click menus: keep the
+same actions reachable elsewhere (a `<flux:dropdown>` button, row actions) — the context menu is a shortcut, never the only path.
+Livewire contract: none of its own — no `wire:model`. Items take `wire:click` like any Flux menu item; the panel is teleported to
+body, so a Livewire morph of the wrapped content never touches it.
+```blade
+<mds:context>
+    <flux:card class="w-64">Right-click this card</flux:card>
+    <mds:context.menu>
+        <flux:menu>
+            <flux:menu.item icon="pencil-square" wire:click="edit({{ $id }})">ویرایش</flux:menu.item>
+            <flux:menu.item icon="document-duplicate" wire:click="duplicate({{ $id }})">تکثیر</flux:menu.item>
+            <flux:menu.separator />
+            <flux:menu.item icon="trash" variant="danger" wire:click="delete({{ $id }})">حذف</flux:menu.item>
+        </flux:menu>
+    </mds:context.menu>
+</mds:context>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

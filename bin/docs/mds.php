@@ -3174,4 +3174,160 @@ $pages['carousel'] = [
     'related' => ['product-card', 'card'],
 ];
 
+// ----------------------------------------------------------- mds:context
+
+$pages['context'] = [
+    'group' => 'mds',
+    'title' => 'mds:context',
+    'lede' => 'A right-click menu around any content — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Context component is Pro-only. This is a working replacement: wrap anything, drop a free <code>flux:menu</code> inside <code>mds:context.menu</code>, and it opens at the pointer on right-click, at the focused element on <kbd>Shift</kbd>+<kbd>F10</kbd>, and on a long press on touch. The preview is live — right-click the card.',
+            'code' => <<<'BLADE'
+            <mds:context>
+                <flux:card class="w-64">Right-click this card</flux:card>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="pencil-square">Edit</flux:menu.item>
+                        <flux:menu.item icon="document-duplicate">Duplicate</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.item icon="trash" variant="danger">Delete</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+            'note' => '<p><strong>Keep the actions reachable elsewhere too.</strong> Nobody discovers a right-click menu by listening to a screen reader, and touch users only find it by holding. Treat it as a shortcut to actions that also live in a visible menu or on the row itself.</p>',
+        ],
+        [
+            'name' => 'Around a table row',
+            'text' => 'The wrapper is a <code>div</code>, so it cannot sit between <code>&lt;tbody&gt;</code> and <code>&lt;tr&gt;</code>. Wrap the whole table instead and let the menu act on the row that was clicked — or wrap the cell content. Here the whole table shares one menu.',
+            'code' => <<<'BLADE'
+            <mds:context class="w-full max-w-md">
+                <flux:table>
+                    <flux:table.columns>
+                        <flux:table.column>Order</flux:table.column>
+                        <flux:table.column>Status</flux:table.column>
+                    </flux:table.columns>
+
+                    <flux:table.rows>
+                        <flux:table.row>
+                            <flux:table.cell>#41023</flux:table.cell>
+                            <flux:table.cell><flux:badge size="sm" color="lime">Delivered</flux:badge></flux:table.cell>
+                        </flux:table.row>
+                        <flux:table.row>
+                            <flux:table.cell>#41024</flux:table.cell>
+                            <flux:table.cell><flux:badge size="sm" color="amber">In transit</flux:badge></flux:table.cell>
+                        </flux:table.row>
+                    </flux:table.rows>
+                </flux:table>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="eye">View order</flux:menu.item>
+                        <flux:menu.item icon="printer">Print invoice</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.item icon="x-circle" variant="danger">Cancel order</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Everything a Flux menu can hold',
+            'text' => 'The menu is Flux\'s own, so checkboxes, radios, groups and submenus work as they do in a <a href="../components/dropdown.html">dropdown</a>. Arrow keys, Home/End and type-ahead are Flux\'s too.',
+            'code' => <<<'BLADE'
+            <mds:context>
+                <flux:card class="w-64">
+                    <flux:heading>Quarterly report.pdf</flux:heading>
+                    <flux:text class="mt-1">2.4 MB · right-click for options</flux:text>
+                </flux:card>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="arrow-down-tray">Download</flux:menu.item>
+                        <flux:menu.item icon="share">Share</flux:menu.item>
+
+                        <flux:menu.submenu heading="Sort by" icon="bars-arrow-down">
+                            <flux:menu.radio checked>Newest</flux:menu.radio>
+                            <flux:menu.radio>Name</flux:menu.radio>
+                        </flux:menu.submenu>
+
+                        <flux:menu.separator />
+
+                        <flux:menu.checkbox checked>Show hidden files</flux:menu.checkbox>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+        ],
+        [
+            'name' => 'Keyboard and touch',
+            'text' => 'With focus anywhere inside the wrapper, the keyboard\'s <kbd>ContextMenu</kbd> key or <kbd>Shift</kbd>+<kbd>F10</kbd> opens the menu at the focused element\'s bottom-start corner, with the first item focused. Content with nothing focusable — an image, a plain card — gets a tab stop with <code>focusable</code>. On touch, holding for half a second opens it; pass <code>:long-press="false"</code> when the content has its own press gesture (a draggable, a slider). Tab the image below, then press <kbd>Shift</kbd>+<kbd>F10</kbd>.',
+            'code' => <<<'BLADE'
+            <mds:context focusable class="inline-block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+                <img src="https://picsum.photos/seed/context/240/150" alt="A sample photo" class="block h-[150px] w-60 rounded-lg object-cover">
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="arrow-down-tray">Save image</flux:menu.item>
+                        <flux:menu.item icon="clipboard">Copy link</flux:menu.item>
+                        <flux:menu.item icon="star">Set as cover</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+        ],
+        [
+            'name' => 'Disabled',
+            'text' => 'Pass <code>disabled</code> and the wrapper renders no handlers at all — the browser\'s own menu comes back.',
+            'code' => <<<'BLADE'
+            <mds:context disabled>
+                <flux:card class="w-64">Right-click shows the native menu</flux:card>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item>Never shown</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'The menu opens with its start edge at the pointer — its right edge on a right-to-left page, the way native menus behave in each direction — and flips to the other side when it runs out of room. The panel is teleported to <code>&lt;body&gt;</code>, so it follows the page\'s <code>dir</code>. The labels are yours.',
+            'code' => <<<'BLADE'
+            <mds:context>
+                <flux:card class="w-64">روی این کارت راست‌کلیک کنید</flux:card>
+
+                <mds:context.menu>
+                    <flux:menu>
+                        <flux:menu.item icon="pencil-square">ویرایش</flux:menu.item>
+                        <flux:menu.item icon="document-duplicate">تکثیر</flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.item icon="trash" variant="danger">حذف</flux:menu.item>
+                    </flux:menu>
+                </mds:context.menu>
+            </mds:context>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:context', 'text' => 'The wrapper. Its slot is the content the menu belongs to, followed by <code>mds:context.menu</code>. Attributes land on the root <code>div</code>.', 'props' => [
+            ['disabled', 'Renders no handlers; the native context menu comes back. Default: <code>false</code>.'],
+            ['long-press', 'On touch, a 500ms press opens the menu (cancelled by moving, lifting or scrolling). Default: <code>true</code>.'],
+            ['focusable', 'Adds <code>tabindex="0"</code> to the wrapper, for content with no focusable element of its own. Default: <code>false</code>.'],
+            ['fa', 'Inherited by the menu. No built-in strings today. Default: <code>config(\'mds.persian_digits\')</code>.'],
+        ]],
+        ['name' => 'mds:context.menu', 'text' => 'The panel — teleported to <code>&lt;body&gt;</code>, hidden until opened, positioned at the pointer and clamped to the viewport. Its slot is a <code>flux:menu</code>, which is shown into the top layer so it sits above modals.', 'props' => [
+            ['fa', 'Inherited from <code>mds:context</code>.'],
+        ]],
+    ],
+    'related' => ['dropdown', 'tooltip'],
+];
+
 return $pages;

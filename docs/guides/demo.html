@@ -191,6 +191,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#context" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Context menu</div>
+    </a>
         <a href="#carousel" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class=" flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Slideshow</div>
     </a>
@@ -12449,6 +12460,443 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="context" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Context menu — mds:context</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of the Context component (Pro-only in Flux) — an ordinary flux:menu that opens at the pointer on right-click, Shift+F10 or a long press.</p>
+    <div class="grid gap-6 md:grid-cols-2">
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >Right-click the card:</p>
+            <script >
+window.mds = window.mds || {}
+
+// A right-click menu around any content — the open version of Flux Pro's
+// context. The menu itself is the caller's flux:menu (free tier), which
+// Flux renders as a `popover="manual"` element: hidden until shown, and
+// shown into the top layer, above modals and clipping ancestors alike. So
+// the component drives the popover API rather than a display toggle, and
+// positions the menu element itself in physical viewport pixels (a
+// top-layer box ignores its parent's position). A slot that is not a
+// popover — a plain div of buttons — is positioned through the wrapper
+// instead, the same numbers written to both.
+window.mds.registerContext = (Alpine) => {
+    if (window.mds.contextRegistered) return
+    window.mds.contextRegistered = true
+
+    Alpine.data('mdsContext', (config = {}) => ({
+        open: false,
+        x: 0,
+        y: 0,
+        disabled: config.disabled ?? false,
+        longPress: config.longPress ?? true,
+
+        // Registered from x-init — $refs cannot reach through x-teleport.
+        panelEl: null,
+
+        // Where focus was when the menu opened; it goes back there on close.
+        returnFocus: null,
+        // Set by the keyboard path: focus lands on the first item, not the menu.
+        viaKeyboard: false,
+        // Keyboard-opened menus are followed by a browser-synthesised
+        // contextmenu event; the timestamp lets that duplicate be ignored.
+        keyboardAt: 0,
+        // Whether we showed the popover (kept locally: matches(':popover-open')
+        // throws where the popover API is polyfilled).
+        shown: false,
+
+        pressTimer: null,
+        pressPoint: null,
+        placeFrame: null,
+
+        init() {
+            // Anything that moves the page under the menu closes it — the
+            // behaviour of every native context menu.
+            this.onScroll = () => { this.cancelPress(); if (this.open) this.close() }
+            this.onBlur = () => { this.cancelPress(); if (this.open) this.close(false) }
+            this.onResize = () => { if (this.open) this.place() }
+            // Capture, so a target that stops propagation still dismisses it.
+            this.onPointerDown = (event) => {
+                if (! this.open) return
+                if (this.panelEl?.contains(event.target)) return
+
+                this.close(false)
+            }
+
+            window.addEventListener('scroll', this.onScroll, { capture: true, passive: true })
+            window.addEventListener('blur', this.onBlur)
+            window.addEventListener('resize', this.onResize, { passive: true })
+            document.addEventListener('pointerdown', this.onPointerDown, { capture: true })
+        },
+
+        destroy() {
+            this.cancelPress()
+
+            if (this.placeFrame) cancelAnimationFrame(this.placeFrame)
+            this.placeFrame = null
+
+            window.removeEventListener('scroll', this.onScroll, { capture: true })
+            window.removeEventListener('blur', this.onBlur)
+            window.removeEventListener('resize', this.onResize)
+            document.removeEventListener('pointerdown', this.onPointerDown, { capture: true })
+
+            if (this.open) this.close(false)
+        },
+
+        // The caller's flux:menu when there is one, else whatever the slot holds.
+        get menu() {
+            const panel = this.panelEl
+
+            if (! panel) return null
+
+            return panel.querySelector('[data-flux-menu], [role="menu"]') ?? panel.firstElementChild
+        },
+
+        get rtl() {
+            return getComputedStyle(this.$root).direction === 'rtl'
+        },
+
+        // Right-click (and, on Android, the long-press the browser turns into
+        // a contextmenu event): the menu opens at the pointer.
+        contextmenu(event) {
+            if (this.disabled) return
+
+            event.preventDefault()
+
+            // The keyboard handler already opened this one.
+            if (performance.now() - this.keyboardAt < 300) return
+
+            this.openAt(event.clientX, event.clientY, false)
+        },
+
+        // The keyboard's own context-menu gesture: the ContextMenu key, or
+        // Shift+F10 where the keyboard has none. The menu opens at the
+        // bottom-start corner of whatever has focus.
+        keydown(event) {
+            if (this.disabled) return
+            if (! (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey))) return
+
+            event.preventDefault()
+
+            const target = event.target instanceof Element ? event.target : this.$root
+            const rect = target.getBoundingClientRect()
+
+            this.keyboardAt = performance.now()
+            this.openAt(this.rtl ? rect.right : rect.left, rect.bottom, true)
+        },
+
+        // Touch: a 500ms press opens the menu; moving, lifting or scrolling
+        // before then cancels it. iOS never fires contextmenu for a press on
+        // ordinary content, which is what this path exists for.
+        pointerdown(event) {
+            if (this.disabled || ! this.longPress || event.pointerType !== 'touch') return
+
+            this.cancelPress()
+
+            this.pressPoint = { x: event.clientX, y: event.clientY }
+            this.pressTimer = setTimeout(() => {
+                this.pressTimer = null
+                this.openAt(this.pressPoint.x, this.pressPoint.y, false)
+            }, 500)
+        },
+
+        pointermove(event) {
+            if (! this.pressTimer || ! this.pressPoint) return
+
+            if (Math.hypot(event.clientX - this.pressPoint.x, event.clientY - this.pressPoint.y) > 10) this.cancelPress()
+        },
+
+        cancelPress() {
+            clearTimeout(this.pressTimer)
+            this.pressTimer = null
+            this.pressPoint = null
+        },
+
+        openAt(x, y, viaKeyboard) {
+            if (! this.open) this.returnFocus = document.activeElement
+
+            this.viaKeyboard = viaKeyboard
+            this.x = x
+            this.y = y
+            this.open = true
+
+            // x-show has to reveal the wrapper before the popover can be shown
+            // and measured — a top-layer box under a display:none ancestor
+            // still renders nothing.
+            this.$nextTick(() => this.show())
+        },
+
+        show() {
+            const menu = this.menu
+
+            if (! menu) return
+
+            if (menu.popover && ! this.shown) {
+                try { menu.showPopover(); this.shown = true } catch (e) {}
+            }
+
+            this.place()
+
+            // Alpine writes x-show's display through its own deferred DOM
+            // queue, which can still be pending here: the panel is then
+            // display:none, a top-layer box under it measures 0 x 0, and the
+            // menu is placed as if it had no size (no flip, no RTL offset).
+            // One more pass on the next frame, when the layout is certainly
+            // there; place() is idempotent, so the common case is a no-op.
+            if (this.placeFrame) cancelAnimationFrame(this.placeFrame)
+
+            this.placeFrame = requestAnimationFrame(() => {
+                this.placeFrame = null
+
+                if (this.open) this.place()
+            })
+
+            // Pointer: the menu container takes focus so Escape and the arrow
+            // keys work without highlighting an item the pointer did not
+            // choose. Keyboard: straight onto the first item, as the menu
+            // pattern asks.
+            const target = this.viaKeyboard
+                ? menu.querySelector('[role="menuitem"]:not([disabled]), [role="menuitemcheckbox"]:not([disabled]), [role="menuitemradio"]:not([disabled])') ?? menu
+                : menu
+
+            if (menu.tabIndex < 0 && ! menu.hasAttribute('tabindex')) menu.tabIndex = -1
+
+            target.focus({ preventScroll: true })
+        },
+
+        /*
+        | Physical viewport pixels on purpose — the anchor is a pointer, not
+        | an element. The menu's START edge sits at the pointer: its left edge
+        | on an LTR page, its right edge on an RTL one, the way native menus
+        | open in each direction. When that side runs out of room the menu
+        | flips to the other side of the pointer; same for below/above; then
+        | it is clamped so no part ever leaves the viewport.
+        */
+        place() {
+            const menu = this.menu
+            const panel = this.panelEl
+
+            if (! menu || ! panel) return
+
+            const w = menu.offsetWidth
+            const h = menu.offsetHeight
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+            const pad = 4
+            const rtl = this.rtl
+
+            let x = rtl ? this.x - w : this.x
+            let y = this.y
+
+            if (rtl && x < pad && this.x + w <= vw - pad) x = this.x
+            else if (! rtl && x + w > vw - pad && this.x - w >= pad) x = this.x - w
+
+            if (y + h > vh - pad && this.y - h >= pad) y = this.y - h
+
+            x = Math.min(Math.max(x, pad), Math.max(vw - w - pad, pad))
+            y = Math.min(Math.max(y, pad), Math.max(vh - h - pad, pad))
+
+            panel.style.left = x + 'px'
+            panel.style.top = y + 'px'
+
+            if (menu.popover) {
+                // The UA sheet centres a popover with inset:0 + margin:auto;
+                // pin it to the corner instead.
+                menu.style.position = 'fixed'
+                menu.style.inset = 'auto'
+                menu.style.margin = '0'
+                menu.style.left = x + 'px'
+                menu.style.top = y + 'px'
+            }
+        },
+
+        // An activated item closes the menu. Flux's items announce themselves
+        // with lofi-close-popovers; plain buttons and links in a custom slot
+        // are caught by the click itself.
+        clicked(event) {
+            const item = event.target.closest('[role^="menuitem"], button, a')
+
+            if (! item || item.hasAttribute('disabled') || item.getAttribute('aria-disabled') === 'true') return
+
+            this.close()
+        },
+
+        close(restoreFocus = true) {
+            if (! this.open) return
+
+            const menu = this.menu
+
+            if (menu?.popover && this.shown) {
+                try { menu.hidePopover() } catch (e) {}
+            }
+
+            if (this.placeFrame) cancelAnimationFrame(this.placeFrame)
+            this.placeFrame = null
+
+            this.shown = false
+            this.open = false
+
+            const target = this.returnFocus
+            this.returnFocus = null
+
+            if (restoreFocus && target?.isConnected && typeof target.focus === 'function') {
+                target.focus({ preventScroll: true })
+            }
+        },
+    }))
+}
+
+if (window.Alpine) { window.mds.registerContext(window.Alpine) }
+else { document.addEventListener('alpine:init', () => window.mds.registerContext(window.Alpine)) }
+</script>
+
+
+<div
+    class="relative"
+    x-data="mdsContext({ disabled: false, longPress: true })"
+            x-on:contextmenu="contextmenu($event)"
+        x-on:keydown="keydown($event)"
+        x-on:pointerdown="pointerdown($event)"
+        x-on:pointermove="pointermove($event)"
+        x-on:pointerup="cancelPress()"
+        x-on:pointercancel="cancelPress()"
+                data-mds-context
+>
+    <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl w-64" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Quarterly report.pdf</div>
+                    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 mt-1" data-flux-text >2.4 MB · right-click for options</p>
+</div>
+
+                <template x-teleport="body">
+<div
+    class="fixed z-50"
+    x-init="panelEl = $el"
+    x-show="open"
+    x-cloak
+    x-on:keydown.escape.prevent.stop="close()"
+    x-on:keydown.tab="close()"
+    x-on:contextmenu.prevent
+    x-on:lofi-close-popovers="close()"
+    x-on:click="clicked($event)"
+    style="top: -9999px; left: -9999px"
+    data-mds-context-menu
+>
+    <ui-menu
+    class="[:where(&amp;)]:min-w-48 p-[.3125rem] rounded-lg shadow-xs border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 focus:outline-hidden"
+    popover="manual"
+    data-flux-menu
+>
+    <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/>
+  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"/>
+</svg>
+
+            
+    Edit
+    </button>
+                        <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M7 3.5A1.5 1.5 0 0 1 8.5 2h3.879a1.5 1.5 0 0 1 1.06.44l3.122 3.12A1.5 1.5 0 0 1 17 6.622V12.5a1.5 1.5 0 0 1-1.5 1.5h-1v-3.379a3 3 0 0 0-.879-2.121L10.5 5.379A3 3 0 0 0 8.379 4.5H7v-1Z"/>
+  <path d="M4.5 6A1.5 1.5 0 0 0 3 7.5v9A1.5 1.5 0 0 0 4.5 18h7a1.5 1.5 0 0 0 1.5-1.5v-5.879a1.5 1.5 0 0 0-.44-1.06L9.44 6.439A1.5 1.5 0 0 0 8.378 6H4.5Z"/>
+</svg>
+
+            
+    Duplicate
+    </button>
+                        <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M13 4.5a2.5 2.5 0 1 1 .702 1.737L6.97 9.604a2.518 2.518 0 0 1 0 .792l6.733 3.367a2.5 2.5 0 1 1-.671 1.341l-6.733-3.367a2.5 2.5 0 1 1 0-3.475l6.733-3.366A2.52 2.52 0 0 1 13 4.5Z"/>
+</svg>
+
+            
+    Share
+    </button>
+                        <div class="-mx-[.3125rem] my-[.3125rem] h-px"  data-flux-menu-separator>
+    <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full dark:bg-zinc-600!" data-flux-separator></div>
+</div>
+                        <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:text-red-600 data-active:bg-red-50 dark:text-white dark:data-active:bg-red-400/20 dark:data-active:text-red-400 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Delete
+    </button>
+</ui-menu>
+</div>
+</template>
+</div>
+        </div>
+
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >With the keyboard: Tab to the image, then Shift+F10:</p>
+            <div
+    class="relative inline-block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    x-data="mdsContext({ disabled: false, longPress: true })"
+            x-on:contextmenu="contextmenu($event)"
+        x-on:keydown="keydown($event)"
+        x-on:pointerdown="pointerdown($event)"
+        x-on:pointermove="pointermove($event)"
+        x-on:pointerup="cancelPress()"
+        x-on:pointercancel="cancelPress()"
+         tabindex="0"         data-mds-context
+>
+    <img src="https://picsum.photos/seed/context/240/150" alt="A sample photo" class="block h-[150px] w-60 rounded-lg object-cover">
+
+                <template x-teleport="body">
+<div
+    class="fixed z-50"
+    x-init="panelEl = $el"
+    x-show="open"
+    x-cloak
+    x-on:keydown.escape.prevent.stop="close()"
+    x-on:keydown.tab="close()"
+    x-on:contextmenu.prevent
+    x-on:lofi-close-popovers="close()"
+    x-on:click="clicked($event)"
+    style="top: -9999px; left: -9999px"
+    data-mds-context-menu
+>
+    <ui-menu
+    class="[:where(&amp;)]:min-w-48 p-[.3125rem] rounded-lg shadow-xs border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 focus:outline-hidden"
+    popover="manual"
+    data-flux-menu
+>
+    <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z"/>
+  <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"/>
+</svg>
+
+            
+    Save image
+    </button>
+                        <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M13.887 3.182c.396.037.79.08 1.183.128C16.194 3.45 17 4.414 17 5.517V16.75A2.25 2.25 0 0 1 14.75 19h-9.5A2.25 2.25 0 0 1 3 16.75V5.517c0-1.103.806-2.068 1.93-2.207.393-.048.787-.09 1.183-.128A3.001 3.001 0 0 1 9 1h2c1.373 0 2.531.923 2.887 2.182ZM7.5 4A1.5 1.5 0 0 1 9 2.5h2A1.5 1.5 0 0 1 12.5 4v.5h-5V4Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Copy link
+    </button>
+                        <button type="button" class="flex items-center px-2 py-1.5 w-full focus:outline-hidden select-none rounded-md text-start text-sm font-medium [&amp;[disabled]]:opacity-50 text-zinc-800 data-active:bg-zinc-50 dark:text-white dark:data-active:bg-zinc-600 **:data-flux-menu-item-icon:text-zinc-400 dark:**:data-flux-menu-item-icon:text-white/60 [&amp;[data-active]_[data-flux-menu-item-icon]]:text-current" data-flux-menu-item="data-flux-menu-item" data-flux-menu-item-has-icon="data-flux-menu-item-has-icon">
+        <svg class="shrink-0 [:where(&amp;)]:size-5 me-2" data-flux-menu-item-icon="data-flux-menu-item-icon" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/>
+</svg>
+
+            
+    Set as cover
+    </button>
+</ui-menu>
+</div>
+</template>
+</div>
+        </div>
+    </div>
+
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >A context menu is a shortcut, never the only path: keep the same actions somewhere visible too — a <code>flux:dropdown</code> or the row's own buttons.</p>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -14449,7 +14897,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

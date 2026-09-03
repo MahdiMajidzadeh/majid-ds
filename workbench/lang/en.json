@@ -604,5 +604,20 @@
     "تازه‌های دیجیتال": "New in electronics",
     "نوار کالاها، سه اسلاید در هر نما:": "A product strip, three slides per view:",
     "پیشنهاد ویژه برای شما": "Recommended for you",
-    "نوار اسلایدها با Tab قابل تمرکز است: کلیدهای چپ و راست بر اساس چیزی که می‌بینید کار می‌کنند، پس در صفحه راست‌به‌چپ کلید راست یعنی اسلاید قبلی. چرخش خودکار با نشانگر ماوس، تمرکز کیبورد یا تب پنهان متوقف می‌شود.": "Tab reaches the slide strip: the left and right arrows follow what you see, so in an RTL page Right is the previous slide. Auto-rotation stops for a hovering pointer, for keyboard focus inside it, and for a hidden tab."
+    "نوار اسلایدها با Tab قابل تمرکز است: کلیدهای چپ و راست بر اساس چیزی که می‌بینید کار می‌کنند، پس در صفحه راست‌به‌چپ کلید راست یعنی اسلاید قبلی. چرخش خودکار با نشانگر ماوس، تمرکز کیبورد یا تب پنهان متوقف می‌شود.": "Tab reaches the slide strip: the left and right arrows follow what you see, so in an RTL page Right is the previous slide. Auto-rotation stops for a hovering pointer, for keyboard focus inside it, and for a hidden tab.",
+    "منوی راست‌کلیک — mds:context": "Context menu — mds:context",
+    "منوی راست‌کلیک": "Context menu",
+    "نسخه آزاد از کامپوننت Context (در Flux فقط Pro) — یک flux:menu معمولی که با راست‌کلیک، کلید Shift+F10 یا لمس طولانی کنار نشانگر باز می‌شود.": "An open version of the Context component (Pro-only in Flux) — an ordinary flux:menu that opens at the pointer on right-click, Shift+F10 or a long press.",
+    "روی کارت راست‌کلیک کنید:": "Right-click the card:",
+    "گزارش فصلی.pdf": "Quarterly report.pdf",
+    "۲٫۴ مگابایت · برای گزینه‌ها راست‌کلیک کنید": "2.4 MB · right-click for options",
+    "ویرایش": "Edit",
+    "تکثیر": "Duplicate",
+    "هم‌رسانی": "Share",
+    "با کیبورد: Tab تا تصویر، سپس Shift+F10:": "With the keyboard: Tab to the image, then Shift+F10:",
+    "نمونه تصویر": "A sample photo",
+    "ذخیره تصویر": "Save image",
+    "کپی پیوند": "Copy link",
+    "انتخاب به‌عنوان کاور": "Set as cover",
+    "منوی راست‌کلیک یک میان‌بر است، نه تنها راه: همان عملیات را جایی دیدنی هم بگذارید — یک <code>flux:dropdown</code> یا دکمه‌های ردیف.": "A context menu is a shortcut, never the only path: keep the same actions somewhere visible too — a <code>flux:dropdown</code> or the row's own buttons."
 }
