@@ -1169,6 +1169,20 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </flux:card>
 </div>
 
+{{-- ============================== MDS: Input ============================== --}}
+<flux:card class="space-y-4">
+    <flux:heading size="lg">{{ __('ورودی ارقام — mds:input') }}</flux:heading>
+
+    <flux:text>{{ __('همان flux:input، با این تفاوت که ارقام فارسی و عربی هنگام تایپ یا چسباندن به لاتین تبدیل می‌شوند — مقداری که به سرور می‌رسد همیشه ماشینی است.') }}</flux:text>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <mds:input only ltr :label="__('شماره موبایل')" type="tel" :placeholder="__('۰۹۱۲ ۳۴۵ ۶۷۸۹')" :description="__('با هر صفحه‌کلیدی تایپ کنید؛ مقدار لاتین ذخیره می‌شود.')" />
+        <mds:input only ltr :label="__('کد تأیید')" maxlength="5" placeholder="12345" class="md:w-40" />
+        <mds:input only ltr :label="__('شماره کارت')" icon="credit-card" clearable :description="__('۱۶ رقم، بدون فاصله')" />
+        <mds:input :label="__('آدرس')" :placeholder="__('خیابان ولیعصر، پلاک ۱۲')" />
+    </div>
+</flux:card>
+
 {{-- ============================== MDS: Stepper ============================== --}}
 <flux:card class="space-y-6">
     <flux:heading size="lg">{{ __('مراحل خرید — mds:stepper') }}</flux:heading>

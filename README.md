@@ -24,6 +24,7 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Typography | Font-agnostic: every component renders in your `--font-sans`. Set a Persian face (Vazirmatn is the recommended default) — see [Fonts](#fonts). |
 | Icons | [Hugeicons](https://hugeicons.com) via `<mds:icon>`, replacing heroicons across every `mds:*` component (heroicon names still work) |
 | Numbers | Persian digits (۰۱۲۳), Persian separators (٬ / ٫), `@fa` / `@faNum` directives |
+| Forms | `<mds:input>` — Flux's input that rewrites Persian/Arabic digits to Latin as the user types, so `wire:model` always receives machine values |
 | Money | `<mds:price>`, `@toman` / `@rial` directives, configurable default currency |
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
@@ -34,7 +35,7 @@ All components are RTL-first (built with logical properties, so they also work L
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 60 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 61 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -43,7 +44,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 60 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 61 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
 ```
 
@@ -209,6 +210,22 @@ attributes for chart geometry, colour swatches and hidden-until-Alpine states. N
 ```
 
 Props: `amount`, `original`, `currency` (`toman` | `rial` | `none` | literal label), `decimals`, `size` (`sm`|`lg`), `fa`, `badge`.
+
+### `<mds:input>`
+
+Flux's input with digit normalisation. Persian keyboards type `۰۱۲۳` and Arabic ones `٠١٢٣`; bound to a plain input, that is what
+`wire:model` posts. `<mds:input>` puts the `x-mds-digits` directive on the control, which rewrites them to Latin as they are typed,
+pasted or dropped — before the browser applies the keystroke, so the field fires one `input` event that is already Latin. Every
+`flux:input` prop passes through:
+
+```blade
+<mds:input wire:model.live="mobile" label="Mobile number" type="tel" only ltr />
+<mds:input only label="Verification code" maxlength="5" />
+<mds:input label="Address" placeholder="خیابان ولیعصر، پلاک ۱۲" />
+```
+
+Props: `only` (digits alone, and `inputmode="numeric"` for mobile keyboards), `ltr` (keep the control left-to-right inside an RTL
+form), plus everything `flux:input` accepts. Leave `only` off when you pass a `mask`; the mask owns the value's shape.
 
 ### `<mds:quantity>`
 

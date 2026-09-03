@@ -1454,6 +1454,84 @@ class ComponentsTest extends TestCase
     }
 
     /**
+     * mds:input is flux:input with the digits directive on the control — so
+     * Flux's own field markup has to be there, and the directive has to sit on
+     * the <input> itself, not on the wrapper Flux builds around it.
+     */
+    public function test_input_is_a_flux_input_carrying_the_digits_directive(): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $html = $this->render('<mds:input label="Mobile number" placeholder="0912" />');
+
+        $this->assertStringContainsString('data-flux-input', $html);
+        $this->assertStringContainsString('Mobile number', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*\sx-mds-digits=""/', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*\sdata-mds-input=""/', $html);
+
+        // Without the flags, nothing is added beyond the directive.
+        $this->assertStringNotContainsString('x-mds-digits.only', $html);
+        $this->assertStringNotContainsString('inputmode=', $html);
+        $this->assertStringNotContainsString('data-ltr', $html);
+    }
+
+    public function test_input_only_keeps_digits_and_asks_for_a_numeric_keyboard(): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $html = $this->render('<mds:input only ltr />');
+
+        $this->assertMatchesRegularExpression('/<input[^>]*\sx-mds-digits\.only=""/', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*\sinputmode="numeric"/', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*\sdata-ltr=""/', $html);
+
+        // The defaults yield to the caller's own attributes.
+        $html = $this->render('<mds:input only inputmode="tel" />');
+
+        $this->assertStringContainsString('inputmode="tel"', $html);
+        $this->assertStringNotContainsString('inputmode="numeric"', $html);
+    }
+
+    public function test_input_forwards_wire_model_to_the_real_control(): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $html = $this->render('<mds:input wire:model.live="mobile" />');
+
+        $this->assertBindingReachesControl($html, 'input', 'wire:model.live="mobile"');
+    }
+
+    public function test_input_inherits_flux_validation_state_from_the_error_bag(): void
+    {
+        $bag = new ViewErrorBag;
+        $bag->put('default', new MessageBag(['mobile' => ['The mobile number is required.']]));
+        View::share('errors', $bag);
+
+        $html = $this->render('<mds:input name="mobile" />');
+
+        // The invalid state is Flux's, read from the bag by name — the same
+        // contract a bare flux:input has. (Flux fills the message block itself;
+        // that is its own behaviour, not asserted here.)
+        $this->assertMatchesRegularExpression('/<input[^>]*\saria-invalid="true"/', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*\sdata-invalid/', $html);
+    }
+
+    public function test_input_registers_the_digits_directive_once_per_page(): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $page = $this->render('<mds:input /><mds:input only /><mds:quantity :value="1" />');
+
+        $this->assertSame(1, substr_count($page, "Alpine.directive('mds-digits'"));
+        $this->assertSame(1, substr_count($page, 'window.mds.latinDigits ='));
+
+        // Registration must survive Alpine having started already (wire:navigate),
+        // so the block registers directly when window.Alpine exists.
+        $this->assertStringContainsString('if (window.Alpine) {', $page);
+        $this->assertStringContainsString("addEventListener('alpine:init'", $page);
+    }
+
+    /**
      * Every built-in string ships in both languages, and `fa` — or the
      * `mds.persian_digits` default behind it — picks which. One table feeds
      * both directions, so the languages cannot drift apart the way they did

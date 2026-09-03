@@ -78,6 +78,7 @@ return [
         'title' => 'mds components',
         'items' => [
             'mds-icon' => 'mds:icon',
+            'mds-input' => 'mds:input',
             'price' => 'mds:price',
             'discount-badge' => 'mds:discount-badge',
             'quantity' => 'mds:quantity',

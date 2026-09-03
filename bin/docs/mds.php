@@ -127,6 +127,67 @@ $pages['mds-icon'] = [
     'related' => ['icon'],
 ];
 
+// ----------------------------------------------------------------- mds:input
+
+$pages['mds-input'] = [
+    'group' => 'mds',
+    'title' => 'mds:input',
+    'lede' => 'Flux\'s input, storing Latin digits whatever keyboard typed them.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Persian keyboards type <code>۰۱۲۳</code> and Arabic ones <code>٠١٢٣</code>; bound to a plain input, that is what <code>wire:model</code> posts. <code>mds:input</code> is <code>flux:input</code> with the <code>x-mds-digits</code> directive on the control: digits are rewritten to Latin as they are typed, pasted or dropped, so the value the server receives is always the machine form. Every <code>flux:input</code> prop and attribute passes straight through.',
+            'code' => <<<'BLADE'
+            <mds:input label="Mobile number" placeholder="Try typing ۰۹۱۲ here" />
+            BLADE,
+        ],
+        [
+            'name' => 'Digits only',
+            'text' => 'With <code>only</code> everything that is not a digit is dropped too — phone numbers, verification codes, card numbers — and mobile keyboards are asked for a numeric layout through <code>inputmode="numeric"</code>. A caller\'s own <code>inputmode</code> wins.',
+            'code' => <<<'BLADE'
+            <mds:input only label="Verification code" placeholder="12345" maxlength="5" class="w-40" />
+            BLADE,
+        ],
+        [
+            'name' => 'Everything Flux\'s input does',
+            'text' => 'Label, description, icons, <code>clearable</code>, <code>copyable</code>, <code>viewable</code>, <code>mask</code>, <code>invalid</code> and the validation state read from the error bag are all Flux\'s own. Only the digit handling is added. A <code>mask</code> decides the shape of the value itself, so leave <code>only</code> off when you use one — the digits still arrive Latin.',
+            'code' => <<<'BLADE'
+            <div class="grid gap-6 sm:grid-cols-2">
+                <mds:input only label="Card number" icon="credit-card" clearable description="16 digits, no spaces." />
+                <mds:input label="Postal code" mask="99999-99999" placeholder="12345-67890" />
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'With Livewire',
+            'text' => 'Because the digits are rewritten <em>before</em> the browser applies the keystroke, the field fires a single <code>input</code> event, already Latin — a <code>wire:model.live</code> request never carries a Persian digit. Text committed through an on-screen keyboard\'s composition step cannot be intercepted that early; a second pass normalises it on <code>input</code> and re-announces the value.',
+            'code' => <<<'BLADE'
+            <mds:input only wire:model="mobile" label="Mobile number" type="tel" />
+            BLADE,
+        ],
+        [
+            'name' => 'Inside an RTL form',
+            'rtl' => true,
+            'text' => 'Numbers read left-to-right even on a right-to-left page. <code>ltr</code> marks the control so the kit\'s stylesheet keeps it LTR and end-aligned inside an RTL form — the same rule that already applies to <code>type="tel"</code>. The field shows Latin digits by design: what is on screen is exactly what will be posted.',
+            'code' => <<<'BLADE'
+            <div class="grid gap-6 sm:grid-cols-2">
+                <mds:input only ltr label="شماره موبایل" placeholder="۰۹۱۲ ۳۴۵ ۶۷۸۹" description="با هر صفحه‌کلیدی تایپ کنید؛ مقدار لاتین ذخیره می‌شود." />
+                <mds:input label="آدرس" placeholder="خیابان ولیعصر، پلاک ۱۲" />
+            </div>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:input', 'props' => [
+            ['only', 'Keep digits alone and ask for a numeric keyboard (<code>inputmode="numeric"</code>). Default: <code>false</code>.'],
+            ['ltr', 'Mark the control <code>data-ltr</code> so it stays left-to-right inside an RTL form. Default: <code>false</code>.'],
+            ['…', 'Every <code>flux:input</code> prop and attribute — <code>label</code>, <code>description</code>, <code>placeholder</code>, <code>icon</code>, <code>clearable</code>, <code>copyable</code>, <code>viewable</code>, <code>mask</code>, <code>type</code>, <code>invalid</code>, <code>wire:model</code>, <code>name</code> — passes through unchanged.'],
+        ]],
+    ],
+    'related' => ['input', 'quantity'],
+];
+
 // ----------------------------------------------------------------- mds:price
 
 $pages['price'] = [

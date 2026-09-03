@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
-4. Alpine is REQUIRED for interactive components (quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
+4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
 6. Components follow Flux's `--color-accent` theme tokens and support dark mode via the `.dark` class.
@@ -108,6 +108,8 @@ Facade `MajidDs\Mds`:
 Components with values render a hidden `<input>`; `wire:model` attributes are forwarded to it and it dispatches
 bubbling `input` events on every change. Hidden values are ALWAYS Latin digits / machine formats regardless of
 Persian display. Applies to: quantity, rating.input, color-picker. `name="..."` enables plain form posts.
+`<mds:input>` is the same rule for a visible text field: it is `flux:input` with the `x-mds-digits` directive, which rewrites
+Persian/Arabic-Indic digits to Latin as they are typed or pasted, so the bound value is the machine form there too.
 
 ## Validation contract
 
@@ -126,6 +128,21 @@ area/slider/dropper; command -> input/items; file-upload -> dropzone; file-item 
 price -> discount-badge. An explicit `:fa` on the child still wins. Subcomponents therefore all accept `fa` themselves.
 
 ## Components
+
+### <mds:input> — Flux's input, Latin digits whatever keyboard typed them
+Props: `only` bool=false (keep digits alone; also sets `inputmode="numeric"` unless the caller passes their own — do NOT combine with
+Flux's `mask`, which owns the value's shape; digits still arrive Latin under a mask) · `ltr` bool=false (adds
+`data-ltr`, which mds.css keeps left-to-right and end-aligned inside an RTL form — `type="tel"` already gets that).
+Everything else is `flux:input`'s own and passes through unchanged: `label`, `description`, `placeholder`, `icon`, `icon:trailing`,
+`clearable`, `copyable`, `viewable`, `mask`, `type`, `size`, `invalid`, `wire:model`, `name`, `class` — including Flux's validation
+state from `$errors` (so, like any flux:input, it needs the shared `$errors` bag: a real request, or `View::share('errors', new ViewErrorBag)`).
+Renders `<input … x-mds-digits="" data-mds-input>` (`x-mds-digits.only=""` with `only`). The directive rewrites ۰-۹ and ٠-٩ to 0-9 in
+`beforeinput` (typing, paste, drop), so the field fires ONE `input` event, already Latin, and undo history survives; IME composition text,
+which cannot be intercepted there, is normalised on `input` with the caret restored and the event re-dispatched. The field therefore SHOWS
+Latin digits — what is on screen is what posts. No `fa` prop: nothing here is display-only.
+`x-mds-digits` is registered by the kit's shared script (`mds::partials.digits`), which is on the page whenever an mds:input, quantity,
+countdown, composer, file-upload or command rendered; on such a page it may be put on any other input or textarea by hand.
+Registration guards against Alpine having already started (a `wire:navigate` visit), so it works on navigated-to pages as well.
 
 ### <mds:rating> — star display
 Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5 · `count` int|null=null (review count) · `size` sm|lg|default · `show-value` bool=true · `fa` bool|null=config.

@@ -17,7 +17,7 @@ composer test                             # full suite (~3s, keep it green)
 composer fix                              # apply Pint formatting (composer lint just checks)
 composer analyse                          # PHPStan/Larastan, level 7 over src/
 vendor/bin/phpunit --filter composer      # one component's tests
-npm run docs                              # regenerate the 60 reference pages + docs/assets/site.css
+npm run docs                              # regenerate the 61 reference pages + docs/assets/site.css
 npm run pages                             # regenerate the 18 static layout-gallery pages in docs/demo/
 npm run demo:serve                        # live workbench at :8720 (needs demo:css once)
 ```
@@ -101,7 +101,7 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
   the builder hard-fails on missing pages and warns on orphans. The nav ships
   as data (`docs/assets/nav.js`, a JS-wrapped JSON because `fetch()` is blocked
   on `file://`) and pages render the sidebar client-side, so a nav change
-  rewrites one asset, not all 60 pages.
+  rewrites one asset, not all 61 pages.
 - Rebuilds are byte-identical: both builders pin the clock (`Date::setTestNow`
   in `build-docs.php`; the `MDS_TEST_NOW` env var for the crawled demo server)
   and the crawler pins the unused Livewire CSRF token. A rebuild that dirties
