@@ -9,6 +9,13 @@ name: CI
 # against Laravel 13's JSON escaping, and the Laravel 11 constraint no longer
 # resolved at all because every 11.x release is behind a security advisory.
 #
+# Action versions are kept on their latest major on purpose. GitHub retires a
+# Node runtime roughly yearly and then forces old actions onto the new one with
+# a deprecation warning on every run; trailing a major means collecting those
+# warnings for something no workflow here depends on. All four run on node24
+# today — checkout v7, setup-node v7, ramsey/composer-install v4 (which is what
+# pulls in a node24 actions/cache) and setup-php v2, whose v2 is current.
+#
 # Deliberately NOT here: anything that publishes. Packagist is wired to this
 # repository by webhook and takes the version from the git tag on its own, and
 # GitHub Pages serves docs/ straight off the branch with no build step. A
@@ -53,7 +60,7 @@ jobs:
           - { php: '8.2', laravel: 12, testbench: 10, dependency-versions: lowest }
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -73,7 +80,7 @@ jobs:
             "orchestra/testbench:^${{ matrix.testbench }}.0"
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
         with:
           # `highest`, never `locked`: the step above rewrites composer.json
           # for this leg, so the committed lock no longer matches it.
@@ -96,7 +103,7 @@ jobs:
     # not a second on every run all day. One PHP version is enough: Pint's
     # rules do not vary by runtime.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -104,7 +111,7 @@ jobs:
           extensions: intl, mbstring, dom, libxml
           coverage: none
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
         env:
           COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
@@ -123,7 +130,7 @@ jobs:
     # Pint wanting a different line break are not the same news, and reading
     # one should not mean scrolling past the other.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -131,7 +138,7 @@ jobs:
           extensions: intl, mbstring, dom, libxml
           coverage: none
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
         env:
           COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
@@ -150,7 +157,7 @@ jobs:
     # pin the clock and the CSRF token precisely so this check is possible —
     # which is what lets a rebuild that dirties git mean something is stale.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -158,11 +165,11 @@ jobs:
           extensions: intl, mbstring, dom, libxml
           coverage: none
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
         env:
           COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
