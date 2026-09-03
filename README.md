@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/MahdiMajidzadeh/majid-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/MahdiMajidzadeh/majid-ds/actions/workflows/ci.yml)
 
-Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` component exactly as it is, and gain an `<mds:*>` namespace with the pieces Flux doesn't have: Persian typography and digits, Jalali dates, Toman/Rial prices, and e-commerce components (product cards, quantity steppers, deal countdowns, checkout steppers, ratings).
+Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` component exactly as it is, and gain an `<mds:*>` namespace with the pieces Flux doesn't have: Persian typography and digits, Jalali dates, Toman and Rial prices, and the e-commerce components a storefront needs.
 
 ```blade
 <mds:product-card
@@ -23,86 +23,35 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 
 | Area | What Majid DS adds |
 |---|---|
-| Typography | Font-agnostic: every component renders in your `--font-sans`. Set a Persian face (Vazirmatn is the recommended default) — see [Fonts](#fonts). |
-| Icons | [Hugeicons](https://hugeicons.com) via `<mds:icon>`, replacing heroicons across every `mds:*` component (heroicon names still work) |
-| Numbers | Persian digits (۰۱۲۳), Persian separators (٬ / ٫), `@fa` / `@faNum` directives |
-| Forms | `<mds:input>` — Flux's input that rewrites Persian/Arabic digits to Latin as the user types, so `wire:model` always receives machine values |
-| Money | `<mds:price>`, `@toman` / `@rial` directives, configurable default currency |
-| Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
-| E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
-| Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>`, `<mds:preview-card>` |
-| Pro alternatives | **All nineteen** of Flux's Pro-only components, rebuilt open: `<mds:command>` (⌘K palette), `<mds:composer>`, `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, `<mds:chart>`, `<mds:popover>`, `<mds:accordion>`, `<mds:slider>`, `<mds:time-picker>`, `<mds:tabs>`, `<mds:autocomplete>`, `<mds:carousel>`, `<mds:context>`, `<mds:pillbox>`, `<mds:editor>`, `<mds:calendar>` (Jalali), `<mds:kanban>` and `<mds:date-picker>` |
+| Typography | Font-agnostic: every component renders in your `--font-sans`, so one token styles the kit. Set a Persian face — see [Fonts](#fonts). |
+| Icons | [Hugeicons](https://hugeicons.com) throughout, with heroicon names still resolving through an alias map |
+| Numbers | Persian digits and separators wherever a number is shown, and Latin machine values in every hidden input |
+| Money | Toman and Rial, with the currency label and the discount maths handled for you |
+| Dates | A dependency-free Jalali calendar, checked against PHP's `intl` Persian calendar across 110 years |
+| Forms | Persian and Arabic-Indic digits rewritten to Latin as the user types, plus Iranian identifier checks — national ID, mobile, Sheba, bank card — as validation rules |
+| E-commerce | Product cards, quantity steppers, prices, discount badges, ratings, checkout steppers, deal countdowns |
+| Pro alternatives | **All nineteen** of Flux's Pro-only components, rebuilt open — including a Jalali calendar and date picker rather than translated Gregorian ones |
 
-All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
+Everything is RTL-first, built with logical properties so it works left-to-right too, supports dark mode, and follows Flux's accent tokens: set `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 74 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
-- **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
-- **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
+The component reference is deliberately not in this file. It lives in two places, both kept honest by the test suite so neither can quietly go stale:
 
-The whole `docs/` folder is a static site: **Settings → Pages → Source: `main` / `/docs`**
-publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo alike. No
-build step runs on GitHub — the pages are committed, so regenerate them when things change:
+- **[The docs site](https://mahdimajidzadeh.github.io/majid-ds/)** — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews and prop tables. 74 pages covering every free Flux component bundled here, the layout grid, and the whole `mds:*` layer. It also ships in the repo, so [docs/index.html](docs/index.html) opens straight from disk.
+- **[llms.txt](llms.txt)** — the same API in one compact, machine-readable file: props, slots, behaviour and the Livewire contract for each component. Point your project's `CLAUDE.md` or `AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
-```bash
-npm run docs            # rebuilds the 74 reference pages + docs/assets/site.css
-npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
-```
+Two demos render the whole kit at once: [RTL demo](docs/guides/rtl-demo.html) in Persian, [demo](docs/guides/demo.html) in English, plus a [layout gallery](docs/demo/layouts.html).
 
-Both sites share one stylesheet, `docs/assets/site.css`, built from
-[workbench/resources/css/site-input.css](workbench/resources/css/site-input.css) — so a
-component CSS change can never ship to the docs but not the demo. The same input also
-compiles to `workbench/public/demo.css` for `npm run demo:serve`.
-
-### What the docs cover
-
-| Group | Pages |
-|---|---|
-| Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
-| Layouts | The layout grid, Header, Sidebar, Aside |
-| Components | The 32 free Flux components bundled with this package |
-| mds components | All 31 `mds:*` components, including the nineteen Flux Pro alternatives |
-
-**Flux Pro components are not documented — because the kit replaces them.** Nineteen of
-the components on fluxui.dev ship no code in the free tier, so there is nothing to preview
-or reference from Flux itself. All nineteen now have an open `mds:*` version built here:
-Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command, Composer,
-Context, Date picker, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time
-picker and Timeline — each with its own page in the mds group.
-
-### How the docs are built
-
-[bin/build-docs.php](bin/build-docs.php) assembles the pages from the content in
-[bin/docs/](bin/docs) — one PHP file per group, holding each page's prose, examples and
-prop tables. The output is plain static HTML: nothing at read time needs PHP, Blade or a
-server.
-
-Each example's preview is its own snippet, rendered once through Blade at build time.
-That is deliberate: Flux computes its class strings at render time (a `match` over
-colour, size and variant), so transcribing that markup by hand would give previews that
-only resemble the components. Rendering it means the snippet you copy and the preview
-above it are provably the same thing — and because the real `flux.js` is loaded, the
-dropdowns, modals, tooltips and countdowns in the docs actually work.
-
-`bin/build-pages.php` is the equivalent tool for the layout gallery: it boots the
-workbench app on a throwaway port, crawls `/layouts` and its `/en` counterpart, and
-writes flat `.html` files into `docs/demo/` with every link and asset rewritten to a
-relative path — so the site works from a project subpath, a custom domain, or straight
-off the file system. The component showcase needs no crawl: the docs builder renders
-the workbench's demo cards (`workbench/resources/views/demo/cards.blade.php`) straight
-into the Demo and RTL demo pages under Guides.
+**Flux Pro components are not documented here — because the kit replaces them.** Nineteen components on fluxui.dev ship no code in the free tier, so there is nothing of Flux's to preview or reference. All nineteen have an open `mds:*` version instead, each with its own page.
 
 ## Requirements
 
 - PHP 8.2+, Laravel 12 or 13
-- Livewire 3 and `livewire/flux` ^2.0 (installed automatically)
+- Livewire 3 or 4, and `livewire/flux` ^2.0 (installed automatically)
 - Tailwind CSS v4
 
-Laravel 11 was supported until its releases were withdrawn behind Composer's
-security advisories: every 11.x version of `laravel/framework` and
-`illuminate/support` is now blocked, so a fresh install cannot resolve it at
-all. Keeping the constraint would have been a promise nothing could satisfy.
+Laravel 11 was supported until its releases were withdrawn behind Composer's security advisories: every 11.x version of `laravel/framework` and `illuminate/support` is now blocked, so a fresh install cannot resolve it at all. Keeping the constraint would have been a promise nothing could satisfy.
 
 ## Installation
 
@@ -176,7 +125,6 @@ Then load the face, one of two ways:
 - **Google Fonts** — a single `<link>` in `<head>`, as in the layout in step 2 above.
 
 Any other Persian face (IRANSansX, Yekan Bakh, Sahel…) works the same way: name it in `--font-sans` and load it.
-The `@mdsFonts` directive that used to emit the Google Fonts tags is gone — replace it with one of these.
 
 ### Content Security Policy
 
@@ -205,52 +153,6 @@ strict policy needs: `'unsafe-eval'` in `script-src`, because Alpine's standard 
 evaluates `x-data` expressions, and `'unsafe-inline'` in `style-src`, because the kit renders inline `style`
 attributes for chart geometry, colour swatches and hidden-until-Alpine states. Nonces cover scripts only.
 
-## Components
-
-Every component has its own reference page with live previews and a prop table,
-and [llms.txt](llms.txt) carries the same API in one machine-readable file —
-props, slots, behaviour and the Livewire contract for each. Both are generated
-or test-enforced, so this table stays an index rather than a fourth copy of the
-API that quietly goes stale.
-
-<!-- mds:components (generated by `npm run docs` — edit bin/docs/mds.php, not this) -->
-
-| Component | What it is |
-|---|---|
-| [`<mds:icon>`](docs/mds/mds-icon.html) | Hugeicons, replacing heroicons across every mds component |
-| [`<mds:input>`](docs/mds/mds-input.html) | Flux's input, storing Latin digits whatever keyboard typed them |
-| [`<mds:price>`](docs/mds/price.html) | Money in Toman or Rial — separators, currency label and discount badge from one amount |
-| [`<mds:discount-badge>`](docs/mds/discount-badge.html) | A percentage-off pill |
-| [`<mds:quantity>`](docs/mds/quantity.html) | A cart quantity stepper |
-| [`<mds:rating>`](docs/mds/rating.html) | A star rating, read-only or as an input |
-| [`<mds:product-card>`](docs/mds/product-card.html) | A whole product tile: image, title, price, rating and a badge |
-| [`<mds:stepper>`](docs/mds/stepper.html) | Checkout steps, with the completed ones ticked |
-| [`<mds:countdown>`](docs/mds/countdown.html) | A live countdown to a deadline |
-| [`<mds:jalali-date>`](docs/mds/jalali-date.html) | Jalali (Shamsi) dates, with no external calendar dependency |
-| [`<mds:empty-state>`](docs/mds/empty-state.html) | What to show when there is nothing to show |
-| [`<mds:preview-card>`](docs/mds/preview-card.html) | A hover preview of a link's destination, shown beside it |
-| [`<mds:command>`](docs/mds/command.html) | A ⌘K command palette — an open version of a Flux Pro component |
-| [`<mds:composer>`](docs/mds/composer.html) | A chat / prompt input with an action bar — an open version of a Flux Pro component |
-| [`<mds:color-picker>`](docs/mds/color-picker.html) | A colour picker — an open version of a Flux Pro component |
-| [`<mds:file-upload>`](docs/mds/file-upload.html) | Drag-and-drop uploads — an open version of a Flux Pro component |
-| [`<mds:timeline>`](docs/mds/timeline.html) | An event timeline — an open version of a Flux Pro component |
-| [`<mds:chart>`](docs/mds/chart.html) | Monochrome dashboard charts, server-rendered as SVG — an open answer to a Flux Pro component |
-| [`<mds:popover>`](docs/mds/popover.html) | A panel anchored to the button that opens it — an open version of a Flux Pro component |
-| [`<mds:accordion>`](docs/mds/accordion.html) | Collapsible sections built on native details/summary — an open version of a Flux Pro component |
-| [`<mds:slider>`](docs/mds/slider.html) | A one- or two-thumb range slider — an open version of a Flux Pro component |
-| [`<mds:time-picker>`](docs/mds/time-picker.html) | A typable time field over a list of times — an open version of a Flux Pro component |
-| [`<mds:tabs>`](docs/mds/tabs.html) | Tabs and tab panels — an open version of a Flux Pro component |
-| [`<mds:autocomplete>`](docs/mds/autocomplete.html) | A text field with suggestions — an open version of a Flux Pro component |
-| [`<mds:carousel>`](docs/mds/carousel.html) | A slide strip with controls, dots and autoplay — an open version of a Flux Pro component |
-| [`<mds:context>`](docs/mds/context.html) | A right-click menu around any content — an open version of a Flux Pro component |
-| [`<mds:pillbox>`](docs/mds/pillbox.html) | A multi-select whose chosen values become removable pills — an open version of a Flux Pro component |
-| [`<mds:editor>`](docs/mds/editor.html) | A rich-text field — an open version of a Flux Pro component |
-| [`<mds:calendar>`](docs/mds/calendar.html) | A Jalali date-picker grid — an open version of a Flux Pro component, on the Iranian calendar |
-| [`<mds:kanban>`](docs/mds/kanban.html) | A drag-and-drop board that also works entirely from the keyboard — an open version of a Flux Pro component |
-| [`<mds:date-picker>`](docs/mds/date-picker.html) | A date field you can type into, with a Jalali calendar in a popover — an open version of a Flux Pro component |
-
-<!-- /mds:components -->
-
 ## Helpers, directives, facade
 
 ```blade
@@ -263,7 +165,7 @@ API that quietly goes stale.
 
 ```php
 use MajidDs\Mds;
-use MajidDs\Support\{Persian, Jalali};
+use MajidDs\Support\{Persian, Jalali, Iran};
 
 Mds::toman(2500000);                       // ۲٬۵۰۰٬۰۰۰ تومان
 Mds::jalali(now(), 'Y/m/d');               // ۱۴۰۵/۰۵/۲۹
@@ -273,9 +175,13 @@ Persian::digits('order 123');              // order ۱۲۳
 Persian::latinDigits('۰۹۱۲');              // 0912
 Jalali::fromGregorian(2026, 8, 20);        // [1405, 5, 29]
 Jalali::toGregorian(1405, 5, 29);          // [2026, 8, 20]
+Iran::normalizeMobile('+98 912 345 6789'); // 09123456789
+Iran::nationalId('0013542877');            // true
 ```
 
 The Jalali implementation is dependency-free and is tested against PHP's `intl` Persian calendar across a 110-year range.
+
+The Iranian identifiers also ship as validation rules — `NationalId`, `IranMobile`, `Sheba` and `BankCard` — each accepting Persian digits and the spaced forms the inputs produce, with a Persian or English message chosen by `config('mds.persian_digits')`.
 
 ## Configuration
 
@@ -298,76 +204,44 @@ Publish the views and edit them — app-level views take precedence, exactly lik
 php artisan vendor:publish --tag=mds-views   # -> resources/views/mds/
 ```
 
-Components can also be used with standard component syntax: `<x-mds::rating>` ≡ `<mds:rating>`.
+Components also work with standard component syntax: `<x-mds::rating>` ≡ `<mds:rating>`. That spelling is *required* for `wire:key`, which Livewire's precompiler rewrites before the namespaced tag is compiled.
 
-## Demo & development
-
-Two RTL demos ship in the workbench — a component showcase and a layout gallery:
+## Development
 
 ```bash
 composer install
 npm install
-npm run demo:css        # compile the demo stylesheet (Tailwind v4)
+
+composer check          # analyse + test — the local loop; formatting is enforced on CI
+composer fix            # apply Pint formatting
+npm run demo:css        # compile the demo stylesheet, once
 npm run demo:serve      # then open http://127.0.0.1:8720/demo
 ```
 
-| Route | What it shows |
-|---|---|
-| `/demo` | Every free Flux component plus the whole `<mds:*>` set |
-| `/layouts` | Gallery of all page layouts, with a wireframe and snippet for each |
-| `/layouts/header` | Top navbar only — header, main and footer all contained |
-| `/layouts/sidebar` | Full-height sidebar (sidebar before header) |
-| `/layouts/sidebar-header` | Full-width header above the sidebar (header first) |
-| `/layouts/collapsible` | Sidebar that collapses to an icon rail on desktop |
-| `/layouts/mobile` | Sidebar fixed on desktop, off-canvas below `lg` |
-| `/layouts/aside` | Three columns: sidebar, main and a sticky `flux:aside` |
-| `/layouts/sticky` | Sticky header, sidebar and aside with a long scrolling main |
-| `/layouts/container` | `container` prop and `flux:container` width control |
+`docs/` is a committed static site — GitHub Pages serves it as-is, with no build step — so regenerate it whenever a view, the CSS or a docs page changes:
 
-Every route above also exists under `/en` — `/en/demo`, `/en/layouts/aside` and so
-on — rendered left-to-right in English. Both locales are what `npm run pages`
-snapshots into `docs/` (18 pages); see [Documentation](#documentation) for
-publishing them.
+```bash
+npm run docs            # the 74 reference pages + docs/assets/site.css
+npm run pages           # the 18 layout-gallery pages in docs/demo/
+```
 
-### How the two locales work
+Both builders are deterministic, so a rebuild that dirties git means something actually changed — which is what lets CI rebuild and fail on a dirty tree.
 
-The Persian copy in the workbench views **is** the translation key, so the Blade
-stays readable in the language the kit is designed for:
+### The workbench demo
+
+Two RTL demos ship in the workbench: a component showcase at `/demo`, and a layout gallery at `/layouts` covering every arrangement Flux's grid supports — header-only, full-height sidebar, header above sidebar, a collapsible rail, off-canvas on mobile, a three-column aside, sticky regions, and container width control. Layout is decided by the order of the children: a `<flux:sidebar>` before `<flux:header>` claims the full height, a `<flux:header>` first spans the full width, and in RTL the sidebar lands on the right with no extra classes.
+
+Every route also exists under `/en`, rendered left-to-right in English. Both locales are what `npm run pages` snapshots into `docs/`.
+
+The Persian copy in the workbench views **is** the translation key, so the Blade stays readable in the language the kit is designed for:
 
 ```blade
 <flux:button :href="$mdsUrl('/layouts')" icon="squares-2x2">{{ __('چیدمان‌های صفحه') }}</flux:button>
 ```
 
-[`workbench/lang/en.json`](workbench/lang/en.json) maps each Persian string to
-English via Laravel's JSON translations. An unmapped key falls through to itself,
-so `fa` needs no translation file at all.
+[`workbench/lang/en.json`](workbench/lang/en.json) maps each Persian string to English via Laravel's JSON translations. An unmapped key falls through to itself, so `fa` needs no translation file at all.
 
-Locale also drives the kit's own output. Every `mds:*` component reads
-`config('mds.persian_digits')` and `config('mds.currency')` at render time, so the
-route sets them once per locale and the whole page switches — digits, separators,
-the currency label, and every built-in string: `۲٬۵۰۰٬۰۰۰ تومان` becomes
-`2,500,000 Toman`, `ناموجود` becomes `Out of stock`, the countdown's
-`روز / ساعت / دقیقه / ثانیه` become `days / hours / min / sec`, Jalali month names
-transliterate (`۲۹ مرداد` → `29 Mordad`), and `Persian::ago()` speaks English —
-without touching a single component call.
-
-The only Persian the config cannot switch is the digit and money directives
-(`@fa`, `@faNum`, `@toman`, `@rial`), which are Persian by definition — `@jalali`
-follows the config, and `mds:price` is the config-aware way to write money. The
-docs build counts the Persian left on each English page, so a new untranslated
-string shows up in the build output.
-
-Every layout page carries a floating switcher, so you can jump between them (and
-toggle dark mode) without going back to the gallery. Layout arrangement is decided
-by the order of the children: a `<flux:sidebar>` placed before `<flux:header>`
-claims the full height, a `<flux:header>` placed first spans the full width — in
-RTL the sidebar lands on the right with no extra classes.
-
-Run the test suite:
-
-```bash
-composer test
-```
+Locale also drives the kit's own output. Every `mds:*` component reads `config('mds.persian_digits')` and `config('mds.currency')` at render time, so the route sets them once per locale and the whole page switches — digits, separators, the currency label and every built-in string: `۲٬۵۰۰٬۰۰۰ تومان` becomes `2,500,000 Toman`, `ناموجود` becomes `Out of stock`, and Jalali month names transliterate. The only Persian the config cannot switch is the digit and money directives (`@fa`, `@faNum`, `@toman`, `@rial`), which are Persian by definition. The docs build counts the Persian left on each English page, so a new untranslated string shows up in the build output.
 
 ## License
 

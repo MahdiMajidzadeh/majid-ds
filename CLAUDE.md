@@ -130,9 +130,12 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
 4. Demo card in `workbench/resources/views/demo/cards.blade.php` + its navbar
    ToC item + `en.json` keys (the partial is shared: the workbench `/demo` page
    includes it, and the docs' Demo / RTL demo pages embed it at build time).
-5. `llms.txt` section (props · slots · behavior · Livewire contract) and a
-   README section; bump the page/component counts in README and
-   `bin/docs/guides.php` if it's a Pro alternative. `LlmsTxtTest` enforces the
+5. `llms.txt` section (props · slots · behavior · Livewire contract). NOT the
+   README: it points at the docs site and llms.txt and documents no component
+   itself, and `DocsTest` fails the build if a `### <mds:…>` section or a
+   `Props:` line appears there — that copy went 664 lines stale once already.
+   Bump the page count in README and the Pro-alternative count there and in
+   `bin/docs/guides.php` if it's one. `LlmsTxtTest` enforces the
    llms.txt half: every `@props` key of every view must appear in that
    component's section, every `### <mds:*>` heading must have a view, every
    public static method on the Support classes and every config key and
