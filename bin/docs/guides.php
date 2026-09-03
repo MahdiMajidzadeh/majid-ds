@@ -44,6 +44,7 @@ $demoAnchors = [
     'carousel' => 'Carousel',
     'context' => 'Context menu',
     'pillbox' => 'Pillbox',
+    'editor' => 'Editor',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

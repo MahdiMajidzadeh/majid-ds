@@ -3448,4 +3448,151 @@ $pages['pillbox'] = [
     'related' => ['command', 'input'],
 ];
 
+// ------------------------------------------------------------ mds:editor
+
+// Paste into bin/docs/mds.php, and add 'editor' to the mds group in bin/docs/nav.php.
+
+$pages['editor'] = [
+    'group' => 'mds',
+    'title' => 'mds:editor',
+    'lede' => 'A rich-text field — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A <code>contenteditable</code> surface under a real ARIA toolbar. No TipTap, no ProseMirror, no third-party JavaScript at all — the marks are the browser\'s own editing commands, and what the field stores is filtered down to a fixed allow-list on the way in <em>and</em> on the way out. Live: type in it, select a word, press the toolbar.',
+            'code' => <<<'BLADE'
+            <mds:editor
+                name="story"
+                label="Product story"
+                description="Formatting is limited on purpose — everything else is stripped."
+                placeholder="Write the story..."
+                rows="7"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'What it supports',
+            'text' => 'Bold, italic, underline, strikethrough, three heading levels, paragraphs, bulleted and numbered lists, a quote, a code block, links, per-block text direction and clear-formatting. That is the whole vocabulary: <code>p h1 h2 h3 ul ol li blockquote pre strong em u s code a br</code>, an <code>href</code> on a link and a <code>dir</code> on a block. There are no images, tables, colours or alignment — a paste that carries them keeps its text and loses the rest.',
+            'code' => <<<'BLADE'
+            <mds:editor
+                label="Everything the toolbar can make"
+                :value="'<h2>A heading</h2>'
+                    .'<p>Text with <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strikethrough</s> and a <a href=\'https://laravel.com\'>link</a>.</p>'
+                    .'<ul><li>A bulleted item</li><li>Another one</li></ul>'
+                    .'<blockquote>A quoted line.</blockquote>'
+                    .'<pre>php artisan serve</pre>'"
+                rows="10"
+            />
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The value is put into a hidden input as an escaped attribute and painted onto the surface through the sanitiser — the stored HTML is never echoed as markup, so a poisoned value cannot execute.',
+        ],
+        [
+            'name' => 'Choosing the tools',
+            'text' => 'The <code>toolbar</code> prop takes a space-separated list; <code>|</code> is a separator. Pass <code>:toolbar="false"</code> for a bare surface.',
+            'code' => <<<'BLADE'
+            <div class="space-y-4">
+                <mds:editor label="Comment" toolbar="bold italic | link unlink" rows="3" placeholder="Keep it short..." />
+
+                <mds:editor label="Plain notes" :toolbar="false" rows="3" placeholder="No toolbar at all..." />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Composing your own toolbar',
+            'text' => 'The default slot replaces the built-in layout. <code>&lt;mds:editor.button&gt;</code> knows every command\'s icon and label, and its own slot replaces the icon — so a custom button is one line.',
+            'code' => <<<'BLADE'
+            <mds:editor label="Custom toolbar" rows="4" placeholder="Two marks and a heading...">
+                <mds:editor.toolbar label="Formatting">
+                    <mds:editor.button command="bold" />
+                    <mds:editor.button command="italic" />
+                    <mds:editor.button command="h2" />
+                    <mds:editor.button command="clear" label="Start over" />
+                </mds:editor.toolbar>
+
+                <mds:editor.content placeholder="Two marks and a heading..." rows="4" />
+            </mds:editor>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Keyboard',
+            'text' => 'In the text: <kbd>Ctrl/⌘</kbd>+<kbd>B</kbd>, <kbd>I</kbd>, <kbd>U</kbd>, <kbd>K</kbd> (link), <kbd>\\</kbd> (clear), <kbd>Shift</kbd>+<kbd>X</kbd> (strikethrough), <kbd>Shift</kbd>+<kbd>7</kbd> / <kbd>8</kbd> (numbered / bulleted list). <kbd>Tab</kbd> is left alone, so it moves focus out. In the toolbar: it is one tab stop, and <kbd>←</kbd> / <kbd>→</kbd> move between the buttons in the order you see them — flipped on an RTL page — with <kbd>Home</kbd> and <kbd>End</kbd> for the ends.',
+            'code' => <<<'BLADE'
+            <mds:editor label="Try the shortcuts" rows="4" placeholder="Select a word, then press Ctrl/Cmd + B..." />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Validation',
+            'text' => 'An explicit <code>error</code> renders the message; without one, a <code>name</code> falls back to <code>$errors->first($name)</code>. Either way the surface gets <code>aria-invalid</code> and the box turns red.',
+            'code' => <<<'BLADE'
+            <mds:editor
+                label="Description"
+                name="description"
+                error="The description is required."
+                rows="3"
+                placeholder="Say something about it..."
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'The whole control mirrors, the list and quote icons flip, and the toolbar\'s arrow keys follow what you see. The <code>direction</code> tool sets <code>dir</code> on the block the caret is in, so one Persian document can hold an LTR code block or an English quotation. Built-in labels follow <code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs.',
+            'code' => <<<'BLADE'
+            <mds:editor
+                label="متن آگهی"
+                description="نوار ابزار را روی متن انتخاب‌شده اعمال کنید"
+                placeholder="داستان محصول را بنویسید..."
+                dir="rtl"
+                rows="7"
+                :value="'<p>این یک بند فارسی است.</p><p dir=\'ltr\'>And this block is left to right.</p>'"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:editor', 'props' => [
+            ['value', 'Initial HTML. Filtered through the allow-list before it is shown.'],
+            ['placeholder', 'Shown while the surface is empty.'],
+            ['label', 'Field label. Also names the editing surface.'],
+            ['description', 'Smaller text under the label.'],
+            ['toolbar', 'Space-separated tool list, <code>|</code> for a separator, or <code>false</code> for none.'],
+            ['toolbar-label', 'The toolbar\'s accessible name.'],
+            ['rows', 'Starting height in lines. Default: <code>6</code>.'],
+            ['dir', 'Base direction of the surface: <code>ltr</code>, <code>rtl</code>, <code>auto</code>.'],
+            ['disabled', 'Makes the whole control inert and the surface uneditable.'],
+            ['invalid', 'Marks the control as invalid.'],
+            ['error', 'Validation message. Falls back to the error bag for <code>name</code>.'],
+            ['name', 'Field name for a plain form, and the key errors are read with.'],
+            ['wire:model', 'Binds the HTML to a Livewire property.'],
+        ]],
+        ['name' => 'mds:editor.toolbar', 'props' => [
+            ['tools', 'The tool list, when you are not passing it on the parent.'],
+            ['label', 'Accessible name of the toolbar.'],
+        ]],
+        ['name' => 'mds:editor.button', 'props' => [
+            ['command', 'The tool: <code>bold</code>, <code>italic</code>, <code>underline</code>, <code>strike</code>, <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>paragraph</code>, <code>bullet</code>, <code>ordered</code>, <code>quote</code>, <code>code</code>, <code>link</code>, <code>unlink</code>, <code>direction</code>, <code>clear</code>.'],
+            ['icon', 'Overrides the command\'s own icon.'],
+            ['label', 'Overrides the command\'s built-in accessible name.'],
+            ['toggle', 'Whether the button reports <code>aria-pressed</code>. Defaults per command.'],
+        ]],
+        ['name' => 'mds:editor.content', 'props' => [
+            ['placeholder', 'Shown while the surface is empty.'],
+            ['rows', 'Starting height in lines. Default: <code>6</code>.'],
+            ['dir', 'Base direction of the surface.'],
+            ['label', 'Accessible name of the surface.'],
+            ['disabled', 'Renders <code>contenteditable="false"</code>.'],
+            ['invalid', 'Adds <code>aria-invalid</code>.'],
+        ]],
+    ],
+    'related' => ['composer', 'mds-input'],
+];
+
 return $pages;

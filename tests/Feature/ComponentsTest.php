@@ -1667,6 +1667,23 @@ class ComponentsTest extends TestCase
             'pillbox remove' => ['<mds:pillbox value="php"><mds:pillbox.option value="php">PHP</mds:pillbox.option></mds:pillbox>', 'aria-label="حذف PHP"', 'aria-label="Remove PHP"'],
             'pillbox empty' => ['<mds:pillbox />', '-empty>موردی یافت نشد.<', '-empty>No matches.<'],
             'pillbox status' => ['<mds:pillbox />', 'data-mds-pillbox-status>۰ مورد انتخاب شده<', 'data-mds-pillbox-status>0 selected<'],
+            'editor toolbar' => ['<mds:editor />', 'aria-label="نوار ابزار قالب‌بندی"', 'aria-label="Formatting toolbar"'],
+            'editor surface' => ['<mds:editor />', 'aria-label="ویرایشگر متن"', 'aria-label="Rich text editor"'],
+            'editor bold' => ['<mds:editor toolbar="bold" />', 'aria-label="پررنگ"', 'aria-label="Bold"'],
+            'editor italic' => ['<mds:editor toolbar="italic" />', 'aria-label="مورب"', 'aria-label="Italic"'],
+            'editor underline' => ['<mds:editor toolbar="underline" />', 'aria-label="زیرخط"', 'aria-label="Underline"'],
+            'editor strikethrough' => ['<mds:editor toolbar="strike" />', 'aria-label="خط‌خورده"', 'aria-label="Strikethrough"'],
+            'editor heading level' => ['<mds:editor toolbar="h1" />', 'aria-label="عنوان ۱"', 'aria-label="Heading 1"'],
+            'editor paragraph' => ['<mds:editor toolbar="paragraph" />', 'aria-label="پاراگراف"', 'aria-label="Paragraph"'],
+            'editor bulleted list' => ['<mds:editor toolbar="bullet" />', 'aria-label="فهرست نقطه‌ای"', 'aria-label="Bulleted list"'],
+            'editor numbered list' => ['<mds:editor toolbar="ordered" />', 'aria-label="فهرست شماره‌دار"', 'aria-label="Numbered list"'],
+            'editor quote' => ['<mds:editor toolbar="quote" />', 'aria-label="نقل‌قول"', 'aria-label="Quote"'],
+            'editor code block' => ['<mds:editor toolbar="code" />', 'aria-label="بلوک کد"', 'aria-label="Code block"'],
+            'editor link' => ['<mds:editor toolbar="link" />', 'aria-label="پیوند"', 'aria-label="Link"'],
+            'editor unlink' => ['<mds:editor toolbar="unlink" />', 'aria-label="حذف پیوند"', 'aria-label="Remove link"'],
+            'editor direction' => ['<mds:editor toolbar="direction" />', 'aria-label="راست‌به‌چپ"', 'aria-label="Right to left"'],
+            'editor clear formatting' => ['<mds:editor toolbar="clear" />', 'aria-label="پاک کردن قالب‌بندی"', 'aria-label="Clear formatting"'],
+            'editor link prompt' => ['<mds:editor />', "linkPrompt: 'نشانی پیوند'", "linkPrompt: 'Link URL'"],
         ];
     }
 

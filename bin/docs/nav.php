@@ -104,6 +104,7 @@ return [
             'carousel' => 'mds:carousel',
             'context' => 'mds:context',
             'pillbox' => 'mds:pillbox',
+            'editor' => 'mds:editor',
         ],
     ],
 ];

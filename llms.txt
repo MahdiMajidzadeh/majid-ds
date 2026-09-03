@@ -936,6 +936,67 @@ event. A MutationObserver on that select re-reads it into Alpine state when the 
 </mds:pillbox>
 ```
 
+### <mds:editor> — rich-text field (open version of Flux Pro's flux:editor)
+A `contenteditable` surface with a WAI-ARIA toolbar above it. No TipTap, no ProseMirror, no third-party
+JavaScript at all: the marks are `document.execCommand` with a hand-written fallback for `formatBlock`,
+and the value is sanitised down to a fixed allow-list on both sides of the surface.
+Props: `name` string|null (plain form post + the key `$errors` is read with) · `value` string|null (stored HTML;
+never echoed as markup — see below) · `placeholder` string|null · `label`/`description` (flux:field chrome;
+`label` also names the surface) · `label:sr-only` / `description:sr-only` (Flux's colon syntax; `label-sr-only` /
+`description-sr-only` are equivalent) · `toolbar` string|false|null=the default set (a space-separated tool list;
+`|` is a separator; `false` renders no toolbar) · `toolbar-label` string|null (the toolbar's aria-label;
+default 'نوار ابزار قالب‌بندی' / 'Formatting toolbar') · `rows` int=6 (starting height in lines, on the block axis) ·
+`dir` ltr|rtl|auto|null (base direction of the surface; per-block direction is a toolbar tool) ·
+`disabled` bool=false · `invalid` bool=false · `error` string|null (explicit message; when omitted and `name` is
+set, falls back to `$errors->first($name)`) · `fa` bool|null=config (inherited by toolbar/button/content).
+Default slot replaces the built-in toolbar + content composition; the subcomponents share the parent's Alpine scope:
+- `<mds:editor.toolbar>` props: `tools` string|array|null=the default set (`'bold italic underline strike | h1 h2 h3 | bullet ordered | quote code | link unlink | direction clear'`) · `label` (aria-label) · `fa`. Its own slot replaces the generated buttons.
+- `<mds:editor.button>` props: `command` string|null (one of the tool names below, or null for a button you wire yourself) · `icon` string|null (defaults to the command's own icon) · `label` string|null (aria-label; defaults to the command's built-in name in the `fa` language) · `toggle` bool|null (defaults per command: true adds the reactive `aria-pressed`) · `fa`. Its slot replaces the icon.
+- `<mds:editor.content>` props: `placeholder` · `rows` int=6 · `dir` · `label` (aria-label; default 'ویرایشگر متن' / 'Rich text editor') · `disabled` bool=false · `invalid` bool=false · `fa`. The `contenteditable` surface itself.
+Tool names (aliases in brackets): `bold` · `italic` · `underline` · `strike` [strikethrough] · `h1` `h2` `h3` [heading1…] ·
+`paragraph` [p] · `bullet` [ul, bullet-list] · `ordered` [ol, ordered-list, numbered] · `quote` [blockquote] ·
+`code` [pre, code-block] (a `<pre>` block) · `link` · `unlink` · `direction` [dir, rtl] · `clear` [clear-format, remove-format].
+Supported markup — the allow-list IS the feature set: `p h1 h2 h3 ul ol li blockquote pre strong em u s code a br`,
+plus `href` on `a` (http/https/mailto/tel/ftp, fragments and relative paths only) and `dir="ltr|rtl"` on any block.
+NOT supported: images, tables, colours, fonts, text alignment, inline styles, nested/indented lists, undo beyond the
+browser's own, or collaborative editing. Anything else pasted is unwrapped to its text; `script`, `style`, `iframe`,
+`img`, `form` controls and friends are dropped whole.
+Behavior: `b`→`strong`, `i`→`em`, `div`→`p`, `h4-h6`→`h3` on the way in; a paste or a drop is filtered through the
+same sanitiser before it is inserted (parsed in a detached `document.implementation.createHTMLDocument`, so nothing
+loads or runs even in the markup being thrown away); empty blocks left behind by the browser are pruned, and a
+deliberate blank line (`<p><br></p>`) survives. `link` asks for a URL with `window.prompt`, prefixes a bare host with
+`https://`, refuses anything else with a scheme, and links the URL itself when nothing is selected. Block tools toggle:
+pressing `h2` inside an `<h2>` returns the block to `<p>`. `direction` flips the current block's `dir` between ltr and
+rtl. `clear` removes the inline marks and links, and returns a heading/quote/code block to a paragraph.
+Shortcuts: Ctrl/⌘+B, +I, +U, +K (link), +\ (clear), +Shift+X (strikethrough), +Shift+7 (numbered list),
++Shift+8 (bulleted list). Tab is deliberately not captured — it leaves the surface.
+ARIA contract: the toolbar is `role="toolbar"` with `aria-label` and `aria-controls` -> the surface, one tab stop with a
+roving tabindex (Left/Right follow the VISUAL order — read from `getComputedStyle().direction` at keydown, so they stay
+previous/next on an RTL page — plus Home/End and wrap-around). Toggle tools carry a reactive `aria-pressed` recomputed
+from the selection on every `selectionchange`; `link`, `unlink` and `clear` act once and carry none. Separators are
+`role="separator"` `aria-orientation="vertical"`. Buttons cancel `mousedown`, so clicking one never takes the selection.
+The surface is `role="textbox"` `aria-multiline="true"`, named by `label`, `aria-invalid` when invalid, with a
+`focus-visible` ring on the whole box. Disabled applies `inert` + `aria-disabled` and `contenteditable="false"`.
+Livewire contract: `wire:model` is forwarded to a hidden input holding the sanitised HTML (everything else lands on the
+root `[data-mds-editor]` div); every change writes it and dispatches a bubbling `input` event. The stored value is
+NEVER rendered as markup — it reaches the page as an escaped attribute and Alpine paints it onto the surface through the
+sanitiser, so a value poisoned elsewhere cannot execute. The surface carries `wire:ignore` (a morph would otherwise
+diff the server's empty div against what has been typed), and a `MutationObserver` on the hidden input's `value`
+attribute repaints the surface when the server changes the bound property; both are torn down in `destroy()`.
+An empty editor commits `''`, not `<p><br></p>`.
+Data attributes: `data-mds-editor` (root) · `-toolbar` · `-tool` + `-command="bold"` · `-separator` · `-body` ·
+`-content` (the surface) · `-placeholder` · `-input` (the hidden control).
+```blade
+<form wire:submit="save">
+    <mds:editor wire:model="body" name="body" label="متن آگهی" description="حداکثر ۵۰۰ کلمه"
+                placeholder="داستان محصول را بنویسید..." rows="8" dir="rtl"
+                toolbar="bold italic | h2 h3 | bullet ordered | link unlink | direction clear" />
+    <flux:button type="submit" variant="primary" class="mt-3">ذخیره</flux:button>
+</form>
+```
+The value is HTML you still have to trust on the server: the sanitiser runs in the browser, so validate and re-sanitise
+before storing or echoing it (`{!! !!}` on unvalidated user HTML is a stored-XSS hole whatever the editor did).
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

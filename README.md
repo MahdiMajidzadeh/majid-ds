@@ -766,6 +766,31 @@ An open implementation of Flux Pro's pillbox: a multi-select whose chosen values
 
 Props: `value` (array or comma-separated string) · `name` · `label` · `description` · `placeholder` · `search-label` · `clearable` · `max` · `empty` · `disabled` · `invalid` · `error` · `fa`; `<mds:pillbox.option>` takes `value` and `disabled`.
 
+### `<mds:editor>`
+
+A rich-text field — an open version of Flux Pro's `flux:editor`, built on `contenteditable` and the
+browser's own editing commands, with no TipTap, no ProseMirror and no third-party JavaScript at all.
+Bold, italic, underline, strikethrough, three heading levels, lists, a quote, a code block, links and a
+per-block RTL/LTR toggle sit behind a WAI-ARIA toolbar; everything pasted, dropped or stored is filtered
+down to that same allow-list, so what reaches your Livewire property cannot carry a script.
+
+```blade
+<mds:editor
+    wire:model="body"
+    name="body"
+    label="متن آگهی"
+    placeholder="داستان محصول را بنویسید..."
+    dir="rtl"
+    rows="8"
+    toolbar="bold italic | h2 h3 | bullet ordered | link unlink | direction clear"
+/>
+```
+
+Props: `name` · `value` · `placeholder` · `label` · `description` · `label:sr-only` · `description:sr-only` ·
+`toolbar` (tool list, `|` separator, or `false`) · `toolbar-label` · `rows` · `dir` · `disabled` · `invalid` ·
+`error` · `fa` · `wire:model`. Compose your own with `<mds:editor.toolbar>`, `<mds:editor.button>` and
+`<mds:editor.content>`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

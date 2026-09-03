@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
         <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
         <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
         <flux:navbar.item href="#carousel">{{ __('اسلایدشو') }}</flux:navbar.item>
@@ -1398,6 +1399,57 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             </mds:pillbox>
         </div>
     </div>
+</flux:card>
+
+{{-- ============================== MDS: Editor ============================== --}}
+<flux:card id="editor" class="space-y-4">
+    <flux:heading size="lg">{{ __('ویرایشگر متن — mds:editor') }}</flux:heading>
+
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Editor (در Flux فقط Pro) — بدون هیچ کتابخانه جاوااسکریپت بیرونی: یک سطح contenteditable، نوار ابزار استاندارد ARIA، و پاک‌سازی HTML چسبانده‌شده تا فهرست مجاز.') }}</flux:text>
+
+    <mds:editor
+        name="story"
+        :label="__('توضیحات محصول')"
+        :description="__('فقط قالب‌بندی‌های زیر نگه داشته می‌شوند؛ بقیه هنگام چسباندن حذف می‌شود.')"
+        :placeholder="__('داستان محصول را بنویسید...')"
+        dir="rtl"
+        rows="7"
+        wire:model="story"
+        :value="'<h2>'.__('هدفون بی‌سیم').'</h2><p>'.__('صدای شفاف، باتری ۳۰ ساعته و اتصال پایدار.').'</p><ul><li>'.__('حذف نویز فعال').'</li><li>'.__('شارژ سریع').'</li></ul>'"
+    />
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('نوار ابزار کوتاه:') }}</flux:text>
+
+            <mds:editor
+                :label="__('یادداشت کوتاه')"
+                label:sr-only
+                :placeholder="__('یک یادداشت بنویسید...')"
+                toolbar="bold italic | link unlink"
+                dir="rtl"
+                rows="3"
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('نوار ابزار دلخواه:') }}</flux:text>
+
+            <mds:editor :label="__('نظر شما')" label:sr-only dir="rtl" rows="3">
+                <mds:editor.toolbar :label="__('قالب‌بندی')">
+                    <mds:editor.button command="bold" />
+                    <mds:editor.button command="h3" />
+                    <mds:editor.button command="quote" />
+                    <mds:editor.button command="direction" />
+                    <mds:editor.button command="clear" :label="__('از نو')" />
+                </mds:editor.toolbar>
+
+                <mds:editor.content :placeholder="__('نظرتان را بنویسید...')" rows="3" dir="rtl" />
+            </mds:editor>
+        </div>
+    </div>
+
+    <flux:text class="text-sm">{{ __('میان‌برها: Ctrl/⌘ به همراه B پررنگ، I مورب، U زیرخط و K پیوند. در نوار ابزار، کلیدهای جهت‌دار به ترتیب دیداری حرکت می‌کنند.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

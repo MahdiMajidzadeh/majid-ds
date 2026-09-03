@@ -191,6 +191,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#editor" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>ویرایشگر متن</div>
+    </a>
         <a href="#pillbox" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -13865,6 +13876,1062 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="editor" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Rich-text editor — mds:editor</div>
+
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of Flux Pro&#039;s Editor — with no third-party JavaScript at all: a contenteditable surface, a standard ARIA toolbar, and pasted HTML filtered down to the allow-list.</p>
+    <script >
+window.mds = window.mds || {}
+
+window.mds.registerEditor = (Alpine) => {
+    if (window.mds.editorRegistered) return
+    window.mds.editorRegistered = true
+
+    /*
+    | The allow-list IS the feature set. Everything the toolbar can produce is
+    | here and nothing else is: pasted (or dropped) markup is filtered down to
+    | this before it reaches the surface, and the string handed to the hidden
+    | input — the one Livewire stores — is filtered again on the way out. A
+    | rich-text field that round-trips whatever the clipboard held is a stored
+    | XSS hole, so the sanitiser runs on BOTH sides of the surface.
+    */
+    const ALLOWED = ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'blockquote', 'pre', 'strong', 'em', 'u', 's', 'code', 'a', 'br']
+
+    // Tags the browser still produces (or a Word/Docs paste carries) that mean
+    // one of ours. Renamed, keeping their children.
+    const RENAME = { b: 'strong', i: 'em', strike: 's', del: 's', ins: 'u', div: 'p', h4: 'h3', h5: 'h3', h6: 'h3', section: 'p', article: 'p' }
+
+    // Dropped whole, children and all — nothing inside them is content.
+    const DROP = ['script', 'style', 'title', 'head', 'link', 'meta', 'noscript', 'template', 'iframe', 'object', 'embed', 'applet', 'form', 'input', 'button', 'select', 'textarea', 'svg', 'math', 'img', 'video', 'audio', 'canvas']
+
+    const BLOCKS = ['p', 'h1', 'h2', 'h3', 'blockquote', 'pre', 'li']
+
+    // Blocks worth deleting when they end up holding nothing. The HTML parser
+    // closes a <p> the moment a list opens inside it — which is exactly what
+    // Chrome's insertUnorderedList produces — and leaves two empty shells.
+    const PRUNE = ['p', 'h1', 'h2', 'h3', 'blockquote', 'pre', 'ul', 'ol', 'li']
+
+    // href schemes that cannot execute script. Everything else — javascript:,
+    // data:, vbscript:, a stray "  jAvAsCrIpT:" — loses the attribute, which
+    // unwraps the anchor because an <a> with no href is not a link.
+    const SAFE_HREF = /^(?:https?:|mailto:|tel:|ftp:|#|\/|\.{1,2}\/|[^:/?#]*(?:[/?#]|$))/i
+
+    const escape = (text) => String(text ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+
+    const unwrap = (el) => {
+        while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el)
+        el.remove()
+    }
+
+    const scrub = (root, doc) => {
+        for (const node of [...root.childNodes]) {
+            // Comments can hide conditional markup (Word pastes are full of
+            // them); text is content and passes through untouched.
+            if (node.nodeType === Node.COMMENT_NODE) { node.remove(); continue }
+            if (node.nodeType === Node.TEXT_NODE) continue
+            if (node.nodeType !== Node.ELEMENT_NODE) { node.remove(); continue }
+
+            const tag = node.tagName.toLowerCase()
+
+            if (DROP.includes(tag)) { node.remove(); continue }
+
+            const mapped = RENAME[tag] ?? tag
+
+            if (! ALLOWED.includes(mapped)) {
+                scrub(node, doc)
+                unwrap(node)
+                continue
+            }
+
+            let el = node
+
+            if (mapped !== tag) {
+                el = doc.createElement(mapped)
+                while (node.firstChild) el.appendChild(node.firstChild)
+                node.parentNode.replaceChild(el, node)
+            }
+
+            for (const attr of [...el.attributes]) {
+                const name = attr.name.toLowerCase()
+                const value = String(attr.value ?? '').trim()
+
+                const keep = (name === 'href' && mapped === 'a' && SAFE_HREF.test(value))
+                    || (name === 'dir' && ['ltr', 'rtl'].includes(value.toLowerCase()))
+
+                if (! keep) el.removeAttribute(attr.name)
+            }
+
+            if (mapped === 'a' && ! el.getAttribute('href')) {
+                scrub(el, doc)
+                unwrap(el)
+                continue
+            }
+
+            scrub(el, doc)
+
+            // A deliberate blank line is <p><br></p>, so a <br> keeps a block.
+            if (PRUNE.includes(mapped) && (el.textContent ?? '').trim() === '' && ! el.querySelector('br')) el.remove()
+        }
+    }
+
+    /*
+    | Parsed in a detached document created by document.implementation, not in
+    | a live div: nothing there loads, runs or fires an error handler, so even
+    | the markup we are about to throw away never executes.
+    */
+    const sanitize = (html) => {
+        const doc = document.implementation.createHTMLDocument('')
+
+        doc.body.innerHTML = String(html ?? '')
+
+        scrub(doc.body, doc)
+
+        return doc.body.innerHTML
+    }
+
+    const blank = (html) => {
+        const doc = document.implementation.createHTMLDocument('')
+
+        doc.body.innerHTML = String(html ?? '')
+
+        return (doc.body.textContent ?? '').trim() === ''
+    }
+
+    const exec = (command, value = null) => {
+        try {
+            return document.execCommand(command, false, value)
+        } catch (e) {
+            return false
+        }
+    }
+
+    const state = (command) => {
+        try {
+            return document.queryCommandState(command)
+        } catch (e) {
+            return false
+        }
+    }
+
+    Alpine.data('mdsEditor', (config = {}) => ({
+        fa: config.fa ?? true,
+        disabled: config.disabled ?? false,
+        linkPrompt: config.linkPrompt ?? 'Link URL',
+        empty: true,
+        value: '',
+        marks: {},
+        observer: null,
+        onSelection: null,
+
+        init() {
+            // Ask for <p> paragraphs and tag-based marks rather than the
+            // <div> + inline-style soup Chrome defaults to. Both are
+            // no-ops where unsupported; the sanitiser cleans up either way.
+            exec('defaultParagraphSeparator', 'p')
+            exec('styleWithCSS', 'false')
+
+            this.value = this.$refs.input?.getAttribute('value') ?? ''
+            this.paint(this.value)
+
+            this.roving()
+            this.sync()
+
+            // Selection state drives every aria-pressed in the toolbar.
+            this.onSelection = () => { if (this.inside()) this.sync() }
+            document.addEventListener('selectionchange', this.onSelection)
+
+            /*
+            | Morph re-sync. Livewire patches the hidden input's `value`
+            | ATTRIBUTE when the server changes the bound property; the
+            | property does not follow once we have written to it, so read
+            | the attribute and compare against what we last committed —
+            | otherwise our own commit would bounce back as a repaint and
+            | eat the caret.
+            */
+            if (this.$refs.input) {
+                this.observer = new MutationObserver(() => this.resync())
+                this.observer.observe(this.$refs.input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+
+            if (this.onSelection) document.removeEventListener('selectionchange', this.onSelection)
+
+            this.onSelection = null
+        },
+
+        resync() {
+            const next = this.$refs.input.getAttribute('value') ?? ''
+
+            if (next === this.value) return
+
+            this.value = next
+            this.paint(next)
+        },
+
+        // The ONLY place server-supplied HTML enters the document, and it is
+        // sanitised on the way in.
+        paint(html) {
+            const clean = sanitize(html)
+
+            if (this.$refs.surface) this.$refs.surface.innerHTML = clean
+
+            this.empty = blank(clean)
+        },
+
+        inside() {
+            const selection = document.getSelection()
+
+            return !! (selection && selection.anchorNode && this.$refs.surface?.contains(selection.anchorNode))
+        },
+
+        // The element the caret sits in. A Ctrl+A (or any selectNodeContents)
+        // anchors on the surface itself with an index offset rather than on a
+        // text node, so walk down to the child it points at — otherwise every
+        // block lookup below returns null and the toggles stop toggling.
+        at() {
+            const selection = document.getSelection()
+
+            if (! selection || ! selection.rangeCount) return null
+
+            const range = selection.getRangeAt(0)
+
+            let node = range.startContainer
+
+            if (node.nodeType === Node.ELEMENT_NODE) node = node.childNodes[range.startOffset] ?? node.lastChild ?? node
+            if (node && node.nodeType === Node.TEXT_NODE) node = node.parentNode
+
+            return node?.nodeType === Node.ELEMENT_NODE ? node : null
+        },
+
+        block() {
+            let node = this.at()
+
+            while (node && node !== this.$refs.surface) {
+                if (BLOCKS.includes(node.tagName?.toLowerCase())) return node
+
+                node = node.parentNode
+            }
+
+            return null
+        },
+
+        anchor() {
+            const node = this.at()
+
+            return node && this.$refs.surface?.contains(node) ? node.closest('a') : null
+        },
+
+        sync() {
+            const name = this.block()?.tagName?.toLowerCase() ?? null
+            const dir = this.block() ? getComputedStyle(this.block()).direction : null
+
+            this.marks = {
+                bold: state('bold'),
+                italic: state('italic'),
+                underline: state('underline'),
+                strike: state('strikeThrough'),
+                bullet: state('insertUnorderedList'),
+                ordered: state('insertOrderedList'),
+                h1: name === 'h1',
+                h2: name === 'h2',
+                h3: name === 'h3',
+                paragraph: name === 'p',
+                quote: !! this.block()?.closest?.('blockquote'),
+                code: name === 'pre',
+                link: !! this.anchor(),
+                direction: dir === 'rtl',
+            }
+        },
+
+        active(command) {
+            return this.marks[command] === true
+        },
+
+        focusSurface() {
+            const surface = this.$refs.surface
+
+            if (! surface) return
+
+            if (! this.inside()) surface.focus()
+        },
+
+        // formatBlock is the one command browsers disagree about; when it
+        // refuses, swap the block element by hand and put the caret back.
+        formatBlock(tag) {
+            const current = this.block()
+
+            if (current && current.tagName.toLowerCase() === tag && tag !== 'p') tag = 'p'
+
+            if (exec('formatBlock', '<' + tag + '>')) return
+
+            const block = this.block()
+
+            if (! block || block.tagName.toLowerCase() === tag) return
+
+            const replacement = document.createElement(tag)
+
+            while (block.firstChild) replacement.appendChild(block.firstChild)
+
+            block.replaceWith(replacement)
+
+            const range = document.createRange()
+
+            range.selectNodeContents(replacement)
+            range.collapse(false)
+
+            const selection = document.getSelection()
+
+            selection.removeAllRanges()
+            selection.addRange(range)
+        },
+
+        insert(html) {
+            if (exec('insertHTML', html)) return
+
+            const selection = document.getSelection()
+
+            if (! selection || ! selection.rangeCount) return
+
+            const range = selection.getRangeAt(0)
+
+            range.deleteContents()
+
+            const fragment = range.createContextualFragment(html)
+
+            range.insertNode(fragment)
+            selection.collapseToEnd()
+        },
+
+        link() {
+            const current = this.anchor()?.getAttribute('href') ?? ''
+            const answer = window.prompt(this.linkPrompt, current)
+
+            if (answer === null) return
+
+            let url = answer.trim()
+
+            if (! url) return exec('unlink')
+
+            // A bare "shop.example.com" is a host, not a relative path.
+            if (! /^[a-z][a-z0-9+.-]*:/i.test(url) && ! /^[#/]/.test(url) && /\./.test(url.split('/')[0])) url = 'https://' + url
+
+            if (! SAFE_HREF.test(url)) return
+
+            const selection = document.getSelection()
+
+            if (selection && selection.isCollapsed && ! this.anchor()) {
+                this.insert('<a href="' + escape(url) + '">' + escape(url) + '</a>')
+
+                return
+            }
+
+            exec('createLink', url)
+        },
+
+        direction() {
+            let block = this.block()
+
+            if (! block) {
+                this.formatBlock('p')
+                block = this.block()
+            }
+
+            if (! block) return
+
+            block.setAttribute('dir', getComputedStyle(block).direction === 'rtl' ? 'ltr' : 'rtl')
+        },
+
+        clear() {
+            exec('removeFormat')
+            exec('unlink')
+
+            const name = this.block()?.tagName?.toLowerCase()
+
+            if (['h1', 'h2', 'h3', 'blockquote', 'pre'].includes(name)) this.formatBlock('p')
+        },
+
+        run(command) {
+            if (this.disabled) return
+
+            this.focusSurface()
+
+            switch (command) {
+                case 'bold': exec('bold'); break
+                case 'italic': exec('italic'); break
+                case 'underline': exec('underline'); break
+                case 'strike': exec('strikeThrough'); break
+                case 'bullet': exec('insertUnorderedList'); break
+                case 'ordered': exec('insertOrderedList'); break
+                case 'h1': case 'h2': case 'h3': this.formatBlock(command); break
+                case 'paragraph': this.formatBlock('p'); break
+                case 'quote': this.formatBlock('blockquote'); break
+                case 'code': this.formatBlock('pre'); break
+                case 'link': this.link(); break
+                case 'unlink': exec('unlink'); break
+                case 'direction': this.direction(); break
+                case 'clear': this.clear(); break
+                default: return
+            }
+
+            this.sync()
+            this.commit()
+        },
+
+        // Ctrl/Cmd shortcuts for the marks a writer reaches for mid-sentence.
+        // Tab is deliberately NOT captured: it has to move focus out.
+        keydown(event) {
+            if (! (event.metaKey || event.ctrlKey) || event.altKey) return
+
+            const key = (event.key ?? '').toLowerCase()
+
+            let command = null
+
+            if (event.shiftKey) {
+                if (key === 'x') command = 'strike'
+                else if (event.code === 'Digit7') command = 'ordered'
+                else if (event.code === 'Digit8') command = 'bullet'
+            } else if (key === 'b') command = 'bold'
+            else if (key === 'i') command = 'italic'
+            else if (key === 'u') command = 'underline'
+            else if (key === 'k') command = 'link'
+            else if (key === '\\') command = 'clear'
+
+            if (! command) return
+
+            event.preventDefault()
+
+            this.run(command)
+        },
+
+        paste(event) {
+            event.preventDefault()
+
+            this.take(event.clipboardData)
+        },
+
+        drop(event) {
+            event.preventDefault()
+
+            this.take(event.dataTransfer)
+        },
+
+        take(data) {
+            if (! data) return
+
+            const html = data.getData('text/html')
+            const text = data.getData('text/plain')
+
+            this.insert(html ? sanitize(html) : escape(text).replace(/\r?\n/g, '<br>'))
+
+            this.sync()
+            this.commit()
+        },
+
+        // Reads the surface, never writes it: rewriting innerHTML on every
+        // keystroke would throw the caret to the top of the document.
+        commit() {
+            const input = this.$refs.input
+
+            if (! input || ! this.$refs.surface) return
+
+            const html = sanitize(this.$refs.surface.innerHTML)
+            const next = blank(html) ? '' : html
+
+            this.empty = next === ''
+
+            if (input.value === next && this.value === next) return
+
+            this.value = next
+            input.value = next
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        tools() {
+            return [...this.$root.querySelectorAll('[data-mds-editor-tool]')].filter((el) => ! el.disabled)
+        },
+
+        // Roving tabindex: the toolbar is one tab stop, arrows move inside it.
+        roving(target = null) {
+            const tools = this.tools()
+
+            if (! tools.length) return
+
+            const active = target ?? tools[0]
+
+            tools.forEach((el) => { el.tabIndex = el === active ? 0 : -1 })
+        },
+
+        toolbarKeydown(event) {
+            const tools = this.tools()
+            const index = tools.indexOf(document.activeElement)
+
+            if (index < 0) return
+
+            // Left/Right follow what the reader sees, so they stay "previous"
+            // and "next" on an RTL page.
+            const rtl = getComputedStyle(event.currentTarget).direction === 'rtl'
+
+            let next = null
+
+            if (event.key === 'ArrowRight') next = index + (rtl ? -1 : 1)
+            else if (event.key === 'ArrowLeft') next = index + (rtl ? 1 : -1)
+            else if (event.key === 'Home') next = 0
+            else if (event.key === 'End') next = tools.length - 1
+            else return
+
+            event.preventDefault()
+
+            next = (next + tools.length) % tools.length
+
+            this.roving(tools[next])
+            tools[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerEditor(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerEditor(window.Alpine))
+}
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Product description
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="overflow-hidden rounded-lg border bg-white shadow-xs dark:bg-white/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/40 border-zinc-200 border-b-zinc-300/80 dark:border-white/10"
+        x-id="['mds-editor-surface']"
+        x-data="mdsEditor({
+            fa: false,
+            disabled: false,
+            linkPrompt: 'Link URL',
+        })"
+                data-mds-editor
+    >
+        <input
+            type="hidden"
+            x-ref="input"
+            value="&lt;h2&gt;Wireless headphones&lt;/h2&gt;&lt;p&gt;Clear sound, a 30-hour battery and a stable connection.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Active noise cancelling&lt;/li&gt;&lt;li&gt;Fast charging&lt;/li&gt;&lt;/ul&gt;"
+             name="story"             data-mds-editor-input
+            wire:model="story"
+        >
+
+                                    <div
+    class="flex flex-wrap items-center gap-0.5 border-b border-zinc-200 bg-zinc-50/80 p-1 dark:border-white/10 dark:bg-white/[3%]"
+    role="toolbar"
+    aria-label="Formatting toolbar"
+    x-bind:aria-controls="$id('mds-editor-surface')"
+    x-on:keydown="toolbarKeydown($event)"
+    data-mds-editor-toolbar
+>
+                                        <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('bold')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('bold') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Bold"      data-mds-editor-command="bold"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 6C5 4.58579 5 3.87868 5.43934 3.43934C5.87868 3 6.58579 3 8 3H12.5789C15.0206 3 17 5.01472 17 7.5C17 9.98528 15.0206 12 12.5789 12H5V6Z" stroke="currentColor" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12.4286 12H13.6667C16.0599 12 18 14.0147 18 16.5C18 18.9853 16.0599 21 13.6667 21H8C6.58579 21 5.87868 21 5.43934 20.5607C5 20.1213 5 19.4142 5 18V12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('italic')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('italic') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Italic"      data-mds-editor-command="italic"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4H19" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M8 20L16 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M5 20H12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('underline')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('underline') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Underline"      data-mds-editor-command="underline"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5.5 3V11.5C5.5 15.0899 8.41015 18 12 18C15.5899 18 18.5 15.0899 18.5 11.5V3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3 21H21" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('strike')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('strike') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Strikethrough"      data-mds-editor-command="strike"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12H20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M17.5 7.66667C17.5 5.08934 15.0376 3 12 3C8.96243 3 6.5 5.08934 6.5 7.66667C6.5 8.15279 6.55336 8.59783 6.6668 9M6 16.3333C6 18.9107 8.68629 21 12 21C15.3137 21 18 19.6667 18 16.3333C18 13.9404 16.9693 12.5782 14.9079 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('h1')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('h1') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Heading 1"      data-mds-editor-command="h1"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M14 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M17 19H18.5M20 19H18.5M18.5 19V11L17 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4 12L14 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('h2')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('h2') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Heading 2"      data-mds-editor-command="h2"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M20.5 19H16.5V18.6907C16.5 18.2521 16.5 18.0327 16.5865 17.8385C16.673 17.6443 16.836 17.4976 17.1621 17.2041L19.7671 14.8596C20.2336 14.4397 20.5 13.8416 20.5 13.214V13C20.5 11.8954 19.6046 11 18.5 11C17.3954 11 16.5 11.8954 16.5 13V13.4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3.5 12L13.5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('h3')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('h3') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Heading 3"      data-mds-editor-command="h3"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M16.5 17C16.5 18.1046 17.3954 19 18.5 19C19.6046 19 20.5 18.1046 20.5 17C20.5 15.8954 19.6046 15 18.5 15C19.6046 15 20.5 14.1046 20.5 13C20.5 11.8954 19.6046 11 18.5 11C17.3954 11 16.5 11.8954 16.5 13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3.5 12L13.5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('bullet')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('bullet') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Bulleted list"      data-mds-editor-command="bullet"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 rtl:-scale-x-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5L20 5" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M4 5H4.00898" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M4 12H4.00898" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M4 19H4.00898" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M8 12L20 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M8 19L20 19" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('ordered')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('ordered') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Numbered list"      data-mds-editor-command="ordered"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 rtl:-scale-x-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11 6L21 6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M11 12L21 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M11 18L21 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M3 15H4.5C4.77879 15 4.91819 15 5.03411 15.0231C5.51014 15.1177 5.88225 15.4899 5.97694 15.9659C6 16.0818 6 16.2212 6 16.5C6 16.7788 6 16.9182 5.97694 17.0341C5.88225 17.5101 5.51014 17.8823 5.03411 17.9769C4.91819 18 4.77879 18 4.5 18C4.22121 18 4.08181 18 3.96589 18.0231C3.48986 18.1177 3.11775 18.4899 3.02306 18.9659C3 19.0818 3 19.2212 3 19.5V20.4C3 20.6828 3 20.8243 3.08787 20.9121C3.17574 21 3.31716 21 3.6 21H6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3 3H4.2C4.36569 3 4.5 3.13431 4.5 3.3V9M4.5 9H3M4.5 9H6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('quote')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('quote') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Quote"      data-mds-editor-command="quote"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 rtl:-scale-x-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 6L17 6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M9 12L19 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M9 18L17 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M5 3L5 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('code')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('code') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Code block"      data-mds-editor-command="code"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 8L18.8398 9.85008C19.6133 10.6279 20 11.0168 20 11.5C20 11.9832 19.6133 12.3721 18.8398 13.1499L17 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M7 8L5.16019 9.85008C4.38673 10.6279 4 11.0168 4 11.5C4 11.9832 4.38673 12.3721 5.16019 13.1499L7 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M14.5 4L9.5 20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('link')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Link"      data-mds-editor-command="link"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.14339 10.691L9.35031 10.4841C11.329 8.50532 14.5372 8.50532 16.5159 10.4841C18.4947 12.4628 18.4947 15.671 16.5159 17.6497L13.6497 20.5159C11.671 22.4947 8.46279 22.4947 6.48405 20.5159C4.50532 18.5372 4.50532 15.329 6.48405 13.3503L6.9484 12.886" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M17.0516 11.114L17.5159 10.6497C19.4947 8.67095 19.4947 5.46279 17.5159 3.48405C15.5372 1.50532 12.329 1.50532 10.3503 3.48405L7.48405 6.35031C5.50532 8.32904 5.50532 11.5372 7.48405 13.5159C9.46279 15.4947 12.671 15.4947 14.6497 13.5159L14.8566 13.309" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('unlink')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Remove link"      data-mds-editor-command="unlink"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.1434 10.691L12.3503 10.4841C14.329 8.50532 17.5372 8.50532 19.5159 10.4841C21.4947 12.4628 21.4947 15.671 19.5159 17.6497L16.6497 20.5159C14.671 22.4947 11.4628 22.4947 9.48405 20.5159C7.50532 18.5372 7.50532 15.329 9.48405 13.3503L9.9484 12.886" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M20.0516 11.114L20.5159 10.6497C22.4947 8.67095 22.4947 5.46279 20.5159 3.48405C18.5372 1.50532 15.329 1.50532 13.3503 3.48405L10.4841 6.35031C8.50532 8.32904 8.50532 11.5372 10.4841 13.5159C12.4628 15.4947 15.671 15.4947 17.6497 13.5159L17.8566 13.309" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M4.5 4L6 6M2 8L5 9M3 13.5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('direction')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('direction') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Right to left"      data-mds-editor-command="direction"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19.9999 17L3.99994 17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M17 14C17 14 19.9999 16.2095 19.9999 17C19.9999 17.7906 16.9999 20 16.9999 20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.99994 7L19.9999 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M6.99992 4C6.99992 4 3.99995 6.20947 3.99994 7.00002C3.99993 7.79058 6.99994 10 6.99994 10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('clear')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Clear formatting"      data-mds-editor-command="clear"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11 20.001H5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 4L8 20.0008M12 4C13.3874 4 15.1695 4.03054 16.5884 4.17648C17.1885 4.23819 17.4886 4.26905 17.7541 4.37789C18.3066 4.60428 18.7518 5.10062 18.9194 5.6768C19 5.95381 19 6.26991 19 6.90214M12 4C10.6126 4 8.83047 4.03054 7.41161 4.17648C6.8115 4.23819 6.51144 4.26905 6.24586 4.37789C5.69344 4.60428 5.24816 5.10062 5.08057 5.6768C5 5.95381 5 6.26991 5 6.90214" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M14 15L19 20M14 20L19 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                        </div>
+            
+            <div class="relative" data-mds-editor-body>
+    
+    <div
+        class="w-full overflow-y-auto px-3 py-2 text-base text-zinc-700 outline-none sm:text-sm dark:text-zinc-200 focus-visible:outline-none [&amp;_h1]:mb-2 [&amp;_h1]:text-2xl [&amp;_h1]:font-bold [&amp;_h2]:mb-2 [&amp;_h2]:text-xl [&amp;_h2]:font-semibold [&amp;_h3]:mb-2 [&amp;_h3]:text-lg [&amp;_h3]:font-semibold [&amp;_p]:mb-2 [&amp;_ul]:mb-2 [&amp;_ul]:list-disc [&amp;_ul]:ps-6 [&amp;_ol]:mb-2 [&amp;_ol]:list-decimal [&amp;_ol]:ps-6 [&amp;_blockquote]:mb-2 [&amp;_blockquote]:border-s-4 [&amp;_blockquote]:border-zinc-300 [&amp;_blockquote]:ps-3 [&amp;_blockquote]:text-zinc-500 [&amp;_blockquote]:italic dark:[&amp;_blockquote]:border-white/20 [&amp;_pre]:mb-2 [&amp;_pre]:overflow-x-auto [&amp;_pre]:rounded-md [&amp;_pre]:bg-zinc-100 [&amp;_pre]:p-3 [&amp;_pre]:font-mono [&amp;_pre]:text-sm dark:[&amp;_pre]:bg-white/10 [&amp;_code]:rounded [&amp;_code]:bg-zinc-100 [&amp;_code]:px-1 [&amp;_code]:font-mono [&amp;_code]:text-[0.9em] dark:[&amp;_code]:bg-white/10 [&amp;_a]:text-accent [&amp;_a]:underline [&amp;_strong]:font-semibold [&amp;_s]:line-through [&amp;_u]:underline"
+        style="min-block-size: 12.25rem"
+        x-ref="surface"
+        x-on:input="commit(); sync()"
+        x-on:keydown="keydown($event)"
+        x-on:paste="paste($event)"
+        x-on:drop="drop($event)"
+        x-on:blur="commit()"
+        x-bind:id="$id('mds-editor-surface')"
+        contenteditable="true"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Product description"
+                 dir="rtl"         spellcheck="true"
+        wire:ignore
+        data-mds-editor-content
+    ></div>
+
+            <div
+            class="pointer-events-none absolute start-0 top-0 px-3 py-2 text-base text-zinc-400 select-none sm:text-sm dark:text-zinc-500"
+            x-show="empty"
+            x-cloak
+            aria-hidden="true"
+            data-mds-editor-placeholder
+        >Write the product story...</div>
+    </div>
+            </div>
+
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60" data-flux-description>
+    Only the formatting below is kept; everything else is stripped on paste.
+</ui-description>
+</ui-field>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >A short toolbar:</p>
+            <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex sr-only" data-flux-label>
+    Short note
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="overflow-hidden rounded-lg border bg-white shadow-xs dark:bg-white/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/40 border-zinc-200 border-b-zinc-300/80 dark:border-white/10"
+        x-id="['mds-editor-surface']"
+        x-data="mdsEditor({
+            fa: false,
+            disabled: false,
+            linkPrompt: 'Link URL',
+        })"
+                data-mds-editor
+    >
+        <input
+            type="hidden"
+            x-ref="input"
+            value=""
+                        data-mds-editor-input
+            
+        >
+
+                                    <div
+    class="flex flex-wrap items-center gap-0.5 border-b border-zinc-200 bg-zinc-50/80 p-1 dark:border-white/10 dark:bg-white/[3%]"
+    role="toolbar"
+    aria-label="Formatting toolbar"
+    x-bind:aria-controls="$id('mds-editor-surface')"
+    x-on:keydown="toolbarKeydown($event)"
+    data-mds-editor-toolbar
+>
+                                        <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('bold')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('bold') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Bold"      data-mds-editor-command="bold"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 6C5 4.58579 5 3.87868 5.43934 3.43934C5.87868 3 6.58579 3 8 3H12.5789C15.0206 3 17 5.01472 17 7.5C17 9.98528 15.0206 12 12.5789 12H5V6Z" stroke="currentColor" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12.4286 12H13.6667C16.0599 12 18 14.0147 18 16.5C18 18.9853 16.0599 21 13.6667 21H8C6.58579 21 5.87868 21 5.43934 20.5607C5 20.1213 5 19.4142 5 18V12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('italic')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('italic') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Italic"      data-mds-editor-command="italic"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4H19" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M8 20L16 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M5 20H12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <span
+                    class="mx-1 h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/15"
+                    role="separator"
+                    aria-orientation="vertical"
+                    data-mds-editor-separator
+                ></span>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('link')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Link"      data-mds-editor-command="link"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.14339 10.691L9.35031 10.4841C11.329 8.50532 14.5372 8.50532 16.5159 10.4841C18.4947 12.4628 18.4947 15.671 16.5159 17.6497L13.6497 20.5159C11.671 22.4947 8.46279 22.4947 6.48405 20.5159C4.50532 18.5372 4.50532 15.329 6.48405 13.3503L6.9484 12.886" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M17.0516 11.114L17.5159 10.6497C19.4947 8.67095 19.4947 5.46279 17.5159 3.48405C15.5372 1.50532 12.329 1.50532 10.3503 3.48405L7.48405 6.35031C5.50532 8.32904 5.50532 11.5372 7.48405 13.5159C9.46279 15.4947 12.671 15.4947 14.6497 13.5159L14.8566 13.309" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>
+    </button>
+                                                <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('unlink')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Remove link"      data-mds-editor-command="unlink"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.1434 10.691L12.3503 10.4841C14.329 8.50532 17.5372 8.50532 19.5159 10.4841C21.4947 12.4628 21.4947 15.671 19.5159 17.6497L16.6497 20.5159C14.671 22.4947 11.4628 22.4947 9.48405 20.5159C7.50532 18.5372 7.50532 15.329 9.48405 13.3503L9.9484 12.886" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M20.0516 11.114L20.5159 10.6497C22.4947 8.67095 22.4947 5.46279 20.5159 3.48405C18.5372 1.50532 15.329 1.50532 13.3503 3.48405L10.4841 6.35031C8.50532 8.32904 8.50532 11.5372 10.4841 13.5159C12.4628 15.4947 15.671 15.4947 17.6497 13.5159L17.8566 13.309" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M4.5 4L6 6M2 8L5 9M3 13.5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                        </div>
+            
+            <div class="relative" data-mds-editor-body>
+    
+    <div
+        class="w-full overflow-y-auto px-3 py-2 text-base text-zinc-700 outline-none sm:text-sm dark:text-zinc-200 focus-visible:outline-none [&amp;_h1]:mb-2 [&amp;_h1]:text-2xl [&amp;_h1]:font-bold [&amp;_h2]:mb-2 [&amp;_h2]:text-xl [&amp;_h2]:font-semibold [&amp;_h3]:mb-2 [&amp;_h3]:text-lg [&amp;_h3]:font-semibold [&amp;_p]:mb-2 [&amp;_ul]:mb-2 [&amp;_ul]:list-disc [&amp;_ul]:ps-6 [&amp;_ol]:mb-2 [&amp;_ol]:list-decimal [&amp;_ol]:ps-6 [&amp;_blockquote]:mb-2 [&amp;_blockquote]:border-s-4 [&amp;_blockquote]:border-zinc-300 [&amp;_blockquote]:ps-3 [&amp;_blockquote]:text-zinc-500 [&amp;_blockquote]:italic dark:[&amp;_blockquote]:border-white/20 [&amp;_pre]:mb-2 [&amp;_pre]:overflow-x-auto [&amp;_pre]:rounded-md [&amp;_pre]:bg-zinc-100 [&amp;_pre]:p-3 [&amp;_pre]:font-mono [&amp;_pre]:text-sm dark:[&amp;_pre]:bg-white/10 [&amp;_code]:rounded [&amp;_code]:bg-zinc-100 [&amp;_code]:px-1 [&amp;_code]:font-mono [&amp;_code]:text-[0.9em] dark:[&amp;_code]:bg-white/10 [&amp;_a]:text-accent [&amp;_a]:underline [&amp;_strong]:font-semibold [&amp;_s]:line-through [&amp;_u]:underline"
+        style="min-block-size: 5.25rem"
+        x-ref="surface"
+        x-on:input="commit(); sync()"
+        x-on:keydown="keydown($event)"
+        x-on:paste="paste($event)"
+        x-on:drop="drop($event)"
+        x-on:blur="commit()"
+        x-bind:id="$id('mds-editor-surface')"
+        contenteditable="true"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Short note"
+                 dir="rtl"         spellcheck="true"
+        wire:ignore
+        data-mds-editor-content
+    ></div>
+
+            <div
+            class="pointer-events-none absolute start-0 top-0 px-3 py-2 text-base text-zinc-400 select-none sm:text-sm dark:text-zinc-500"
+            x-show="empty"
+            x-cloak
+            aria-hidden="true"
+            data-mds-editor-placeholder
+        >Write a note...</div>
+    </div>
+            </div>
+</ui-field>
+        </div>
+
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >A custom toolbar:</p>
+            <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex sr-only" data-flux-label>
+    Your comment
+
+    
+    
+    </ui-label>
+    
+    <div
+        class="overflow-hidden rounded-lg border bg-white shadow-xs dark:bg-white/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/40 border-zinc-200 border-b-zinc-300/80 dark:border-white/10"
+        x-id="['mds-editor-surface']"
+        x-data="mdsEditor({
+            fa: false,
+            disabled: false,
+            linkPrompt: 'Link URL',
+        })"
+                data-mds-editor
+    >
+        <input
+            type="hidden"
+            x-ref="input"
+            value=""
+                        data-mds-editor-input
+            
+        >
+
+                    <div
+    class="flex flex-wrap items-center gap-0.5 border-b border-zinc-200 bg-zinc-50/80 p-1 dark:border-white/10 dark:bg-white/[3%]"
+    role="toolbar"
+    aria-label="Formatting"
+    x-bind:aria-controls="$id('mds-editor-surface')"
+    x-on:keydown="toolbarKeydown($event)"
+    data-mds-editor-toolbar
+>
+            <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('bold')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('bold') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Bold"      data-mds-editor-command="bold"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 6C5 4.58579 5 3.87868 5.43934 3.43934C5.87868 3 6.58579 3 8 3H12.5789C15.0206 3 17 5.01472 17 7.5C17 9.98528 15.0206 12 12.5789 12H5V6Z" stroke="currentColor" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12.4286 12H13.6667C16.0599 12 18 14.0147 18 16.5C18 18.9853 16.0599 21 13.6667 21H8C6.58579 21 5.87868 21 5.43934 20.5607C5 20.1213 5 19.4142 5 18V12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                    <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('h3')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('h3') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Heading 3"      data-mds-editor-command="h3"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13.5 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M16.5 17C16.5 18.1046 17.3954 19 18.5 19C19.6046 19 20.5 18.1046 20.5 17C20.5 15.8954 19.6046 15 18.5 15C19.6046 15 20.5 14.1046 20.5 13C20.5 11.8954 19.6046 11 18.5 11C17.3954 11 16.5 11.8954 16.5 13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M3.5 12L13.5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                    <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('quote')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('quote') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Quote"      data-mds-editor-command="quote"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 rtl:-scale-x-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 6L17 6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M9 12L19 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M9 18L17 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M5 3L5 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                    <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('direction')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+            x-bind:aria-pressed="active('direction') ? 'true' : 'false'"
+        aria-pressed="false"
+         aria-label="Right to left"      data-mds-editor-command="direction"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19.9999 17L3.99994 17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M17 14C17 14 19.9999 16.2095 19.9999 17C19.9999 17.7906 16.9999 20 16.9999 20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.99994 7L19.9999 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M6.99992 4C6.99992 4 3.99995 6.20947 3.99994 7.00002C3.99993 7.79058 6.99994 10 6.99994 10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+                    <button
+    type="button"
+    class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-200/70 dark:text-zinc-300 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:bg-accent/10 aria-pressed:text-accent-content dark:aria-pressed:bg-accent/20"
+    tabindex="-1"
+     x-on:click="run('clear')"     x-on:mousedown.prevent
+    x-on:focus="roving($el)"
+         aria-label="Start over"      data-mds-editor-command="clear"     data-mds-editor-tool
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11 20.001H5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 4L8 20.0008M12 4C13.3874 4 15.1695 4.03054 16.5884 4.17648C17.1885 4.23819 17.4886 4.26905 17.7541 4.37789C18.3066 4.60428 18.7518 5.10062 18.9194 5.6768C19 5.95381 19 6.26991 19 6.90214M12 4C10.6126 4 8.83047 4.03054 7.41161 4.17648C6.8115 4.23819 6.51144 4.26905 6.24586 4.37789C5.69344 4.60428 5.24816 5.10062 5.08057 5.6768C5 5.95381 5 6.26991 5 6.90214" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /><path d="M14 15L19 20M14 20L19 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+    </div>
+
+                <div class="relative" data-mds-editor-body>
+    
+    <div
+        class="w-full overflow-y-auto px-3 py-2 text-base text-zinc-700 outline-none sm:text-sm dark:text-zinc-200 focus-visible:outline-none [&amp;_h1]:mb-2 [&amp;_h1]:text-2xl [&amp;_h1]:font-bold [&amp;_h2]:mb-2 [&amp;_h2]:text-xl [&amp;_h2]:font-semibold [&amp;_h3]:mb-2 [&amp;_h3]:text-lg [&amp;_h3]:font-semibold [&amp;_p]:mb-2 [&amp;_ul]:mb-2 [&amp;_ul]:list-disc [&amp;_ul]:ps-6 [&amp;_ol]:mb-2 [&amp;_ol]:list-decimal [&amp;_ol]:ps-6 [&amp;_blockquote]:mb-2 [&amp;_blockquote]:border-s-4 [&amp;_blockquote]:border-zinc-300 [&amp;_blockquote]:ps-3 [&amp;_blockquote]:text-zinc-500 [&amp;_blockquote]:italic dark:[&amp;_blockquote]:border-white/20 [&amp;_pre]:mb-2 [&amp;_pre]:overflow-x-auto [&amp;_pre]:rounded-md [&amp;_pre]:bg-zinc-100 [&amp;_pre]:p-3 [&amp;_pre]:font-mono [&amp;_pre]:text-sm dark:[&amp;_pre]:bg-white/10 [&amp;_code]:rounded [&amp;_code]:bg-zinc-100 [&amp;_code]:px-1 [&amp;_code]:font-mono [&amp;_code]:text-[0.9em] dark:[&amp;_code]:bg-white/10 [&amp;_a]:text-accent [&amp;_a]:underline [&amp;_strong]:font-semibold [&amp;_s]:line-through [&amp;_u]:underline"
+        style="min-block-size: 5.25rem"
+        x-ref="surface"
+        x-on:input="commit(); sync()"
+        x-on:keydown="keydown($event)"
+        x-on:paste="paste($event)"
+        x-on:drop="drop($event)"
+        x-on:blur="commit()"
+        x-bind:id="$id('mds-editor-surface')"
+        contenteditable="true"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Rich text editor"
+                 dir="rtl"         spellcheck="true"
+        wire:ignore
+        data-mds-editor-content
+    ></div>
+
+            <div
+            class="pointer-events-none absolute start-0 top-0 px-3 py-2 text-base text-zinc-400 select-none sm:text-sm dark:text-zinc-500"
+            x-show="empty"
+            x-cloak
+            aria-hidden="true"
+            data-mds-editor-placeholder
+        >Write your comment...</div>
+    </div>
+            </div>
+</ui-field>
+        </div>
+    </div>
+
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm" data-flux-text >Shortcuts: Ctrl/⌘ with B for bold, I for italic, U for underline and K for a link. In the toolbar, the arrow keys move in the order you see.</p>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -15865,7 +16932,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#editor" class="docs-toc-sub">Editor</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 
