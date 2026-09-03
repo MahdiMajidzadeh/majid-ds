@@ -661,6 +661,44 @@ public array $price = [500000, 3000000];   // price.0 and price.1 — a scalar w
 public function updatedPrice() { $this->resetPage(); }
 ```
 
+### <mds:time-picker> — time field with a list of times (open version of Flux Pro's flux:time-picker)
+A typable combobox over a server-rendered list of times. The visible field shows «۱۴:۳۰» or "2:30 PM"; a hidden input carries the
+machine value, always 24-hour `HH:MM` with Latin digits. Props: `value` string|null (`HH:MM`, `H:MM` or `HH:MM:SS`, Persian/Arabic digits
+accepted; normalized to `HH:MM`, and anything that is not a time renders empty) · `name` string|null (plain form post, and the key the error
+bag is read with — it lands on the hidden input alone) · `label` / `description` (flux:field chrome; `label` also names the listbox) ·
+`placeholder` string='--:--' · `step` int=30 (minutes between listed times; `<= 0` falls back to 1) · `min` string|null='00:00' ·
+`max` string|null='23:59' (both as `HH:MM`; the list runs from `min` to `max` inclusive, and a `max` the step skips is simply not listed) ·
+`hours` 12|24=24 (display only — the machine value stays 24-hour) · `clearable` bool=false (a clear button that shows once there is a value) ·
+`disabled` bool=false (`inert` + `aria-disabled` on the whole control) · `size` sm|null · `icon` string|false='clock' (leading `mds:icon`;
+`false` removes it) · `invalid` bool=false · `error` string|null (explicit message; when omitted and `name` is set, falls back to
+`$errors->first($name)`) · `fa` bool|null=config (digits, the AM/PM words «ق.ظ»/«ب.ظ» vs "AM"/"PM", and the clear button's label).
+Behavior: the field is typable as well as pickable. Typing accepts `1430`, `14:30`, `2:30 pm`, `۱۴:۳۰`, `۲:۳۰ ب.ظ` and the same with Arabic
+digits or a `.`/`،`/`-`/space separator; a bare number without an AM/PM word reads as a 24-hour time; «صبح/قبل/ق.ظ» and «عصر/شب/بعد/ب.ظ»
+are understood alongside am/pm. The typed minute is kept as typed (it is NOT rounded to `step`) and clamped to `min`/`max`; text that is not
+a time reverts to the last valid value on Enter or blur. With the list open the arrows preview an option in the field and Enter commits it;
+with the list closed the arrows nudge the value itself by `step` (Flux's behaviour). Home/End jump to the first/last option, Alt+ArrowDown /
+Alt+ArrowUp open and close the list, Escape reverts and closes, Tab closes, and a click outside commits what is typed. Opening with no value
+scrolls the list to the option nearest the current clock time. The list and the field are always `dir="ltr"` (a time reads
+hour-then-minute in both languages) and end-aligned in an RTL form.
+ARIA contract: the visible input is `role="combobox"` with `aria-autocomplete="list"`, `aria-haspopup="listbox"`, `aria-expanded`,
+`aria-controls` -> the listbox and `aria-activedescendant` -> the previewed option; option ids come from Alpine's `$id()`, so two pickers on a
+page never share one. Options are `role="option"` with `aria-selected`, inside a `role="listbox"` named by `label`. The error message is
+`role="alert"`; `aria-invalid` marks the field. `inputmode="numeric"` is requested in 24-hour mode only — typing "pm" needs letters.
+Data hooks: `data-mds-time-picker` (root, plus `data-disabled`), `-control`, `-input`, `-clear`, `-listbox`, `-option` (each carrying
+`data-value="HH:MM"`).
+Livewire contract: `wire:model` is forwarded to the hidden input and nowhere else; the wrapper keeps no copy. The bound property is a
+`HH:MM` string (`''` when cleared), which `date_format:H:i` validates and Carbon parses directly. Every Alpine change writes the hidden
+input and dispatches a bubbling `input` event, and a `MutationObserver` on the hidden input's `value` attribute pulls a server-side change
+back into the field, so `$this->at = '09:00'` in an action re-renders the display text too.
+```blade
+<mds:time-picker wire:model.live="at" name="at" label="ساعت تحویل" description="بازه‌های نیم‌ساعته."
+                 :value="$at" min="09:00" max="21:00" :step="30" clearable />
+```
+```php
+public string $at = '10:30';
+protected function rules() { return ['at' => 'required|date_format:H:i']; }
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

@@ -657,6 +657,23 @@ readout follows `mds.persian_digits`, and a range binds its two ends as Livewire
 Props: `value` · `min` · `max` · `step` · `range` · `label` · `description` · `name` · `size` ·
 `disabled` · `show-value` · `ticks` · `format` · `invalid` · `error` · `fa` · `wire:model`.
 
+### `<mds:time-picker>`
+
+A typable time field over a list of times — an open version of Flux Pro's `flux:time-picker`. The visible
+field shows «۱۴:۳۰» or "2:30 PM" and accepts almost anything a user types (`1430`, `2:30 pm`, `۲:۳۰ ب.ظ`);
+the hidden input it binds is always 24-hour `HH:MM` with Latin digits, which `date_format:H:i` validates
+and Carbon parses as is.
+
+```blade
+<mds:time-picker wire:model="at" name="at" label="ساعت تحویل" description="بازه‌های نیم‌ساعته."
+                 value="10:30" min="09:00" max="21:00" :step="30" clearable />
+
+<mds:time-picker label="یادآوری" value="14:30" hours="12" />   {{-- shows «۲:۳۰ ب.ظ», binds "14:30" --}}
+```
+
+Props: `value` · `name` · `label` · `description` · `placeholder` · `step` · `min` · `max` · `hours` ·
+`clearable` · `disabled` · `size` · `icon` · `invalid` · `error` · `fa` · `wire:model`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

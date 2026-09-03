@@ -98,6 +98,7 @@ return [
             'popover' => 'mds:popover',
             'accordion' => 'mds:accordion',
             'slider' => 'mds:slider',
+            'time-picker' => 'mds:time-picker',
         ],
     ],
 ];

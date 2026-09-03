@@ -541,5 +541,13 @@
     "روشنایی صفحه": "Screen brightness",
     "حجم بسته اینترنتی": "Data allowance",
     "برای تغییر، ابتدا وارد حساب کاربری شوید.": "Sign in to change this.",
-    "اسلایدر": "Slider"
+    "اسلایدر": "Slider",
+    "انتخاب ساعت — mds:time-picker": "Time picker — mds:time-picker",
+    "نسخه آزاد از کامپوننت Time Picker (در Flux فقط Pro) — فهرست ساعت‌ها با گام دلخواه، تایپ آزاد با ارقام فارسی، و مقدار ماشینی همیشه ۲۴ساعته.": "An open version of the Time Picker component (Pro-only in Flux) — a list of times at any step, free typing with localized digits, and a machine value that is always 24-hour.",
+    "ساعت تحویل": "Delivery time",
+    "بازه‌های نیم‌ساعته، از ۹ تا ۲۱.": "Half-hour slots, 9 to 21.",
+    "شروع نوبت": "Appointment start",
+    "یادآوری": "Reminder",
+    "ساعت را انتخاب کنید": "Choose a time",
+    "انتخاب ساعت": "Time picker"
 }

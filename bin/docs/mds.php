@@ -2551,4 +2551,124 @@ $pages['slider'] = [
     'related' => ['quantity', 'progress', 'price'],
 ];
 
+// ------------------------------------------------------- mds:time-picker
+
+$pages['time-picker'] = [
+    'group' => 'mds',
+    'title' => 'mds:time-picker',
+    'lede' => 'A typable time field over a list of times — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A combobox: type a time, or pick one from the list. The field shows the time the way your app reads it; a hidden input carries the machine value — always 24-hour <code>HH:MM</code> with Latin digits, whatever is displayed. The preview is live — click it and try typing <code>1430</code>.',
+            'code' => <<<'BLADE'
+            <mds:time-picker label="Delivery time" description="Half-hour slots." value="10:30" name="at" class="max-w-xs" />
+            BLADE,
+            'note' => 'Typing is lenient: <code>1430</code>, <code>14:30</code>, <code>2:30 pm</code>, <code>۱۴:۳۰</code> and <code>۲:۳۰ ب.ظ</code> all land on the same value. Text that is not a time reverts to the last valid one on <code>Enter</code> or blur.',
+        ],
+        [
+            'name' => 'Step and bounds',
+            'text' => '<code>step</code> is the number of minutes between the listed times; <code>min</code> and <code>max</code> cut the list down to the hours you actually open.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap gap-6">
+                <mds:time-picker label="Appointment" value="09:15" :step="15" min="09:00" max="17:00" class="max-w-xs" />
+                <mds:time-picker label="Reminder" value="07:00" :step="60" class="max-w-xs" />
+            </div>
+            BLADE,
+            'note' => 'The list is only a shortcut — a typed time off the grid, like <code>10:07</code>, is kept as typed and simply matches no option. What it never escapes is <code>min</code>/<code>max</code>: a typed time outside them is clamped.',
+        ],
+        [
+            'name' => 'Twelve-hour clock',
+            'text' => '<code>hours="12"</code> shows 12-hour times with an AM/PM word — «ق.ظ» / «ب.ظ» when the kit is in Persian. The bound value stays 24-hour either way.',
+            'code' => <<<'BLADE'
+            <mds:time-picker label="Opens at" value="14:30" hours="12" :step="30" class="max-w-xs" />
+            BLADE,
+            'note' => 'In 12-hour mode the field does not ask for a numeric keyboard, because typing "pm" needs letters.',
+        ],
+        [
+            'name' => 'Clearable, placeholder and icon',
+            'text' => '<code>clearable</code> adds a clear button that appears once there is a value. <code>placeholder</code> replaces the default <code>--:--</code>, and <code>icon</code> swaps the leading clock — or removes it with <code>:icon="false"</code>.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap gap-6">
+                <mds:time-picker label="Pick-up" value="18:00" clearable class="max-w-xs" />
+                <mds:time-picker label="Closes at" placeholder="Choose a time" icon="moon" class="max-w-xs" />
+                <mds:time-picker label="Bare" value="08:00" :icon="false" class="max-w-xs" />
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Keyboard',
+            'text' => 'With the list open the arrows preview an option in the field and <code>Enter</code> commits it; <code>Home</code> and <code>End</code> jump to the ends. With the list closed the arrows nudge the value itself by <code>step</code>. <code>Alt</code> + arrow opens and closes the list, <code>Escape</code> reverts what you typed, and <code>Tab</code> leaves it committed.',
+            'code' => <<<'BLADE'
+            <mds:time-picker label="Try the arrow keys" value="12:00" :step="15" class="max-w-xs" />
+            BLADE,
+            'note' => 'Opening an empty picker scrolls the list to the time nearest the clock, so the useful options are the ones under the cursor.',
+        ],
+        [
+            'name' => 'Size and disabled',
+            'text' => '<code>size="sm"</code> matches a compact form row. <code>disabled</code> makes the whole control <code>inert</code> — the field, the list and the clear button all stop taking input.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap gap-6">
+                <mds:time-picker label="Compact" value="08:30" size="sm" class="max-w-xs" />
+                <mds:time-picker label="Locked" value="08:30" clearable disabled class="max-w-xs" />
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Validation',
+            'text' => 'An explicit <code>error</code> wins; otherwise the message comes from the error bag for <code>name</code>. Either way the field gets <code>aria-invalid</code> and a red border.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap gap-6">
+                <mds:time-picker name="at" label="Delivery time" error="Pick a time inside opening hours." min="09:00" max="17:00" class="max-w-xs" />
+                <mds:time-picker label="Closing time" value="23:00" invalid class="max-w-xs" />
+            </div>
+            BLADE,
+            'note' => 'The message uses the same markup as <code>flux:error</code> — <code>role="alert"</code> — without depending on the session error bag. <code>date_format:H:i</code> is the rule that matches what the field posts.',
+        ],
+        [
+            'name' => 'Livewire',
+            'text' => '<code>wire:model</code> reaches the hidden input and nothing else, so the bound property is a plain <code>HH:MM</code> string — <code>\'\'</code> once cleared.',
+            'code' => <<<'BLADE'
+            <mds:time-picker wire:model.live="at" name="at" label="Delivery time" value="10:30" min="09:00" max="21:00" clearable class="max-w-xs" />
+            BLADE,
+            'note' => 'A server-side change of the property is pulled back into the field by a <code>MutationObserver</code> on the hidden input, so <code>$this->at = \'09:00\'</code> in an action updates the displayed text too.',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits and the built-in words to Persian; <code>:fa="true"</code> does it for a single picker. The field and the list stay <code>dir="ltr"</code>, because a time reads hour-then-minute in both languages, and sit end-aligned in an RTL form. The hidden value is Latin regardless.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap gap-6">
+                <mds:time-picker :fa="true" label="ساعت تحویل" description="بازه‌های نیم‌ساعته، از ۹ تا ۲۱." value="10:30" min="09:00" max="21:00" clearable class="max-w-xs" />
+
+                <mds:time-picker :fa="true" label="یادآوری" value="14:30" hours="12" class="max-w-xs" />
+            </div>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:time-picker', 'props' => [
+            ['value', 'Initial time. <code>HH:MM</code>, <code>H:MM</code> or <code>HH:MM:SS</code>, Persian digits accepted; anything else renders empty.'],
+            ['name', 'Field name for a plain form post, and the key the error bag is read with. Lands on the hidden input.'],
+            ['label', 'Label text. Also names the listbox.'],
+            ['description', 'Help text under the field.'],
+            ['placeholder', 'Placeholder for the field. Default: <code>--:--</code>.'],
+            ['step', 'Minutes between listed times, and the arrow-key increment. Default: <code>30</code>.'],
+            ['min', 'Earliest listed time, and the floor a typed time is clamped to. Default: <code>00:00</code>.'],
+            ['max', 'Latest listed time, and the ceiling a typed time is clamped to. Default: <code>23:59</code>.'],
+            ['hours', '<code>12</code> for a 12-hour display with AM/PM. Default: <code>24</code>.'],
+            ['clearable', 'Adds a clear button once there is a value. Default: <code>false</code>.'],
+            ['disabled', 'Makes the whole control <code>inert</code>. Default: <code>false</code>.'],
+            ['size', '<code>sm</code> for a compact field.'],
+            ['icon', 'Leading icon. <code>false</code> removes it. Default: <code>clock</code>.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code>.'],
+            ['fa', 'Persian digits and Persian AM/PM words. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds the hidden <code>HH:MM</code> value to a Livewire property.'],
+        ]],
+    ],
+    'related' => ['jalali-date', 'input', 'field'],
+];
+
 return $pages;

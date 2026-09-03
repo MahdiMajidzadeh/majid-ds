@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
         <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
         <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
         <flux:navbar.item href="#popover" icon="chat-bubble-oval-left">{{ __('پاپ‌اور') }}</flux:navbar.item>
@@ -1112,6 +1113,38 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             :max="50"
             size="sm"
             disabled
+        />
+    </div>
+</flux:card>
+
+{{-- ============================== MDS: Time-Picker ============================== --}}
+<flux:card id="time-picker" class="space-y-6">
+    <flux:heading size="lg">{{ __('انتخاب ساعت — mds:time-picker') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Time Picker (در Flux فقط Pro) — فهرست ساعت‌ها با گام دلخواه، تایپ آزاد با ارقام فارسی، و مقدار ماشینی همیشه ۲۴ساعته.') }}</flux:text>
+
+    <div class="grid gap-6 md:grid-cols-3">
+        <mds:time-picker
+            :label="__('ساعت تحویل')"
+            :description="__('بازه‌های نیم‌ساعته، از ۹ تا ۲۱.')"
+            value="10:30"
+            min="09:00"
+            max="21:00"
+            clearable
+        />
+
+        <mds:time-picker
+            :label="__('شروع نوبت')"
+            value="14:15"
+            :step="15"
+            min="08:00"
+            max="18:00"
+        />
+
+        <mds:time-picker
+            :label="__('یادآوری')"
+            :placeholder="__('ساعت را انتخاب کنید')"
+            hours="12"
+            clearable
         />
     </div>
 </flux:card>

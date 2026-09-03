@@ -38,6 +38,7 @@ $demoAnchors = [
     'popover' => 'Popover',
     'accordion' => 'Accordion',
     'slider' => 'Slider',
+    'time-picker' => 'Time picker',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

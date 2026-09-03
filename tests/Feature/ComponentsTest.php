@@ -1639,6 +1639,10 @@ class ComponentsTest extends TestCase
             'slider range high thumb' => ['<mds:slider range />', 'aria-label="مقدار — حداکثر"', 'aria-label="Value — maximum"'],
             'slider labelled range ends' => ['<mds:slider range label="Price" />', 'aria-label="Price — حداقل"', 'aria-label="Price — minimum"'],
             'slider readout digits' => ['<mds:slider :value="25" show-value />', 'aria-valuetext="۲۵"', 'aria-valuetext="25"'],
+            'time picker clear' => ['<mds:time-picker clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'time picker am' => ['<mds:time-picker hours="12" />', '>۱۲:۰۰ ق.ظ</li>', '>12:00 AM</li>'],
+            'time picker pm' => ['<mds:time-picker hours="12" />', '>۱۲:۰۰ ب.ظ</li>', '>12:00 PM</li>'],
+            'time picker option digits' => ['<mds:time-picker value="14:30" />', '>۱۴:۳۰</li>', '>14:30</li>'],
         ];
     }
 
