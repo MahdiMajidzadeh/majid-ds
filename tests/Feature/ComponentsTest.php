@@ -1643,6 +1643,10 @@ class ComponentsTest extends TestCase
             'time picker am' => ['<mds:time-picker hours="12" />', '>۱۲:۰۰ ق.ظ</li>', '>12:00 AM</li>'],
             'time picker pm' => ['<mds:time-picker hours="12" />', '>۱۲:۰۰ ب.ظ</li>', '>12:00 PM</li>'],
             'time picker option digits' => ['<mds:time-picker value="14:30" />', '>۱۴:۳۰</li>', '>14:30</li>'],
+            // The tablist's accessible name is the component's only built-in string. It
+            // is anchored to the aria-label so a bare "Tabs" elsewhere in the markup
+            // could not satisfy it.
+            'tabs list label' => ['<mds:tab.group><mds:tabs><mds:tab name="a">A</mds:tab></mds:tabs></mds:tab.group>', 'aria-label="زبانه‌ها"', 'aria-label="Tabs"'],
         ];
     }
 

@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
         <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
         <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
@@ -1146,6 +1147,62 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             hours="12"
             clearable
         />
+    </div>
+</flux:card>
+
+{{-- ============================== MDS: Tabs ============================== --}}
+<flux:card id="tabs" class="space-y-4">
+    <flux:heading size="lg">{{ __('زبانه‌ها — mds:tabs') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Tabs (که در Flux فقط در نسخه Pro موجود است) — با الگوی کامل WAI-ARIA، ناوبری با کلیدهای جهت‌دار که در چیدمان راست‌به‌چپ برعکس می‌شوند، و زبانه فعالِ درست در همان اولین رندر سرور.') }}</flux:text>
+
+    <div class="space-y-2">
+        <flux:text class="text-sm font-medium">{{ __('پیش‌فرض، با آیکون:') }}</flux:text>
+
+        <mds:tab.group>
+            <mds:tabs :label="__('بخش‌های محصول')">
+                <mds:tab name="specs" icon="document-text">{{ __('مشخصات فنی') }}</mds:tab>
+                <mds:tab name="reviews" icon="star">{{ __('نظرات کاربران') }}</mds:tab>
+                <mds:tab name="qna" icon="chat-bubble-left-right">{{ __('پرسش و پاسخ') }}</mds:tab>
+                <mds:tab name="seller" icon="truck" disabled>{{ __('فروشنده') }}</mds:tab>
+            </mds:tabs>
+
+            <mds:tab.panel name="specs">{{ __('وزن، ابعاد و مدت گارانتی.') }}</mds:tab.panel>
+            <mds:tab.panel name="reviews">{{ __('آنچه خریداران درباره این کالا نوشته‌اند.') }}</mds:tab.panel>
+            <mds:tab.panel name="qna">{{ __('پرسش خود را از فروشنده بپرسید.') }}</mds:tab.panel>
+            <mds:tab.panel name="seller">{{ __('این بخش فعلاً در دسترس نیست.') }}</mds:tab.panel>
+        </mds:tab.group>
+    </div>
+
+    <div class="space-y-2">
+        <flux:text class="text-sm font-medium">{{ __('قطعه‌ای و کوچک، با زبانه آغازین انتخاب‌شده:') }}</flux:text>
+
+        <mds:tab.group value="month">
+            <mds:tabs variant="segmented" size="sm" :label="__('بازه زمانی')">
+                <mds:tab name="week">{{ __('این هفته') }}</mds:tab>
+                <mds:tab name="month">{{ __('این ماه') }}</mds:tab>
+                <mds:tab name="year">{{ __('امسال') }}</mds:tab>
+            </mds:tabs>
+
+            <mds:tab.panel name="week">{{ __('سفارش‌های ۷ روز گذشته.') }}</mds:tab.panel>
+            <mds:tab.panel name="month">{{ __('سفارش‌های ۳۰ روز گذشته.') }}</mds:tab.panel>
+            <mds:tab.panel name="year">{{ __('سفارش‌های ۱۲ ماه گذشته.') }}</mds:tab.panel>
+        </mds:tab.group>
+    </div>
+
+    <div class="space-y-2">
+        <flux:text class="text-sm font-medium">{{ __('قرصی، متصل به Livewire:') }}</flux:text>
+
+        <mds:tab.group>
+            <mds:tabs variant="pills" wire:model="tab" name="tab" :label="__('حساب کاربری')">
+                <mds:tab name="profile" icon="user">{{ __('نمایه') }}</mds:tab>
+                <mds:tab name="notifications" icon="bell">{{ __('اعلان‌ها') }}</mds:tab>
+                <mds:tab name="security" icon="lock-closed">{{ __('امنیت') }}</mds:tab>
+            </mds:tabs>
+
+            <mds:tab.panel name="profile">{{ __('نام، تصویر و نشانی عمومی شما.') }}</mds:tab.panel>
+            <mds:tab.panel name="notifications">{{ __('ایمیل و پیامک‌هایی که دریافت می‌کنید.') }}</mds:tab.panel>
+            <mds:tab.panel name="security">{{ __('گذرواژه و ورودهای فعال.') }}</mds:tab.panel>
+        </mds:tab.group>
     </div>
 </flux:card>
 

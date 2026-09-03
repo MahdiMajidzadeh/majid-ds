@@ -2671,4 +2671,164 @@ $pages['time-picker'] = [
     'related' => ['jalali-date', 'input', 'field'],
 ];
 
+// -------------------------------------------------------------- mds:tabs
+
+// ---------------------------------------------------------------- mds:tabs
+
+$pages['tabs'] = [
+    'group' => 'mds',
+    'title' => 'mds:tabs',
+    'lede' => 'Tabs and tab panels — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Tabs component is Pro-only. This is a working replacement: a <code>role="tablist"</code> of buttons, one panel per tab, the WAI-ARIA keyboard pattern, and — unlike most JavaScript tab widgets — the right panel already visible in the first paint, because the server resolves the active tab before Alpine runs. The previews are live: click a tab, or focus one and use the arrow keys.',
+            'code' => <<<'BLADE'
+            <mds:tab.group>
+                <mds:tabs>
+                    <mds:tab name="profile">Profile</mds:tab>
+                    <mds:tab name="account">Account</mds:tab>
+                    <mds:tab name="billing">Billing</mds:tab>
+                </mds:tabs>
+
+                <mds:tab.panel name="profile">Your name, photo and public profile.</mds:tab.panel>
+                <mds:tab.panel name="account">Email address, password and sessions.</mds:tab.panel>
+                <mds:tab.panel name="billing">Plan, invoices and payment method.</mds:tab.panel>
+            </mds:tab.group>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Variants',
+            'text' => 'Three looks, same markup: the default underlined row, <code>segmented</code> (a raised pill on a track) and <code>pills</code>.',
+            'code' => <<<'BLADE'
+            <div class="space-y-6">
+                <mds:tab.group>
+                    <mds:tabs variant="segmented">
+                        <mds:tab name="week">This week</mds:tab>
+                        <mds:tab name="month">This month</mds:tab>
+                        <mds:tab name="year">This year</mds:tab>
+                    </mds:tabs>
+
+                    <mds:tab.panel name="week">7 days of orders.</mds:tab.panel>
+                    <mds:tab.panel name="month">30 days of orders.</mds:tab.panel>
+                    <mds:tab.panel name="year">12 months of orders.</mds:tab.panel>
+                </mds:tab.group>
+
+                <mds:tab.group>
+                    <mds:tabs variant="pills">
+                        <mds:tab name="all">All</mds:tab>
+                        <mds:tab name="open">Open</mds:tab>
+                        <mds:tab name="closed">Closed</mds:tab>
+                    </mds:tabs>
+
+                    <mds:tab.panel name="all">Every ticket.</mds:tab.panel>
+                    <mds:tab.panel name="open">Tickets waiting on us.</mds:tab.panel>
+                    <mds:tab.panel name="closed">Tickets that are done.</mds:tab.panel>
+                </mds:tab.group>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Icons, a small size, and a disabled tab',
+            'text' => 'Leading and trailing icons go through <code>mds:icon</code>, so any heroicon name works. <code>size="sm"</code> shrinks the whole row. A <code>disabled</code> tab is a real disabled button: it is skipped by the arrow keys and is never chosen as the default.',
+            'code' => <<<'BLADE'
+            <mds:tab.group>
+                <mds:tabs size="sm">
+                    <mds:tab name="specs" icon="document-text">Specifications</mds:tab>
+                    <mds:tab name="reviews" icon="star" icon-trailing="chat-bubble-left-right">Reviews</mds:tab>
+                    <mds:tab name="qna" icon="question-mark-circle" disabled>Questions</mds:tab>
+                </mds:tabs>
+
+                <mds:tab.panel name="specs">Weight, dimensions and warranty.</mds:tab.panel>
+                <mds:tab.panel name="reviews">What buyers said.</mds:tab.panel>
+                <mds:tab.panel name="qna">Ask the seller.</mds:tab.panel>
+            </mds:tab.group>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Choosing the open tab',
+            'text' => 'The group\'s <code>value</code> names the tab to open. Point it at a disabled or unknown tab and the first enabled tab wins instead — so a stale value from the database can never render a page with nothing selected.',
+            'code' => <<<'BLADE'
+            <mds:tab.group value="shipping">
+                <mds:tabs variant="segmented">
+                    <mds:tab name="cart">Cart</mds:tab>
+                    <mds:tab name="shipping">Shipping</mds:tab>
+                    <mds:tab name="payment">Payment</mds:tab>
+                </mds:tabs>
+
+                <mds:tab.panel name="cart">3 items.</mds:tab.panel>
+                <mds:tab.panel name="shipping">Where should it go?</mds:tab.panel>
+                <mds:tab.panel name="payment">How would you like to pay?</mds:tab.panel>
+            </mds:tab.group>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Binding to Livewire',
+            'text' => 'Put <code>wire:model</code> on <code>mds:tabs</code>, not on the group: it is forwarded to the hidden input the list carries, and the bound property holds the active tab\'s name. Use <code>wire:model.live</code> when the server should load the panel\'s content, and add <code>name</code> when a plain form should post it.',
+            'code' => <<<'BLADE'
+            <mds:tab.group>
+                <mds:tabs wire:model.live="tab" name="tab">
+                    <mds:tab name="inbox">Inbox</mds:tab>
+                    <mds:tab name="archive">Archive</mds:tab>
+                </mds:tabs>
+
+                <mds:tab.panel name="inbox">Unread messages.</mds:tab.panel>
+                <mds:tab.panel name="archive">Everything else.</mds:tab.panel>
+            </mds:tab.group>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The panels stay in the DOM and are toggled with <code>hidden</code>, so a half-filled form in a hidden panel keeps its values. Flux takes the binding on the group instead; writing <code>wire:model</code> on <code>mds:tab.group</code> throws, rather than quietly landing on a div Livewire ignores.',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => 'The tablist\'s accessible name is the only built-in string, and it follows <code>config(\'mds.persian_digits\')</code> — «زبانه‌ها» in a Persian app, "Tabs" in these docs. Pass <code>label</code> to name a specific tablist, or <code>:fa="true"</code> to force the Persian default. Left and right arrow keys read the tablist\'s own direction, so in this preview they move right-to-left.',
+            'code' => <<<'BLADE'
+            <mds:tab.group :fa="true">
+                <mds:tabs variant="pills" label="بخش‌های محصول">
+                    <mds:tab name="مشخصات" icon="document-text">مشخصات</mds:tab>
+                    <mds:tab name="نظرات" icon="star">نظرات</mds:tab>
+                    <mds:tab name="پرسش" icon="chat-bubble-left-right">پرسش و پاسخ</mds:tab>
+                </mds:tabs>
+
+                <mds:tab.panel name="مشخصات">وزن، ابعاد و مدت گارانتی.</mds:tab.panel>
+                <mds:tab.panel name="نظرات">آنچه خریداران نوشته‌اند.</mds:tab.panel>
+                <mds:tab.panel name="پرسش">پرسش خود را از فروشنده بپرسید.</mds:tab.panel>
+            </mds:tab.group>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:tab.group', 'text' => 'Wraps the list and its panels, and holds the state.', 'props' => [
+            ['value', 'Name of the tab to open. Falls back to the first enabled tab when it names a disabled or unknown one.'],
+            ['fa', 'Persian built-in strings. Default: <code>config(\'mds.persian_digits\')</code>. Inherited by the list, the tabs and the panels.'],
+        ]],
+        ['name' => 'mds:tabs', 'text' => 'The <code>role="tablist"</code> row. Takes <code>wire:model</code>.', 'props' => [
+            ['variant', 'One of <code>default</code>, <code>segmented</code>, <code>pills</code>. Default: <code>default</code>.'],
+            ['size', '<code>sm</code> for a smaller row. Default: none.'],
+            ['label', 'Accessible name for the tablist. Default: "Tabs", or زبانه‌ها in Persian.'],
+            ['name', 'Form field name for the hidden input that carries the active tab.'],
+            ['fa', 'Persian built-in strings. Inherited from the group.'],
+        ]],
+        ['name' => 'mds:tab', 'text' => 'One tab. The name is required.', 'props' => [
+            ['name', 'Required. Pairs the tab with the panel of the same name.'],
+            ['icon', 'Leading icon name.'],
+            ['icon-trailing', 'Trailing icon name. Flux\'s <code>icon:trailing</code> spelling works too.'],
+            ['disabled', 'Renders a disabled button, skipped by the keyboard. Default: <code>false</code>.'],
+            ['fa', 'Persian built-in strings. Inherited from the group.'],
+        ]],
+        ['name' => 'mds:tab.panel', 'text' => 'The panel for one tab. The name is required.', 'props' => [
+            ['name', 'Required. The name of the tab this panel belongs to.'],
+            ['fa', 'Persian built-in strings. Inherited from the group.'],
+        ]],
+    ],
+    'related' => ['navbar', 'card', 'command'],
+];
+
 return $pages;

@@ -674,6 +674,28 @@ and Carbon parses as is.
 Props: `value` · `name` · `label` · `description` · `placeholder` · `step` · `min` · `max` · `hours` ·
 `clearable` · `disabled` · `size` · `icon` · `invalid` · `error` · `fa` · `wire:model`.
 
+### `<mds:tabs>`
+
+An open implementation of Flux Pro's tabs, API-compatible with `flux:tabs`. Three variants (underlined, `segmented`, `pills`), the full WAI-ARIA tabs pattern with automatic activation — roving tabindex, arrow keys that follow the *visual* order in RTL, Home/End, disabled tabs skipped — and, unlike most tab widgets, the correct panel already visible in the server's first paint, so the page is right before Alpine runs:
+
+```blade
+<mds:tab.group value="specs">
+    <mds:tabs variant="segmented" wire:model.live="tab">
+        <mds:tab name="specs" icon="document-text">مشخصات</mds:tab>
+        <mds:tab name="reviews" icon="star">نظرات</mds:tab>
+        <mds:tab name="qna" disabled>پرسش و پاسخ</mds:tab>
+    </mds:tabs>
+
+    <mds:tab.panel name="specs">وزن، ابعاد و مدت گارانتی.</mds:tab.panel>
+    <mds:tab.panel name="reviews">آنچه خریداران نوشته‌اند.</mds:tab.panel>
+    <mds:tab.panel name="qna">پرسش خود را بپرسید.</mds:tab.panel>
+</mds:tab.group>
+```
+
+`wire:model` goes on `<mds:tabs>` (Flux takes it on the group; writing it there throws instead of silently doing nothing) and binds the active tab's name. Panels are toggled with `hidden`, so a half-filled form inside one keeps its values. A `value` naming a disabled or unknown tab falls back to the first enabled tab, on the server and in Alpine alike.
+
+Props — `tab.group`: `value` (tab to open), `fa`; `tabs`: `variant` (`default`/`segmented`/`pills`), `size` (`sm`), `label` (tablist accessible name, default «زبانه‌ها» — or "Tabs" when Persian output is off), `name` (form field for the hidden input), `fa`, plus `wire:model`; `tab`: `name` (required), `icon`, `icon-trailing` (Flux's `icon:trailing` works too), `disabled`, `fa`; `tab.panel`: `name` (required), `fa`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

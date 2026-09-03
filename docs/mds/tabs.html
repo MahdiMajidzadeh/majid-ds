@@ -1,0 +1,1756 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:tabs — Majid DS</title>
+<meta name="description" content="mds:tabs — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../guides/demo.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open data-docs-slug="tabs" data-docs-prefix="../">
+            <summary>Menu</summary>
+            <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="../index.html">overview</a>.</p></noscript>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:tabs</h1>
+        <p class="docs-lede">Tabs and tab panels — an open version of a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Flux's Tabs component is Pro-only. This is a working replacement: a <code>role="tablist"</code> of buttons, one panel per tab, the WAI-ARIA keyboard pattern, and — unlike most JavaScript tab widgets — the right panel already visible in the first paint, because the server resolves the active tab before Alpine runs. The previews are live: click a tab, or focus one and use the arrow keys.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'profile' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-4 shadow-[inset_0_-1px_0_0_var(--color-zinc-200)] dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)] overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="default"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="profile"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-profile" aria-controls="mds-tabpanel-profile"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('profile')"
+    x-bind:aria-selected="isActive('profile') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('profile') ? 0 : -1"
+    x-bind:data-selected="isActive('profile') ? '' : false"
+    data-mds-tab="profile"
+>
+    
+    <span>Profile</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-account" aria-controls="mds-tabpanel-account"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('account')"
+    x-bind:aria-selected="isActive('account') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('account') ? 0 : -1"
+    x-bind:data-selected="isActive('account') ? '' : false"
+    data-mds-tab="account"
+>
+    
+    <span>Account</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-billing" aria-controls="mds-tabpanel-billing"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('billing')"
+    x-bind:aria-selected="isActive('billing') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('billing') ? 0 : -1"
+    x-bind:data-selected="isActive('billing') ? '' : false"
+    data-mds-tab="billing"
+>
+    
+    <span>Billing</span>
+
+    </button>
+</div>
+
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-profile" aria-labelledby="mds-tab-profile"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('profile')"
+    data-mds-tab-panel="profile"
+>
+    Your name, photo and public profile.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-account" aria-labelledby="mds-tab-account"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('account')"
+    data-mds-tab-panel="account"
+>
+    Email address, password and sessions.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-billing" aria-labelledby="mds-tab-billing"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('billing')"
+    data-mds-tab-panel="billing"
+>
+    Plan, invoices and payment method.
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;profile&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Profile</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;account&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Account</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;billing&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Billing</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;profile&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Your name, photo and public profile.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;account&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Email address, password and sessions.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;billing&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Plan, invoices and payment method.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="variants" class="docs-section"><h2>Variants</h2><p class="docs-text">Three looks, same markup: the default underlined row, <code>segmented</code> (a raised pill on a track) and <code>pills</code>.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'week' })"
+    data-mds-tab-group
+>
+    <div
+    class="inline-flex max-w-full gap-1 rounded-lg bg-zinc-800/5 p-1 dark:bg-white/10 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="segmented"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="week"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-week" aria-controls="mds-tabpanel-week"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('week')"
+    x-bind:aria-selected="isActive('week') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('week') ? 0 : -1"
+    x-bind:data-selected="isActive('week') ? '' : false"
+    data-mds-tab="week"
+>
+    
+    <span>This week</span>
+
+    </button>
+            <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-month" aria-controls="mds-tabpanel-month"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('month')"
+    x-bind:aria-selected="isActive('month') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('month') ? 0 : -1"
+    x-bind:data-selected="isActive('month') ? '' : false"
+    data-mds-tab="month"
+>
+    
+    <span>This month</span>
+
+    </button>
+            <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-year" aria-controls="mds-tabpanel-year"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('year')"
+    x-bind:aria-selected="isActive('year') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('year') ? 0 : -1"
+    x-bind:data-selected="isActive('year') ? '' : false"
+    data-mds-tab="year"
+>
+    
+    <span>This year</span>
+
+    </button>
+</div>
+
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-week" aria-labelledby="mds-tab-week"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('week')"
+    data-mds-tab-panel="week"
+>
+    7 days of orders.
+</div>
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-month" aria-labelledby="mds-tab-month"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('month')"
+    data-mds-tab-panel="month"
+>
+    30 days of orders.
+</div>
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-year" aria-labelledby="mds-tab-year"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('year')"
+    data-mds-tab-panel="year"
+>
+    12 months of orders.
+</div>
+</div>
+
+    <div
+    
+    x-data="mdsTabs({ value: 'all' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-1 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="pills"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="all"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-all" aria-controls="mds-tabpanel-all"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('all')"
+    x-bind:aria-selected="isActive('all') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('all') ? 0 : -1"
+    x-bind:data-selected="isActive('all') ? '' : false"
+    data-mds-tab="all"
+>
+    
+    <span>All</span>
+
+    </button>
+            <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-open" aria-controls="mds-tabpanel-open"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('open')"
+    x-bind:aria-selected="isActive('open') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('open') ? 0 : -1"
+    x-bind:data-selected="isActive('open') ? '' : false"
+    data-mds-tab="open"
+>
+    
+    <span>Open</span>
+
+    </button>
+            <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-closed" aria-controls="mds-tabpanel-closed"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('closed')"
+    x-bind:aria-selected="isActive('closed') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('closed') ? 0 : -1"
+    x-bind:data-selected="isActive('closed') ? '' : false"
+    data-mds-tab="closed"
+>
+    
+    <span>Closed</span>
+
+    </button>
+</div>
+
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-all" aria-labelledby="mds-tab-all"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('all')"
+    data-mds-tab-panel="all"
+>
+    Every ticket.
+</div>
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-open" aria-labelledby="mds-tab-open"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('open')"
+    data-mds-tab-panel="open"
+>
+    Tickets waiting on us.
+</div>
+        <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-closed" aria-labelledby="mds-tab-closed"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('closed')"
+    data-mds-tab-panel="closed"
+>
+    Tickets that are done.
+</div>
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;segmented&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;week&quot;</span><span class="t-punct">&gt;</span><span class="t-text">This week</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;month&quot;</span><span class="t-punct">&gt;</span><span class="t-text">This month</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;year&quot;</span><span class="t-punct">&gt;</span><span class="t-text">This year</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;week&quot;</span><span class="t-punct">&gt;</span><span class="t-text">7 days of orders.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;month&quot;</span><span class="t-punct">&gt;</span><span class="t-text">30 days of orders.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;year&quot;</span><span class="t-punct">&gt;</span><span class="t-text">12 months of orders.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;pills&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;all&quot;</span><span class="t-punct">&gt;</span><span class="t-text">All</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;open&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Open</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;closed&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Closed</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;all&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Every ticket.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;open&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Tickets waiting on us.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;closed&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Tickets that are done.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="icons-a-small-size-and-a-disabled-tab" class="docs-section"><h2>Icons, a small size, and a disabled tab</h2><p class="docs-text">Leading and trailing icons go through <code>mds:icon</code>, so any heroicon name works. <code>size="sm"</code> shrinks the whole row. A <code>disabled</code> tab is a real disabled button: it is skipped by the arrow keys and is never chosen as the default.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'specs' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-4 shadow-[inset_0_-1px_0_0_var(--color-zinc-200)] dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)] overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="default"
+    data-mds-tabs-size="sm"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="specs"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-8 text-xs" id="mds-tab-specs" aria-controls="mds-tabpanel-specs"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('specs')"
+    x-bind:aria-selected="isActive('specs') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('specs') ? 0 : -1"
+    x-bind:data-selected="isActive('specs') ? '' : false"
+    data-mds-tab="specs"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 17H16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M8 13H12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5M20 10.6569V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V9.45584C4 6.21082 4 4.58831 4.88607 3.48933C5.06508 3.26731 5.26731 3.06508 5.48933 2.88607C6.58831 2 8.21082 2 11.4558 2C12.1614 2 12.5141 2 12.8372 2.11401C12.9044 2.13772 12.9702 2.165 13.0345 2.19575C13.3436 2.34355 13.593 2.593 14.0919 3.09188L18.8284 7.82843C19.4065 8.40649 19.6955 8.69552 19.8478 9.06306C20 9.4306 20 9.83935 20 10.6569Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>Specifications</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-8 text-xs" id="mds-tab-reviews" aria-controls="mds-tabpanel-reviews"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('reviews')"
+    x-bind:aria-selected="isActive('reviews') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('reviews') ? 0 : -1"
+    x-bind:data-selected="isActive('reviews') ? '' : false"
+    data-mds-tab="reviews"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>Reviews</span>
+
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.0045 12H12.0135M16 12H16.009M8.009 12H8.01797" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M21.5 12C21.5 17.2467 17.2467 21.5 12 21.5C10.3719 21.5 8.8394 21.0904 7.5 20.3687C5.63177 19.362 4.37462 20.2979 3.26592 20.4658C3.09774 20.4913 2.93024 20.4302 2.80997 20.31C2.62741 20.1274 2.59266 19.8451 2.6935 19.6074C3.12865 18.5818 3.5282 16.6382 2.98341 15C2.6698 14.057 2.5 13.0483 2.5 12C2.5 6.75329 6.75329 2.5 12 2.5C17.2467 2.5 21.5 6.75329 21.5 12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-8 text-xs" id="mds-tab-qna" aria-controls="mds-tabpanel-qna"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+         disabled     x-on:click="select('qna')"
+    x-bind:aria-selected="isActive('qna') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('qna') ? 0 : -1"
+    x-bind:data-selected="isActive('qna') ? '' : false"
+    data-mds-tab="qna"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M9.5 9.5C9.5 8.11929 10.6193 7 12 7C13.3807 7 14.5 8.11929 14.5 9.5C14.5 10.3569 14.0689 11.1131 13.4117 11.5636C12.7283 12.0319 12 12.6716 12 13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12.0001 17H12.009" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+    
+    <span>Questions</span>
+
+    </button>
+</div>
+
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-specs" aria-labelledby="mds-tab-specs"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('specs')"
+    data-mds-tab-panel="specs"
+>
+    Weight, dimensions and warranty.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-reviews" aria-labelledby="mds-tab-reviews"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('reviews')"
+    data-mds-tab-panel="reviews"
+>
+    What buyers said.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-qna" aria-labelledby="mds-tab-qna"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('qna')"
+    data-mds-tab-panel="qna"
+>
+    Ask the seller.
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;specs&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;document-text&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Specifications</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;reviews&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span> <span class="t-attr">icon-trailing</span><span class="t-equals">=</span><span class="t-string">&quot;chat-bubble-left-right&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Reviews</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;qna&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;question-mark-circle&quot;</span> <span class="t-attr">disabled</span><span class="t-punct">&gt;</span><span class="t-text">Questions</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;specs&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Weight, dimensions and warranty.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;reviews&quot;</span><span class="t-punct">&gt;</span><span class="t-text">What buyers said.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;qna&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Ask the seller.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="choosing-the-open-tab" class="docs-section"><h2>Choosing the open tab</h2><p class="docs-text">The group's <code>value</code> names the tab to open. Point it at a disabled or unknown tab and the first enabled tab wins instead — so a stale value from the database can never render a page with nothing selected.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'shipping' })"
+    data-mds-tab-group
+>
+    <div
+    class="inline-flex max-w-full gap-1 rounded-lg bg-zinc-800/5 p-1 dark:bg-white/10 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="segmented"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="shipping"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-cart" aria-controls="mds-tabpanel-cart"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('cart')"
+    x-bind:aria-selected="isActive('cart') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('cart') ? 0 : -1"
+    x-bind:data-selected="isActive('cart') ? '' : false"
+    data-mds-tab="cart"
+>
+    
+    <span>Cart</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-shipping" aria-controls="mds-tabpanel-shipping"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('shipping')"
+    x-bind:aria-selected="isActive('shipping') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('shipping') ? 0 : -1"
+    x-bind:data-selected="isActive('shipping') ? '' : false"
+    data-mds-tab="shipping"
+>
+    
+    <span>Shipping</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-3 py-1.5 text-sm" id="mds-tab-payment" aria-controls="mds-tabpanel-payment"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('payment')"
+    x-bind:aria-selected="isActive('payment') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('payment') ? 0 : -1"
+    x-bind:data-selected="isActive('payment') ? '' : false"
+    data-mds-tab="payment"
+>
+    
+    <span>Payment</span>
+
+    </button>
+</div>
+
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-cart" aria-labelledby="mds-tab-cart"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('cart')"
+    data-mds-tab-panel="cart"
+>
+    3 items.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-shipping" aria-labelledby="mds-tab-shipping"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('shipping')"
+    data-mds-tab-panel="shipping"
+>
+    Where should it go?
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-payment" aria-labelledby="mds-tab-payment"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('payment')"
+    data-mds-tab-panel="payment"
+>
+    How would you like to pay?
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;shipping&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;segmented&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;cart&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Cart</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;shipping&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Shipping</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;payment&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Payment</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;cart&quot;</span><span class="t-punct">&gt;</span><span class="t-text">3 items.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;shipping&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Where should it go?</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;payment&quot;</span><span class="t-punct">&gt;</span><span class="t-text">How would you like to pay?</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="binding-to-livewire" class="docs-section"><h2>Binding to Livewire</h2><p class="docs-text">Put <code>wire:model</code> on <code>mds:tabs</code>, not on the group: it is forwarded to the hidden input the list carries, and the bound property holds the active tab's name. Use <code>wire:model.live</code> when the server should load the panel's content, and add <code>name</code> when a plain form should post it.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'inbox' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-4 shadow-[inset_0_-1px_0_0_var(--color-zinc-200)] dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)] overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="Tabs"
+    data-mds-tabs
+    data-mds-tabs-variant="default"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="inbox"
+         name="tab"         data-mds-tabs-input
+        wire:model.live="tab"
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-inbox" aria-controls="mds-tabpanel-inbox"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('inbox')"
+    x-bind:aria-selected="isActive('inbox') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('inbox') ? 0 : -1"
+    x-bind:data-selected="isActive('inbox') ? '' : false"
+    data-mds-tab="inbox"
+>
+    
+    <span>Inbox</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-archive" aria-controls="mds-tabpanel-archive"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('archive')"
+    x-bind:aria-selected="isActive('archive') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('archive') ? 0 : -1"
+    x-bind:data-selected="isActive('archive') ? '' : false"
+    data-mds-tab="archive"
+>
+    
+    <span>Archive</span>
+
+    </button>
+</div>
+
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-inbox" aria-labelledby="mds-tab-inbox"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('inbox')"
+    data-mds-tab-panel="inbox"
+>
+    Unread messages.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-archive" aria-labelledby="mds-tab-archive"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('archive')"
+    data-mds-tab-panel="archive"
+>
+    Everything else.
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">wire:model.live</span><span class="t-equals">=</span><span class="t-string">&quot;tab&quot;</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;tab&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;inbox&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Inbox</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;archive&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Archive</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;inbox&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Unread messages.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;archive&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Everything else.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">The panels stay in the DOM and are toggled with <code>hidden</code>, so a half-filled form in a hidden panel keeps its values. Flux takes the binding on the group instead; writing <code>wire:model</code> on <code>mds:tab.group</code> throws, rather than quietly landing on a div Livewire ignores.</div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text">The tablist's accessible name is the only built-in string, and it follows <code>config('mds.persian_digits')</code> — «زبانه‌ها» in a Persian app, "Tabs" in these docs. Pass <code>label</code> to name a specific tablist, or <code>:fa="true"</code> to force the Persian default. Left and right arrow keys read the tablist's own direction, so in this preview they move right-to-left.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'مشخصات' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-1 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="بخش‌های محصول"
+    data-mds-tabs
+    data-mds-tabs-variant="pills"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="مشخصات"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-مشخصات" aria-controls="mds-tabpanel-مشخصات"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('مشخصات')"
+    x-bind:aria-selected="isActive('مشخصات') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('مشخصات') ? 0 : -1"
+    x-bind:data-selected="isActive('مشخصات') ? '' : false"
+    data-mds-tab="مشخصات"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 17H16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M8 13H12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5M20 10.6569V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V9.45584C4 6.21082 4 4.58831 4.88607 3.48933C5.06508 3.26731 5.26731 3.06508 5.48933 2.88607C6.58831 2 8.21082 2 11.4558 2C12.1614 2 12.5141 2 12.8372 2.11401C12.9044 2.13772 12.9702 2.165 13.0345 2.19575C13.3436 2.34355 13.593 2.593 14.0919 3.09188L18.8284 7.82843C19.4065 8.40649 19.6955 8.69552 19.8478 9.06306C20 9.4306 20 9.83935 20 10.6569Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>مشخصات</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-نظرات" aria-controls="mds-tabpanel-نظرات"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('نظرات')"
+    x-bind:aria-selected="isActive('نظرات') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('نظرات') ? 0 : -1"
+    x-bind:data-selected="isActive('نظرات') ? '' : false"
+    data-mds-tab="نظرات"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>نظرات</span>
+
+    </button>
+        <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-پرسش" aria-controls="mds-tabpanel-پرسش"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('پرسش')"
+    x-bind:aria-selected="isActive('پرسش') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('پرسش') ? 0 : -1"
+    x-bind:data-selected="isActive('پرسش') ? '' : false"
+    data-mds-tab="پرسش"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.0045 12H12.0135M16 12H16.009M8.009 12H8.01797" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M21.5 12C21.5 17.2467 17.2467 21.5 12 21.5C10.3719 21.5 8.8394 21.0904 7.5 20.3687C5.63177 19.362 4.37462 20.2979 3.26592 20.4658C3.09774 20.4913 2.93024 20.4302 2.80997 20.31C2.62741 20.1274 2.59266 19.8451 2.6935 19.6074C3.12865 18.5818 3.5282 16.6382 2.98341 15C2.6698 14.057 2.5 13.0483 2.5 12C2.5 6.75329 6.75329 2.5 12 2.5C17.2467 2.5 21.5 6.75329 21.5 12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>پرسش و پاسخ</span>
+
+    </button>
+</div>
+
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-مشخصات" aria-labelledby="mds-tab-مشخصات"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('مشخصات')"
+    data-mds-tab-panel="مشخصات"
+>
+    وزن، ابعاد و مدت گارانتی.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-نظرات" aria-labelledby="mds-tab-نظرات"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('نظرات')"
+    data-mds-tab-panel="نظرات"
+>
+    آنچه خریداران نوشته‌اند.
+</div>
+    <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-پرسش" aria-labelledby="mds-tab-پرسش"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('پرسش')"
+    data-mds-tab-panel="پرسش"
+>
+    پرسش خود را از فروشنده بپرسید.
+</div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.group</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tabs</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;pills&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;بخش‌های محصول&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;مشخصات&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;document-text&quot;</span><span class="t-punct">&gt;</span><span class="t-text">مشخصات</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;نظرات&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;star&quot;</span><span class="t-punct">&gt;</span><span class="t-text">نظرات</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;پرسش&quot;</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;chat-bubble-left-right&quot;</span><span class="t-punct">&gt;</span><span class="t-text">پرسش و پاسخ</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tabs</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;مشخصات&quot;</span><span class="t-punct">&gt;</span><span class="t-text">وزن، ابعاد و مدت گارانتی.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;نظرات&quot;</span><span class="t-punct">&gt;</span><span class="t-text">آنچه خریداران نوشته‌اند.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:tab.panel</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;پرسش&quot;</span><span class="t-punct">&gt;</span><span class="t-text">پرسش خود را از فروشنده بپرسید.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.panel</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:tab.group</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-tab-group" class="docs-ref-block"><h3>mds:tab.group</h3><p class="docs-text">Wraps the list and its panels, and holds the state.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">value</span></td><td>Name of the tab to open. Falls back to the first enabled tab when it names a disabled or unknown one.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian built-in strings. Default: <code>config('mds.persian_digits')</code>. Inherited by the list, the tabs and the panels.</td></tr></tbody>
+</table></div><div id="mds-tabs" class="docs-ref-block"><h3>mds:tabs</h3><p class="docs-text">The <code>role="tablist"</code> row. Takes <code>wire:model</code>.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">variant</span></td><td>One of <code>default</code>, <code>segmented</code>, <code>pills</code>. Default: <code>default</code>.</td></tr><tr><td><span class="docs-prop">size</span></td><td><code>sm</code> for a smaller row. Default: none.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Accessible name for the tablist. Default: "Tabs", or زبانه‌ها in Persian.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Form field name for the hidden input that carries the active tab.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian built-in strings. Inherited from the group.</td></tr></tbody>
+</table></div><div id="mds-tab" class="docs-ref-block"><h3>mds:tab</h3><p class="docs-text">One tab. The name is required.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">name</span></td><td>Required. Pairs the tab with the panel of the same name.</td></tr><tr><td><span class="docs-prop">icon</span></td><td>Leading icon name.</td></tr><tr><td><span class="docs-prop">icon-trailing</span></td><td>Trailing icon name. Flux's <code>icon:trailing</code> spelling works too.</td></tr><tr><td><span class="docs-prop">disabled</span></td><td>Renders a disabled button, skipped by the keyboard. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian built-in strings. Inherited from the group.</td></tr></tbody>
+</table></div><div id="mds-tab-panel" class="docs-ref-block"><h3>mds:tab.panel</h3><p class="docs-text">The panel for one tab. The name is required.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">name</span></td><td>Required. The name of the tab this panel belongs to.</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian built-in strings. Inherited from the group.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/navbar.html"><span class="docs-related-name">Navbar</span><span class="docs-related-lede">Horizontal navigation, usually inside a header.</span></a><a class="docs-related-card" href="../components/card.html"><span class="docs-related-name">Card</span><span class="docs-related-lede">A bordered surface for grouping related content.</span></a><a class="docs-related-card" href="../mds/command.html"><span class="docs-related-name">mds:command</span><span class="docs-related-lede">A ⌘K command palette — an open version of a Flux Pro component.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#variants">Variants</a><a href="#icons-a-small-size-and-a-disabled-tab">Icons, a small size, and a disabled tab</a><a href="#choosing-the-open-tab">Choosing the open tab</a><a href="#binding-to-livewire">Binding to Livewire</a><a href="#persian-output">Persian output</a><a href="#reference">Reference</a><a href="#mds-tab-group" class="docs-toc-sub">mds:tab.group</a><a href="#mds-tabs" class="docs-toc-sub">mds:tabs</a><a href="#mds-tab" class="docs-toc-sub">mds:tab</a><a href="#mds-tab-panel" class="docs-toc-sub">mds:tab.panel</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+<script src="../assets/nav.js"></script>
+
+<script>
+// Build the sidebar from the nav data. textContent throughout — labels and
+// tags are data, never markup.
+(function () {
+    var details = document.querySelector('.docs-nav');
+    var slug = details.getAttribute('data-docs-slug');
+    var prefix = details.getAttribute('data-docs-prefix');
+
+    (window.__mdsNav || []).forEach(function (group) {
+        var wrap = document.createElement('div');
+        wrap.className = 'docs-nav-group';
+
+        var title = document.createElement('p');
+        title.className = 'docs-nav-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+
+        var items = document.createElement('div');
+        items.className = 'docs-nav-items';
+
+        group.items.forEach(function (item) {
+            var link = document.createElement('a');
+            link.href = prefix + item.path;
+            link.textContent = item.label;
+
+            if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+            if (item.tag) {
+                var tag = document.createElement('span');
+                tag.className = 'docs-nav-tag';
+                tag.textContent = item.tag;
+                link.appendChild(document.createTextNode(' '));
+                link.appendChild(tag);
+            }
+
+            items.appendChild(link);
+        });
+
+        wrap.appendChild(items);
+        details.appendChild(wrap);
+    });
+})();
+
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

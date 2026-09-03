@@ -159,6 +159,9 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>نمودار</div>
     </a>
+        <a href="#tabs" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class=" flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>زبانه‌ها</div>
+    </a>
         <a href="#time-picker" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -10394,6 +10397,486 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="tabs" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>زبانه‌ها — mds:tabs</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >نسخه آزاد از کامپوننت Tabs (که در Flux فقط در نسخه Pro موجود است) — با الگوی کامل WAI-ARIA، ناوبری با کلیدهای جهت‌دار که در چیدمان راست‌به‌چپ برعکس می‌شوند، و زبانه فعالِ درست در همان اولین رندر سرور.</p>
+    <div class="space-y-2">
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >پیش‌فرض، با آیکون:</p>
+        <script >
+window.mds = window.mds || {}
+
+// Registered through a guard rather than straight from alpine:init: a page
+// reached by wire:navigate runs this block after Alpine has already started.
+window.mds.registerTabs = (Alpine) => {
+    if (window.mds.tabsRegistered) return
+    window.mds.tabsRegistered = true
+
+    Alpine.data('mdsTabs', (config = {}) => ({
+        active: config.value ?? null,
+        observer: null,
+
+        init() {
+            const input = this.input()
+
+            if (input) {
+                // A Livewire morph that changes the bound property rewrites the
+                // hidden input's value ATTRIBUTE; Alpine state does not follow
+                // on its own. Read the attribute, not the property — once a
+                // value has been set from script the property stops mirroring it.
+                this.observer = new MutationObserver(() => this.apply(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+
+            // wire:model seeds the hidden input from the Livewire property, but
+            // that directive sits on a child and runs after this init — so the
+            // first read waits a tick, and takes the property it wrote.
+            this.$nextTick(() => this.apply(input ? input.value : this.active))
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+            this.observer = null
+        },
+
+        input() {
+            return this.$refs.tabsInput ?? null
+        },
+
+        // This group's own tabs — a group nested inside a panel keeps its own.
+        tabs() {
+            return [...this.$root.querySelectorAll('[data-mds-tab]')]
+                .filter(el => el.closest('[data-mds-tab-group]') === this.$root)
+        },
+
+        enabled() {
+            return this.tabs().filter(el => ! el.disabled)
+        },
+
+        has(name) {
+            return this.enabled().some(el => el.getAttribute('data-mds-tab') === name)
+        },
+
+        // A value arriving from the server or the bound property: take it when
+        // it names an enabled tab, else fall back to the first one — the same
+        // rule the Blade side applies. The hidden control is corrected quietly:
+        // this was not a change the user made, so no event is dispatched.
+        apply(name) {
+            this.active = this.has(name) ? name : (this.enabled()[0]?.getAttribute('data-mds-tab') ?? null)
+
+            const input = this.input()
+
+            if (input && this.active !== null && input.value !== this.active) input.value = this.active
+        },
+
+        select(name) {
+            if (name === this.active || ! this.has(name)) return
+
+            this.active = name
+
+            const input = this.input()
+
+            if (! input) return
+
+            input.value = name
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+        },
+
+        isActive(name) {
+            return this.active === name
+        },
+
+        // WAI-ARIA tabs, automatic activation: the arrows move focus AND
+        // select, wrapping at the ends; Home/End jump; disabled tabs are
+        // skipped. Left/Right follow the visual order, so they flip in RTL —
+        // read off the tablist itself, not the document, so an RTL island in
+        // an LTR page (or the reverse) still moves the way it looks.
+        keydown(event) {
+            if (! ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+            const list = event.currentTarget
+            const tabs = [...list.querySelectorAll('[data-mds-tab]:not([disabled])')]
+
+            if (! tabs.length) return
+
+            const current = tabs.indexOf(event.target.closest('[data-mds-tab]'))
+            const rtl = getComputedStyle(list).direction === 'rtl'
+            let next
+
+            if (event.key === 'Home') {
+                next = 0
+            } else if (event.key === 'End') {
+                next = tabs.length - 1
+            } else {
+                const forward = (event.key === 'ArrowRight') !== rtl
+
+                next = current === -1 ? 0 : (current + (forward ? 1 : -1) + tabs.length) % tabs.length
+            }
+
+            event.preventDefault()
+
+            this.select(tabs[next].getAttribute('data-mds-tab'))
+            tabs[next].focus()
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerTabs(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerTabs(window.Alpine))
+}
+</script>
+
+<div
+    
+    x-data="mdsTabs({ value: 'specs' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-4 shadow-[inset_0_-1px_0_0_var(--color-zinc-200)] dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)] overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="بخش‌های محصول"
+    data-mds-tabs
+    data-mds-tabs-variant="default"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="specs"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-specs" aria-controls="mds-tabpanel-specs"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('specs')"
+    x-bind:aria-selected="isActive('specs') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('specs') ? 0 : -1"
+    x-bind:data-selected="isActive('specs') ? '' : false"
+    data-mds-tab="specs"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 17H16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M8 13H12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5M20 10.6569V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V9.45584C4 6.21082 4 4.58831 4.88607 3.48933C5.06508 3.26731 5.26731 3.06508 5.48933 2.88607C6.58831 2 8.21082 2 11.4558 2C12.1614 2 12.5141 2 12.8372 2.11401C12.9044 2.13772 12.9702 2.165 13.0345 2.19575C13.3436 2.34355 13.593 2.593 14.0919 3.09188L18.8284 7.82843C19.4065 8.40649 19.6955 8.69552 19.8478 9.06306C20 9.4306 20 9.83935 20 10.6569Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>مشخصات فنی</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-reviews" aria-controls="mds-tabpanel-reviews"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('reviews')"
+    x-bind:aria-selected="isActive('reviews') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('reviews') ? 0 : -1"
+    x-bind:data-selected="isActive('reviews') ? '' : false"
+    data-mds-tab="reviews"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>نظرات کاربران</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-qna" aria-controls="mds-tabpanel-qna"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('qna')"
+    x-bind:aria-selected="isActive('qna') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('qna') ? 0 : -1"
+    x-bind:data-selected="isActive('qna') ? '' : false"
+    data-mds-tab="qna"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.0045 12H12.0135M16 12H16.009M8.009 12H8.01797" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /><path d="M21.5 12C21.5 17.2467 17.2467 21.5 12 21.5C10.3719 21.5 8.8394 21.0904 7.5 20.3687C5.63177 19.362 4.37462 20.2979 3.26592 20.4658C3.09774 20.4913 2.93024 20.4302 2.80997 20.31C2.62741 20.1274 2.59266 19.8451 2.6935 19.6074C3.12865 18.5818 3.5282 16.6382 2.98341 15C2.6698 14.057 2.5 13.0483 2.5 12C2.5 6.75329 6.75329 2.5 12 2.5C17.2467 2.5 21.5 6.75329 21.5 12Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>پرسش و پاسخ</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 border-b-2 border-transparent px-1 text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:border-accent data-selected:text-zinc-800 dark:data-selected:text-white h-10 text-sm" id="mds-tab-seller" aria-controls="mds-tabpanel-seller"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+         disabled     x-on:click="select('seller')"
+    x-bind:aria-selected="isActive('seller') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('seller') ? 0 : -1"
+    x-bind:data-selected="isActive('seller') ? '' : false"
+    data-mds-tab="seller"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><path d="M11 17H15M13.5 7H14.4429C15.7533 7 16.4086 7 16.9641 7.31452C17.5196 7.62904 17.89 8.20972 18.6308 9.37107C19.1502 10.1854 19.6955 10.7765 20.4622 11.3024C21.2341 11.8318 21.6012 12.0906 21.8049 12.506C22 12.9038 22 13.375 22 14.3173C22 15.5596 22 16.1808 21.651 16.5755C21.636 16.5925 21.6207 16.609 21.6049 16.625C21.2375 17 20.6594 17 19.503 17H19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 7L13.9942 9.48556C14.4813 10.7034 14.7249 11.3123 15.2328 11.6561C15.7407 12 16.3965 12 17.7081 12H21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.86957 17C3.51684 17 2.84048 17 2.42024 16.5607C2 16.1213 2 15.4142 2 14V7C2 5.58579 2 4.87868 2.42024 4.43934C2.84048 4 3.51684 4 4.86957 4H10.1304C11.4832 4 12.1595 4 12.5798 4.43934C13 4.87868 13 5.58579 13 7V17H8.69565" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>فروشنده</span>
+
+    </button>
+</div>
+
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-specs" aria-labelledby="mds-tab-specs"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('specs')"
+    data-mds-tab-panel="specs"
+>
+    وزن، ابعاد و مدت گارانتی.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-reviews" aria-labelledby="mds-tab-reviews"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('reviews')"
+    data-mds-tab-panel="reviews"
+>
+    آنچه خریداران درباره این کالا نوشته‌اند.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-qna" aria-labelledby="mds-tab-qna"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('qna')"
+    data-mds-tab-panel="qna"
+>
+    پرسش خود را از فروشنده بپرسید.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-seller" aria-labelledby="mds-tab-seller"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('seller')"
+    data-mds-tab-panel="seller"
+>
+    این بخش فعلاً در دسترس نیست.
+</div>
+</div>
+    </div>
+
+    <div class="space-y-2">
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >قطعه‌ای و کوچک، با زبانه آغازین انتخاب‌شده:</p>
+        <div
+    
+    x-data="mdsTabs({ value: 'month' })"
+    data-mds-tab-group
+>
+    <div
+    class="inline-flex max-w-full gap-1 rounded-lg bg-zinc-800/5 p-1 dark:bg-white/10 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="بازه زمانی"
+    data-mds-tabs
+    data-mds-tabs-variant="segmented"
+    data-mds-tabs-size="sm"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="month"
+                data-mds-tabs-input
+        
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-2.5 py-1 text-xs" id="mds-tab-week" aria-controls="mds-tabpanel-week"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('week')"
+    x-bind:aria-selected="isActive('week') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('week') ? 0 : -1"
+    x-bind:data-selected="isActive('week') ? '' : false"
+    data-mds-tab="week"
+>
+    
+    <span>این هفته</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-2.5 py-1 text-xs" id="mds-tab-month" aria-controls="mds-tabpanel-month"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('month')"
+    x-bind:aria-selected="isActive('month') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('month') ? 0 : -1"
+    x-bind:data-selected="isActive('month') ? '' : false"
+    data-mds-tab="month"
+>
+    
+    <span>این ماه</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-md text-zinc-500 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:text-white data-selected:bg-white data-selected:text-zinc-800 data-selected:shadow-xs dark:data-selected:bg-zinc-700 dark:data-selected:text-white px-2.5 py-1 text-xs" id="mds-tab-year" aria-controls="mds-tabpanel-year"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('year')"
+    x-bind:aria-selected="isActive('year') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('year') ? 0 : -1"
+    x-bind:data-selected="isActive('year') ? '' : false"
+    data-mds-tab="year"
+>
+    
+    <span>امسال</span>
+
+    </button>
+</div>
+
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-week" aria-labelledby="mds-tab-week"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('week')"
+    data-mds-tab-panel="week"
+>
+    سفارش‌های ۷ روز گذشته.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-month" aria-labelledby="mds-tab-month"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('month')"
+    data-mds-tab-panel="month"
+>
+    سفارش‌های ۳۰ روز گذشته.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-year" aria-labelledby="mds-tab-year"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('year')"
+    data-mds-tab-panel="year"
+>
+    سفارش‌های ۱۲ ماه گذشته.
+</div>
+</div>
+    </div>
+
+    <div class="space-y-2">
+        <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >قرصی، متصل به Livewire:</p>
+        <div
+    
+    x-data="mdsTabs({ value: 'profile' })"
+    data-mds-tab-group
+>
+    <div
+    class="flex gap-1 overflow-x-auto [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden"
+    x-on:keydown="keydown($event)"
+    role="tablist"
+    aria-orientation="horizontal"
+    aria-label="حساب کاربری"
+    data-mds-tabs
+    data-mds-tabs-variant="pills"
+    data-mds-tabs-size="default"
+>
+    
+    <input
+        type="hidden"
+        x-ref="tabsInput"
+        value="profile"
+         name="tab"         data-mds-tabs-input
+        wire:model="tab"
+    >
+
+    <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-profile" aria-controls="mds-tabpanel-profile"
+    type="button"
+    role="tab"
+    aria-selected="true"
+    tabindex="0"
+     data-selected         x-on:click="select('profile')"
+    x-bind:aria-selected="isActive('profile') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('profile') ? 0 : -1"
+    x-bind:data-selected="isActive('profile') ? '' : false"
+    data-mds-tab="profile"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+    
+    <span>نمایه</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-notifications" aria-controls="mds-tabpanel-notifications"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('notifications')"
+    x-bind:aria-selected="isActive('notifications') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('notifications') ? 0 : -1"
+    x-bind:data-selected="isActive('notifications') ? '' : false"
+    data-mds-tab="notifications"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16 18C16 20.2091 14.2091 22 12 22C9.79086 22 8 20.2091 8 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.43654 18H19.5625C20.2903 18 20.6542 18 20.8648 17.8951C21.274 17.6913 21.4929 17.2359 21.3964 16.789C21.3468 16.559 21.1194 16.2749 20.6648 15.7066L20.4951 15.4944C20.0392 14.9246 19.8113 14.6397 19.6184 14.3409C19.0187 13.4119 18.6477 12.354 18.5356 11.254C18.4995 10.9002 18.4995 10.5353 18.4995 9.8056V8.5C18.4995 8.03572 18.4995 7.80358 18.4867 7.60758C18.2898 4.60304 15.8965 2.20977 12.892 2.01285C12.696 2 12.4638 2 11.9995 2C11.5353 2 11.3031 2 11.1071 2.01285C8.10258 2.20977 5.70931 4.60304 5.51239 7.60758C5.49954 7.80358 5.49954 8.03572 5.49954 8.5V9.8056C5.49954 10.5353 5.49954 10.9002 5.46349 11.254C5.35143 12.354 4.98035 13.4119 4.38067 14.3409C4.18779 14.6397 3.95985 14.9246 3.50401 15.4944L3.33427 15.7066C2.87964 16.2749 2.65233 16.559 2.60268 16.789C2.50621 17.2359 2.72509 17.6913 3.13431 17.8951C3.3449 18 3.70878 18 4.43654 18Z" stroke="currentColor" stroke-width="1.5" /></svg>
+    
+    <span>اعلان‌ها</span>
+
+    </button>
+                <button
+    class="inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50 rounded-full text-zinc-500 enabled:hover:bg-zinc-800/5 enabled:hover:text-zinc-800 dark:text-white/70 dark:enabled:hover:bg-white/10 dark:enabled:hover:text-white data-selected:bg-accent/10 data-selected:text-accent-content dark:data-selected:bg-accent/20 px-3 py-1.5 text-sm" id="mds-tab-security" aria-controls="mds-tabpanel-security"
+    type="button"
+    role="tab"
+    aria-selected="false"
+    tabindex="-1"
+            x-on:click="select('security')"
+    x-bind:aria-selected="isActive('security') ? 'true' : 'false'"
+    x-bind:tabindex="isActive('security') ? 0 : -1"
+    x-bind:data-selected="isActive('security') ? '' : false"
+    data-mds-tab="security"
+>
+            <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.26781 18.8447C4.49269 20.515 5.87613 21.8235 7.55966 21.9009C8.97627 21.966 10.4153 22 12 22C13.5847 22 15.0237 21.966 16.4403 21.9009C18.1239 21.8235 19.5073 20.515 19.7322 18.8447C19.879 17.7547 20 16.6376 20 15.5C20 14.3624 19.879 13.2453 19.7322 12.1553C19.5073 10.485 18.1239 9.17649 16.4403 9.09909C15.0237 9.03397 13.5847 9 12 9C10.4153 9 8.97627 9.03397 7.55966 9.09909C5.87613 9.17649 4.49269 10.485 4.26781 12.1553C4.12104 13.2453 4 14.3624 4 15.5C4 16.6376 4.12104 17.7547 4.26781 18.8447Z" stroke="currentColor" stroke-width="1.5" /><path d="M7.5 9V6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5V9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M11.9961 15.5H12.0051" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" /></svg>
+    
+    <span>امنیت</span>
+
+    </button>
+</div>
+
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-profile" aria-labelledby="mds-tab-profile"
+    role="tabpanel"
+    tabindex="0"
+        x-bind:hidden="! isActive('profile')"
+    data-mds-tab-panel="profile"
+>
+    نام، تصویر و نشانی عمومی شما.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-notifications" aria-labelledby="mds-tab-notifications"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('notifications')"
+    data-mds-tab-panel="notifications"
+>
+    ایمیل و پیامک‌هایی که دریافت می‌کنید.
+</div>
+            <div
+    class="mt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" id="mds-tabpanel-security" aria-labelledby="mds-tab-security"
+    role="tabpanel"
+    tabindex="0"
+     hidden     x-bind:hidden="! isActive('security')"
+    data-mds-tab-panel="security"
+>
+    گذرواژه و ورودهای فعال.
+</div>
+</div>
+    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>آیکون‌ها — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >آیکون‌های <a href="https://hugeicons.com" class="underline">Hugeicons</a> جایگزین heroicons در همه اجزای mds شده‌اند. مجموعه رایگان Stroke Rounded (۶٬۲۰۰ آیکون) همراه بسته می‌آید؛ نام‌های heroicons هم از طریق نقشه معادل‌ها کار می‌کنند.</p>
@@ -12410,7 +12893,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

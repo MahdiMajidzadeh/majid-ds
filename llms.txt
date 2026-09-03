@@ -699,6 +699,56 @@ public string $at = '10:30';
 protected function rules() { return ['at' => 'required|date_format:H:i']; }
 ```
 
+### <mds:tabs> — the tab list (open version of Flux Pro's flux:tabs)
+Props: `variant` default|segmented|pills='default' (an unknown value falls back to default) · `size` sm|null=null
+(`sm` shrinks every tab in the list) · `label` string|null — the tablist's accessible name, default «زبانه‌ها» / "Tabs" by fa ·
+`name` string|null (posts the active tab under that name in a plain form) · `fa` bool|null=config (inherited from the group).
+Renders the `role="tablist"` `aria-orientation="horizontal"` element plus the hidden control Livewire binds to
+(`<input type="hidden" data-mds-tabs-input>`); `wire:model*` written on `<mds:tabs>` is forwarded to that input and is never
+left on the list. The list scrolls horizontally rather than wrapping (its scrollbar is hidden), so a long row of tabs stays one row.
+Markers: `data-mds-tabs`, `data-mds-tabs-variant`, `data-mds-tabs-size`. The active tab is inherited from the enclosing
+`<mds:tab.group>` — the list never decides on its own, it only resolves the group's `value` against the tabs it actually holds.
+
+### <mds:tab> — one tab, its group and its panels (open version of Flux Pro's flux:tab)
+Props: `name` string, REQUIRED — pairs the tab with the `<mds:tab.panel>` of the same name; a missing name throws
+InvalidArgumentException · `icon` heroicon name|null (leading, rendered through `<mds:icon variant="micro">`) ·
+`icon-trailing` heroicon name|null — Flux's `icon:trailing` spelling is accepted too and is consumed, not printed ·
+`disabled` bool=false (a real disabled `<button>`: skipped by the arrow keys and never chosen as the default) ·
+`fa` bool|null=config (accepted for symmetry; a tab has no built-in text of its own).
+Renders `<button type="button" role="tab" id="mds-tab-{slug}" aria-controls="mds-tabpanel-{slug}">` where `{slug}` is the
+name with every run of non-letter/non-digit characters replaced by `-` — Persian names survive intact. Marker `data-mds-tab="{name}"`.
+Compose:
+- `<mds:tab.group>` props: `value` string|null — the tab shown first; when it names a disabled or unknown tab the first ENABLED tab wins instead · `fa` bool|null=config (inherited by the list, the tabs and the panels). Holds the Alpine state (`Alpine.data('mdsTabs')`, registered once per page behind a started-Alpine guard) and wraps list + panels. Marker `data-mds-tab-group`. Groups nest: a group inside a panel keeps its own state and its own default.
+- `<mds:tab.panel>` props: `name` string, REQUIRED — the tab it belongs to; a missing name throws InvalidArgumentException · `fa` bool|null=config. Renders `role="tabpanel"` `tabindex="0"` `id="mds-tabpanel-{slug}"` `aria-labelledby="mds-tab-{slug}"`, `hidden` on the server unless it is the active one. Marker `data-mds-tab-panel="{name}"`.
+Behavior: the first ENABLED tab is active when the group has no `value`, and the server resolves that before Alpine runs — the right
+panel is visible in the very first paint, and with JavaScript off the page is still correct (only switching needs Alpine). Clicking a
+tab selects it; the panels are toggled by `hidden`, so all of them stay in the DOM and keep their form state.
+ARIA contract: the WAI-ARIA Tabs pattern with AUTOMATIC activation. Roving tabindex — the active tab is the only tab stop
+(`tabindex="0"`, the rest `-1`) and carries `aria-selected="true"` plus `data-selected` (styling hooks off the attribute, never off a
+colour alone). ArrowLeft/ArrowRight move focus AND select, wrapping at both ends and skipping disabled tabs; Home/End jump to the
+first/last enabled tab. Left/Right follow the VISUAL order: `getComputedStyle(tablist).direction` is read at keydown, so an RTL island
+in an LTR page moves the way it looks. Panels are focusable (`tabindex="0"`) so a keyboard user can reach panel content that has no
+control of its own.
+Livewire contract: `wire:model` / `wire:model.live` on `<mds:tabs>` binds the active tab's NAME (a plain string) through the hidden
+input, which dispatches a bubbling `input` event on every user selection. A morph that changes the bound property rewrites that input's
+`value` attribute; a MutationObserver (`attributeFilter: ['value']`, disconnected in `destroy()`) re-reads it into Alpine, and a value
+that names no enabled tab is quietly corrected to the first one without dispatching an event. Flux puts the binding on the GROUP;
+here it belongs on the list, and `wire:model` written on `<mds:tab.group>` throws InvalidArgumentException rather than landing on a
+plain div where Livewire would ignore it. Other `wire:*` attributes on the group pass through untouched.
+```blade
+<mds:tab.group value="specs">
+    <mds:tabs variant="segmented" label="بخش‌های محصول" wire:model.live="tab">
+        <mds:tab name="specs" icon="document-text">مشخصات</mds:tab>
+        <mds:tab name="reviews" icon="star">نظرات</mds:tab>
+        <mds:tab name="qna" icon="chat-bubble-left-right" disabled>پرسش و پاسخ</mds:tab>
+    </mds:tabs>
+
+    <mds:tab.panel name="specs">…</mds:tab.panel>
+    <mds:tab.panel name="reviews">…</mds:tab.panel>
+    <mds:tab.panel name="qna">…</mds:tab.panel>
+</mds:tab.group>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.
