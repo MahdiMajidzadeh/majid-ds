@@ -696,6 +696,21 @@ An open implementation of Flux Pro's tabs, API-compatible with `flux:tabs`. Thre
 
 Props — `tab.group`: `value` (tab to open), `fa`; `tabs`: `variant` (`default`/`segmented`/`pills`), `size` (`sm`), `label` (tablist accessible name, default «زبانه‌ها» — or "Tabs" when Persian output is off), `name` (form field for the hidden input), `fa`, plus `wire:model`; `tab`: `name` (required), `icon`, `icon-trailing` (Flux's `icon:trailing` works too), `disabled`, `fa`; `tab.panel`: `name` (required), `fa`.
 
+### `<mds:autocomplete>`
+
+An open implementation of Flux Pro's autocomplete: a real `flux:input` that keeps whatever the user types, with a filtered list of suggestions under it — the options are a shortcut, not a constraint, and `strict` turns them into one when you need it. Matching folds Arabic spellings into Persian (ي/ك → ی/ک) and both digit scripts to Latin, so a shopper typing on an Arabic keyboard still finds the Persian entry.
+
+```blade
+<mds:autocomplete wire:model.live.debounce.300ms="city" name="city" label="شهر"
+                  placeholder="نام شهر را بنویسید..." icon="map-pin" clearable :min-chars="2" empty strict>
+    @foreach ($this->cities as $city)
+        <mds:autocomplete.item :value="$city->name">{{ $city->name }}</mds:autocomplete.item>
+    @endforeach
+</mds:autocomplete>
+```
+
+Props: `value`, `name`, `label`, `description`, `placeholder`, `icon`, `clearable`, `min-chars` (default `0`), `empty` (bare attribute for the built-in "no matches" line, or your own string), `strict`, `size` (`sm`/`xs`), `disabled`, `invalid`, `error`, `fa`; `autocomplete.item` takes `value`, `disabled`, `fa`. `wire:model` binds the text and reaches the input itself, so a Livewire-filtered list works — the component re-scans its options after every morph.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

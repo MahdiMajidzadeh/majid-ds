@@ -100,6 +100,7 @@ return [
             'slider' => 'mds:slider',
             'time-picker' => 'mds:time-picker',
             'tabs' => 'mds:tabs',
+            'autocomplete' => 'mds:autocomplete',
         ],
     ],
 ];

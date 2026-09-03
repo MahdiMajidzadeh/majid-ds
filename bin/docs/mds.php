@@ -2831,4 +2831,182 @@ $pages['tabs'] = [
     'related' => ['navbar', 'card', 'command'],
 ];
 
+// ------------------------------------------------------ mds:autocomplete
+
+// Paste into bin/docs/mds.php (keep the file's slug order in sync with bin/docs/nav.php).
+// Nav entry:  'autocomplete' => 'mds:autocomplete',
+
+// --------------------------------------------------------- mds:autocomplete
+
+$pages['autocomplete'] = [
+    'group' => 'mds',
+    'title' => 'mds:autocomplete',
+    'lede' => 'A text field with suggestions — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Autocomplete is Pro-only. This is a working replacement: a real <code>flux:input</code> that keeps whatever the user types, with a filtered list of suggestions underneath. Unlike a select it never forces a choice — the options are a shortcut, not a constraint. The preview is live; type a letter or two into it.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete label="City" placeholder="Start typing a city..." class="max-w-sm">
+                <mds:autocomplete.item>Tehran</mds:autocomplete.item>
+                <mds:autocomplete.item>Mashhad</mds:autocomplete.item>
+                <mds:autocomplete.item>Isfahan</mds:autocomplete.item>
+                <mds:autocomplete.item>Karaj</mds:autocomplete.item>
+                <mds:autocomplete.item>Shiraz</mds:autocomplete.item>
+                <mds:autocomplete.item>Tabriz</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Matching folds Persian and Arabic spellings together (ي/ى → ی, ك → ک) and both digit scripts to Latin, so a shopper typing <span dir="rtl">كتاب</span> on an Arabic keyboard still finds <span dir="rtl">کتاب</span>.',
+        ],
+        [
+            'name' => 'A value distinct from the label',
+            'text' => 'By default picking an option writes its own text into the field. Give the item a <code>value</code> to write something else — a code, a canonical spelling, an id.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete label="Province" placeholder="Province code" class="max-w-sm">
+                <mds:autocomplete.item value="THR">Tehran</mds:autocomplete.item>
+                <mds:autocomplete.item value="RKH">Razavi Khorasan</mds:autocomplete.item>
+                <mds:autocomplete.item value="ESF">Isfahan</mds:autocomplete.item>
+                <mds:autocomplete.item value="FRS">Fars</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Empty state',
+            'text' => 'Without <code>empty</code> the list simply disappears when nothing matches. A bare <code>empty</code> attribute shows the built-in line, and a string replaces it. Type something that matches nothing to see it.',
+            'code' => <<<'BLADE'
+            <div class="grid w-full gap-6 sm:grid-cols-2">
+                <mds:autocomplete label="Built-in message" placeholder="Try 'zzz'" empty>
+                    <mds:autocomplete.item>Laptop</mds:autocomplete.item>
+                    <mds:autocomplete.item>Headphones</mds:autocomplete.item>
+                </mds:autocomplete>
+
+                <mds:autocomplete label="Your own message" placeholder="Try 'zzz'" empty="No such product — try another spelling.">
+                    <mds:autocomplete.item>Laptop</mds:autocomplete.item>
+                    <mds:autocomplete.item>Headphones</mds:autocomplete.item>
+                </mds:autocomplete>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Waiting for a few characters',
+            'text' => '<code>min-chars</code> keeps the list shut until the query is long enough — the shape you want when every keystroke is a database query.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete label="Search products" placeholder="At least two characters..." :min-chars="2" empty class="max-w-sm">
+                <mds:autocomplete.item>Galaxy S24</mds:autocomplete.item>
+                <mds:autocomplete.item>Galaxy A55</mds:autocomplete.item>
+                <mds:autocomplete.item>Galaxy Watch 7</mds:autocomplete.item>
+                <mds:autocomplete.item>Galaxy Buds 3</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Strict values',
+            'text' => 'Free text is the default. <code>strict</code> makes the field settle on an option when it loses focus: text that matches one is snapped to that option\'s own spelling, and text that matches none is cleared. Type <code>tehran</code> and click away.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete label="City" placeholder="Only a listed city is kept" strict empty class="max-w-sm">
+                <mds:autocomplete.item>Tehran</mds:autocomplete.item>
+                <mds:autocomplete.item>Mashhad</mds:autocomplete.item>
+                <mds:autocomplete.item>Isfahan</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Icon, size, clearable and disabled options',
+            'text' => 'The field is a <code>flux:input</code>, so <code>icon</code> and <code>size</code> go straight through. <code>clearable</code> adds a trailing button that empties the field, and an option can be <code>disabled</code> — still listed, but not selectable.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-sm space-y-4">
+                <mds:autocomplete label="Branch" icon="map-pin" clearable value="Tehran — Saadat Abad" empty>
+                    <mds:autocomplete.item>Tehran — Saadat Abad</mds:autocomplete.item>
+                    <mds:autocomplete.item>Tehran — Tajrish</mds:autocomplete.item>
+                    <mds:autocomplete.item disabled>Karaj — Gohardasht (closed)</mds:autocomplete.item>
+                </mds:autocomplete>
+
+                <mds:autocomplete size="sm" icon="magnifying-glass" placeholder="Small" description="A compact field for a toolbar.">
+                    <mds:autocomplete.item>Orders</mds:autocomplete.item>
+                    <mds:autocomplete.item>Invoices</mds:autocomplete.item>
+                </mds:autocomplete>
+
+                <mds:autocomplete label="Locked" value="Tehran" disabled>
+                    <mds:autocomplete.item>Tehran</mds:autocomplete.item>
+                </mds:autocomplete>
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Validation',
+            'text' => 'Pass <code>error</code> for an explicit message. With a <code>name</code> (or a <code>wire:model</code> to take the name from) and no <code>error</code>, the component reads the message out of the validation bag itself.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete label="City" name="city" error="Choose a city we deliver to." value="Bandar Abbas" class="max-w-sm">
+                <mds:autocomplete.item>Tehran</mds:autocomplete.item>
+                <mds:autocomplete.item>Mashhad</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'With Livewire',
+            'text' => 'The bound property holds the text, so the options can be queried on the server as it changes. Nothing else is needed — the component re-scans its own list when Livewire morphs new items in.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete wire:model.live.debounce.300ms="city" name="city" label="City" icon="map-pin"
+                              placeholder="Start typing..." :min-chars="2" clearable empty class="max-w-sm">
+                <mds:autocomplete.item>Tehran</mds:autocomplete.item>
+                <mds:autocomplete.item>Tabriz</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'In the component: <code>public string $city = \'\';</code> and a computed property that queries with <code>$this->city</code>. Because the value is free text, validate it server-side even when <code>strict</code> is on — the browser is not the authority.',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the built-in strings to Persian; <code>:fa="true"</code> does it for a single field. The popup, the highlight and the clear button all follow the page direction with no extra work.',
+            'code' => <<<'BLADE'
+            <mds:autocomplete :fa="true" label="شهر" placeholder="نام شهر را بنویسید..." icon="map-pin"
+                              clearable empty strict class="max-w-sm">
+                <mds:autocomplete.item>تهران</mds:autocomplete.item>
+                <mds:autocomplete.item>مشهد</mds:autocomplete.item>
+                <mds:autocomplete.item>اصفهان</mds:autocomplete.item>
+                <mds:autocomplete.item>کرج</mds:autocomplete.item>
+                <mds:autocomplete.item>شیراز</mds:autocomplete.item>
+                <mds:autocomplete.item disabled>کیش (خارج از محدوده ارسال)</mds:autocomplete.item>
+            </mds:autocomplete>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:autocomplete', 'props' => [
+            ['value', 'Initial text in the field.'],
+            ['name', 'Field name for a plain form post, and the key the error bag is read with. Defaults to the <code>wire:model</code> expression.'],
+            ['label', 'Label text. Also names the suggestion listbox.'],
+            ['description', 'Help text under the field.'],
+            ['placeholder', 'Placeholder for the field.'],
+            ['icon', 'Leading icon name.'],
+            ['clearable', 'Adds a button that empties the field. Default: <code>false</code>.'],
+            ['min-chars', 'Characters needed before the list opens. Default: <code>0</code>.'],
+            ['empty', 'Message shown when nothing matches. Absent, the list just hides; a bare attribute uses "No matches.", or موردی یافت نشد. in Persian.'],
+            ['strict', 'On blur, snap the text to a matching option or clear it. Default: <code>false</code>.'],
+            ['size', 'Field size: <code>sm</code> or <code>xs</code>.'],
+            ['disabled', 'Disables the field and hides the popup.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code>.'],
+            ['fa', 'Persian built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds the text to a Livewire property.'],
+        ]],
+        ['name' => 'mds:autocomplete.item', 'props' => [
+            ['value', 'Text written into the field when the option is picked. Defaults to the option\'s own text.'],
+            ['disabled', 'Lists the option but does not let it be picked. Default: <code>false</code>.'],
+            ['fa', 'Inherited from the autocomplete.'],
+        ]],
+    ],
+    'related' => ['input', 'select', 'command'],
+];
+
 return $pages;

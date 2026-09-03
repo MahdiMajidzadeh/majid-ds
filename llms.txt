@@ -749,6 +749,58 @@ plain div where Livewire would ignore it. Other `wire:*` attributes on the group
 </mds:tab.group>
 ```
 
+### <mds:autocomplete> — text input with a suggestion list (open version of Flux Pro's flux:autocomplete)
+A `flux:input` that keeps its free text and offers matching options underneath: type-ahead, not a select. Props: `value`
+string|null (initial text) · `name` string|null (plain form post + the key `$errors` is read with; defaults to the
+`wire:model` expression, exactly as flux:input does) · `label` / `description` (flux:field chrome; `label` also names the
+listbox) · `placeholder` string|null · `icon` string|null (leading icon, passed to flux:input) · `clearable` bool=false
+(trailing × button, hidden while the field is empty) · `min-chars` int=0 (characters needed before the list opens) ·
+`empty` bool|string|null=false (the no-match line: absent the list just hides, a bare `empty` uses the built-in
+'موردی یافت نشد.' / 'No matches.', a string is shown as given) · `strict` bool=false (on blur, snap the text to a matching
+option's own spelling, or clear it when it matches none) · `disabled` bool=false · `size` sm|xs|null (flux:input size) ·
+`error` string|null (explicit message; when omitted and `name` is set, falls back to `$errors->first($name)`) ·
+`invalid` bool=false (any error implies it) · `fa` bool|null=config (picks the language of the built-in strings; inherited
+by items). `wire:model` is forwarded to the text input; everything else lands on the root `[data-mds-autocomplete]` div.
+- `<mds:autocomplete.item>` props: `value` string|null (what is written into the input when picked; the item's own text
+  when absent) · `disabled` bool=false (stays visible, greyed, skipped by the cursor and unclickable) · `fa` bool|null
+  (inherited). Default slot = the option's label. Attributes land on the option. Renders `role="option"` inside the
+  listbox with `data-mds-autocomplete-item` and a `[data-mds-autocomplete-label]` span the highlighter rewrites.
+Behavior (Alpine `mdsAutocomplete`): WAI-ARIA combobox with a listbox popup — *list autocomplete with manual selection*,
+so typing filters but selects nothing; the arrow keys move a virtual cursor and Enter or a click copies that option's
+value into the input. Matching is substring on the option's text after Persian normalization (Arabic ي/ى/ك fold to ی/ک,
+Persian and Arabic-Indic digits fold to Latin), so typing 'كتاب' or '٢' still matches; the matched run of every visible
+label is wrapped in a `<mark>` built from text nodes, so typed text never reaches innerHTML. Keys: ArrowDown/ArrowUp move
+and wrap (from nothing active, Down takes the first option and Up the last, and either opens a closed list), Home/End jump
+to the ends, Enter picks the active option, Escape closes, Tab closes and moves on. Enter, Escape, Home and End only act
+while the list is open — a closed autocomplete is an ordinary text field, so Enter submits its form. The list opens on
+focus and closes on blur; the popup prevents `mousedown`, so clicking an option (or dragging its scrollbar) never blurs
+the input. `min-chars` holds the list shut until enough is typed. The option cache follows the DOM: a MutationObserver on
+the root re-scans (collapsed to one pass per microtask) when a Livewire morph or an `x-for` adds, removes or relabels
+items, keeping the cursor on the same option where it survives — so server-side search works. The observer and its
+records are cleared in `destroy()`.
+ARIA contract: the input is `role="combobox"` `aria-autocomplete="list"` `autocomplete="off"` with `aria-expanded`
+tracking the popup, `aria-controls` → the listbox and `aria-activedescendant` → the active option (ids assigned at init
+from Alpine's `$id`). Options are `role="option"` with `aria-selected` on the active one and `aria-disabled="true"` on
+disabled ones; they are never in the tab order — focus stays in the input. The no-match line is a `role="status"` region
+OUTSIDE the listbox (a listbox takes options, not prose). The clear button is labelled 'پاک کردن' / 'Clear'. The error is
+the `flux:error` markup (`role="alert"`), rendered without its dependency on the session bag. CSS hooks:
+`[data-mds-autocomplete]`, `-input`, `-clear`, `-popup`, `-list`, `-item`, `-label`, `-empty`; `[data-disabled]` on the
+root and on disabled options.
+Livewire contract: the bound property holds the *text*, not an id — `wire:model.live` is the useful mode when the options
+are queried on the server.
+```php
+public string $city = '';
+public function getCitiesProperty() { return City::where('name', 'like', "%{$this->city}%")->take(8)->get(); }
+```
+```blade
+<mds:autocomplete wire:model.live.debounce.300ms="city" name="city" label="شهر" placeholder="نام شهر را بنویسید..."
+                  icon="map-pin" clearable :min-chars="2" empty strict>
+    @foreach ($this->cities as $city)
+        <mds:autocomplete.item :value="$city->name">{{ $city->name }}</mds:autocomplete.item>
+    @endforeach
+</mds:autocomplete>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

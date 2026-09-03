@@ -40,6 +40,7 @@ $demoAnchors = [
     'slider' => 'Slider',
     'time-picker' => 'Time picker',
     'tabs' => 'Tabs',
+    'autocomplete' => 'Autocomplete',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

@@ -1647,6 +1647,11 @@ class ComponentsTest extends TestCase
             // is anchored to the aria-label so a bare "Tabs" elsewhere in the markup
             // could not satisfy it.
             'tabs list label' => ['<mds:tab.group><mds:tabs><mds:tab name="a">A</mds:tab></mds:tabs></mds:tab.group>', 'aria-label="زبانه‌ها"', 'aria-label="Tabs"'],
+            'autocomplete clear' => ['<mds:autocomplete clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            // The no-match line sits on its own indented line inside the popup, so the
+            // needle is the sentence (as with the 'command empty state' row) rather
+            // than a >…< anchor — ComponentsTest does not collapse whitespace.
+            'autocomplete empty state' => ['<mds:autocomplete empty />', 'موردی یافت نشد.', 'No matches.'],
         ];
     }
 

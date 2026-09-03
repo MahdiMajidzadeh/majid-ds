@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#autocomplete" icon="magnifying-glass">{{ __('تکمیل خودکار') }}</flux:navbar.item>
         <flux:navbar.item href="#tabs">{{ __('زبانه‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#time-picker" icon="clock">{{ __('انتخاب ساعت') }}</flux:navbar.item>
         <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
@@ -1204,6 +1205,59 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             <mds:tab.panel name="security">{{ __('گذرواژه و ورودهای فعال.') }}</mds:tab.panel>
         </mds:tab.group>
     </div>
+</flux:card>
+
+{{-- ============================== MDS: Autocomplete ============================== --}}
+<flux:card id="autocomplete" class="space-y-6">
+    <flux:heading size="lg">{{ __('تکمیل خودکار — mds:autocomplete') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Autocomplete (که در Flux فقط در نسخه Pro موجود است) — یک ورودی متنی معمولی با فهرست پیشنهاد، جستجوی فارسی و ناوبری با کیبورد.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('متن آزاد با پیشنهاد شهرها:') }}</flux:text>
+
+            <mds:autocomplete
+                :label="__('شهر')"
+                :description="__('با کلیدهای بالا و پایین در فهرست حرکت کنید و با Enter انتخاب کنید.')"
+                :placeholder="__('نام شهر را بنویسید...')"
+                :empty="__('شهری با این نام پیدا نشد.')"
+                icon="map-pin"
+                clearable
+            >
+                <mds:autocomplete.item>{{ __('تهران') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('مشهد') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('اصفهان') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('کرج') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('شیراز') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('تبریز') }}</mds:autocomplete.item>
+                <mds:autocomplete.item disabled>{{ __('کیش (خارج از محدوده ارسال)') }}</mds:autocomplete.item>
+            </mds:autocomplete>
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('فقط یکی از گزینه‌ها، با حداقل دو حرف:') }}</flux:text>
+
+            <mds:autocomplete
+                :label="__('جستجوی کالا')"
+                :description="__('اگر متن با هیچ کالایی نخواند، هنگام خروج از فیلد پاک می‌شود.')"
+                :placeholder="__('حداقل دو حرف بنویسید...')"
+                :empty="__('کالایی با این نام پیدا نشد.')"
+                icon="magnifying-glass"
+                :min-chars="2"
+                strict
+                clearable
+            >
+                <mds:autocomplete.item>{{ __('گوشی موبایل سامسونگ Galaxy S25') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('هدفون بی‌سیم AirSound Pro') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('ساعت هوشمند Fit Band 8') }}</mds:autocomplete.item>
+                <mds:autocomplete.item>{{ __('شارژر سریع ۶۵ وات') }}</mds:autocomplete.item>
+            </mds:autocomplete>
+        </div>
+    </div>
+
+    <flux:callout icon="information-circle">
+        <flux:callout.text>{{ __('مقدار همیشه متن است، نه شناسه — پس با wire:model.live می‌توانید فهرست را روی سرور بسازید؛ کامپوننت پس از هر morph فهرست خود را دوباره می‌خواند.') }}</flux:callout.text>
+    </flux:callout>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}
