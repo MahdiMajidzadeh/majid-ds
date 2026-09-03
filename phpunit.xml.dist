@@ -44,6 +44,12 @@
     <php>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
         <env name="APP_ENV" value="testing"/>
+        <!-- The suite renders every component of the kit, and PHP's 128M default is
+             no longer enough: past ~700 tests the run dies with "Premature end of
+             PHP process", which reads like a crash rather than an out-of-memory.
+             Pin it here so `composer test` behaves the same on every machine. -->
+        <ini name="memory_limit" value="512M"/>
+
         <!-- Persian::toDateTime() and Jalali::format() read the clock; pin it so a
              contributor's date.timezone cannot make a test machine-dependent. -->
         <ini name="date.timezone" value="UTC"/>
