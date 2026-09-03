@@ -275,8 +275,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -291,9 +301,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -768,8 +785,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -784,9 +811,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -1275,8 +1309,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -1291,9 +1335,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -1782,8 +1833,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -1798,9 +1859,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -2281,8 +2349,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -2297,9 +2375,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -2893,8 +2978,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -2909,9 +3004,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },
@@ -3666,8 +3768,18 @@ window.mds.registerCarousel = (Alpine) => {
         get atStart() { return ! this.loop && this.active <= 0 },
         get atEnd() { return ! this.loop && this.active >= this.last },
 
-        // scrollIntoView follows the writing direction, so RTL needs no
-        // arithmetic: `start` is the right edge there and the left edge in LTR.
+        // Scroll the TRACK, never the slide. scrollIntoView() walks up and
+        // scrolls every scrollable ancestor, so an autoplaying carousel drags
+        // the whole page down to itself every few seconds — which is exactly
+        // what it did on the docs page until this was measured. scrollBy() on
+        // the track touches nothing else.
+        //
+        // The delta is read off the two rectangles rather than computed from
+        // scrollLeft, whose sign and origin in RTL differ between engines and
+        // historically between versions of the same engine. Both rects are
+        // physical, so their difference is a physical pixel offset that
+        // scrollBy() takes directly; picking which edge to align is the only
+        // thing direction changes.
         go(i, behavior = null) {
             if (! this.total) return
 
@@ -3682,9 +3794,16 @@ window.mds.registerCarousel = (Alpine) => {
             this.active = i
             this.announce()
 
-            el.scrollIntoView({
-                inline: 'start',
-                block: 'nearest',
+            const track = this.$refs.track
+            const rtl = getComputedStyle(track).direction === 'rtl'
+            const t = track.getBoundingClientRect()
+            const e = el.getBoundingClientRect()
+
+            // Align the slide's inline-start edge with the track's: the right
+            // edge in RTL, the left edge in LTR.
+            track.scrollBy({
+                left: rtl ? e.right - t.right : e.left - t.left,
+                top: 0,
                 behavior: behavior ?? (this.reduced ? 'auto' : 'smooth'),
             })
         },

@@ -320,7 +320,15 @@ class CarouselTest extends TestCase
         $this->assertStringContainsString('this.observer?.disconnect()', $html);
         $this->assertStringContainsString('this.watcher?.disconnect()', $html);
         $this->assertStringContainsString('threshold: 0.6', $html);
-        $this->assertStringContainsString("inline: 'start'", $html);
+        // The slide is never asked to bring itself into view: scrollIntoView()
+        // scrolls every scrollable ancestor, so an autoplaying carousel walked
+        // the whole page down to itself every few seconds. Measured on the docs
+        // page — 22px to 1832px in under eight seconds with nobody touching it.
+        // The track scrolls itself instead, which cannot move anything else.
+        // (the call, not the word — the view's comment explains the history)
+        $this->assertStringNotContainsString('.scrollIntoView(', $html);
+        $this->assertStringContainsString('track.scrollBy({', $html);
+        $this->assertStringContainsString('rtl ? e.right - t.right : e.left - t.left', $html);
     }
 
     public function test_empty_carousel_renders_without_dots_or_status_text(): void
