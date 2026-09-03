@@ -1649,7 +1649,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerQuantity = (Alpine) => {
+    if (window.mds.quantityRegistered) return
+    window.mds.quantityRegistered = true
+
     Alpine.data('mdsQuantity', (config = {}) => ({
         value: config.value ?? 0,
         min: config.min ?? 0,
@@ -1671,7 +1676,15 @@ document.addEventListener('alpine:init', () => {
             this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerQuantity(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerQuantity(window.Alpine))
+}
 </script>
 
 <div
@@ -1758,7 +1771,12 @@ document.addEventListener('alpine:init', () => {
         <div class="space-y-2">
             <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >درون‌خطی:</p>
             <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerCommand = (Alpine) => {
+    if (window.mds.commandRegistered) return
+    window.mds.commandRegistered = true
+
     Alpine.data('mdsCommand', () => ({
         query: '',
         active: 0,
@@ -1887,7 +1905,15 @@ document.addEventListener('alpine:init', () => {
             return el.id !== '' && el.id === this.activeId
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerCommand(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerCommand(window.Alpine))
+}
 </script>
 
 <div
@@ -2240,7 +2266,12 @@ document.addEventListener('alpine:init', () => {
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >نسخه آزاد از کامپوننت Color Picker (در Flux فقط Pro) — بوم اشباع/روشنایی، اسلایدر رنگ و شفافیت، پالت سواچ، قطره‌چکان و شش فرمت خروجی.</p>
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerColorPicker = (Alpine) => {
+    if (window.mds.colorPickerRegistered) return
+    window.mds.colorPickerRegistered = true
+
     Alpine.data('mdsColorPicker', (config) => ({
         open: false,
 
@@ -2406,7 +2437,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerColorPicker(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerColorPicker(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -3829,7 +3868,12 @@ document.addEventListener('alpine:init', () => {
     <div class="grid gap-6 md:grid-cols-2">
         <div class="space-y-3">
             <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -3892,7 +3936,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -4380,7 +4432,12 @@ document.addEventListener('alpine:init', () => {
 
             <form wire:submit="send">
                 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerComposer = (Alpine) => {
+    if (window.mds.composerRegistered) return
+    window.mds.composerRegistered = true
+
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
         maxRows: config.maxRows ?? null,
@@ -4459,20 +4516,40 @@ document.addEventListener('alpine:init', () => {
             if (form) form.requestSubmit()
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerComposer(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerComposer(window.Alpine))
+}
 
 /*
 | Livewire writes the textarea's value straight into the DOM when the server
 | sends a new one (a sent message clears the property), and that is not an
 | input event. One global morph hook re-syncs the height and the counter.
 */
-document.addEventListener('livewire:init', () => {
+window.mds.registerComposerMorphHook = () => {
+    if (window.mds.composerMorphHookRegistered) return
+    window.mds.composerMorphHookRegistered = true
+
     Livewire.hook('morph.updated', ({ el }) => {
         if (el.matches?.('[data-mds-composer-input]')) {
             el.dispatchEvent(new CustomEvent('mds-composer-morphed', { bubbles: true }))
         }
     })
-})
+}
+
+// Same reasoning as the Alpine registration above: livewire:init fires once
+// per full page load, so on a wire:navigate visit this block runs with Livewire
+// already started and the event will never come again.
+if (window.Livewire) {
+    window.mds.registerComposerMorphHook()
+} else {
+    document.addEventListener('livewire:init', () => window.mds.registerComposerMorphHook())
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -4887,7 +4964,12 @@ document.addEventListener('livewire:init', () => {
 
             <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >این کیت توسط تیم
                 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -5021,7 +5103,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -6163,7 +6253,12 @@ document.addEventListener('alpine:init', () => {
         </div>
     
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerHeatmap = (Alpine) => {
+    if (window.mds.heatmapRegistered) return
+    window.mds.heatmapRegistered = true
+
     Alpine.data('mdsHeatmap', (config = {}) => ({
         hover: null,
         rows: config.rows ?? 7,
@@ -6189,7 +6284,15 @@ document.addEventListener('alpine:init', () => {
             this.move((rtl ? -direction : direction) * this.rows)
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerHeatmap(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerHeatmap(window.Alpine))
+}
 </script>
 
 <div
@@ -23988,7 +24091,12 @@ if (window.Alpine) {
 
     <div class="flex items-center gap-4">
         <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >ثبت امتیاز:</p>        <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerRatingInput = (Alpine) => {
+    if (window.mds.ratingInputRegistered) return
+    window.mds.ratingInputRegistered = true
+
     Alpine.data('mdsRatingInput', (config = {}) => ({
         value: config.value ?? 0,
         max: config.max ?? 5,
@@ -24024,7 +24132,15 @@ document.addEventListener('alpine:init', () => {
             this.$root.querySelectorAll('[role="radio"]')[this.value - 1]?.focus()
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerRatingInput(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerRatingInput(window.Alpine))
+}
 </script>
 
 <div
@@ -24582,7 +24698,12 @@ document.addEventListener('alpine:init', () => {
         <div class="flex flex-col gap-4">
             <div class="flex items-center gap-3">
                 <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >پیشنهاد شگفت‌انگیز:</p>                <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerCountdown = (Alpine) => {
+    if (window.mds.countdownRegistered) return
+    window.mds.countdownRegistered = true
+
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,
         now: Date.now(),
@@ -24619,7 +24740,15 @@ document.addEventListener('alpine:init', () => {
             return window.mds.digits(String(n).padStart(2, '0'), this.fa)
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerCountdown(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerCountdown(window.Alpine))
+}
 </script>
 
 <div

@@ -52,7 +52,12 @@ $triggerSize = match ($size) {
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerColorPicker = (Alpine) => {
+    if (window.mds.colorPickerRegistered) return
+    window.mds.colorPickerRegistered = true
+
     Alpine.data('mdsColorPicker', (config) => ({
         open: false,
 
@@ -218,7 +223,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerColorPicker(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerColorPicker(window.Alpine))
+}
 </script>
 @endonce
 

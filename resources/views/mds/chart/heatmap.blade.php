@@ -29,7 +29,12 @@ $num = fn ($n) => Persian::decimal($n, $fa);
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerHeatmap = (Alpine) => {
+    if (window.mds.heatmapRegistered) return
+    window.mds.heatmapRegistered = true
+
     Alpine.data('mdsHeatmap', (config = {}) => ({
         hover: null,
         rows: config.rows ?? 7,
@@ -55,7 +60,15 @@ document.addEventListener('alpine:init', () => {
             this.move((rtl ? -direction : direction) * this.rows)
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerHeatmap(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerHeatmap(window.Alpine))
+}
 </script>
 @endonce
 

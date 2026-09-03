@@ -57,7 +57,12 @@ $segments[] = ['key' => 's', 'label' => $unitLabels['s'], 'initial' => $seg($ini
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerCountdown = (Alpine) => {
+    if (window.mds.countdownRegistered) return
+    window.mds.countdownRegistered = true
+
     Alpine.data('mdsCountdown', (config = {}) => ({
         end: config.end ?? 0,
         now: Date.now(),
@@ -94,7 +99,15 @@ document.addEventListener('alpine:init', () => {
             return window.mds.digits(String(n).padStart(2, '0'), this.fa)
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerCountdown(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerCountdown(window.Alpine))
+}
 </script>
 @endonce
 

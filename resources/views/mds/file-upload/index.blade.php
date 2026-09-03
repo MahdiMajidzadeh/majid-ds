@@ -25,7 +25,12 @@ $invalid = $invalid || filled($error);
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -88,7 +93,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 @endonce
 

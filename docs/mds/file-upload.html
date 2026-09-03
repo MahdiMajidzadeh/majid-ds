@@ -159,7 +159,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -222,7 +227,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -426,7 +439,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -489,7 +507,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -847,7 +873,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -910,7 +941,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -1184,7 +1223,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -1247,7 +1291,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
@@ -1421,7 +1473,12 @@ if (window.Alpine) {
 </script>
 
 <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerFileUpload = (Alpine) => {
+    if (window.mds.fileUploadRegistered) return
+    window.mds.fileUploadRegistered = true
+
     Alpine.data('mdsFileUpload', (config = {}) => ({
         dragging: false,
         loading: false,
@@ -1484,7 +1541,15 @@ document.addEventListener('alpine:init', () => {
             input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerFileUpload(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerFileUpload(window.Alpine))
+}
 </script>
 
 <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>

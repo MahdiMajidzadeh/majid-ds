@@ -68,7 +68,12 @@ $row = $header ? 'row-start-2' : 'row-start-1';
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerComposer = (Alpine) => {
+    if (window.mds.composerRegistered) return
+    window.mds.composerRegistered = true
+
     Alpine.data('mdsComposer', (config = {}) => ({
         rows: config.rows ?? 2,
         maxRows: config.maxRows ?? null,
@@ -147,20 +152,40 @@ document.addEventListener('alpine:init', () => {
             if (form) form.requestSubmit()
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerComposer(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerComposer(window.Alpine))
+}
 
 /*
 | Livewire writes the textarea's value straight into the DOM when the server
 | sends a new one (a sent message clears the property), and that is not an
 | input event. One global morph hook re-syncs the height and the counter.
 */
-document.addEventListener('livewire:init', () => {
+window.mds.registerComposerMorphHook = () => {
+    if (window.mds.composerMorphHookRegistered) return
+    window.mds.composerMorphHookRegistered = true
+
     Livewire.hook('morph.updated', ({ el }) => {
         if (el.matches?.('[data-mds-composer-input]')) {
             el.dispatchEvent(new CustomEvent('mds-composer-morphed', { bubbles: true }))
         }
     })
-})
+}
+
+// Same reasoning as the Alpine registration above: livewire:init fires once
+// per full page load, so on a wire:navigate visit this block runs with Livewire
+// already started and the event will never come again.
+if (window.Livewire) {
+    window.mds.registerComposerMorphHook()
+} else {
+    document.addEventListener('livewire:init', () => window.mds.registerComposerMorphHook())
+}
 </script>
 @endonce
 

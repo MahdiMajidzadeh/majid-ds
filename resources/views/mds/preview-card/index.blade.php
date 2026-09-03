@@ -5,7 +5,12 @@
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -139,7 +144,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 @endonce
 

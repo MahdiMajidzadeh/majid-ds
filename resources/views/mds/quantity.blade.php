@@ -49,7 +49,12 @@ $textClasses = match ($size) {
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerQuantity = (Alpine) => {
+    if (window.mds.quantityRegistered) return
+    window.mds.quantityRegistered = true
+
     Alpine.data('mdsQuantity', (config = {}) => ({
         value: config.value ?? 0,
         min: config.min ?? 0,
@@ -71,7 +76,15 @@ document.addEventListener('alpine:init', () => {
             this.$refs.input.dispatchEvent(new Event('input', { bubbles: true }))
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerQuantity(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerQuantity(window.Alpine))
+}
 </script>
 @endonce
 

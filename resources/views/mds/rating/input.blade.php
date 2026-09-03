@@ -35,7 +35,12 @@ $starClasses = match ($size) {
 
 @once
 <script @mdsNonce>
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerRatingInput = (Alpine) => {
+    if (window.mds.ratingInputRegistered) return
+    window.mds.ratingInputRegistered = true
+
     Alpine.data('mdsRatingInput', (config = {}) => ({
         value: config.value ?? 0,
         max: config.max ?? 5,
@@ -71,7 +76,15 @@ document.addEventListener('alpine:init', () => {
             this.$root.querySelectorAll('[role="radio"]')[this.value - 1]?.focus()
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerRatingInput(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerRatingInput(window.Alpine))
+}
 </script>
 @endonce
 

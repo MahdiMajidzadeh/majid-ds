@@ -47,7 +47,12 @@
         <div class="docs-preview-inner"><p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
     This kit is maintained by the
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -181,7 +186,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -295,7 +308,12 @@ document.addEventListener('alpine:init', () => {
         <div class="docs-preview-inner"><p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
     The next team offsite is at the
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -429,7 +447,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -521,7 +547,12 @@ document.addEventListener('alpine:init', () => {
     <div class="docs-preview">
         <div class="docs-preview-inner"><div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -655,7 +686,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -906,7 +945,12 @@ document.addEventListener('alpine:init', () => {
         <div class="docs-preview-inner"><p class="text-sm text-zinc-600 dark:text-zinc-300">
     Read more in the
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -1040,7 +1084,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -1111,7 +1163,12 @@ document.addEventListener('alpine:init', () => {
         <div class="docs-preview-inner"><p class="text-sm text-zinc-600 dark:text-zinc-300">
     An
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -1245,7 +1302,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
@@ -1361,7 +1426,12 @@ document.addEventListener('alpine:init', () => {
         <div class="docs-preview-inner" dir="rtl"><p class="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-300">
     این کیت توسط تیم
     <script >
-document.addEventListener('alpine:init', () => {
+window.mds = window.mds || {}
+
+window.mds.registerPreviewCard = (Alpine) => {
+    if (window.mds.previewCardRegistered) return
+    window.mds.previewCardRegistered = true
+
     Alpine.data('mdsPreviewCard', (config = {}) => ({
         open: false,
         delay: config.delay ?? 600,
@@ -1495,7 +1565,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-})
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPreviewCard(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPreviewCard(window.Alpine))
+}
 </script>
 
 <span
