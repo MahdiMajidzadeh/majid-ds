@@ -519,6 +519,64 @@ No fa (it renders no text). KPI card recipe = mds:chart with `delta` + a sparkli
 </mds:chart>
 ```
 
+### <mds:popover> — a panel anchored to its trigger (open version of Flux Pro's flux:popover)
+Compound: `<mds:popover>` (root, holds the state) + `<mds:popover.trigger>` + `<mds:popover.content>`.
+Root props: `position` top|bottom|start|end='bottom' (logical: start/end resolve against the component's own direction, so
+placement mirrors on RTL pages — and inside RTL islands on an LTR page) · `align` start|center|end='start' (alignment along
+that side; `start` hugs the leading edge, which is the trigger's right edge in RTL) · `offset` int=8 (px gap from the trigger;
+cast to an int, and negatives clamp to 0) · `arrow` bool=false (inherited by the content) · `hover` bool=false (open on hover and
+on keyboard focus as well as on click) · `fa` bool|null=config (picks the close button's language; inherited by the content).
+An unknown `position` or `align` falls back to the default instead of producing a broken placement.
+- `<mds:popover.trigger>` — no props. Wrap exactly ONE focusable element (a `flux:button`, a link, an input). Blade cannot
+  inject attributes into slot content, so the click handler lives on this `<span>` (`[data-mds-popover-trigger]`) and the ARIA
+  state is written onto the real button at runtime, where a screen reader reads it. With no focusable child the wrapper itself
+  is used, and the popover is then mouse-only — don't do that.
+- `<mds:popover.content>` props: `arrow` bool|null (inherited from the root; set it here to override one panel) · `closable`
+  bool=false (adds a corner close button labelled «بستن» / "Close" by `fa`, and reserves room for it with `pe-10`) ·
+  `fa` bool|null (inherited from the root). Size and padding are yours — `class="w-72"`, `class="!p-0"`; the default look is
+  the kit's dropdown surface (`min-w-48`, rounded, bordered, `p-4`, `text-start`).
+Behavior (Alpine): the panel is wrapped in `<template x-teleport="body">` — the template keeps a block-level panel legal inside
+a `<p>` and teleports it out of `overflow-hidden` and transformed ancestors. It is `position: fixed`, placed from measured
+rects on open, flipped to the opposite side when the preferred one has no room and the other does, clamped to the viewport
+(5px padding), and repositioned on scroll (capturing) and resize while open — those listeners are attached on open, dropped on
+close and in `destroy()`. The chosen side is written to `data-rendered-side` on the panel, and the arrow (a rotated square
+borrowing the panel's border) follows it and points at the middle of the trigger. The open/close transition is opacity only
+and is skipped under `prefers-reduced-motion`.
+Clicking the trigger toggles and *pins* the popover; Escape (window-level), a click outside, or the close button closes it.
+Opening by click or keyboard moves focus to the first tabbable element inside the panel; closing returns it to the trigger
+when focus was still inside. The panel is non-modal, so focus is not trapped: Tab off its last control closes it and continues
+at the element after the trigger, Shift+Tab off its first closes it and returns to the trigger.
+`hover` adds an open delay of 100ms and a close delay of 300ms, so the panel neither flickers under a passing cursor nor
+vanishes on the way to it; keyboard focus (`:focus-visible` only) opens it immediately, and a click pins it so the mouse
+leaving no longer closes it.
+Events: the root dispatches bubbling `mds-popover-open` and `mds-popover-close` CustomEvents — listen on the tag itself
+(`x-on:mds-popover-close="…"`, `@mds-popover-open.window="…"`). The Alpine component's `toggle()`, `show()` and `close()` are
+public.
+ARIA contract: the panel is `role="dialog"` `aria-modal="false"` `tabindex="-1"`, named by its trigger through
+`aria-labelledby` unless the caller passes its own `aria-label` / `aria-labelledby` (either one suppresses the automatic
+link). At runtime the real trigger button gets `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` pointing at the
+panel — a generic wrapper `<span>` never carries them. Markers for tests and CSS: `data-mds-popover` (root),
+`data-mds-popover-trigger`, `data-mds-popover-content`, `data-mds-popover-close`, `data-mds-popover-arrow`.
+Livewire contract: the popover holds no value, so there is no `wire:model`. Every attribute lands on the root, so
+`x-on:mds-popover-close="$wire.save()"` and `wire:key` work as usual; `wire:click` on buttons inside the content is ordinary
+markup. One caveat comes with the teleport: Alpine moves the panel out of the Livewire component's DOM and into `<body>` as
+soon as it initialises (it is always there, hidden by `x-show`, not created on open), and Livewire's morph follows teleported
+nodes — the same mechanism `<mds:preview-card>` already relies on.
+```blade
+<mds:popover position="bottom" align="end" arrow>
+    <mds:popover.trigger>
+        <flux:button icon="bell" variant="ghost">اعلان‌ها</flux:button>
+    </mds:popover.trigger>
+
+    <mds:popover.content closable class="w-72">
+        <flux:heading size="sm">اعلان‌ها</flux:heading>
+        <flux:text class="mt-2">سفارش شما ارسال شد و سه‌شنبه به دستتان می‌رسد.</flux:text>
+        <flux:separator class="my-3" />
+        <flux:link href="/notifications">مشاهده همه اعلان‌ها</flux:link>
+    </mds:popover.content>
+</mds:popover>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

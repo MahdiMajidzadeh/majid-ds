@@ -1633,6 +1633,7 @@ class ComponentsTest extends TestCase
             'chart radar' => ['<mds:chart.radar :data="[\'a\' => 1, \'b\' => 2, \'c\' => 3]" />', 'aria-label="نمودار راداری"', 'aria-label="Radar chart"'],
             'chart heatmap idle' => ['<mds:chart.heatmap :data="[1, 2, 3]" />', 'برای جزئیات روی خانه‌ها بروید', 'Hover tiles for details'],
             'chart heatmap unit' => ['<mds:chart.heatmap :data="[1, 2, 3]" />', 'مورد"', 'items"'],
+            'popover close' => ['<mds:popover><mds:popover.content closable>x</mds:popover.content></mds:popover>', 'aria-label="بستن"', 'aria-label="Close"'],
         ];
     }
 

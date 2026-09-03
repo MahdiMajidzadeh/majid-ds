@@ -2072,4 +2072,187 @@ $pages['chart'] = [
     'related' => ['price', 'jalali-date', 'timeline'],
 ];
 
+// ----------------------------------------------------------- mds:popover
+
+// --------------------------------------------------------------- mds:popover
+
+$pages['popover'] = [
+    'group' => 'mds',
+    'title' => 'mds:popover',
+    'lede' => 'A panel anchored to the button that opens it — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Popover component is Pro-only. This is a working replacement: a non-modal dialog anchored to its trigger, positioned from measured rectangles, teleported to <code>&lt;body&gt;</code> so no <code>overflow-hidden</code> ancestor can clip it. The preview is live — click the button.',
+            'code' => <<<'BLADE'
+            <mds:popover>
+                <mds:popover.trigger>
+                    <flux:button icon="bell">Notifications</flux:button>
+                </mds:popover.trigger>
+
+                <mds:popover.content class="w-72">
+                    <flux:heading size="sm">Notifications</flux:heading>
+                    <flux:text class="mt-2">Your order has shipped — it should arrive on Tuesday.</flux:text>
+                </mds:popover.content>
+            </mds:popover>
+            BLADE,
+            'note' => '<p><strong>A popover is not a menu.</strong> It holds arbitrary content — a form, a summary, a mini profile — and the keyboard walks through that content with <code>Tab</code>. For a list of commands or links, use <a href="dropdown.html"><code>flux:dropdown</code></a>, which gives you a real <code>menu</code> role and arrow-key navigation.</p>',
+        ],
+        [
+            'name' => 'Placement',
+            'text' => 'Position with <code>position</code> (<code>top</code> / <code>bottom</code> / <code>start</code> / <code>end</code>) and <code>align</code> (<code>start</code> / <code>center</code> / <code>end</code>). The sides are logical: <code>start</code> and <code>end</code> — and the alignment axis — mirror by themselves on an RTL page. Whatever you ask for, the panel flips to the opposite side when the preferred one runs out of room and stays clamped inside the viewport.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <mds:popover position="top" align="center">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">top / center</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-52"><flux:text class="text-sm">Above the trigger, centred on it.</flux:text></mds:popover.content>
+                </mds:popover>
+
+                <mds:popover position="bottom" align="end">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">bottom / end</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-52"><flux:text class="text-sm">Under the trigger, trailing edges aligned.</flux:text></mds:popover.content>
+                </mds:popover>
+
+                <mds:popover position="start" align="center">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">start / center</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-52"><flux:text class="text-sm">On the leading side — left here, right in RTL.</flux:text></mds:popover.content>
+                </mds:popover>
+
+                <mds:popover position="end" align="start">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">end / start</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-52"><flux:text class="text-sm">On the trailing side, top edges aligned.</flux:text></mds:popover.content>
+                </mds:popover>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Arrow and offset',
+            'text' => 'Add <code>arrow</code> for a pointer that tracks the middle of the trigger, wherever the panel was flipped or clamped to. <code>offset</code> is the gap in pixels between trigger and panel — <code>8</code> by default.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <mds:popover arrow>
+                    <mds:popover.trigger><flux:button size="sm">With an arrow</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-56"><flux:text class="text-sm">The arrow borrows the panel's own border and follows the side that was actually used.</flux:text></mds:popover.content>
+                </mds:popover>
+
+                <mds:popover arrow offset="20">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">Offset 20</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-56"><flux:text class="text-sm">Pushed twenty pixels away from its trigger.</flux:text></mds:popover.content>
+                </mds:popover>
+
+                <mds:popover offset="0">
+                    <mds:popover.trigger><flux:button size="sm" variant="subtle">Offset 0</flux:button></mds:popover.trigger>
+                    <mds:popover.content class="w-56"><flux:text class="text-sm">Flush against the trigger.</flux:text></mds:popover.content>
+                </mds:popover>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'A closable panel',
+            'text' => '<code>closable</code> adds a labelled close button in the corner and reserves room for it. It comes last in the DOM on purpose, so opening the popover still lands focus on the first control of your content rather than on the dismiss button.',
+            'code' => <<<'BLADE'
+            <mds:popover position="bottom" align="start" arrow>
+                <mds:popover.trigger>
+                    <flux:button icon="funnel" variant="subtle">Filters</flux:button>
+                </mds:popover.trigger>
+
+                <mds:popover.content closable class="w-64">
+                    <flux:heading size="sm" class="mb-3">Filters</flux:heading>
+
+                    <div class="space-y-2">
+                        <flux:checkbox label="In stock only" checked />
+                        <flux:checkbox label="Free shipping" />
+                        <flux:checkbox label="Discounted" />
+                    </div>
+
+                    <flux:button size="sm" variant="primary" class="mt-4 w-full">Apply</flux:button>
+                </mds:popover.content>
+            </mds:popover>
+            BLADE,
+        ],
+        [
+            'name' => 'Opening on hover',
+            'text' => 'With <code>hover</code>, the panel also opens on hover (after 100ms, closing 300ms after the cursor leaves) and on keyboard focus. A click still works and <em>pins</em> the panel open, so a reader who committed to it is not chased away by the mouse. Keep hover popovers supplementary — a touch user only gets the click.',
+            'code' => <<<'BLADE'
+            <mds:popover hover position="top" align="center" arrow>
+                <mds:popover.trigger>
+                    <flux:button icon="question-mark-circle" variant="ghost">Size guide</flux:button>
+                </mds:popover.trigger>
+
+                <mds:popover.content class="w-64">
+                    <flux:heading size="sm">How we measure</flux:heading>
+                    <flux:text class="mt-2 text-sm">Chest is measured flat, across the garment, 2cm below the armhole. Between two sizes, take the larger.</flux:text>
+                </mds:popover.content>
+            </mds:popover>
+            BLADE,
+        ],
+        [
+            'name' => 'Any content, any width',
+            'text' => 'The panel is a plain container: set its width with a class, cancel the padding with <code>!p-0</code> for an image-led or list-led layout, and put whatever you like inside — the keyboard walks through it with <code>Tab</code>, and tabbing off either end closes the popover and continues down the page.',
+            'code' => <<<'BLADE'
+            <mds:popover position="bottom" align="end" arrow>
+                <mds:popover.trigger>
+                    <flux:button variant="ghost">
+                        <flux:avatar size="xs" src="https://i.pravatar.cc/48?img=12" />
+                    </flux:button>
+                </mds:popover.trigger>
+
+                <mds:popover.content class="w-64 !p-0 overflow-hidden">
+                    <div class="flex items-center gap-3 p-4">
+                        <flux:avatar src="https://i.pravatar.cc/48?img=12" />
+                        <div class="min-w-0">
+                            <div class="truncate font-medium text-zinc-800 dark:text-white">Mahdi Majidzadeh</div>
+                            <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">m.majidzadeh@example.com</div>
+                        </div>
+                    </div>
+
+                    <flux:separator />
+
+                    <div class="flex flex-col p-2">
+                        <flux:button size="sm" variant="ghost" icon="shopping-bag" class="justify-start">My orders</flux:button>
+                        <flux:button size="sm" variant="ghost" icon="cog-6-tooth" class="justify-start">Settings</flux:button>
+                        <flux:button size="sm" variant="ghost" icon="arrow-right-start-on-rectangle" class="justify-start">Sign out</flux:button>
+                    </div>
+                </mds:popover.content>
+            </mds:popover>
+            BLADE,
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'Placement is measured, not guessed: <code>start</code> and <code>end</code> read the component\'s own direction at open time, so the same markup mirrors on a Persian page. The one built-in string — the close button\'s label — follows <code>config(\'mds.persian_digits\')</code>, off in these docs; the <code>fa</code> prop forces it either way.',
+            'code' => <<<'BLADE'
+            <mds:popover position="bottom" align="start" arrow :fa="true">
+                <mds:popover.trigger>
+                    <flux:button icon="bell">اعلان‌ها</flux:button>
+                </mds:popover.trigger>
+
+                <mds:popover.content closable class="w-72">
+                    <flux:heading size="sm">اعلان‌ها</flux:heading>
+                    <flux:text class="mt-2 text-sm">سفارش شما ارسال شد و سه‌شنبه به دستتان می‌رسد.</flux:text>
+                    <flux:separator class="my-3" />
+                    <flux:link href="#!">مشاهده همه اعلان‌ها</flux:link>
+                </mds:popover.content>
+            </mds:popover>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:popover', 'text' => 'The root. Holds the open state and renders an inline wrapper; dispatches bubbling <code>mds-popover-open</code> and <code>mds-popover-close</code> events.', 'props' => [
+            ['position', 'Preferred side: <code>top</code>, <code>bottom</code>, <code>start</code>, <code>end</code>. Flips when out of room. Default: <code>bottom</code>.'],
+            ['align', 'Alignment along that side: <code>start</code>, <code>center</code>, <code>end</code>. Default: <code>start</code>.'],
+            ['offset', 'Gap between trigger and panel, in pixels. Default: <code>8</code>.'],
+            ['arrow', 'Adds a pointer toward the trigger; inherited by the content. Default: <code>false</code>.'],
+            ['hover', 'Also open on hover and keyboard focus, not only on click. Default: <code>false</code>.'],
+        ]],
+        ['name' => 'mds:popover.trigger', 'text' => 'Wraps exactly one focusable element — a button or a link. It owns the click; <code>aria-haspopup</code>, <code>aria-expanded</code> and <code>aria-controls</code> are written onto that element at runtime. Takes no props.'],
+        ['name' => 'mds:popover.content', 'text' => 'The panel: a non-modal <code>role="dialog"</code>, teleported to <code>&lt;body&gt;</code> and positioned <code>fixed</code>. Named by its trigger unless you pass your own <code>aria-label</code> or <code>aria-labelledby</code>. Set the width with a class.', 'props' => [
+            ['arrow', 'Overrides the root\'s <code>arrow</code> for this panel.'],
+            ['closable', 'Adds a close button in the corner. Default: <code>false</code>.'],
+        ]],
+    ],
+    'related' => ['dropdown', 'tooltip', 'preview-card'],
+];
+
 return $pages;

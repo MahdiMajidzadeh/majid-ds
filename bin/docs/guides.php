@@ -35,6 +35,7 @@ $demoAnchors = [
     'preview-card' => 'Preview card',
     'timeline' => 'Timeline',
     'chart' => 'Charts',
+    'popover' => 'Popover',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

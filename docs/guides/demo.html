@@ -191,6 +191,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#popover" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>پاپ‌اور</div>
+    </a>
         <a href="#icons" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -7021,6 +7032,621 @@ document.addEventListener('alpine:init', () => {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="popover" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Popover — mds:popover</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of the Popover component (Pro-only in Flux) — a panel anchored to its button: logical, RTL-aware placement, focus returned to the trigger, and Escape to close.</p>
+    <div class="flex flex-wrap items-center gap-3">
+        <script >
+window.mds = window.mds || {}
+
+window.mds.registerPopover = (Alpine) => {
+    if (window.mds.popoverRegistered) return
+    window.mds.popoverRegistered = true
+
+    Alpine.data('mdsPopover', (config = {}) => ({
+        open: false,
+        position: config.position ?? 'bottom',
+        align: config.align ?? 'start',
+        offset: config.offset ?? 8,
+        hover: config.hover ?? false,
+
+        // Set by a click (or the keyboard) rather than by a passing cursor:
+        // a pinned popover ignores mouseleave and blur in hover mode, so a
+        // reader who clicked to keep it open is not chased away by the mouse.
+        pinned: false,
+
+        openTimer: null,
+        closeTimer: null,
+
+        // Registered from x-init — the panel is teleported to body, and $refs
+        // are not relied on across that boundary.
+        contentEl: null,
+        arrowEl: null,
+
+        init() {
+            // Reposition while open so the panel tracks its trigger through
+            // scrolling and resizes. Listeners live only while open.
+            this.reposition = () => { if (this.open) this.place() }
+        },
+
+        destroy() {
+            this.unlisten()
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+        },
+
+        listen() {
+            window.addEventListener('scroll', this.reposition, { passive: true, capture: true })
+            window.addEventListener('resize', this.reposition, { passive: true })
+        },
+
+        unlisten() {
+            window.removeEventListener('scroll', this.reposition, { capture: true })
+            window.removeEventListener('resize', this.reposition)
+        },
+
+        // The element the reader actually operates: the button (or link) the
+        // caller put inside the trigger; the wrapper itself when there is none.
+        triggerButton() {
+            const wrapper = this.$refs.trigger
+
+            return wrapper?.querySelector('button, a[href], input, [role="button"], [tabindex]') ?? wrapper ?? null
+        },
+
+        // ARIA lives on the real button, not on the wrapper span — aria-expanded
+        // on a generic span means nothing to a screen reader. Runs as an
+        // x-effect, so it follows `open`.
+        syncTrigger() {
+            const button = this.triggerButton()
+
+            if (! button) return
+
+            button.setAttribute('aria-haspopup', 'dialog')
+            button.setAttribute('aria-expanded', this.open ? 'true' : 'false')
+            button.setAttribute('aria-controls', this.$id('mds-popover'))
+        },
+
+        toggle() {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            if (! this.open) {
+                this.pinned = true
+                this.show()
+            } else if (this.hover && ! this.pinned) {
+                // Hover opened it; the click keeps it open and hands focus over.
+                this.pinned = true
+                this.focusInside()
+            } else {
+                this.close()
+            }
+        },
+
+        show(options = {}) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            this.open = true
+            this.listen()
+
+            this.$nextTick(() => {
+                this.place()
+
+                if (options.focus ?? true) this.focusInside()
+            })
+
+            // From the root, whichever element's handler got here: consumers
+            // listen on the mds:popover tag itself.
+            this.$root.dispatchEvent(new CustomEvent('mds-popover-open', { bubbles: true }))
+        },
+
+        close(options = {}) {
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+
+            if (! this.open) return
+
+            const active = document.activeElement
+            const inside = this.contentEl?.contains(active) || active === document.body || active === null
+
+            this.open = false
+            this.pinned = false
+            this.unlisten()
+
+            // Focus comes back to the trigger when it was inside the panel
+            // (or was lost with it); a click elsewhere keeps the focus it set.
+            if ((options.focus ?? true) && inside) this.triggerButton()?.focus()
+
+            this.$root.dispatchEvent(new CustomEvent('mds-popover-close', { bubbles: true }))
+        },
+
+        // Hover mode only. A short delay each way: the panel neither flickers
+        // under a passing cursor nor vanishes on the way to it.
+        enter() {
+            if (! this.hover) return
+
+            clearTimeout(this.closeTimer)
+
+            if (this.open) return
+
+            clearTimeout(this.openTimer)
+            this.openTimer = setTimeout(() => this.show({ focus: false }), 100)
+        },
+
+        leave() {
+            if (! this.hover || this.pinned) return
+
+            clearTimeout(this.openTimer)
+            clearTimeout(this.closeTimer)
+            this.closeTimer = setTimeout(() => this.close({ focus: false }), 300)
+        },
+
+        // Keyboard focus landing on the trigger opens a hover popover, the
+        // way focusing a link opens its preview. Mouse focus does not: a
+        // click is a toggle, and would otherwise open and close in one go.
+        focusin(event) {
+            if (! this.hover || ! event.target.matches(':focus-visible')) return
+
+            this.show({ focus: false })
+        },
+
+        // Focus moving to something outside trigger and panel closes a hover
+        // popover. relatedTarget null is a click on plain text — maybe inside
+        // the panel itself — so that case is left to mouseleave.
+        focusout(event) {
+            if (! this.hover || this.pinned || ! this.open) return
+
+            const to = event.relatedTarget
+
+            if (! to || this.$root.contains(to) || this.contentEl?.contains(to)) return
+
+            this.close({ focus: false })
+        },
+
+        // The panel is teleported, so a click on the trigger is "outside" it
+        // as far as the DOM knows — and toggle() already handled that click.
+        outside(event) {
+            if (this.$refs.trigger?.contains(event.target)) return
+
+            this.close({ focus: false })
+        },
+
+        tabbables(root) {
+            if (! root) return []
+
+            const selector = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+
+            return [...root.querySelectorAll(selector)].filter(el => el.getClientRects().length > 0)
+        },
+
+        focusInside() {
+            const target = this.tabbables(this.contentEl)[0] ?? this.contentEl
+
+            target?.focus({ preventScroll: true })
+        },
+
+        // Non-modal, so no trap — but the panel sits at the end of body, and
+        // tabbing off its last control would land in the browser chrome.
+        // Tab out closes and continues from the trigger; Shift+Tab out
+        // closes and returns to it.
+        tab(event) {
+            const items = this.tabbables(this.contentEl)
+            const active = document.activeElement
+            const first = items[0] ?? this.contentEl
+            const last = items[items.length - 1] ?? this.contentEl
+
+            if (event.shiftKey && active === first) {
+                event.preventDefault()
+                this.close({ focus: false })
+                this.triggerButton()?.focus()
+            } else if (! event.shiftKey && active === last) {
+                event.preventDefault()
+                this.close({ focus: false })
+                this.focusAfterTrigger()
+            }
+        },
+
+        focusAfterTrigger() {
+            const button = this.triggerButton()
+            const all = this.tabbables(document.body).filter(el => ! this.contentEl?.contains(el))
+            const index = all.indexOf(button)
+
+            ;(index === -1 ? button : all[index + 1] ?? button)?.focus()
+        },
+
+        /*
+        | position: fixed + measured placement in physical viewport
+        | coordinates. `start`/`end` resolve against the component's own
+        | direction, so placement mirrors on RTL pages — and inside RTL
+        | islands — by itself.
+        */
+        place() {
+            const content = this.contentEl
+            const trigger = this.$refs.trigger
+
+            if (! content || ! trigger) return
+
+            const t = trigger.getBoundingClientRect()
+            const rtl = getComputedStyle(this.$root).direction === 'rtl'
+            const pad = 5
+            const offset = this.offset
+            const align = this.align
+
+            let side = this.position
+
+            if (side === 'start') side = rtl ? 'right' : 'left'
+            if (side === 'end') side = rtl ? 'left' : 'right'
+
+            const c = { w: content.offsetWidth, h: content.offsetHeight }
+            const vw = window.innerWidth
+            const vh = window.innerHeight
+
+            // Flip to the other side when the preferred one runs out of room
+            // and the other has it.
+            if (side === 'bottom' && t.bottom + offset + c.h > vh && t.top - offset - c.h > 0) side = 'top'
+            else if (side === 'top' && t.top - offset - c.h < 0 && t.bottom + offset + c.h < vh) side = 'bottom'
+            else if (side === 'right' && t.right + offset + c.w > vw && t.left - offset - c.w > 0) side = 'left'
+            else if (side === 'left' && t.left - offset - c.w < 0 && t.right + offset + c.w < vw) side = 'right'
+
+            const vertical = side === 'top' || side === 'bottom'
+
+            let x, y
+
+            if (vertical) {
+                y = side === 'bottom' ? t.bottom + offset : t.top - offset - c.h
+
+                // start hugs the leading edge — the trigger's right edge on an RTL page.
+                x = align === 'center' ? t.left + t.width / 2 - c.w / 2
+                    : (align === 'start') !== rtl ? t.left
+                    : t.right - c.w
+
+                x = Math.min(Math.max(x, pad), vw - c.w - pad)
+            } else {
+                x = side === 'right' ? t.right + offset : t.left - offset - c.w
+
+                y = align === 'center' ? t.top + t.height / 2 - c.h / 2
+                    : align === 'start' ? t.top
+                    : t.bottom - c.h
+
+                y = Math.min(Math.max(y, pad), vh - c.h - pad)
+            }
+
+            content.style.left = x + 'px'
+            content.style.top = y + 'px'
+            content.dataset.renderedSide = side
+
+            // The arrow points at the middle of the trigger, wherever the
+            // panel was clamped to.
+            const arrow = this.arrowEl
+
+            if (arrow) {
+                if (vertical) {
+                    const ax = Math.min(Math.max(t.left + t.width / 2 - x, 12), c.w - 12)
+                    arrow.style.left = ax + 'px'
+                    arrow.style.top = ''
+                } else {
+                    const ay = Math.min(Math.max(t.top + t.height / 2 - y, 12), c.h - 12)
+                    arrow.style.top = ay + 'px'
+                    arrow.style.left = ''
+                }
+            }
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerPopover(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerPopover(window.Alpine))
+}
+</script>
+
+<span
+    class="relative inline-block"
+    x-id="['mds-popover', 'mds-popover-trigger']"
+    x-data="mdsPopover({ position: 'bottom', align: 'start', offset: 8, hover: false })"
+    x-on:keydown.escape.window="open && close()"
+    x-on:focusout="focusout($event)"
+    data-mds-popover
+><span
+    class="inline-flex"
+    x-ref="trigger"
+    x-bind:id="$id('mds-popover-trigger')"
+    x-effect="syncTrigger()"
+    x-on:click="toggle()"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusin="focusin($event)"
+    data-mds-popover-trigger
+><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12 5a4 4 0 0 0-8 0v2.379a1.5 1.5 0 0 1-.44 1.06L2.294 9.707a1 1 0 0 0-.293.707V11a1 1 0 0 0 1 1h2a3 3 0 1 0 6 0h2a1 1 0 0 0 1-1v-.586a1 1 0 0 0-.293-.707L12.44 8.44A1.5 1.5 0 0 1 12 7.38V5Zm-5.5 7a1.5 1.5 0 0 0 3 0h-3Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>Notifications</span>
+    </button></span>
+
+            <template x-teleport="body">
+<div
+    class="fixed z-50 min-w-48 rounded-lg border border-zinc-200 bg-white p-4 text-start shadow-sm outline-none dark:border-white/10 dark:bg-zinc-800 pe-10 w-72"
+    x-init="contentEl = $el"
+    x-ref="content"
+    x-bind:id="$id('mds-popover')"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-100 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition duration-75 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:click.outside="outside($event)"
+    x-on:keydown.tab="tab($event)"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusout="focusout($event)"
+    role="dialog"
+    aria-modal="false"
+     x-bind:aria-labelledby="$id('mds-popover-trigger')"     tabindex="-1"
+    style="top: -9999px; left: -9999px"
+    data-mds-popover-content
+>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Notifications</div>
+                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 mt-2 text-sm" data-flux-text >Your order has shipped</p>                <div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full my-3" data-flux-separator></div>
+                <a class="inline font-medium underline-offset-[6px] hover:decoration-current underline [[data-color]&gt;&amp;]:text-inherit [[data-color]&gt;&amp;]:decoration-current/20 dark:[[data-color]&gt;&amp;]:decoration-current/50 [[data-color]&gt;&amp;]:hover:decoration-current text-[var(--color-accent-content)] decoration-[color-mix(in_oklab,var(--color-accent-content),transparent_80%)]" href="#!" data-flux-link >See all notifications</a>
+
+            
+        <button
+            type="button"
+            class="absolute end-2 top-2 rounded-md p-1 text-zinc-400 hover:text-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:text-zinc-500 dark:hover:text-white"
+            x-on:click="close()"
+            aria-label="Close"
+            data-mds-popover-close
+        >
+            <svg aria-hidden="true" data-mds-icon="" class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+        </button>
+    
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-popover-arrow
+        ></span>
+    </div>
+</template></span>
+
+        <span
+    class="relative inline-block"
+    x-id="['mds-popover', 'mds-popover-trigger']"
+    x-data="mdsPopover({ position: 'bottom', align: 'end', offset: 8, hover: false })"
+    x-on:keydown.escape.window="open && close()"
+    x-on:focusout="focusout($event)"
+    data-mds-popover
+><span
+    class="inline-flex"
+    x-ref="trigger"
+    x-bind:id="$id('mds-popover-trigger')"
+    x-effect="syncTrigger()"
+    x-on:click="toggle()"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusin="focusin($event)"
+    data-mds-popover-trigger
+><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white" data-flux-button="data-flux-button">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M14 2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2.172a2 2 0 0 0 .586 1.414l2.828 2.828A2 2 0 0 1 6 9.828v4.363a.5.5 0 0 0 .724.447l2.17-1.085A2 2 0 0 0 10 11.763V9.829a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 0 14 4.172V2Z"/>
+</svg>
+
+                
+                    
+            
+            <span>Filters</span>
+    </button></span>
+
+            <template x-teleport="body">
+<div
+    class="fixed z-50 min-w-48 rounded-lg border border-zinc-200 bg-white p-4 text-start shadow-sm outline-none dark:border-white/10 dark:bg-zinc-800 w-64"
+    x-init="contentEl = $el"
+    x-ref="content"
+    x-bind:id="$id('mds-popover')"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-100 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition duration-75 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:click.outside="outside($event)"
+    x-on:keydown.tab="tab($event)"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusout="focusout($event)"
+    role="dialog"
+    aria-modal="false"
+     x-bind:aria-labelledby="$id('mds-popover-trigger')"     tabindex="-1"
+    style="top: -9999px; left: -9999px"
+    data-mds-popover-content
+>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2 mb-3" data-flux-heading>Filters</div>
+
+                <div class="space-y-2">
+                    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 grid gap-x-3 gap-y-1.5 has-[[data-flux-label]~[data-flux-control]]:grid-cols-[1fr_auto] has-[[data-flux-control]~[data-flux-label]]:grid-cols-[auto_1fr] [&amp;&gt;[data-flux-control]~[data-flux-description]]:row-start-2 [&amp;&gt;[data-flux-control]~[data-flux-description]]:col-start-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:col-span-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:mt-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:row-start-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:col-start-2" data-flux-field>
+    <ui-checkbox class="flex size-[1.125rem] rounded-[.3rem] mt-px outline-offset-2" label="In stock only" checked="checked"  data-flux-control data-flux-checkbox>
+        <div class="shrink-0 size-[1.125rem] rounded-[.3rem] flex justify-center items-center text-sm text-zinc-700 dark:text-zinc-800 shadow-xs [ui-checkbox[disabled]_&amp;]:opacity-75 [ui-checkbox[data-checked][disabled]_&amp;]:opacity-50 [ui-checkbox[disabled]_&amp;]:shadow-none [ui-checkbox[data-checked]_&amp;]:shadow-none [ui-checkbox[data-indeterminate]_&amp;]:shadow-none [ui-checkbox[data-checked]:not([data-indeterminate])_&amp;&gt;svg:first-child]:block [ui-checkbox[data-indeterminate]_&amp;&gt;svg:last-child]:block border border-zinc-300 dark:border-white/10 [ui-checkbox[disabled]_&amp;]:border-zinc-200 dark:[ui-checkbox[disabled]_&amp;]:border-white/5 [ui-checkbox[data-checked]_&amp;]:border-transparent [ui-checkbox[data-indeterminate]_&amp;]:border-transparent [ui-checkbox[disabled][data-checked]_&amp;]:border-transparent [ui-checkbox[disabled][data-indeterminate]_&amp;]:border-transparent [print-color-adjust:exact] bg-white dark:bg-white/10 [ui-checkbox[data-checked]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) [ui-checkbox[data-indeterminate]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent)" data-flux-checkbox-indicator>
+    <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+</svg>
+
+        </div>
+    </ui-checkbox>
+
+                    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    In stock only
+
+    
+    
+    </ui-label>
+        
+        
+                    <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+
+                    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 grid gap-x-3 gap-y-1.5 has-[[data-flux-label]~[data-flux-control]]:grid-cols-[1fr_auto] has-[[data-flux-control]~[data-flux-label]]:grid-cols-[auto_1fr] [&amp;&gt;[data-flux-control]~[data-flux-description]]:row-start-2 [&amp;&gt;[data-flux-control]~[data-flux-description]]:col-start-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:col-span-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:mt-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:row-start-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:col-start-2" data-flux-field>
+    <ui-checkbox class="flex size-[1.125rem] rounded-[.3rem] mt-px outline-offset-2" label="Free shipping"  data-flux-control data-flux-checkbox>
+        <div class="shrink-0 size-[1.125rem] rounded-[.3rem] flex justify-center items-center text-sm text-zinc-700 dark:text-zinc-800 shadow-xs [ui-checkbox[disabled]_&amp;]:opacity-75 [ui-checkbox[data-checked][disabled]_&amp;]:opacity-50 [ui-checkbox[disabled]_&amp;]:shadow-none [ui-checkbox[data-checked]_&amp;]:shadow-none [ui-checkbox[data-indeterminate]_&amp;]:shadow-none [ui-checkbox[data-checked]:not([data-indeterminate])_&amp;&gt;svg:first-child]:block [ui-checkbox[data-indeterminate]_&amp;&gt;svg:last-child]:block border border-zinc-300 dark:border-white/10 [ui-checkbox[disabled]_&amp;]:border-zinc-200 dark:[ui-checkbox[disabled]_&amp;]:border-white/5 [ui-checkbox[data-checked]_&amp;]:border-transparent [ui-checkbox[data-indeterminate]_&amp;]:border-transparent [ui-checkbox[disabled][data-checked]_&amp;]:border-transparent [ui-checkbox[disabled][data-indeterminate]_&amp;]:border-transparent [print-color-adjust:exact] bg-white dark:bg-white/10 [ui-checkbox[data-checked]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) [ui-checkbox[data-indeterminate]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent)" data-flux-checkbox-indicator>
+    <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+</svg>
+
+        </div>
+    </ui-checkbox>
+
+                    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Free shipping
+
+    
+    
+    </ui-label>
+        
+        
+                    <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+
+                    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 grid gap-x-3 gap-y-1.5 has-[[data-flux-label]~[data-flux-control]]:grid-cols-[1fr_auto] has-[[data-flux-control]~[data-flux-label]]:grid-cols-[auto_1fr] [&amp;&gt;[data-flux-control]~[data-flux-description]]:row-start-2 [&amp;&gt;[data-flux-control]~[data-flux-description]]:col-start-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:col-span-2 [&amp;&gt;[data-flux-control]~[data-flux-error]]:mt-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:row-start-1 [&amp;&gt;[data-flux-label]~[data-flux-control]]:col-start-2" data-flux-field>
+    <ui-checkbox class="flex size-[1.125rem] rounded-[.3rem] mt-px outline-offset-2" label="Discounted items"  data-flux-control data-flux-checkbox>
+        <div class="shrink-0 size-[1.125rem] rounded-[.3rem] flex justify-center items-center text-sm text-zinc-700 dark:text-zinc-800 shadow-xs [ui-checkbox[disabled]_&amp;]:opacity-75 [ui-checkbox[data-checked][disabled]_&amp;]:opacity-50 [ui-checkbox[disabled]_&amp;]:shadow-none [ui-checkbox[data-checked]_&amp;]:shadow-none [ui-checkbox[data-indeterminate]_&amp;]:shadow-none [ui-checkbox[data-checked]:not([data-indeterminate])_&amp;&gt;svg:first-child]:block [ui-checkbox[data-indeterminate]_&amp;&gt;svg:last-child]:block border border-zinc-300 dark:border-white/10 [ui-checkbox[disabled]_&amp;]:border-zinc-200 dark:[ui-checkbox[disabled]_&amp;]:border-white/5 [ui-checkbox[data-checked]_&amp;]:border-transparent [ui-checkbox[data-indeterminate]_&amp;]:border-transparent [ui-checkbox[disabled][data-checked]_&amp;]:border-transparent [ui-checkbox[disabled][data-indeterminate]_&amp;]:border-transparent [print-color-adjust:exact] bg-white dark:bg-white/10 [ui-checkbox[data-checked]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-checked]_&amp;]:bg-(--color-accent) [ui-checkbox[data-indeterminate]_&amp;]:bg-[var(--color-accent)] hover:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent) focus:[ui-checkbox[data-indeterminate]_&amp;]:bg-(--color-accent)" data-flux-checkbox-indicator>
+    <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"/>
+</svg>
+
+            <svg class="shrink-0 [:where(&amp;)]:size-4 hidden text-[var(--color-accent-foreground)]" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>
+</svg>
+
+        </div>
+    </ui-checkbox>
+
+                    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Discounted items
+
+    
+    
+    </ui-label>
+        
+        
+                    <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+
+                </div>
+
+                <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   mt-4 w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        Apply filters
+    </button>
+
+    
+    </div>
+</template></span>
+
+        <span
+    class="relative inline-block"
+    x-id="['mds-popover', 'mds-popover-trigger']"
+    x-data="mdsPopover({ position: 'top', align: 'center', offset: 8, hover: true })"
+    x-on:keydown.escape.window="open && close()"
+    x-on:focusout="focusout($event)"
+    data-mds-popover
+><span
+    class="inline-flex"
+    x-ref="trigger"
+    x-bind:id="$id('mds-popover-trigger')"
+    x-effect="syncTrigger()"
+    x-on:click="toggle()"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusin="focusin($event)"
+    data-mds-popover-trigger
+><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white" data-flux-button="data-flux-button">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0Zm-6 3.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7.293 5.293a1 1 0 1 1 .99 1.667c-.459.134-1.033.566-1.033 1.29v.25a.75.75 0 1 0 1.5 0v-.115a2.5 2.5 0 1 0-2.518-4.153.75.75 0 1 0 1.061 1.06Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>Size guide</span>
+    </button></span>
+
+            <template x-teleport="body">
+<div
+    class="fixed z-50 min-w-48 rounded-lg border border-zinc-200 bg-white p-4 text-start shadow-sm outline-none dark:border-white/10 dark:bg-zinc-800 w-64"
+    x-init="contentEl = $el"
+    x-ref="content"
+    x-bind:id="$id('mds-popover')"
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition duration-100 ease-out motion-reduce:transition-none"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition duration-75 ease-in motion-reduce:transition-none"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:click.outside="outside($event)"
+    x-on:keydown.tab="tab($event)"
+    x-on:mouseenter="enter()"
+    x-on:mouseleave="leave()"
+    x-on:focusout="focusout($event)"
+    role="dialog"
+    aria-modal="false"
+     x-bind:aria-labelledby="$id('mds-popover-trigger')"     tabindex="-1"
+    style="top: -9999px; left: -9999px"
+    data-mds-popover-content
+>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>How do we measure?</div>
+                <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 mt-2 text-sm" data-flux-text >Chest is measured flat, across the garment, 2cm below the armhole. Between two sizes, take the larger.</p>
+
+    
+            
+        <span
+            x-init="arrowEl = $el"
+            class="absolute size-2.5 -translate-x-1/2 rotate-45 border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-800
+                in-data-[rendered-side=bottom]:-top-[6px] in-data-[rendered-side=bottom]:border-t in-data-[rendered-side=bottom]:border-l
+                in-data-[rendered-side=top]:-bottom-[6px] in-data-[rendered-side=top]:border-b in-data-[rendered-side=top]:border-r
+                in-data-[rendered-side=left]:-right-[6px] in-data-[rendered-side=left]:translate-x-0 in-data-[rendered-side=left]:-translate-y-1/2 in-data-[rendered-side=left]:border-t in-data-[rendered-side=left]:border-r
+                in-data-[rendered-side=right]:-left-[6px] in-data-[rendered-side=right]:translate-x-0 in-data-[rendered-side=right]:-translate-y-1/2 in-data-[rendered-side=right]:border-b in-data-[rendered-side=right]:border-l"
+            aria-hidden="true"
+            data-mds-popover-arrow
+        ></span>
+    </div>
+</template></span>
+    </div>
+
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm text-zinc-500 dark:text-zinc-400" data-flux-text >The third panel also opens on hover or keyboard focus; a click pins it open.</p>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -9021,7 +9647,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

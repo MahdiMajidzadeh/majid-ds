@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#popover" icon="chat-bubble-oval-left">{{ __('پاپ‌اور') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
@@ -948,6 +949,58 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text size="sm">{{ __('رنگ جوهر همه نمودارها currentColor است؛ با یک کلاس text-accent کل نمودار رنگ می‌گیرد.') }}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Popover ============================== --}}
+<flux:card id="popover" class="space-y-4">
+    <flux:heading size="lg">{{ __('پاپ‌اور — mds:popover') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Popover (که در Flux فقط در نسخه Pro موجود است) — پنلی که به دکمه‌اش لنگر می‌اندازد: جای‌گذاری منطقی و راست‌چین، برگشت فوکوس به دکمه و بسته شدن با Escape.') }}</flux:text>
+
+    <div class="flex flex-wrap items-center gap-3">
+        <mds:popover position="bottom" align="start" arrow>
+            <mds:popover.trigger>
+                <flux:button icon="bell">{{ __('اعلان‌ها') }}</flux:button>
+            </mds:popover.trigger>
+
+            <mds:popover.content closable class="w-72">
+                <flux:heading size="sm">{{ __('اعلان‌ها') }}</flux:heading>
+                <flux:text class="mt-2 text-sm">{{ __('سفارش شما ارسال شد') }}</flux:text>
+                <flux:separator class="my-3" />
+                <flux:link href="#!">{{ __('مشاهده همه اعلان‌ها') }}</flux:link>
+            </mds:popover.content>
+        </mds:popover>
+
+        <mds:popover position="bottom" align="end">
+            <mds:popover.trigger>
+                <flux:button icon="funnel" variant="subtle">{{ __('فیلترها') }}</flux:button>
+            </mds:popover.trigger>
+
+            <mds:popover.content class="w-64">
+                <flux:heading size="sm" class="mb-3">{{ __('فیلترها') }}</flux:heading>
+
+                <div class="space-y-2">
+                    <flux:checkbox :label="__('فقط کالاهای موجود')" checked />
+                    <flux:checkbox :label="__('ارسال رایگان')" />
+                    <flux:checkbox :label="__('کالاهای تخفیف‌دار')" />
+                </div>
+
+                <flux:button size="sm" variant="primary" class="mt-4 w-full">{{ __('اعمال فیلتر') }}</flux:button>
+            </mds:popover.content>
+        </mds:popover>
+
+        <mds:popover hover position="top" align="center" arrow>
+            <mds:popover.trigger>
+                <flux:button icon="question-mark-circle" variant="ghost">{{ __('راهنمای سایز') }}</flux:button>
+            </mds:popover.trigger>
+
+            <mds:popover.content class="w-64">
+                <flux:heading size="sm">{{ __('اندازه‌گیری چگونه انجام می‌شود؟') }}</flux:heading>
+                <flux:text class="mt-2 text-sm">{{ __('دور سینه روی لباس صاف و دو سانتی‌متر پایین‌تر از حلقه آستین اندازه گرفته می‌شود. بین دو سایز، سایز بزرگ‌تر را انتخاب کنید.') }}</flux:text>
+            </mds:popover.content>
+        </mds:popover>
+    </div>
+
+    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('پنل سوم با نگه‌داشتن نشانگر یا با فوکوس کیبورد هم باز می‌شود؛ کلیک آن را ثابت نگه می‌دارد.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

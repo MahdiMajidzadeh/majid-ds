@@ -505,5 +505,14 @@
     "سفارش": "orders",
     "هر ستون یک هفته": "One column per week",
     "پررنگ‌تر: بیشتر": "Darker: more",
-    "رنگ جوهر همه نمودارها currentColor است؛ با یک کلاس text-accent کل نمودار رنگ می‌گیرد.": "Every chart's ink is currentColor; a single text-accent class recolors the whole thing."
+    "رنگ جوهر همه نمودارها currentColor است؛ با یک کلاس text-accent کل نمودار رنگ می‌گیرد.": "Every chart's ink is currentColor; a single text-accent class recolors the whole thing.",
+    "پاپ‌اور — mds:popover": "Popover — mds:popover",
+    "نسخه آزاد از کامپوننت Popover (که در Flux فقط در نسخه Pro موجود است) — پنلی که به دکمه‌اش لنگر می‌اندازد: جای‌گذاری منطقی و راست‌چین، برگشت فوکوس به دکمه و بسته شدن با Escape.": "An open version of the Popover component (Pro-only in Flux) — a panel anchored to its button: logical, RTL-aware placement, focus returned to the trigger, and Escape to close.",
+    "مشاهده همه اعلان‌ها": "See all notifications",
+    "کالاهای تخفیف‌دار": "Discounted items",
+    "اعمال فیلتر": "Apply filters",
+    "راهنمای سایز": "Size guide",
+    "اندازه‌گیری چگونه انجام می‌شود؟": "How do we measure?",
+    "دور سینه روی لباس صاف و دو سانتی‌متر پایین‌تر از حلقه آستین اندازه گرفته می‌شود. بین دو سایز، سایز بزرگ‌تر را انتخاب کنید.": "Chest is measured flat, across the garment, 2cm below the armhole. Between two sizes, take the larger.",
+    "پنل سوم با نگه‌داشتن نشانگر یا با فوکوس کیبورد هم باز می‌شود؛ کلیک آن را ثابت نگه می‌دارد.": "The third panel also opens on hover or keyboard focus; a click pins it open."
 }

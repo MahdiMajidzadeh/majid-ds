@@ -594,6 +594,26 @@ Every chart is one ink: the stage renders in `currentColor` at fixed opacity ste
 
 Props — `chart`: `label`, `badge`, `value`, `unit`, `delta` (leading `-` turns it red), `footer-start` / `footer-end`, `fa` (inherited by the stages inside); `chart.line`: `data`, `labels`, `baseline` (dashed twin series), `area`, `dots`, `curve` (`smooth` | `straight`), `axis`, `max`, `width` / `height`; `chart.bars`: `data` (numbers, or arrays that stack), `secondary`, `labels`, `horizontal`, `axis`, `max`; `chart.donut`: `data` (label ⇒ value), `value` / `label` (center), `legend`, `size`, `thickness`; `chart.gauge`: `value`, `max`, `label`, `decimals`; `chart.radar`: `data`, `max`; `chart.bullet`: `items`, `max`, `unit`; `chart.heatmap`: `data`, `rows`, `labels`, `color` (`accent`), `unit`, `callout`; `chart.sparkline`: `data`, `area`, `curve`, `width` / `height`.
 
+### `<mds:popover>`
+
+An open implementation of Flux Pro's popover, API-compatible with `flux:popover`: a non-modal `role="dialog"` anchored to its trigger, teleported to `<body>` so no `overflow-hidden` ancestor can clip it, positioned from measured rectangles and flipped or clamped to stay in view. Placement is logical — `start`/`end` read the component's own direction, so the same markup mirrors on an RTL page — and the keyboard is handled: Escape and outside clicks close it, opening moves focus into the panel, closing returns it to the trigger, and tabbing off either end of the panel closes it and continues down the page.
+
+```blade
+<mds:popover position="bottom" align="end" arrow>
+    <mds:popover.trigger>
+        <flux:button icon="bell" variant="ghost">اعلان‌ها</flux:button>
+    </mds:popover.trigger>
+
+    <mds:popover.content closable class="w-72">
+        <flux:heading size="sm">اعلان‌ها</flux:heading>
+        <flux:text class="mt-2">سفارش شما ارسال شد.</flux:text>
+        <flux:link href="/notifications">مشاهده همه اعلان‌ها</flux:link>
+    </mds:popover.content>
+</mds:popover>
+```
+
+Props: `position` (`top` | `bottom` | `start` | `end`), `align` (`start` | `center` | `end`), `offset` (pixels), `arrow`, `hover` (also open on hover and keyboard focus; a click pins it), `fa`. On `<mds:popover.content>`: `arrow` (overrides the root), `closable`, `fa`. `<mds:popover.trigger>` takes no props — it wraps exactly one focusable element and writes `aria-haspopup`/`aria-expanded`/`aria-controls` onto it at runtime. The root dispatches bubbling `mds-popover-open` and `mds-popover-close` events.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

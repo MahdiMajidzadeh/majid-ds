@@ -95,6 +95,7 @@ return [
             'file-upload' => 'mds:file-upload',
             'timeline' => 'mds:timeline',
             'chart' => 'mds:chart',
+            'popover' => 'mds:popover',
         ],
     ],
 ];
