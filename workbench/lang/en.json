@@ -650,5 +650,16 @@
     "قالب‌بندی": "Formatting",
     "از نو": "Start over",
     "نظرتان را بنویسید...": "Write your comment...",
-    "میان‌برها: Ctrl/⌘ به همراه B پررنگ، I مورب، U زیرخط و K پیوند. در نوار ابزار، کلیدهای جهت‌دار به ترتیب دیداری حرکت می‌کنند.": "Shortcuts: Ctrl/⌘ with B for bold, I for italic, U for underline and K for a link. In the toolbar, the arrow keys move in the order you see."
+    "میان‌برها: Ctrl/⌘ به همراه B پررنگ، I مورب، U زیرخط و K پیوند. در نوار ابزار، کلیدهای جهت‌دار به ترتیب دیداری حرکت می‌کنند.": "Shortcuts: Ctrl/⌘ with B for bold, I for italic, U for underline and K for a link. In the toolbar, the arrow keys move in the order you see.",
+    "تقویم — mds:calendar": "Calendar — mds:calendar",
+    "نسخه آزاد از کامپوننت Calendar (که در Flux فقط در نسخه Pro موجود است) — و برخلاف آن، شمسی: ماه‌های فروردین تا اسفند، هفته‌ای که با شنبه شروع می‌شود و سال کبیسه‌ی درست. مقداری که به Livewire می‌رسد همیشه تاریخ میلادی ISO است.": "An open version of the Calendar component (Pro-only in Flux) — and unlike it, Jalali: Farvardin through Esfand, a week that opens on Saturday, and the right leap years. What reaches Livewire is always an ISO Gregorian date.",
+    "یک روز، با محدوده و روزهای تعطیل:": "One day, with bounds and days off:",
+    "روز تحویل": "Delivery day",
+    "بازه‌ی اقامت، دو ماه کنار هم:": "A stay, two months side by side:",
+    "بازه‌ی اقامت": "Stay",
+    "چند روز دلخواه:": "Several days at once:",
+    "روزهای انتخابی": "Chosen days",
+    "انتخاب ماه و سال از هدر:": "Month and year from the header:",
+    "تاریخ تولد": "Date of birth",
+    "کلیدهای جهت‌دار روی شبکه کار می‌کنند: چپ و راست یک روز — به همان سمتی که فلش نشان می‌دهد، حتی در صفحه‌ی راست‌چین — بالا و پایین یک هفته، Home و End ابتدا و انتهای هفته، PageUp و PageDown یک ماه و با Shift یک سال.": "The arrow keys drive the grid: Left and Right move a day — the way the arrow points, even on a right-to-left page — Up and Down move a week, Home and End jump to the ends of the week, PageUp and PageDown move a month, and Shift makes it a year."
 }

@@ -1684,6 +1684,20 @@ class ComponentsTest extends TestCase
             'editor direction' => ['<mds:editor toolbar="direction" />', 'aria-label="راست‌به‌چپ"', 'aria-label="Right to left"'],
             'editor clear formatting' => ['<mds:editor toolbar="clear" />', 'aria-label="پاک کردن قالب‌بندی"', 'aria-label="Clear formatting"'],
             'editor link prompt' => ['<mds:editor />', "linkPrompt: 'نشانی پیوند'", "linkPrompt: 'Link URL'"],
+            // Rows for ComponentsTest::microcopy(). Every needle is anchored: a bare
+            // "Calendar" also matches registerCalendar/mdsCalendar in the inline script,
+            // "Month"/"Week" match addMonths/weekNumber, and "Today" matches goToday — so
+            // none of those could ever fail unanchored.
+            'calendar grid label' => ['<mds:calendar />', 'aria-label="تقویم"', 'aria-label="Calendar"'],
+            'calendar previous month' => ['<mds:calendar />', 'aria-label="ماه قبل"', 'aria-label="Previous month"'],
+            'calendar next month' => ['<mds:calendar />', 'aria-label="ماه بعد"', 'aria-label="Next month"'],
+            'calendar today shortcut' => ['<mds:calendar with-today />', '>امروز</button>', '>Today</button>'],
+            'calendar month select' => ['<mds:calendar selectable-header />', 'aria-label="ماه"', 'aria-label="Month"'],
+            'calendar year select' => ['<mds:calendar selectable-header />', 'aria-label="سال"', 'aria-label="Year"'],
+            'calendar week column' => ['<mds:calendar week-numbers />', '<span class="sr-only">هفته</span>', '<span class="sr-only">Week</span>'],
+            'calendar weekday name' => ['<mds:calendar />', 'abbr="شنبه"', 'abbr="Saturday"'],
+            'calendar month name' => ['<mds:calendar value="2026-08-20" />', '>مرداد ۱۴۰۵<', '>Mordad 1405<'],
+            'calendar spoken date' => ['<mds:calendar value="2026-08-20" />', 'aria-label="پنجشنبه ۲۹ مرداد ۱۴۰۵"', 'aria-label="Thursday 29 Mordad 1405"'],
         ];
     }
 

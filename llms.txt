@@ -997,6 +997,59 @@ Data attributes: `data-mds-editor` (root) · `-toolbar` · `-tool` + `-command="
 The value is HTML you still have to trust on the server: the sanitiser runs in the browser, so validate and re-sanitise
 before storing or echoing it (`{!! !!}` on unvalidated user HTML is a stored-XSS hole whatever the editor did).
 
+### <mds:calendar> — date picker grid, Jalali by default (open version of Flux Pro's flux:calendar)
+The point of the component: Flux's calendar is Gregorian, this one is Jalali (`MajidDs\Support\Jalali`), with the Gregorian grid
+still one prop away. Machine values are ALWAYS ISO Gregorian `Y-m-d` with Latin digits, whatever the grid draws.
+Props: `value` string|DateTimeInterface|array|null (mode `range` takes `[start, end]` or `['start' => …, 'end' => …]`; mode
+`multiple` takes an array; anything `MajidDs\Support\Persian::toDateTime()` parses) · `mode` single|multiple|range='single'
+(an unknown value falls back to `single`) · `min` / `max` date|null (out-of-bounds days get `aria-disabled` and also disable the
+month arrows) · `unavailable` array=[] (individual dates disabled inside the bounds) · `months` int=1 (clamped to 1…12; grids
+wrap in a flex row, each with its own `<caption>`) · `calendar` jalali|gregorian='jalali' · `start-day` int|null=null
+(0=Sunday … 6=Saturday; defaults to 6 for Jalali, 1 for Gregorian) · `week-numbers` bool=false (a `<th scope="row">` column
+counting from the week that holds the 1st of the calendar's OWN year) · `fixed-weeks` bool=false (always six rows, so the box
+never changes height between months) · `selectable-header` bool=false (month + year `<select>`s instead of the title) ·
+`with-today` bool=false (a "today" shortcut under the grid; in `single` mode it also selects today) · `static` bool=false
+(read-only: `aria-readonly`, no picking, no range hover preview) · `size` sm|lg|null=null (cell 7/8/10) · `name` string|null
+(plain form post: `name` for single, `name[]` for multiple, `name[start]`/`name[end]` for range — and the key the error bag is
+read with) · `label` string|null='تقویم'/'Calendar' by fa (the grid's accessible name; multi-month grids get «label — month») ·
+`invalid` bool=false · `error` string|null (see Validation contract — renders the message) · `fa` bool|null=config.
+`fa` and `calendar` are independent axes: a Jalali grid in English (Farvardin, Latin digits) and a Gregorian grid in Persian
+(ژانویه, Persian digits) are both valid, exactly as `mds:jalali-date` behaves.
+Behavior: the server renders a complete grid — selection, today, disabled days, roving tabindex — so the page is correct before
+Alpine boots and without it; Alpine then redraws the same shape from `window.mds.jalali` (`mds::partials.jalali`, the JS port of
+`MajidDs\Support\Jalali`) and hides the server copy. Month arrows step one month; clicking a greyed neighbouring day brings that
+month on screen so a selection is never off-grid. Range mode: first click opens the span, second closes it, either order (a
+backwards pair is straightened out), and the pointer previews the span before the second click. Multiple mode toggles days and
+keeps them sorted. All date arithmetic runs on integer day serials, never `Date`, so DST cannot skip or repeat a day.
+ARIA contract: each month is a `<table role="grid">` named by `label`, `aria-readonly` when `static`, `aria-describedby` the error
+when there is one; rows are `role="row"`, cells `role="gridcell"` carrying `aria-selected`, weekday headers `<th scope="col">`
+with the initial `aria-hidden` beside the full name in an `.sr-only` span, week numbers `<th scope="row">`. Each day is a
+`<button>` with the full spoken date as `aria-label` («پنجشنبه ۲۹ مرداد ۱۴۰۵»), `aria-current="date"` on today, `aria-disabled`
+(never the `disabled` attribute — disabled days stay reachable) and `data-date` with the ISO value. Roving tabindex: exactly one
+cell is tabbable — the selection when it is on screen, else today, else the 1st of the first month. Keyboard on the grid:
+Arrow keys ±1 day / ±1 week (Left/Right follow the VISUAL order — `direction` is read at keydown, so an RTL island in an LTR page
+still moves the way the arrow points), Home/End jump to the start/end of the week, PageUp/PageDown ±1 month, Shift+PageUp/PageDown
+±1 year. The header title is an `aria-live="polite"` region so a month change is announced.
+Livewire contract: `wire:model*` never lands on the wrapper; it reaches the hidden control, once, per mode —
+`single` → `<input type="hidden" x-ref="input">`; `multiple` → a visually-hidden `<select multiple name="x[]">` whose options
+mirror the selection (Livewire reads a multiple select as an array); `range` → two hidden inputs bound to dotted paths under the
+caller's property, modifiers kept (`wire:model.live="trip"` → `trip.start` / `trip.end`). Every commit dispatches bubbling
+`input` and `change` events. A `MutationObserver` on the hidden control re-reads a server-changed value back into Alpine after a
+morph, and is disconnected in `destroy()`.
+Styling hooks: `data-mds-calendar` on the root (plus `data-mds-calendar-mode` / `-system`, and `data-invalid` / `data-static`),
+`-header` `-prev` `-next` `-title` `-selects` `-month-select` `-year-select` `-months` `-month` `-week` `-day` `-today`
+`-start` `-end` `-select`; each day carries `data-selected` `data-in-range` `data-range-start` `data-range-end` `data-today`
+`data-outside` `data-disabled` as they apply.
+Example:
+```blade
+<mds:calendar wire:model.live="deliverAt" name="deliver_at" :min="now()" :max="now()->addDays(30)"
+    :unavailable="['2026-08-28']" with-today week-numbers label="روز تحویل" />
+
+<mds:calendar mode="range" wire:model="trip" :months="2" fixed-weeks />   {{-- trip.start / trip.end --}}
+<mds:calendar mode="multiple" wire:model="days" selectable-header />      {{-- an array of ISO dates --}}
+<mds:calendar calendar="gregorian" :start-day="0" static :value="$order->shipped_at" />
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

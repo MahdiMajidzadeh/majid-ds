@@ -3595,4 +3595,162 @@ $pages['editor'] = [
     'related' => ['composer', 'mds-input'],
 ];
 
+// ---------------------------------------------------------- mds:calendar
+
+// ------------------------------------------------------------- mds:calendar
+
+$pages['calendar'] = [
+    'group' => 'mds',
+    'title' => 'mds:calendar',
+    'lede' => 'A Jalali date-picker grid — an open version of a Flux Pro component, on the Iranian calendar.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s calendar is Gregorian. This one is Jalali by default — Farvardin to Esfand, the week opening on Saturday, leap years from <code>MajidDs\Support\Jalali</code> — and it hands your Livewire property an ISO Gregorian <code>Y-m-d</code> string all the same. Click around: the grid is live.',
+            'code' => <<<'BLADE'
+            <mds:calendar wire:model="deliverAt" />
+            BLADE,
+            'note' => 'What the grid draws and what the model stores are two different things. The visible month is Jalali; the hidden input holds <code dir="ltr">2026-08-24</code>, so <code>Carbon</code>, your database and every validation rule see an ordinary date.',
+        ],
+        [
+            'name' => 'Selecting',
+            'text' => 'Bind it with <code>wire:model</code>, or give it a <code>name</code> and post the form the plain way. <code>value</code> seeds the selection and picks the month the calendar opens on.',
+            'code' => <<<'BLADE'
+            <mds:calendar name="deliver_at" value="2026-08-20" />
+            BLADE,
+        ],
+        [
+            'name' => 'Ranges',
+            'text' => 'The first click opens the span and the second closes it, in either order; the pointer previews it in between. The two ends bind to dotted paths under your property — <code dir="ltr">wire:model="trip"</code> fills <code dir="ltr">trip.start</code> and <code dir="ltr">trip.end</code>.',
+            'code' => <<<'BLADE'
+            <mds:calendar mode="range" wire:model="trip" :value="['2026-08-20', '2026-08-26']" />
+            BLADE,
+        ],
+        [
+            'name' => 'Several days',
+            'text' => '<code>mode="multiple"</code> toggles days on and off. Livewire receives a sorted array of ISO dates, through a visually hidden <code dir="ltr">&lt;select multiple&gt;</code>.',
+            'code' => <<<'BLADE'
+            <mds:calendar mode="multiple" wire:model="days" :value="['2026-08-20', '2026-08-25', '2026-08-26']" />
+            BLADE,
+        ],
+        [
+            'name' => 'Bounds and days off',
+            'text' => '<code>min</code> and <code>max</code> close the ends — and the month arrows with them. <code>unavailable</code> takes out individual days inside the range: a holiday, a full delivery slot, a booked room.',
+            'code' => <<<'BLADE'
+            <mds:calendar min="2026-08-16" max="2026-09-12" :unavailable="['2026-08-28', '2026-09-04']" value="2026-08-24" />
+            BLADE,
+            'note' => 'Blocked days keep their place in the grid and stay reachable by keyboard — they carry <code>aria-disabled</code>, not the <code>disabled</code> attribute, so a screen reader can still read out why a week looks empty.',
+        ],
+        [
+            'name' => 'Several months',
+            'text' => '<code>months</code> draws up to twelve grids side by side — the usual shape for choosing a stay. <code>fixed-weeks</code> pads every month to six rows so the box stops changing height as you page through.',
+            'code' => <<<'BLADE'
+            <mds:calendar mode="range" :months="2" fixed-weeks :value="['2026-08-26', '2026-09-08']" />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Week numbers',
+            'text' => 'A row-header column, counting from the week that holds the 1st of the calendar\'s own year — Farvardin 1 here, January 1 for a Gregorian grid — so the number means the same thing whichever system and start-day you chose.',
+            'code' => <<<'BLADE'
+            <mds:calendar week-numbers value="2026-08-24" />
+            BLADE,
+        ],
+        [
+            'name' => 'Header and today',
+            'text' => '<code>selectable-header</code> swaps the month title for two selects, which is how you get from here to a birthday in 1372 without three hundred clicks. <code>with-today</code> adds a shortcut under the grid; in single mode it selects today as well as scrolling to it.',
+            'code' => <<<'BLADE'
+            <mds:calendar selectable-header with-today />
+            BLADE,
+        ],
+        [
+            'name' => 'Sizes',
+            'text' => 'Three cell sizes. <code>sm</code> fits a calendar into a popover or a sidebar; <code>lg</code> is the one to use on a touch screen.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-start gap-6">
+                <mds:calendar size="sm" value="2026-08-24" />
+                <mds:calendar value="2026-08-24" />
+                <mds:calendar size="lg" value="2026-08-24" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Read-only',
+            'text' => 'A <code>static</code> calendar shows a date instead of asking for one — an order timeline, a booking confirmation. It reports <code>aria-readonly</code> and ignores clicks; the arrows still work, so the month around the date can be read.',
+            'code' => <<<'BLADE'
+            <mds:calendar static :value="['2026-08-20', '2026-08-24']" mode="range" />
+            BLADE,
+        ],
+        [
+            'name' => 'The Gregorian grid',
+            'text' => 'Same component, other calendar. <code>calendar="gregorian"</code> opens the week on Monday and names the months in the ISO way; <code>start-day</code> overrides the first column in either system (0 is Sunday, 6 is Saturday).',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-start gap-6">
+                <mds:calendar calendar="gregorian" value="2026-08-24" />
+                <mds:calendar calendar="gregorian" :start-day="0" value="2026-08-24" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Validation',
+            'text' => 'An explicit <code>error</code> wins; without one the message comes from the error bag for <code>name</code>. Either way the border reddens, the root gets <code>data-invalid</code>, and the grid points at the message with <code>aria-describedby</code>.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-start gap-6">
+                <mds:calendar name="deliver_at" error="Pick a delivery day." />
+                <mds:calendar invalid value="2026-08-24" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Keyboard',
+            'text' => 'The grid follows the WAI-ARIA pattern: one cell is in the tab order, then the arrows take over. Focus the calendar above and try it — <kbd>←</kbd> <kbd>→</kbd> move a day <em>the way the arrow points</em> (the page direction is read at the keypress, so this works the same on an RTL page), <kbd>↑</kbd> <kbd>↓</kbd> move a week, <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends of the week, <kbd>PageUp</kbd> / <kbd>PageDown</kbd> move a month and hold <kbd>Shift</kbd> for a year.',
+            'code' => <<<'BLADE'
+            <mds:calendar value="2026-08-20" week-numbers with-today />
+            BLADE,
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits, the month and weekday names and every built-in string to Persian; <code>:fa="true"</code> does it for one calendar. The calendar system does not move with it: this is the same Jalali grid as everywhere above, and <code>calendar="gregorian"</code> with <code>:fa="true"</code> would give you a Persian-language Gregorian one.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-start gap-6">
+                <mds:calendar :fa="true" wire:model="deliverAt" value="2026-08-20" week-numbers with-today label="روز تحویل" />
+                <mds:calendar :fa="true" mode="range" :value="['2026-08-20', '2026-08-26']" size="sm" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The visible digits are Persian; the hidden input still holds <code dir="ltr">2026-08-20</code>. Machine values never change language.',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:calendar', 'props' => [
+            ['value', 'The selection. A date string or object; an array for <code>multiple</code>, and <code>[start, end]</code> or <code>[\'start\' =&gt; …, \'end\' =&gt; …]</code> for <code>range</code>. Also picks the month the calendar opens on.'],
+            ['mode', '<code>single</code> (default), <code>multiple</code> or <code>range</code>.'],
+            ['min', 'Earliest selectable date. Also stops the back arrow.'],
+            ['max', 'Latest selectable date. Also stops the forward arrow.'],
+            ['unavailable', 'Array of individual dates to disable inside the bounds.'],
+            ['months', 'How many months to show side by side, 1 to 12. Default: <code>1</code>.'],
+            ['calendar', '<code>jalali</code> (default) or <code>gregorian</code>.'],
+            ['start-day', 'First column of the week, 0 (Sunday) to 6 (Saturday). Defaults to Saturday for Jalali, Monday for Gregorian.'],
+            ['week-numbers', 'Adds a week-number column. Default: <code>false</code>.'],
+            ['fixed-weeks', 'Always draws six rows, so the height never changes. Default: <code>false</code>.'],
+            ['selectable-header', 'Month and year selects instead of the title. Default: <code>false</code>.'],
+            ['with-today', 'A "today" shortcut under the grid. Default: <code>false</code>.'],
+            ['static', 'Read-only: no picking, no hover preview. Default: <code>false</code>.'],
+            ['size', 'Cell size: <code>sm</code>, <code>lg</code>, or the default.'],
+            ['name', 'Field name for a plain form post, and the key the error bag is read with.'],
+            ['label', 'Accessible name for the grid. Default: <code>Calendar</code>, or «تقویم» with Persian output.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code>.'],
+            ['fa', 'Persian digits and Persian built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds to a Livewire property — the hidden input, the hidden multiple select, or <code>x.start</code> / <code>x.end</code> in range mode.'],
+        ]],
+    ],
+    'related' => ['jalali-date', 'mds-input', 'field'],
+];
+
 return $pages;

@@ -105,6 +105,7 @@ return [
             'context' => 'mds:context',
             'pillbox' => 'mds:pillbox',
             'editor' => 'mds:editor',
+            'calendar' => 'mds:calendar',
         ],
     ],
 ];

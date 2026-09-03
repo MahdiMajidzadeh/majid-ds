@@ -791,6 +791,21 @@ Props: `name` · `value` · `placeholder` · `label` · `description` · `label:
 `error` · `fa` · `wire:model`. Compose your own with `<mds:editor.toolbar>`, `<mds:editor.button>` and
 `<mds:editor.content>`.
 
+### `<mds:calendar>`
+
+An open implementation of Flux Pro's calendar, and the one place the two are deliberately not the same: `flux:calendar` is Gregorian, `mds:calendar` is **Jalali** — Farvardin to Esfand, the week opening on Saturday, leap years from `MajidDs\Support\Jalali` — with `calendar="gregorian"` one prop away. Single, multiple and range selection, bounds and blocked days, several months at a time, week numbers, a selectable month/year header and full WAI-ARIA grid keyboarding; whatever the grid draws, the value your Livewire property receives is an ISO Gregorian `Y-m-d` string with Latin digits.
+
+```blade
+<mds:calendar wire:model.live="deliverAt" :min="now()" :max="now()->addDays(30)"
+    :unavailable="['2026-08-28']" week-numbers with-today label="روز تحویل" />
+
+<mds:calendar mode="range" wire:model="trip" :months="2" fixed-weeks />  {{-- trip.start / trip.end --}}
+<mds:calendar mode="multiple" wire:model="days" selectable-header />     {{-- an array of ISO dates --}}
+<mds:calendar calendar="gregorian" :start-day="0" static :value="$order->shipped_at" />
+```
+
+Props: `value`, `mode` (`single` | `multiple` | `range`), `min`, `max`, `unavailable`, `months` (1–12), `calendar` (`jalali` | `gregorian`), `start-day` (0 Sunday – 6 Saturday), `week-numbers`, `fixed-weeks`, `selectable-header`, `with-today`, `static`, `size` (`sm` | `lg`), `name`, `label`, `invalid`, `error`, `fa`, `wire:model` (forwarded to the hidden control — one input, a multiple `<select>`, or `x.start` / `x.end`).
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

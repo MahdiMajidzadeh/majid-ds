@@ -45,6 +45,7 @@ $demoAnchors = [
     'context' => 'Context menu',
     'pillbox' => 'Pillbox',
     'editor' => 'Editor',
+    'calendar' => 'Calendar',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

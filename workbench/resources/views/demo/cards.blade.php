@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
         <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
         <flux:navbar.item href="#pillbox" icon="squares-2x2">{{ __('چندانتخابی') }}</flux:navbar.item>
         <flux:navbar.item href="#context" icon="bars-3">{{ __('منوی راست‌کلیک') }}</flux:navbar.item>
@@ -1450,6 +1451,61 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text class="text-sm">{{ __('میان‌برها: Ctrl/⌘ به همراه B پررنگ، I مورب، U زیرخط و K پیوند. در نوار ابزار، کلیدهای جهت‌دار به ترتیب دیداری حرکت می‌کنند.') }}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Calendar ============================== --}}
+<flux:card id="calendar" class="space-y-6">
+    <flux:heading size="lg">{{ __('تقویم — mds:calendar') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Calendar (که در Flux فقط در نسخه Pro موجود است) — و برخلاف آن، شمسی: ماه‌های فروردین تا اسفند، هفته‌ای که با شنبه شروع می‌شود و سال کبیسه‌ی درست. مقداری که به Livewire می‌رسد همیشه تاریخ میلادی ISO است.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('یک روز، با محدوده و روزهای تعطیل:') }}</flux:text>
+
+            <mds:calendar
+                :label="__('روز تحویل')"
+                value="2026-08-24"
+                min="2026-08-16"
+                max="2026-09-12"
+                :unavailable="['2026-08-28', '2026-09-04']"
+                week-numbers
+                with-today
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('بازه‌ی اقامت، دو ماه کنار هم:') }}</flux:text>
+
+            <mds:calendar
+                :label="__('بازه‌ی اقامت')"
+                mode="range"
+                :months="2"
+                fixed-weeks
+                size="sm"
+                :value="['2026-08-26', '2026-09-08']"
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('چند روز دلخواه:') }}</flux:text>
+
+            <mds:calendar
+                :label="__('روزهای انتخابی')"
+                mode="multiple"
+                :value="['2026-08-20', '2026-08-25', '2026-08-26']"
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('انتخاب ماه و سال از هدر:') }}</flux:text>
+
+            <mds:calendar :label="__('تاریخ تولد')" selectable-header value="1993-06-15" />
+        </div>
+    </div>
+
+    <flux:callout icon="information-circle" variant="secondary">
+        <flux:callout.text>{{ __('کلیدهای جهت‌دار روی شبکه کار می‌کنند: چپ و راست یک روز — به همان سمتی که فلش نشان می‌دهد، حتی در صفحه‌ی راست‌چین — بالا و پایین یک هفته، Home و End ابتدا و انتهای هفته، PageUp و PageDown یک ماه و با Shift یک سال.') }}</flux:callout.text>
+    </flux:callout>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}
