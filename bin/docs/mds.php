@@ -2420,4 +2420,135 @@ $pages['accordion'] = [
     'related' => ['card', 'separator'],
 ];
 
+// ------------------------------------------------------------ mds:slider
+
+$pages['slider'] = [
+    'group' => 'mds',
+    'title' => 'mds:slider',
+    'lede' => 'A one- or two-thumb range slider — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A native <code>&lt;input type="range"&gt;</code> under the kit\'s styling, so the keyboard, the pointer and the screen-reader announcement are the browser\'s own. <code>show-value</code> adds a live readout beside the label. The preview is live — drag it, or focus it and press the arrow keys.',
+            'code' => <<<'BLADE'
+            <mds:slider label="Volume" description="Arrow keys move it too." :value="60" :step="5" format="{value}%" show-value class="max-w-md" />
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Nothing is clamped in JavaScript alone: the value is clamped to <code>min</code>/<code>max</code> and snapped to the <code>step</code> grid on the server as well, so the first paint, a no-JS form post and the thumb never disagree.',
+        ],
+        [
+            'name' => 'Range',
+            'text' => 'Add <code>range</code> and pass <code>[low, high]</code>. Two thumbs share one track and may not cross; a press on the bare track moves the nearer one.',
+            'code' => <<<'BLADE'
+            <mds:slider range label="Price range" :min="0" :max="5000000" :step="250000" :value="[500000, 3000000]" format="{value} Toman" show-value class="max-w-md" />
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'An inverted pair like <code>[80, 20]</code> is put back in order rather than rendering a crossed range.',
+        ],
+        [
+            'name' => 'Bounds and step',
+            'text' => 'Any numeric <code>min</code>, <code>max</code> and <code>step</code> — fractions included. A value off the grid is snapped to it.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider label="Rating" :min="1" :max="5" :step="0.5" :value="3.5" show-value />
+                <mds:slider label="Temperature" :min="-20" :max="40" :step="1" :value="21" format="{value}°C" show-value />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Ticks',
+            'text' => 'Not in Flux: <code>ticks</code> draws one mark per step while the span divides into at most twenty whole steps — and quietly draws none when they would crowd the track. An integer asks for that many, evenly spaced.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider label="Screen brightness" :min="1" :max="5" :value="3" ticks show-value />
+                <mds:slider label="Progress" :ticks="5" :value="40" show-value />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Ticks are decoration — <code>aria-hidden</code> and never a substitute for <code>step</code>, which is what actually constrains the value.',
+        ],
+        [
+            'name' => 'Formatting the readout',
+            'text' => '<code>format</code> is a <code>{value}</code> template. It shapes the readout and the <code>aria-valuetext</code> a screen reader announces, and leaves the machine value alone.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider label="Discount" :value="25" format="{value}%" show-value />
+                <mds:slider label="Budget" :min="0" :max="500" :step="10" :value="120" format="{value} Toman" show-value />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Size and disabled',
+            'text' => '<code>size="sm"</code> thins the track for dense filter panels. <code>disabled</code> dims the slider and disables every thumb.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider size="sm" label="Compact" :value="35" show-value />
+                <mds:slider label="Data allowance" :value="10" :max="50" disabled description="Sign in to change this." />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Validation',
+            'text' => 'An explicit <code>error</code> wins; otherwise the message comes from the error bag for <code>name</code> — and for a range, from <code>name.*</code> as well, because it posts as an array. Either way the thumbs get <code>aria-invalid</code> and the fill turns red.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider range name="price" label="Price range" :value="[10, 90]" error="Pick a narrower range." show-value />
+                <mds:slider label="Weight" :value="80" invalid show-value />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The message is rendered with the same markup as <code>flux:error</code> — <code>role="alert"</code>, linked from every thumb through <code>aria-describedby</code> — without depending on the session error bag.',
+        ],
+        [
+            'name' => 'Livewire',
+            'text' => 'A single slider binds the property as written. A <strong>range</strong> binds the two ends as dotted paths — <code>wire:model.live="price"</code> becomes <code>price.0</code> on the low thumb and <code>price.1</code> on the high one — so the bound property must be an array of two numbers.',
+            'code' => <<<'BLADE'
+            <mds:slider wire:model.live="price" range name="price" label="Price range" :min="0" :max="5000000" :step="250000" :value="[500000, 3000000]" format="{value} Toman" show-value class="max-w-md" />
+            BLADE,
+            'align' => 'stretch',
+            'note' => '<code>public array $price = [500000, 3000000];</code> — a scalar property would break the binding. Modifiers are kept: <code>wire:model.live.debounce.500ms="price"</code> reaches both thumbs. A server-side change of the property flows back into the readout and the fill.',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the readout to Persian digits and the built-in thumb labels to Persian («مقدار — حداقل» / «مقدار — حداکثر»); <code>:fa="true"</code> does it for a single slider. The machine value stays Latin, whatever is shown.',
+            'code' => <<<'BLADE'
+            <div class="w-full max-w-md space-y-6">
+                <mds:slider :fa="true" range label="بازه قیمت" :min="0" :max="5000000" :step="250000" :value="[500000, 3000000]" format="{value} تومان" show-value description="قیمت‌ها به تومان است." />
+
+                <mds:slider :fa="true" label="میزان صدا" :value="60" :step="5" format="{value}٪" ticks show-value />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The track is RTL-aware: the fill runs from the start edge, and the arrow keys follow the visual order because the native control already does.',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:slider', 'props' => [
+            ['value', 'Current value — a number, or <code>[low, high]</code> with <code>range</code>. Default: <code>min</code>.'],
+            ['min', 'Lower bound. Default: <code>0</code>.'],
+            ['max', 'Upper bound. Default: <code>100</code>.'],
+            ['step', 'Granularity. Default: <code>1</code>.'],
+            ['range', 'Two thumbs holding a low and a high value. Default: <code>false</code>.'],
+            ['label', 'Label text. Also names the thumbs for screen readers.'],
+            ['description', 'Help text under the track.'],
+            ['name', 'Field name for a plain form post — <code>name[]</code> for a range — and the key the error bag is read with.'],
+            ['size', '<code>sm</code> for a thinner track.'],
+            ['disabled', 'Disables every thumb. Default: <code>false</code>.'],
+            ['show-value', 'Live readout beside the label. Default: <code>false</code>.'],
+            ['ticks', '<code>true</code> for one tick per step (up to twenty), or an integer count. Default: <code>false</code>.'],
+            ['format', '<code>{value}</code> template for the readout and <code>aria-valuetext</code>.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code> (and <code>name.*</code> for a range).'],
+            ['fa', 'Persian digits and Persian built-in labels. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds the thumb. A range binds <code>property.0</code> and <code>property.1</code>.'],
+        ]],
+    ],
+    'related' => ['quantity', 'progress', 'price'],
+];
+
 return $pages;

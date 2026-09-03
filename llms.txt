@@ -623,6 +623,44 @@ server-driven `expanded` stays in sync. Style descendants off the state with `in
 </mds:accordion>
 ```
 
+### <mds:slider> — range slider (open version of Flux Pro's flux:slider)
+Native `<input type="range">` controls under kit styling: one thumb, or two that hold a range. Props: `value` int|float|array|null=`min`
+(a range takes `[low, high]`; a single slider takes a number) · `min` numeric=0 · `max` numeric=100 (an inverted pair is swapped) ·
+`step` numeric=1 (fractions welcome; anything `<= 0` falls back to 1) · `range` bool=false (two thumbs that may not cross) ·
+`label` / `description` (flux:label + flux:description chrome; the label also names the thumbs) · `name` string|null (plain form post —
+a range posts as `name[]` — and the key the error bag is read with) · `size` sm|null · `disabled` bool=false ·
+`show-value` bool=false (live readout beside the label) · `ticks` bool|int=false (`true` draws one tick per step while the span divides
+into at most 20 whole steps, and nothing when it would crowd the track; an int draws that many, evenly spaced) ·
+`format` string|null (a `{value}` template applied to the readout and `aria-valuetext`, e.g. `{value} تومان` or `{value}٪`) ·
+`invalid` bool=false · `error` string|null (explicit message; when omitted and `name` is set, falls back to `$errors->first($name)`,
+then — for a range — `$errors->first($name.'.*')`) · `fa` bool|null=config (digits of the readout and language of the built-in labels).
+Behavior: values are clamped to the bounds and snapped to the step grid on the SERVER too, so the first paint, a no-JS form post and the
+thumb all agree. Alpine mirrors the native inputs (it never writes `value` back into them), keeps `low <= high` by pushing a crossing
+thumb back and re-announcing the clamped value in the same tick, and — in range mode only — moves the nearer thumb to a press on the bare
+track. The fill between the thumbs is two CSS custom properties (`--mds-slider-a` / `--mds-slider-b`) set server-side and kept up to date
+by Alpine, so it is painted before Alpine boots. Keyboard is the browser's own: arrows step, PageUp/PageDown jump, Home/End go to the
+bounds, and the arrows follow the visual direction in RTL because the native control already does.
+ARIA contract: each thumb is a real `input[type=range]`, so `role="slider"`, `aria-valuemin/max/now` and the keyboard come free. The kit adds
+`aria-label` — the `label` text, or «مقدار» / "Value" — suffixed with « — حداقل» / " — minimum" and « — حداکثر» / " — maximum" on a range,
+`aria-valuetext` (the formatted, `fa`-aware reading, kept in sync by Alpine), `aria-invalid` on every thumb when invalid, and
+`aria-describedby` pointing at the description and the error message. The readout is an `aria-live="polite"` region; the track, fill and
+ticks are `aria-hidden`. Ticks are decoration — they never replace `step`.
+Data hooks: `data-mds-slider` on the root (plus `data-mds-slider-range`, `data-mds-slider-size="sm"`, `data-disabled`, `data-invalid`),
+`data-mds-slider-header`, `-value`, `-track`, `-fill`, `-ticks`, `-tick`, and `data-mds-slider-input="value|low|high"` on the controls.
+Livewire contract: `wire:model` is forwarded to the native input(s) and the wrapper keeps no copy. A single slider binds the property as
+written. A RANGE binds the two ends as dotted paths, keeping the caller's modifiers: `wire:model.live="price"` becomes
+`wire:model.live="price.0"` on the low thumb and `wire:model.live="price.1"` on the high one — so the bound property must be an ARRAY of
+two numbers (`public array $price = [500000, 3000000];`), never a scalar. A server-side change of the property flows back through the
+`x-model` accessor Livewire leaves on the input, so the readout and the fill follow a `$this->price = [...]` from a Livewire action.
+```blade
+<mds:slider wire:model.live="price" range name="price" label="بازه قیمت" :min="0" :max="5000000" :step="250000"
+            :value="$price" format="{value} تومان" show-value description="قیمت‌ها به تومان است." />
+```
+```php
+public array $price = [500000, 3000000];   // price.0 and price.1 — a scalar would break the binding
+public function updatedPrice() { $this->resetPage(); }
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

@@ -638,6 +638,25 @@ An open implementation of Flux Pro's accordion, API-compatible with `flux:accord
 
 Props: on the root, `exclusive` (one open item at a time, through the native `<details name>` group), `transition` (animate the height; skipped under `prefers-reduced-motion`), `name` (the group name to use when `exclusive`), `fa`. On `<mds:accordion.item>`: `heading` (a shortcut for the two subcomponents; escaped), `expanded` (rendered server-side as `open`, so the first paint is right), `disabled`, `fa`. `<mds:accordion.heading>` and `<mds:accordion.content>` take only `fa` and inherit the rest.
 
+### `<mds:slider>`
+
+A one- or two-thumb range slider — an open version of Flux Pro's `flux:slider`, built on native
+`<input type="range">` controls, so the keyboard, the pointer and the screen-reader announcement come
+from the browser. Values are clamped and snapped to the step on the server as well as in Alpine, the
+readout follows `mds.persian_digits`, and a range binds its two ends as Livewire dotted paths.
+
+```blade
+<mds:slider label="میزان صدا" :value="60" :step="5" format="{value}٪" show-value />
+
+<mds:slider wire:model.live="price" range name="price" label="بازه قیمت"
+            :min="0" :max="5000000" :step="250000" :value="[500000, 3000000]"
+            format="{value} تومان" show-value />
+{{-- wire:model reaches price.0 and price.1, so $price is an array of two numbers --}}
+```
+
+Props: `value` · `min` · `max` · `step` · `range` · `label` · `description` · `name` · `size` ·
+`disabled` · `show-value` · `ticks` · `format` · `invalid` · `error` · `fa` · `wire:model`.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

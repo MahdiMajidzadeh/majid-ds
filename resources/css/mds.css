@@ -734,3 +734,93 @@
         block-size: 1.75rem;
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Slider (mds:slider)
+|--------------------------------------------------------------------------
+|
+| The thumbs of the native range inputs. `appearance: none` (a Tailwind class
+| on the input) removes the thumb along with the native track, so the thumb is
+| drawn here, once per engine; the visible track and fill are divs behind the
+| input, so the native track stays transparent.
+|
+| In range mode the two inputs are stacked over the whole control, so only
+| their thumbs may take pointer events — otherwise the top input swallows
+| every press meant for the other thumb, and the pointerdown handler on the
+| track never sees a press on the bare track.
+*/
+
+@layer components {
+    .mds-slider-input:focus {
+        outline: none;
+    }
+
+    .mds-slider-input::-webkit-slider-runnable-track {
+        background: transparent;
+    }
+
+    .mds-slider-input::-moz-range-track {
+        background: transparent;
+    }
+
+    .mds-slider-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1.125rem;
+        height: 1.125rem;
+        border-radius: 9999px;
+        background: var(--mds-slider-thumb, #ffffff);
+        border: 1px solid rgb(0 0 0 / 0.15);
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+        cursor: inherit;
+    }
+
+    .mds-slider-input::-moz-range-thumb {
+        width: 1.125rem;
+        height: 1.125rem;
+        border: 1px solid rgb(0 0 0 / 0.15);
+        border-radius: 9999px;
+        background: var(--mds-slider-thumb, #ffffff);
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+        cursor: inherit;
+    }
+
+    /* appearance:none drops the native focus ring with the native styling. */
+    .mds-slider-input:focus-visible::-webkit-slider-thumb {
+        outline: 2px solid var(--color-accent, currentColor);
+        outline-offset: 2px;
+    }
+
+    .mds-slider-input:focus-visible::-moz-range-thumb {
+        outline: 2px solid var(--color-accent, currentColor);
+        outline-offset: 2px;
+    }
+
+    [data-mds-slider-size='sm'] .mds-slider-input::-webkit-slider-thumb {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
+    [data-mds-slider-size='sm'] .mds-slider-input::-moz-range-thumb {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
+    /* Two stacked inputs: only the thumbs are pressable. */
+    [data-mds-slider-range] .mds-slider-input {
+        pointer-events: none;
+    }
+
+    [data-mds-slider-range] .mds-slider-input::-webkit-slider-thumb {
+        pointer-events: auto;
+    }
+
+    [data-mds-slider-range] .mds-slider-input::-moz-range-thumb {
+        pointer-events: auto;
+    }
+
+    .dark .mds-slider-input {
+        --mds-slider-thumb: #e4e4e7;
+    }
+}

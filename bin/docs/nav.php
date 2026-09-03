@@ -97,6 +97,7 @@ return [
             'chart' => 'mds:chart',
             'popover' => 'mds:popover',
             'accordion' => 'mds:accordion',
+            'slider' => 'mds:slider',
         ],
     ],
 ];

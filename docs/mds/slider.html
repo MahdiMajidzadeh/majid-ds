@@ -1,0 +1,3800 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:slider — Majid DS</title>
+<meta name="description" content="mds:slider — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../guides/demo.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open data-docs-slug="slider" data-docs-prefix="../">
+            <summary>Menu</summary>
+            <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="../index.html">overview</a>.</p></noscript>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:slider</h1>
+        <p class="docs-lede">A one- or two-thumb range slider — an open version of a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">A native <code>&lt;input type="range"&gt;</code> under the kit's styling, so the keyboard, the pointer and the screen-reader announcement are the browser's own. <code>show-value</code> adds a live readout beside the label. The preview is live — drag it, or focus it and press the arrow keys.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 60%;" class="block min-w-0 max-w-md"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 5,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: '{value}%',
+        low: 60,
+        high: 60,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Volume
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >60%</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="5"
+            value="60"
+                                                 aria-describedby="mds-slider-e1294031-description"             aria-label="Volume"
+            aria-valuetext="60%"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60  mt-3" id="mds-slider-e1294031-description" data-flux-description>
+    Arrow keys move it too.
+</ui-description>
+    
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Volume&quot;</span> <span class="t-attr">description</span><span class="t-equals">=</span><span class="t-string">&quot;Arrow keys move it too.&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;60&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value}%&quot;</span> <span class="t-attr">show-value</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">Nothing is clamped in JavaScript alone: the value is clamped to <code>min</code>/<code>max</code> and snapped to the <code>step</code> grid on the server as well, so the first paint, a no-JS form post and the thumb never disagree.</div></section><section id="range" class="docs-section"><h2>Range</h2><p class="docs-text">Add <code>range</code> and pass <code>[low, high]</code>. Two thumbs share one track and may not cross; a press on the bare track moves the nearer one.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 10%; --mds-slider-b: 60%;" class="block min-w-0 max-w-md"
+    x-data="mdsSlider({
+        min: 0,
+        max: 5000000,
+        step: 250000,
+        range: true,
+        disabled: false,
+        fa: false,
+        format: '{value} Toman',
+        low: 500000,
+        high: 3000000,
+    })"
+    x-bind:style="fill"
+             data-mds-slider-range         data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Price range
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >500000 Toman – 3000000 Toman</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+         x-on:pointerdown="trackDown($event)"     >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0"
+             x-bind:class="(min + max) / 2 < low ? 'z-20' : 'z-10'"             x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="5000000"
+            step="250000"
+            value="500000"
+                                                            aria-label="Price range — minimum"
+            aria-valuetext="500000 Toman"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="low"
+            
+        >
+
+                    <input
+                type="range"
+                class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0 z-10"
+                x-ref="high"
+                x-on:input="input('high')"
+                min="0"
+                max="5000000"
+                step="250000"
+                value="3000000"
+                                                                                aria-label="Price range — maximum"
+                aria-valuetext="3000000 Toman"
+                x-bind:aria-valuetext="display(high)"
+                data-mds-slider-input="high"
+                
+            >
+            </div>
+
+    
+    
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">range</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Price range&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;0&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5000000&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;250000&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;[500000, 3000000]&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value} Toman&quot;</span> <span class="t-attr">show-value</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">An inverted pair like <code>[80, 20]</code> is put back in order rather than rendering a crossed range.</div></section><section id="bounds-and-step" class="docs-section"><h2>Bounds and step</h2><p class="docs-text">Any numeric <code>min</code>, <code>max</code> and <code>step</code> — fractions included. A value off the grid is snapped to it.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 62.5%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 1,
+        max: 5,
+        step: 0.5,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 3.5,
+        high: 3.5,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Rating
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >3.5</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="1"
+            max="5"
+            step="0.5"
+            value="3.5"
+                                                            aria-label="Rating"
+            aria-valuetext="3.5"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 68.3333%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: -20,
+        max: 40,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: '{value}°C',
+        low: 21,
+        high: 21,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Temperature
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >21°C</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="-20"
+            max="40"
+            step="1"
+            value="21"
+                                                            aria-label="Temperature"
+            aria-valuetext="21°C"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Rating&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;0.5&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3.5&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Temperature&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;-20&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;40&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;21&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value}°C&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="ticks" class="docs-section"><h2>Ticks</h2><p class="docs-text">Not in Flux: <code>ticks</code> draws one mark per step while the span divides into at most twenty whole steps — and quietly draws none when they would crowd the track. An integer asks for that many, evenly spaced.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 50%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 1,
+        max: 5,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 3,
+        high: 3,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Screen brightness
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >3</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="1"
+            max="5"
+            step="1"
+            value="3"
+                                                            aria-label="Screen brightness"
+            aria-valuetext="3"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+            <div class="mt-1 flex justify-between mx-2" aria-hidden="true" data-mds-slider-ticks>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                    </div>
+    
+    
+    </div>
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 40%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 40,
+        high: 40,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Progress
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >40</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="1"
+            value="40"
+                                                            aria-label="Progress"
+            aria-valuetext="40"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+            <div class="mt-1 flex justify-between mx-2" aria-hidden="true" data-mds-slider-ticks>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                    </div>
+    
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Screen brightness&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;1&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;3&quot;</span> <span class="t-attr">ticks</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Progress&quot;</span> <span class="t-attr">:ticks</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;40&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">Ticks are decoration — <code>aria-hidden</code> and never a substitute for <code>step</code>, which is what actually constrains the value.</div></section><section id="formatting-the-readout" class="docs-section"><h2>Formatting the readout</h2><p class="docs-text"><code>format</code> is a <code>{value}</code> template. It shapes the readout and the <code>aria-valuetext</code> a screen reader announces, and leaves the machine value alone.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 25%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: '{value}%',
+        low: 25,
+        high: 25,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Discount
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >25%</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="1"
+            value="25"
+                                                            aria-label="Discount"
+            aria-valuetext="25%"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 24%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 500,
+        step: 10,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: '{value} Toman',
+        low: 120,
+        high: 120,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Budget
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >120 Toman</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="500"
+            step="10"
+            value="120"
+                                                            aria-label="Budget"
+            aria-valuetext="120 Toman"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Discount&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;25&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value}%&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Budget&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;0&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;500&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;10&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;120&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value} Toman&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="size-and-disabled" class="docs-section"><h2>Size and disabled</h2><p class="docs-text"><code>size="sm"</code> thins the track for dense filter panels. <code>disabled</code> dims the slider and disables every thumb.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 35%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 35,
+        high: 35,
+    })"
+    x-bind:style="fill"
+                 data-mds-slider-size="sm"     data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Compact
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >35</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-4"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1 start-1.5 end-1.5"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-4 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="1"
+            value="35"
+                                                            aria-label="Compact"
+            aria-valuetext="35"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 20%;" class="block min-w-0 opacity-50"
+    x-data="mdsSlider({
+        min: 0,
+        max: 50,
+        step: 1,
+        range: false,
+        disabled: true,
+        fa: false,
+        format: null,
+        low: 10,
+        high: 10,
+    })"
+    x-bind:style="fill"
+     data-disabled                 data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Data allowance
+
+    
+    
+    </ui-label>
+            
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-not-allowed relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="50"
+            step="1"
+            value="10"
+                         disabled                          aria-describedby="mds-slider-874a1bce-description"             aria-label="Data allowance"
+            aria-valuetext="10"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60  mt-3" id="mds-slider-874a1bce-description" data-flux-description>
+    Sign in to change this.
+</ui-description>
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Compact&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;35&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Data allowance&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;10&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;50&quot;</span> <span class="t-attr">disabled</span> <span class="t-attr">description</span><span class="t-equals">=</span><span class="t-string">&quot;Sign in to change this.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="validation" class="docs-section"><h2>Validation</h2><p class="docs-text">An explicit <code>error</code> wins; otherwise the message comes from the error bag for <code>name</code> — and for a range, from <code>name.*</code> as well, because it posts as an array. Either way the thumbs get <code>aria-invalid</code> and the fill turns red.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 10%; --mds-slider-b: 90%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        range: true,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 10,
+        high: 90,
+    })"
+    x-bind:style="fill"
+         data-invalid      data-mds-slider-range         data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Price range
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >10 – 90</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+         x-on:pointerdown="trackDown($event)"     >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-red-500 dark:bg-red-400"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0"
+             x-bind:class="(min + max) / 2 < low ? 'z-20' : 'z-10'"             x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="1"
+            value="10"
+             name="price[]"                          aria-invalid="true"              aria-describedby="mds-slider-c674b9b2-error"             aria-label="Price range — minimum"
+            aria-valuetext="10"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="low"
+            
+        >
+
+                    <input
+                type="range"
+                class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0 z-10"
+                x-ref="high"
+                x-on:input="input('high')"
+                min="0"
+                max="100"
+                step="1"
+                value="90"
+                 name="price[]"                                  aria-invalid="true"                  aria-describedby="mds-slider-c674b9b2-error"                 aria-label="Price range — maximum"
+                aria-valuetext="90"
+                x-bind:aria-valuetext="display(high)"
+                data-mds-slider-input="high"
+                
+            >
+            </div>
+
+    
+    
+            
+        <div role="alert" aria-live="polite" aria-atomic="true" id="mds-slider-c674b9b2-error" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400" data-flux-error>
+            <svg aria-hidden="true" data-mds-icon="" class="inline size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 9V13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M12 16.9922V17.0022" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" /></svg>
+            Pick a narrower range.
+        </div>
+    </div>
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 80%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 80,
+        high: 80,
+    })"
+    x-bind:style="fill"
+         data-invalid             data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Weight
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >80</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-red-500 dark:bg-red-400"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="1"
+            value="80"
+                                     aria-invalid="true"                         aria-label="Weight"
+            aria-valuetext="80"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">range</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;price&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Price range&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;[10, 90]&quot;</span> <span class="t-attr">error</span><span class="t-equals">=</span><span class="t-string">&quot;Pick a narrower range.&quot;</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Weight&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;80&quot;</span> <span class="t-attr">invalid</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">The message is rendered with the same markup as <code>flux:error</code> — <code>role="alert"</code>, linked from every thumb through <code>aria-describedby</code> — without depending on the session error bag.</div></section><section id="livewire" class="docs-section"><h2>Livewire</h2><p class="docs-text">A single slider binds the property as written. A <strong>range</strong> binds the two ends as dotted paths — <code>wire:model.live="price"</code> becomes <code>price.0</code> on the low thumb and <code>price.1</code> on the high one — so the bound property must be an array of two numbers.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 10%; --mds-slider-b: 60%;" class="block min-w-0 max-w-md"
+    x-data="mdsSlider({
+        min: 0,
+        max: 5000000,
+        step: 250000,
+        range: true,
+        disabled: false,
+        fa: false,
+        format: '{value} Toman',
+        low: 500000,
+        high: 3000000,
+    })"
+    x-bind:style="fill"
+             data-mds-slider-range         data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Price range
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >500000 Toman – 3000000 Toman</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+         x-on:pointerdown="trackDown($event)"     >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0"
+             x-bind:class="(min + max) / 2 < low ? 'z-20' : 'z-10'"             x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="5000000"
+            step="250000"
+            value="500000"
+             name="price[]"                                                 aria-label="Price range — minimum"
+            aria-valuetext="500000 Toman"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="low"
+            wire:model.live="price.0"
+        >
+
+                    <input
+                type="range"
+                class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0 z-10"
+                x-ref="high"
+                x-on:input="input('high')"
+                min="0"
+                max="5000000"
+                step="250000"
+                value="3000000"
+                 name="price[]"                                                                 aria-label="Price range — maximum"
+                aria-valuetext="3000000 Toman"
+                x-bind:aria-valuetext="display(high)"
+                data-mds-slider-input="high"
+                wire:model.live="price.1"
+            >
+            </div>
+
+    
+    
+    </div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">wire:model.live</span><span class="t-equals">=</span><span class="t-string">&quot;price&quot;</span> <span class="t-attr">range</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;price&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Price range&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;0&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5000000&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;250000&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;[500000, 3000000]&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value} Toman&quot;</span> <span class="t-attr">show-value</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;max-w-md&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note"><code>public array $price = [500000, 3000000];</code> — a scalar property would break the binding. Modifiers are kept: <code>wire:model.live.debounce.500ms="price"</code> reaches both thumbs. A server-side change of the property flows back into the readout and the fill.</div></section><section id="persian-output" class="docs-section"><h2>Persian output</h2><p class="docs-text"><code>config('mds.persian_digits')</code> — on by default in a real app, off in these docs — switches the readout to Persian digits and the built-in thumb labels to Persian («مقدار — حداقل» / «مقدار — حداکثر»); <code>:fa="true"</code> does it for a single slider. The machine value stays Latin, whatever is shown.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><div class="w-full max-w-md space-y-6">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 10%; --mds-slider-b: 60%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 5000000,
+        step: 250000,
+        range: true,
+        disabled: false,
+        fa: true,
+        format: '{value} تومان',
+        low: 500000,
+        high: 3000000,
+    })"
+    x-bind:style="fill"
+             data-mds-slider-range         data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    بازه قیمت
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >۵۰۰۰۰۰ تومان – ۳۰۰۰۰۰۰ تومان</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+         x-on:pointerdown="trackDown($event)"     >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0"
+             x-bind:class="(min + max) / 2 < low ? 'z-20' : 'z-10'"             x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="5000000"
+            step="250000"
+            value="500000"
+                                                 aria-describedby="mds-slider-4403e898-description"             aria-label="بازه قیمت — حداقل"
+            aria-valuetext="۵۰۰۰۰۰ تومان"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="low"
+            
+        >
+
+                    <input
+                type="range"
+                class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0 z-10"
+                x-ref="high"
+                x-on:input="input('high')"
+                min="0"
+                max="5000000"
+                step="250000"
+                value="3000000"
+                                                                 aria-describedby="mds-slider-4403e898-description"                 aria-label="بازه قیمت — حداکثر"
+                aria-valuetext="۳۰۰۰۰۰۰ تومان"
+                x-bind:aria-valuetext="display(high)"
+                data-mds-slider-input="high"
+                
+            >
+            </div>
+
+    
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60  mt-3" id="mds-slider-4403e898-description" data-flux-description>
+    قیمت‌ها به تومان است.
+</ui-description>
+    
+    </div>
+
+    <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 60%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 5,
+        range: false,
+        disabled: false,
+        fa: true,
+        format: '{value}٪',
+        low: 60,
+        high: 60,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    میزان صدا
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >۶۰٪</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="5"
+            value="60"
+                                                            aria-label="میزان صدا"
+            aria-valuetext="۶۰٪"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+            <div class="mt-1 flex justify-between mx-2" aria-hidden="true" data-mds-slider-ticks>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                    </div>
+    
+    
+    </div>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-md space-y-6&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-attr">range</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;بازه قیمت&quot;</span> <span class="t-attr">:min</span><span class="t-equals">=</span><span class="t-string">&quot;0&quot;</span> <span class="t-attr">:max</span><span class="t-equals">=</span><span class="t-string">&quot;5000000&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;250000&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;[500000, 3000000]&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value} تومان&quot;</span> <span class="t-attr">show-value</span> <span class="t-attr">description</span><span class="t-equals">=</span><span class="t-string">&quot;قیمت‌ها به تومان است.&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:slider</span> <span class="t-attr">:fa</span><span class="t-equals">=</span><span class="t-string">&quot;true&quot;</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;میزان صدا&quot;</span> <span class="t-attr">:value</span><span class="t-equals">=</span><span class="t-string">&quot;60&quot;</span> <span class="t-attr">:step</span><span class="t-equals">=</span><span class="t-string">&quot;5&quot;</span> <span class="t-attr">format</span><span class="t-equals">=</span><span class="t-string">&quot;{value}٪&quot;</span> <span class="t-attr">ticks</span> <span class="t-attr">show-value</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note">The track is RTL-aware: the fill runs from the start edge, and the arrow keys follow the visual order because the native control already does.</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-slider" class="docs-ref-block"><h3>mds:slider</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">value</span></td><td>Current value — a number, or <code>[low, high]</code> with <code>range</code>. Default: <code>min</code>.</td></tr><tr><td><span class="docs-prop">min</span></td><td>Lower bound. Default: <code>0</code>.</td></tr><tr><td><span class="docs-prop">max</span></td><td>Upper bound. Default: <code>100</code>.</td></tr><tr><td><span class="docs-prop">step</span></td><td>Granularity. Default: <code>1</code>.</td></tr><tr><td><span class="docs-prop">range</span></td><td>Two thumbs holding a low and a high value. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">label</span></td><td>Label text. Also names the thumbs for screen readers.</td></tr><tr><td><span class="docs-prop">description</span></td><td>Help text under the track.</td></tr><tr><td><span class="docs-prop">name</span></td><td>Field name for a plain form post — <code>name[]</code> for a range — and the key the error bag is read with.</td></tr><tr><td><span class="docs-prop">size</span></td><td><code>sm</code> for a thinner track.</td></tr><tr><td><span class="docs-prop">disabled</span></td><td>Disables every thumb. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">show-value</span></td><td>Live readout beside the label. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">ticks</span></td><td><code>true</code> for one tick per step (up to twenty), or an integer count. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">format</span></td><td><code>{value}</code> template for the readout and <code>aria-valuetext</code>.</td></tr><tr><td><span class="docs-prop">invalid</span></td><td>Applies error styling.</td></tr><tr><td><span class="docs-prop">error</span></td><td>Validation message. Falls back to the bag for <code>name</code> (and <code>name.*</code> for a range).</td></tr><tr><td><span class="docs-prop">fa</span></td><td>Persian digits and Persian built-in labels. Default: <code>config('mds.persian_digits')</code>.</td></tr><tr><td><span class="docs-prop">wire:model</span></td><td>Binds the thumb. A range binds <code>property.0</code> and <code>property.1</code>.</td></tr></tbody>
+</table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../mds/quantity.html"><span class="docs-related-name">mds:quantity</span><span class="docs-related-lede">A cart quantity stepper.</span></a><a class="docs-related-card" href="../components/progress.html"><span class="docs-related-name">Progress</span><span class="docs-related-lede">How far along something is.</span></a><a class="docs-related-card" href="../mds/price.html"><span class="docs-related-name">mds:price</span><span class="docs-related-lede">Money in Toman or Rial — separators, currency label and discount badge from one amount.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#range">Range</a><a href="#bounds-and-step">Bounds and step</a><a href="#ticks">Ticks</a><a href="#formatting-the-readout">Formatting the readout</a><a href="#size-and-disabled">Size and disabled</a><a href="#validation">Validation</a><a href="#livewire">Livewire</a><a href="#persian-output">Persian output</a><a href="#reference">Reference</a><a href="#mds-slider" class="docs-toc-sub">mds:slider</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+<script src="../assets/nav.js"></script>
+
+<script>
+// Build the sidebar from the nav data. textContent throughout — labels and
+// tags are data, never markup.
+(function () {
+    var details = document.querySelector('.docs-nav');
+    var slug = details.getAttribute('data-docs-slug');
+    var prefix = details.getAttribute('data-docs-prefix');
+
+    (window.__mdsNav || []).forEach(function (group) {
+        var wrap = document.createElement('div');
+        wrap.className = 'docs-nav-group';
+
+        var title = document.createElement('p');
+        title.className = 'docs-nav-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+
+        var items = document.createElement('div');
+        items.className = 'docs-nav-items';
+
+        group.items.forEach(function (item) {
+            var link = document.createElement('a');
+            link.href = prefix + item.path;
+            link.textContent = item.label;
+
+            if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+            if (item.tag) {
+                var tag = document.createElement('span');
+                tag.className = 'docs-nav-tag';
+                tag.textContent = item.tag;
+                link.appendChild(document.createTextNode(' '));
+                link.appendChild(tag);
+            }
+
+            items.appendChild(link);
+        });
+
+        wrap.appendChild(items);
+        details.appendChild(wrap);
+    });
+})();
+
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

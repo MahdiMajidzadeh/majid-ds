@@ -191,6 +191,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Charts</div>
     </a>
+        <a href="#slider" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>Slider</div>
+    </a>
         <a href="#accordion" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class=" flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>آکاردئون</div>
     </a>
@@ -8074,6 +8085,465 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="slider" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Slider — mds:slider</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >An open version of the Slider component (Pro-only in Flux) — single-thumb or range, with a live localized readout, tick marks and server-side clamping.</p>
+    <div class="grid gap-8 md:grid-cols-2">
+        <script >
+window.mds = window.mds || {}
+
+window.mds.registerSlider = (Alpine) => {
+    if (window.mds.sliderRegistered) return
+    window.mds.sliderRegistered = true
+
+    Alpine.data('mdsSlider', (config = {}) => ({
+        min: config.min ?? 0,
+        max: config.max ?? 100,
+        step: config.step ?? 1,
+        range: config.range ?? false,
+        disabled: config.disabled ?? false,
+        fa: config.fa ?? true,
+        format: config.format ?? null,
+        low: config.low ?? 0,
+        high: config.high ?? 0,
+        effects: [],
+
+        init() {
+            // The native inputs ARE the controls, so this state is a mirror of
+            // them, never the other way round: no x-bind:value, no x-model.
+            // Children are not initialised yet when init() runs, so the
+            // wiring waits a tick.
+            this.$nextTick(() => {
+                this.follow('low')
+                if (this.range) this.follow('high')
+            })
+        },
+
+        destroy() {
+            this.effects.forEach(effect => Alpine.release(effect))
+            this.effects = []
+        },
+
+        // Livewire's wire:model is an x-model bound to $wire, and Alpine
+        // leaves its accessor on the element as _x_model. Reading it inside an
+        // effect makes the readout and fill follow a server-side change of the
+        // bound property (x-model sets el.value without an input event, so a
+        // listener would not see it; the attribute never changes, so neither
+        // would a MutationObserver). Without a binding, the input's own value
+        // is the source — it may differ from the config after a form restore.
+        follow(which) {
+            const el = this.$refs[which]
+
+            if (! el) return
+
+            const model = el._x_model
+
+            if (! model) {
+                this.read(which)
+
+                return
+            }
+
+            this.effects.push(Alpine.effect(() => {
+                const value = model.get()
+
+                if (value === undefined || value === null || value === '') return
+
+                const n = Number(value)
+
+                if (Number.isFinite(n)) this[which] = n
+            }))
+        },
+
+        read(which) {
+            const n = Number(this.$refs[which].value)
+
+            if (Number.isFinite(n)) this[which] = n
+        },
+
+        // The thumbs may not cross. A crossing value is pushed back to the
+        // other thumb and re-announced, so a wire:model listener that already
+        // took the raw value gets the clamped one in the same tick.
+        input(which) {
+            const el = this.$refs[which]
+            const n = Number(el.value)
+
+            if (! Number.isFinite(n)) return
+
+            if (this.range && which === 'low' && n > this.high) return this.commit(el, this.high)
+            if (this.range && which === 'high' && n < this.low) return this.commit(el, this.low)
+
+            this[which] = n
+        },
+
+        commit(el, value) {
+            el.value = value
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            el.dispatchEvent(new Event('change', { bubbles: true }))
+        },
+
+        // With two thumbs the inputs take no pointer events (only their thumbs
+        // do), so a press on the bare track moves the nearer thumb there.
+        trackDown(e) {
+            if (! this.range || this.disabled || e.button !== 0) return
+            if (e.target.matches('input')) return
+
+            const rect = this.$refs.track.getBoundingClientRect()
+
+            if (! rect.width) return
+
+            let fraction = (e.clientX - rect.left) / rect.width
+
+            if (getComputedStyle(this.$root).direction === 'rtl') fraction = 1 - fraction
+
+            const value = this.min + Math.min(Math.max(fraction, 0), 1) * (this.max - this.min)
+            const which = Math.abs(value - this.low) <= Math.abs(value - this.high) ? 'low' : 'high'
+
+            // Setting .value snaps to the step and clamps to the bounds natively.
+            this.commit(this.$refs[which], value)
+            this.$refs[which].focus()
+        },
+
+        percent(n) {
+            const span = this.max - this.min
+
+            return span > 0 ? Math.min(Math.max((n - this.min) / span * 100, 0), 100) : 0
+        },
+
+        get fill() {
+            return {
+                '--mds-slider-a': this.percent(this.range ? this.low : this.min) + '%',
+                '--mds-slider-b': this.percent(this.range ? this.high : this.low) + '%',
+            }
+        },
+
+        display(n) {
+            let s = window.mds.digits(String(Number(Number(n).toFixed(10))), this.fa)
+
+            return this.format === null ? s : this.format.split('{value}').join(s)
+        },
+
+        get readout() {
+            return this.range ? this.display(this.low) + ' – ' + this.display(this.high) : this.display(this.low)
+        },
+    }))
+}
+
+if (window.Alpine) {
+    window.mds.registerSlider(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerSlider(window.Alpine))
+}
+</script>
+
+<div
+    style="--mds-slider-a: 0%; --mds-slider-b: 60%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 100,
+        step: 5,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: '{value}%',
+        low: 60,
+        high: 60,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Volume
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >60%</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="100"
+            step="5"
+            value="60"
+                                                 aria-describedby="mds-slider-e1294031-description"             aria-label="Volume"
+            aria-valuetext="60%"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60  mt-3" id="mds-slider-e1294031-description" data-flux-description>
+    Arrow keys move it too.
+</ui-description>
+    
+    </div>
+
+        <div
+    style="--mds-slider-a: 10%; --mds-slider-b: 60%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 0,
+        max: 5000000,
+        step: 250000,
+        range: true,
+        disabled: false,
+        fa: false,
+        format: '{value} Toman',
+        low: 500000,
+        high: 3000000,
+    })"
+    x-bind:style="fill"
+             data-mds-slider-range         data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Price range
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >500000 Toman – 3000000 Toman</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+         x-on:pointerdown="trackDown($event)"     >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0"
+             x-bind:class="(min + max) / 2 < low ? 'z-20' : 'z-10'"             x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="5000000"
+            step="250000"
+            value="500000"
+                                                            aria-label="Price range — minimum"
+            aria-valuetext="500000 Toman"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="low"
+            
+        >
+
+                    <input
+                type="range"
+                class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer absolute inset-0 z-10"
+                x-ref="high"
+                x-on:input="input('high')"
+                min="0"
+                max="5000000"
+                step="250000"
+                value="3000000"
+                                                                                aria-label="Price range — maximum"
+                aria-valuetext="3000000 Toman"
+                x-bind:aria-valuetext="display(high)"
+                data-mds-slider-input="high"
+                
+            >
+            </div>
+
+    
+    
+    </div>
+
+        <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 50%;" class="block min-w-0"
+    x-data="mdsSlider({
+        min: 1,
+        max: 5,
+        step: 1,
+        range: false,
+        disabled: false,
+        fa: false,
+        format: null,
+        low: 3,
+        high: 3,
+    })"
+    x-bind:style="fill"
+                    data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Screen brightness
+
+    
+    
+    </ui-label>
+            
+                            <span
+                    class="shrink-0 text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    x-text="readout"
+                    data-mds-slider-value
+                >3</span>
+                    </div>
+    
+    <div
+        class="relative flex items-center h-5"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1.5 start-2 end-2"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-5 cursor-pointer relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="1"
+            max="5"
+            step="1"
+            value="3"
+                                                            aria-label="Screen brightness"
+            aria-valuetext="3"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+            <div class="mt-1 flex justify-between mx-2" aria-hidden="true" data-mds-slider-ticks>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                            <span class="h-1 w-px bg-zinc-300 dark:bg-white/20" data-mds-slider-tick></span>
+                    </div>
+    
+    
+    </div>
+
+        <div
+    style="--mds-slider-a: 0%; --mds-slider-b: 20%;" class="block min-w-0 opacity-50"
+    x-data="mdsSlider({
+        min: 0,
+        max: 50,
+        step: 1,
+        range: false,
+        disabled: true,
+        fa: false,
+        format: null,
+        low: 10,
+        high: 10,
+    })"
+    x-bind:style="fill"
+     data-disabled              data-mds-slider-size="sm"     data-mds-slider
+>
+            <div class="mb-3 flex items-center justify-between gap-3" data-mds-slider-header>
+                            <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Data allowance
+
+    
+    
+    </ui-label>
+            
+                    </div>
+    
+    <div
+        class="relative flex items-center h-4"
+            >
+        <div
+            class="absolute rounded-full bg-zinc-200 dark:bg-white/10 h-1 start-1.5 end-1.5"
+            x-ref="track"
+            aria-hidden="true"
+            data-mds-slider-track
+        >
+            <div
+                class="absolute inset-y-0 rounded-full bg-accent"
+                style="inset-inline-start: var(--mds-slider-a); inset-inline-end: calc(100% - var(--mds-slider-b))"
+                data-mds-slider-fill
+            ></div>
+        </div>
+
+        <input
+            type="range"
+            class="mds-slider-input w-full appearance-none bg-transparent h-4 cursor-not-allowed relative"
+                        x-ref="low"
+            x-on:input="input('low')"
+            min="0"
+            max="50"
+            step="1"
+            value="10"
+                         disabled                          aria-describedby="mds-slider-874a1bce-description"             aria-label="Data allowance"
+            aria-valuetext="10"
+            x-bind:aria-valuetext="display(low)"
+            data-mds-slider-input="value"
+            
+        >
+
+            </div>
+
+    
+            <ui-description class="text-sm text-zinc-500 dark:text-white/60  mt-3" id="mds-slider-874a1bce-description" data-flux-description>
+    Sign in to change this.
+</ui-description>
+    
+    </div>
+    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>Icons — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text ><a href="https://hugeicons.com" class="underline">Hugeicons</a> replaces heroicons across every mds component. The free Stroke Rounded set (6,200 icons) ships with the package; heroicon names still work through an alias map.</p>
@@ -10074,7 +10544,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

@@ -530,5 +530,16 @@
     "سفارش ۱۴۸۱": "Order 1481",
     "یکشنبه تحویل پست شد.": "Handed to the courier on Sunday.",
     "سفارش ۱۴۷۷": "Order 1477",
-    "چهارشنبه هفته گذشته تحویل داده و امضا شد.": "Delivered last Wednesday and signed for."
+    "چهارشنبه هفته گذشته تحویل داده و امضا شد.": "Delivered last Wednesday and signed for.",
+    "اسلایدر — mds:slider": "Slider — mds:slider",
+    "نسخه آزاد از کامپوننت Slider (در Flux فقط Pro) — تک‌دستگیره یا بازه‌ای، با خوانش زنده به ارقام فارسی، تیک‌های راهنما و کلمپ سمت سرور.": "An open version of the Slider component (Pro-only in Flux) — single-thumb or range, with a live localized readout, tick marks and server-side clamping.",
+    "میزان صدا": "Volume",
+    "با کلیدهای جهت‌دار هم جابه‌جا می‌شود.": "Arrow keys move it too.",
+    "{value}٪": "{value}%",
+    "بازه قیمت": "Price range",
+    "{value} تومان": "{value} Toman",
+    "روشنایی صفحه": "Screen brightness",
+    "حجم بسته اینترنتی": "Data allowance",
+    "برای تغییر، ابتدا وارد حساب کاربری شوید.": "Sign in to change this.",
+    "اسلایدر": "Slider"
 }

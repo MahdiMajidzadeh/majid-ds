@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#slider" icon="adjustments-horizontal">{{ __('اسلایدر') }}</flux:navbar.item>
         <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
         <flux:navbar.item href="#popover" icon="chat-bubble-oval-left">{{ __('پاپ‌اور') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
@@ -1066,6 +1067,52 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
                 </mds:accordion.item>
             </mds:accordion>
         </div>
+    </div>
+</flux:card>
+
+{{-- ============================== MDS: Slider ============================== --}}
+<flux:card id="slider" class="space-y-6">
+    <flux:heading size="lg">{{ __('اسلایدر — mds:slider') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Slider (در Flux فقط Pro) — تک‌دستگیره یا بازه‌ای، با خوانش زنده به ارقام فارسی، تیک‌های راهنما و کلمپ سمت سرور.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <mds:slider
+            :label="__('میزان صدا')"
+            :description="__('با کلیدهای جهت‌دار هم جابه‌جا می‌شود.')"
+            :value="60"
+            :step="5"
+            :format="__('{value}٪')"
+            show-value
+        />
+
+        <mds:slider
+            :label="__('بازه قیمت')"
+            range
+            :min="0"
+            :max="5000000"
+            :step="250000"
+            :value="[500000, 3000000]"
+            :format="__('{value} تومان')"
+            show-value
+        />
+
+        <mds:slider
+            :label="__('روشنایی صفحه')"
+            :min="1"
+            :max="5"
+            :value="3"
+            ticks
+            show-value
+        />
+
+        <mds:slider
+            :label="__('حجم بسته اینترنتی')"
+            :description="__('برای تغییر، ابتدا وارد حساب کاربری شوید.')"
+            :value="10"
+            :max="50"
+            size="sm"
+            disabled
+        />
     </div>
 </flux:card>
 
