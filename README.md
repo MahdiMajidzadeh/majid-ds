@@ -227,6 +227,29 @@ pasted or dropped — before the browser applies the keystroke, so the field fir
 Props: `only` (digits alone, and `inputmode="numeric"` for mobile keyboards), `ltr` (keep the control left-to-right inside an RTL
 form), plus everything `flux:input` accepts. Leave `only` off when you pass a `mask`; the mask owns the value's shape.
 
+Four presets cover the numbers every Persian checkout asks for, each paired with a validation rule that checks what the issuing
+authority defines — the national ID's check digit, the mobile prefixes, the IBAN mod-97 check, Luhn for cards. The rules accept
+Persian digits and the spaced forms the inputs produce; the `Iran` helpers return the canonical value to store:
+
+```blade
+<mds:input.mobile wire:model="mobile" label="Mobile number" />          {{-- 11 digits, 09… --}}
+<mds:input.national-id wire:model="national_id" label="National ID" />  {{-- 10 digits --}}
+<mds:input.card wire:model="card" label="Card number" />                {{-- masked 6037 9911 0000 0003 --}}
+<mds:input.sheba wire:model="sheba" label="Sheba" />                    {{-- masked IR06 0620 0000 … --}}
+```
+
+```php
+use MajidDs\Rules\{IranMobile, NationalId, BankCard, Sheba};
+use MajidDs\Support\Iran;
+
+$this->validate(['mobile' => ['required', new IranMobile], 'card' => ['nullable', new BankCard]]);
+
+$user->mobile = Iran::normalizeMobile($this->mobile);   // "09123456789"
+$user->card = Iran::normalizeBankCard($this->card);     // 16 digits, no spaces
+```
+
+Messages are Persian or English by `config('mds.persian_digits')`, or pass your own: `new Sheba('Please check the Sheba number.')`.
+
 ### `<mds:quantity>`
 
 Cart quantity stepper. Works with plain forms (`name`) and Livewire (`wire:model` is forwarded to the hidden input, which always holds Latin digits):

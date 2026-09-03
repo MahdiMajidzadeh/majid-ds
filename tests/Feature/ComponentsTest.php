@@ -1532,6 +1532,57 @@ class ComponentsTest extends TestCase
     }
 
     /**
+     * The Iranian variants are attribute presets over mds:input — each has
+     * to reach the real control, keep the caller's overrides, and pick the
+     * right half of the only/mask trade-off (a mask owns the value's shape).
+     *
+     * @return array<string, array{0: string, 1: string, 2: list<string>, 3: list<string>}>
+     */
+    public static function inputVariants(): array
+    {
+        return [
+            'mobile' => ['mobile', 'data-mds-input-mobile', ['x-mds-digits.only=""', 'data-ltr=""', 'type="tel"', 'maxlength="14"', 'autocomplete="tel-national"', 'inputmode="numeric"'], ['x-mask']],
+            'national-id' => ['national-id', 'data-mds-input-national-id', ['x-mds-digits.only=""', 'data-ltr=""', 'maxlength="10"', 'autocomplete="off"'], ['x-mask', 'type="tel"']],
+            'card' => ['card', 'data-mds-input-card', ['x-mds-digits=""', 'data-ltr=""', 'x-mask="9999 9999 9999 9999"', 'inputmode="numeric"', 'autocomplete="cc-number"'], ['x-mds-digits.only', 'maxlength']],
+            'sheba' => ['sheba', 'data-mds-input-sheba', ['x-mds-digits=""', 'data-ltr=""', 'x-mask="IR99 9999 9999 9999 9999 9999 99"', 'inputmode="numeric"'], ['x-mds-digits.only', 'maxlength']],
+        ];
+    }
+
+    /**
+     * @param  list<string>  $present
+     * @param  list<string>  $absent
+     */
+    #[DataProvider('inputVariants')]
+    public function test_input_variants_preset_the_control(string $variant, string $marker, array $present, array $absent): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $html = $this->render("<mds:input.{$variant} wire:model=\"value\" label=\"Field\" />");
+
+        preg_match('/<input\b[^>]*>/', $html, $control);
+
+        $this->assertNotEmpty($control, "<mds:input.{$variant}> rendered no <input>.");
+        $this->assertStringContainsString($marker.'=""', $control[0]);
+
+        foreach ($present as $needle) {
+            $this->assertStringContainsString($needle, $control[0], "<mds:input.{$variant}> lacks {$needle}.");
+        }
+
+        foreach ($absent as $needle) {
+            $this->assertStringNotContainsString($needle, $control[0], "<mds:input.{$variant}> must not carry {$needle}.");
+        }
+
+        $this->assertBindingReachesControl($html, 'input', 'wire:model="value"');
+
+        // The presets are defaults: a caller's own attribute wins.
+        $html = $this->render("<mds:input.{$variant} placeholder=\"custom\" autocomplete=\"one-time-code\" />");
+
+        $this->assertStringContainsString('placeholder="custom"', $html);
+        $this->assertStringContainsString('autocomplete="one-time-code"', $html);
+        $this->assertSame(1, substr_count($html, 'autocomplete='));
+    }
+
+    /**
      * Every built-in string ships in both languages, and `fa` — or the
      * `mds.persian_digits` default behind it — picks which. One table feeds
      * both directions, so the languages cannot drift apart the way they did

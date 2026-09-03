@@ -551,7 +551,418 @@ if (window.Alpine) {
     </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Postal code&quot;</span> <span class="t-attr">mask</span><span class="t-equals">=</span><span class="t-string">&quot;99999-99999&quot;</span> <span class="t-attr">placeholder</span><span class="t-equals">=</span><span class="t-string">&quot;12345-67890&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
 </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
     </div>
-</div></section><section id="with-livewire" class="docs-section"><h2>With Livewire</h2><p class="docs-text">Because the digits are rewritten <em>before</em> the browser applies the keystroke, the field fires a single <code>input</code> event, already Latin — a <code>wire:model.live</code> request never carries a Persian digit. Text committed through an on-screen keyboard's composition step cannot be intercepted that early; a second pass normalises it on <code>input</code> and re-announces the value.</p><div class="docs-example">
+</div></section><section id="iranian-formats" class="docs-section"><h2>Iranian formats</h2><p class="docs-text">Four presets for the numbers every Persian checkout asks for. <code>mds:input.mobile</code> and <code>mds:input.national-id</code> are digits-only fields with the right length, keyboard and autofill hints. <code>mds:input.card</code> and <code>mds:input.sheba</code> group the digits the way they read on the card and the bank letter, through Flux's mask — so their bound value carries the spaces (and Sheba's <code>IR</code>), and the matching rule ignores them. Every preset is a default the caller's own attribute overrides.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div class="grid gap-6 sm:grid-cols-2">
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Mobile number
+
+    
+    
+    </ui-label>
+        
+        
+        <div class="w-full relative block group/input" data-flux-input>
+            
+            <input
+                type="tel"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" x-mds-digits.only="" data-mds-input="" inputmode="numeric" data-ltr="" maxlength="14" autocomplete="tel-national" placeholder="09123456789" data-mds-input-mobile="" label="Mobile number"
+                                                                                                                data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+
+        
+                <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    National ID
+
+    
+    
+    </ui-label>
+        
+        
+        <div class="w-full relative block group/input" data-flux-input>
+            
+            <input
+                type="text"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" x-mds-digits.only="" data-mds-input="" inputmode="numeric" data-ltr="" maxlength="10" autocomplete="off" placeholder="0012345678" data-mds-input-national-id="" label="National ID"
+                                                                                                                data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+
+        
+                <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Card number
+
+    
+    
+    </ui-label>
+        
+        
+        <div class="w-full relative block group/input" data-flux-input>
+                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 0 0 1 5.5V6h18v-.5A1.5 1.5 0 0 0 17.5 4h-15ZM19 8.5H1v6A1.5 1.5 0 0 0 2.5 16h15a1.5 1.5 0 0 0 1.5-1.5v-6ZM3 13.25a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm4.75-.75a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5Z" clip-rule="evenodd"/>
+</svg>
+
+                        </div>
+            
+            <input
+                type="text"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-10 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" x-mds-digits="" data-mds-input="" data-ltr="" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" data-mds-input-card="" label="Card number"
+                                 x-mask="9999 9999 9999 9999"                                                                                 data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+
+        
+                <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+    <ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Sheba (IBAN)
+
+    
+    
+    </ui-label>
+        
+        
+        <div class="w-full relative block group/input" data-flux-input>
+            
+            <input
+                type="text"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" x-mds-digits="" data-mds-input="" data-ltr="" inputmode="numeric" autocomplete="off" placeholder="IR00 0000 0000 0000 0000 0000 00" data-mds-input-sheba="" label="Sheba (IBAN)"
+                                 x-mask="IR99 9999 9999 9999 9999 9999 99"                                                                                 data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+
+        
+                <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400 hidden" data-flux-error>
+    </div>
+</ui-field>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;grid gap-6 sm:grid-cols-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input.mobile</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Mobile number&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input.national-id</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;National ID&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input.card</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Card number&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input.sheba</span> <span class="t-attr">label</span><span class="t-equals">=</span><span class="t-string">&quot;Sheba (IBAN)&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="validating-on-the-server" class="docs-section"><h2>Validating on the server</h2><p class="docs-text">The checks the issuing authorities define — the national ID's mod-11 check digit, the mobile prefixes, the IBAN mod-97 check, Luhn for cards — ship as validation rules under <code>MajidDs\Rules</code>, with a Persian or English message by <code>config('mds.persian_digits')</code> and an optional custom one. Each accepts Persian digits and the spaced forms the inputs produce; the <code>MajidDs\Support\Iran</code> helpers behind them return the canonical value to store.</p><div class="docs-example">
+    <div class="docs-preview">
+        <div class="docs-preview-inner"><ui-field class="min-w-0 [&amp;:not(:has([data-flux-field])):has([data-flux-control][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-radio-group][disabled])&gt;[data-flux-label]]:opacity-50 [&amp;:has(&gt;[data-flux-checkbox-group][disabled])&gt;[data-flux-label]]:opacity-50 block *:data-flux-label:mb-3 [&amp;&gt;[data-flux-label]:has(+[data-flux-description])]:mb-2 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mt-0 [&amp;&gt;[data-flux-label]+[data-flux-description]]:mb-3 [&amp;&gt;[data-flux-description]:first-child:has(+*)]:mb-3 [&amp;&gt;*:not([data-flux-label])+[data-flux-description]]:mt-3" data-flux-field>
+    <ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
+    Mobile number
+
+    
+    
+    </ui-label>
+    <script >
+window.mds = window.mds || {}
+
+// Display-only: machine values stay Latin in the hidden inputs.
+window.mds.digits = (value, fa = true) => {
+    const s = String(value)
+
+    return fa ? s.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]) : s
+}
+
+// The inverse, for reading a Persian- or Arabic-typed value back.
+window.mds.latinDigits = (value) => String(value)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+
+// x-mds-digits — Latin digits in the value, whatever keyboard typed them.
+// Modifier `.only` also drops everything that is not a digit (codes, phone
+// numbers, card numbers).
+//
+// Two layers. `beforeinput` catches typing, paste and drop before the
+// browser applies them and inserts the normalised text instead, so the
+// field sees ONE input event, already Latin, and undo history stays intact.
+// Composition input (Android keyboards commit words through an IME) cannot
+// be cancelled, so a second pass on `input` normalises whatever slipped
+// through, restores the caret, and re-announces the value.
+window.mds.registerDigitsDirective = (Alpine) => {
+    if (window.mds.digitsDirectiveRegistered) return
+    window.mds.digitsDirectiveRegistered = true
+
+    // Alpine walks only the trees under a root — x-data or x-init — so an
+    // input in a plain form carrying nothing but this directive would never
+    // be initialised. Registering the attribute as a root selector makes a
+    // bare mds:input start up like any Alpine component; inside an x-data
+    // scope it is reached by the parent's walk as usual. (No angle brackets
+    // in this comment: the kit's tag compiler would compile them.)
+    Alpine.addRootSelector(() => '[x-mds-digits],[x-mds-digits\\.only]')
+
+    Alpine.directive('mds-digits', (el, { modifiers }, { cleanup }) => {
+        const only = modifiers.includes('only')
+
+        const normalise = (s) => {
+            s = window.mds.latinDigits(s)
+
+            return only ? s.replace(/\D+/g, '') : s
+        }
+
+        const onBeforeInput = (e) => {
+            if (! e.inputType.startsWith('insert') || e.inputType === 'insertCompositionText') return
+
+            const data = e.data ?? e.dataTransfer?.getData('text/plain') ?? null
+
+            if (data === null) return
+
+            const clean = normalise(data)
+
+            if (clean === data) return
+
+            e.preventDefault()
+
+            // execCommand is the one insertion path that keeps the browser's
+            // undo stack and fires a real `input` event of its own.
+            if (clean !== '' && ! document.execCommand('insertText', false, clean)) {
+                el.setRangeText(clean, el.selectionStart, el.selectionEnd, 'end')
+                el.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        let resyncing = false
+
+        const onInput = () => {
+            if (resyncing) return
+
+            const before = el.value
+            const after = normalise(before)
+
+            if (after === before) return
+
+            // Whatever was dropped sat before the caret; count what survives there.
+            const caret = el.selectionStart
+            const position = caret === null ? null : normalise(before.slice(0, caret)).length
+
+            resyncing = true
+            el.value = after
+
+            if (position !== null) {
+                try { el.setSelectionRange(position, position) } catch (_) {}
+            }
+
+            el.dispatchEvent(new Event('input', { bubbles: true }))
+            resyncing = false
+        }
+
+        el.addEventListener('beforeinput', onBeforeInput)
+        el.addEventListener('input', onInput)
+
+        // A re-edited form may arrive with Persian digits already in the value.
+        onInput()
+
+        cleanup(() => {
+            el.removeEventListener('beforeinput', onBeforeInput)
+            el.removeEventListener('input', onInput)
+        })
+    })
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerDigitsDirective(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerDigitsDirective(window.Alpine))
+}
+</script>
+
+<div class="w-full relative block group/input" data-flux-input>
+            
+            <input
+                type="tel"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" x-mds-digits.only="" data-mds-input="" inputmode="numeric" data-ltr="" maxlength="14" autocomplete="tel-national" placeholder="09123456789" data-mds-input-mobile="" value="0912345678"
+                 name="mobile"                                                                                 aria-invalid="true" data-invalid
+                                                data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+    <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 text-sm font-medium text-red-500 dark:text-red-400" data-flux-error>
+                        <svg class="shrink-0 [:where(&amp;)]:size-5 inline" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+                
+        The mobile number is not a valid mobile number.
+    </div>
+</ui-field></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">flux:field</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:label</span><span class="t-punct">&gt;</span><span class="t-text">Mobile number</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:label</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:input.mobile</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;mobile&quot;</span> <span class="t-attr">value</span><span class="t-equals">=</span><span class="t-string">&quot;0912345678&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">flux:error</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;mobile&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:field</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div><div class="docs-note"><pre><code>use MajidDs\Rules\{IranMobile, NationalId, BankCard, Sheba};
+use MajidDs\Support\Iran;
+
+$request->validate([
+    'mobile'      => ['required', new IranMobile],
+    'national_id' => ['required', new NationalId],
+    'card'        => ['nullable', new BankCard],
+    'sheba'       => ['nullable', new Sheba('Please check the Sheba number.')],
+]);
+
+$user->mobile = Iran::normalizeMobile($request->mobile);   // 09123456789
+$user->card   = Iran::normalizeBankCard($request->card);   // 16 digits, no spaces
+$user->sheba  = Iran::normalizeSheba($request->sheba);     // IR + 24 digits</code></pre></div></section><section id="with-livewire" class="docs-section"><h2>With Livewire</h2><p class="docs-text">Because the digits are rewritten <em>before</em> the browser applies the keystroke, the field fires a single <code>input</code> event, already Latin — a <code>wire:model.live</code> request never carries a Persian digit. Text committed through an on-screen keyboard's composition step cannot be intercepted that early; a second pass normalises it on <code>input</code> and re-announces the value.</p><div class="docs-example">
     <div class="docs-preview">
         <div class="docs-preview-inner"><script >
 window.mds = window.mds || {}
@@ -891,12 +1302,15 @@ if (window.Alpine) {
 </div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-input" class="docs-ref-block"><h3>mds:input</h3><table class="docs-table">
     <thead><tr><th>Prop</th><th>Description</th></tr></thead>
     <tbody><tr><td><span class="docs-prop">only</span></td><td>Keep digits alone and ask for a numeric keyboard (<code>inputmode="numeric"</code>). Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">ltr</span></td><td>Mark the control <code>data-ltr</code> so it stays left-to-right inside an RTL form. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">…</span></td><td>Every <code>flux:input</code> prop and attribute — <code>label</code>, <code>description</code>, <code>placeholder</code>, <code>icon</code>, <code>clearable</code>, <code>copyable</code>, <code>viewable</code>, <code>mask</code>, <code>type</code>, <code>invalid</code>, <code>wire:model</code>, <code>name</code> — passes through unchanged.</td></tr></tbody>
+</table></div><div id="mds-input-mobile-mds-input-national-id-mds-input-card-mds-input-sheba" class="docs-ref-block"><h3>mds:input.mobile · mds:input.national-id · mds:input.card · mds:input.sheba</h3><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">mobile</span></td><td><code>only ltr type="tel" maxlength="14" autocomplete="tel-national"</code>. Value: the digits — 09…, or a pasted 98…/0098… form the rule accepts and <code>Iran::normalizeMobile()</code> reduces. Rule: <code>IranMobile</code>.</td></tr><tr><td><span class="docs-prop">national-id</span></td><td><code>only ltr maxlength="10" autocomplete="off"</code>. Value: the ten digits. Rule: <code>NationalId</code>.</td></tr><tr><td><span class="docs-prop">card</span></td><td><code>ltr mask="9999 9999 9999 9999" autocomplete="cc-number" icon="credit-card"</code>. Value: the grouped digits. Rule: <code>BankCard</code>; store <code>Iran::normalizeBankCard()</code>.</td></tr><tr><td><span class="docs-prop">sheba</span></td><td><code>ltr mask="IR99 9999 9999 9999 9999 9999 99"</code>. Value: the grouped form with its IR prefix. Rule: <code>Sheba</code>; store <code>Iran::normalizeSheba()</code>.</td></tr><tr><td><span class="docs-prop">…</span></td><td>Every preset is a default — a caller's attribute of the same name replaces it — and every <code>flux:input</code> prop passes through as on <code>mds:input</code>.</td></tr></tbody>
 </table></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/input.html"><span class="docs-related-name">Input</span><span class="docs-related-lede">A single-line text field, with the affordances forms usually need.</span></a><a class="docs-related-card" href="../mds/quantity.html"><span class="docs-related-name">mds:quantity</span><span class="docs-related-lede">A cart quantity stepper.</span></a></div></section>
     </main>
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#introduction">Introduction</a><a href="#digits-only">Digits only</a><a href="#everything-flux-s-input-does">Everything Flux&#039;s input does</a><a href="#with-livewire">With Livewire</a><a href="#inside-an-rtl-form">Inside an RTL form</a><a href="#reference">Reference</a><a href="#mds-input" class="docs-toc-sub">mds:input</a></nav>
+        <nav><a href="#introduction">Introduction</a><a href="#digits-only">Digits only</a><a href="#everything-flux-s-input-does">Everything Flux&#039;s input does</a><a href="#iranian-formats">Iranian formats</a><a href="#validating-on-the-server">Validating on the server</a><a href="#with-livewire">With Livewire</a><a href="#inside-an-rtl-form">Inside an RTL form</a><a href="#reference">Reference</a><a href="#mds-input" class="docs-toc-sub">mds:input</a><a href="#mds-input-mobile-mds-input-national-id-mds-input-card-mds-input-sheba" class="docs-toc-sub">mds:input.mobile · mds:input.national-id · mds:input.card · mds:input.sheba</a></nav>
     </aside>
 </div>
 

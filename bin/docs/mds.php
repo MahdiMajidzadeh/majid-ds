@@ -160,6 +160,50 @@ $pages['mds-input'] = [
             BLADE,
         ],
         [
+            'name' => 'Iranian formats',
+            'align' => 'stretch',
+            'text' => 'Four presets for the numbers every Persian checkout asks for. <code>mds:input.mobile</code> and <code>mds:input.national-id</code> are digits-only fields with the right length, keyboard and autofill hints. <code>mds:input.card</code> and <code>mds:input.sheba</code> group the digits the way they read on the card and the bank letter, through Flux\'s mask — so their bound value carries the spaces (and Sheba\'s <code>IR</code>), and the matching rule ignores them. Every preset is a default the caller\'s own attribute overrides.',
+            'code' => <<<'BLADE'
+            <div class="grid gap-6 sm:grid-cols-2">
+                <mds:input.mobile label="Mobile number" />
+                <mds:input.national-id label="National ID" />
+                <mds:input.card label="Card number" />
+                <mds:input.sheba label="Sheba (IBAN)" />
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Validating on the server',
+            'text' => 'The checks the issuing authorities define — the national ID\'s mod-11 check digit, the mobile prefixes, the IBAN mod-97 check, Luhn for cards — ship as validation rules under <code>MajidDs\Rules</code>, with a Persian or English message by <code>config(\'mds.persian_digits\')</code> and an optional custom one. Each accepts Persian digits and the spaced forms the inputs produce; the <code>MajidDs\Support\Iran</code> helpers behind them return the canonical value to store.',
+            'code' => <<<'BLADE'
+            <flux:field>
+                <flux:label>Mobile number</flux:label>
+                <mds:input.mobile name="mobile" value="0912345678" />
+                <flux:error name="mobile" />
+            </flux:field>
+            BLADE,
+            'render' => <<<'BLADE'
+            <flux:field>
+                <flux:label>Mobile number</flux:label>
+                <mds:input.mobile name="mobile" value="0912345678" invalid />
+                <flux:error message="The mobile number is not a valid mobile number." />
+            </flux:field>
+            BLADE,
+            'note' => '<pre><code>use MajidDs\Rules\{IranMobile, NationalId, BankCard, Sheba};
+use MajidDs\Support\Iran;
+
+$request->validate([
+    \'mobile\'      => [\'required\', new IranMobile],
+    \'national_id\' => [\'required\', new NationalId],
+    \'card\'        => [\'nullable\', new BankCard],
+    \'sheba\'       => [\'nullable\', new Sheba(\'Please check the Sheba number.\')],
+]);
+
+$user->mobile = Iran::normalizeMobile($request->mobile);   // 09123456789
+$user->card   = Iran::normalizeBankCard($request->card);   // 16 digits, no spaces
+$user->sheba  = Iran::normalizeSheba($request->sheba);     // IR + 24 digits</code></pre>',
+        ],
+        [
             'name' => 'With Livewire',
             'text' => 'Because the digits are rewritten <em>before</em> the browser applies the keystroke, the field fires a single <code>input</code> event, already Latin — a <code>wire:model.live</code> request never carries a Persian digit. Text committed through an on-screen keyboard\'s composition step cannot be intercepted that early; a second pass normalises it on <code>input</code> and re-announces the value.',
             'code' => <<<'BLADE'
@@ -183,6 +227,13 @@ $pages['mds-input'] = [
             ['only', 'Keep digits alone and ask for a numeric keyboard (<code>inputmode="numeric"</code>). Default: <code>false</code>.'],
             ['ltr', 'Mark the control <code>data-ltr</code> so it stays left-to-right inside an RTL form. Default: <code>false</code>.'],
             ['…', 'Every <code>flux:input</code> prop and attribute — <code>label</code>, <code>description</code>, <code>placeholder</code>, <code>icon</code>, <code>clearable</code>, <code>copyable</code>, <code>viewable</code>, <code>mask</code>, <code>type</code>, <code>invalid</code>, <code>wire:model</code>, <code>name</code> — passes through unchanged.'],
+        ]],
+        ['name' => 'mds:input.mobile · mds:input.national-id · mds:input.card · mds:input.sheba', 'props' => [
+            ['mobile', '<code>only ltr type="tel" maxlength="14" autocomplete="tel-national"</code>. Value: the digits — 09…, or a pasted 98…/0098… form the rule accepts and <code>Iran::normalizeMobile()</code> reduces. Rule: <code>IranMobile</code>.'],
+            ['national-id', '<code>only ltr maxlength="10" autocomplete="off"</code>. Value: the ten digits. Rule: <code>NationalId</code>.'],
+            ['card', '<code>ltr mask="9999 9999 9999 9999" autocomplete="cc-number" icon="credit-card"</code>. Value: the grouped digits. Rule: <code>BankCard</code>; store <code>Iran::normalizeBankCard()</code>.'],
+            ['sheba', '<code>ltr mask="IR99 9999 9999 9999 9999 9999 99"</code>. Value: the grouped form with its IR prefix. Rule: <code>Sheba</code>; store <code>Iran::normalizeSheba()</code>.'],
+            ['…', 'Every preset is a default — a caller\'s attribute of the same name replaces it — and every <code>flux:input</code> prop passes through as on <code>mds:input</code>.'],
         ]],
     ],
     'related' => ['input', 'quantity'],

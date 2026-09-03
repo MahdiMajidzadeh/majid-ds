@@ -155,6 +155,12 @@ Latin digits — what is on screen is what posts. No `fa` prop: nothing here is 
 `x-mds-digits` is registered by the kit's shared script (`mds::partials.digits`), which is on the page whenever an mds:input, quantity,
 countdown, composer, file-upload or command rendered; on such a page it may be put on any other input or textarea by hand.
 Registration guards against Alpine having already started (a `wire:navigate` visit), so it works on navigated-to pages as well.
+Iranian presets — each is `<mds:input>` with default attributes a caller's own attribute of the same name replaces; no props of their own:
+- `<mds:input.mobile>` — `only ltr type="tel" maxlength="14" autocomplete="tel-national" placeholder="09123456789"`, marker `data-mds-input-mobile`. Value: the digits — 09… when typed, or a pasted 98…/0098… form (the cap is 14 so it is not truncated into a wrong number). Pair with the `IranMobile` rule and store `Iran::normalizeMobile()`.
+- `<mds:input.national-id>` — `only ltr maxlength="10" autocomplete="off"`, marker `data-mds-input-national-id`. Value: the 10 digits. Pair with `NationalId`.
+- `<mds:input.card>` — `ltr mask="9999 9999 9999 9999" inputmode="numeric" autocomplete="cc-number" icon="credit-card"`, marker `data-mds-input-card`. NOT `only` (the mask owns the shape), so the bound value carries the spaces: "6037 9911 0000 0003". Pair with `BankCard`; store `Iran::normalizeBankCard()`.
+- `<mds:input.sheba>` — `ltr mask="IR99 9999 9999 9999 9999 9999 99" inputmode="numeric"`, marker `data-mds-input-sheba`. The mask supplies the IR prefix and spacing; the user types 24 digits; the bound value is the spaced form. Pair with `Sheba`; store `Iran::normalizeSheba()`.
+
 ### <mds:rating> — star display
 Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5 · `count` int|null=null (review count) · `size` sm|lg|default · `show-value` bool=true · `fa` bool|null=config.
 Renders role="img" with `aria-label="{value} / {max}"` (digits follow `fa`). RTL-correct partial fill. Inherits `fa` from product-card.

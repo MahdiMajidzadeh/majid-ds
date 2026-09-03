@@ -1176,9 +1176,11 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     <flux:text>{{ __('همان flux:input، با این تفاوت که ارقام فارسی و عربی هنگام تایپ یا چسباندن به لاتین تبدیل می‌شوند — مقداری که به سرور می‌رسد همیشه ماشینی است.') }}</flux:text>
 
     <div class="grid gap-6 md:grid-cols-2">
-        <mds:input only ltr :label="__('شماره موبایل')" type="tel" :placeholder="__('۰۹۱۲ ۳۴۵ ۶۷۸۹')" :description="__('با هر صفحه‌کلیدی تایپ کنید؛ مقدار لاتین ذخیره می‌شود.')" />
+        <mds:input.mobile :label="__('شماره موبایل')" :description="__('با هر صفحه‌کلیدی تایپ کنید؛ مقدار لاتین ذخیره می‌شود.')" />
+        <mds:input.national-id :label="__('کد ملی')" :description="__('ده رقم؛ رقم کنترل در سرور با قانون NationalId بررسی می‌شود.')" />
+        <mds:input.card :label="__('شماره کارت')" :description="__('۱۶ رقم؛ گروه‌بندی نمایشی است و قانون BankCard فاصله‌ها را نادیده می‌گیرد.')" />
+        <mds:input.sheba :label="__('شماره شبا')" :description="__('IR و ۲۴ رقم؛ گروه‌بندی نمایشی است و قانون Sheba فاصله‌ها را نادیده می‌گیرد.')" />
         <mds:input only ltr :label="__('کد تأیید')" maxlength="5" placeholder="12345" class="md:w-40" />
-        <mds:input only ltr :label="__('شماره کارت')" icon="credit-card" clearable :description="__('۱۶ رقم، بدون فاصله')" />
         <mds:input :label="__('آدرس')" :placeholder="__('خیابان ولیعصر، پلاک ۱۲')" />
     </div>
 </flux:card>
