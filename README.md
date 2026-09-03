@@ -29,13 +29,13 @@ Majid DS does not replace Flux — it extends it. You keep every `<flux:*>` comp
 | Dates | Dependency-free Jalali calendar (`<mds:jalali-date>`, `@jalali`, relative "۳ ساعت پیش") |
 | E-commerce | `<mds:product-card>`, `<mds:quantity>`, `<mds:discount-badge>`, `<mds:countdown>` |
 | Flows | `<mds:stepper>` (checkout steps), `<mds:rating>` / `<mds:rating.input>`, `<mds:empty-state>`, `<mds:preview-card>` |
-| Pro alternatives | Eighteen of Flux's nineteen Pro-only components, rebuilt open: `<mds:command>` (⌘K palette), `<mds:composer>`, `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, `<mds:chart>`, `<mds:popover>`, `<mds:accordion>`, `<mds:slider>`, `<mds:time-picker>`, `<mds:tabs>`, `<mds:autocomplete>`, `<mds:carousel>`, `<mds:context>`, `<mds:pillbox>`, `<mds:editor>`, `<mds:calendar>` (Jalali) and `<mds:kanban>` |
+| Pro alternatives | **All nineteen** of Flux's Pro-only components, rebuilt open: `<mds:command>` (⌘K palette), `<mds:composer>`, `<mds:color-picker>`, `<mds:file-upload>`, `<mds:timeline>`, `<mds:chart>`, `<mds:popover>`, `<mds:accordion>`, `<mds:slider>`, `<mds:time-picker>`, `<mds:tabs>`, `<mds:autocomplete>`, `<mds:carousel>`, `<mds:context>`, `<mds:pillbox>`, `<mds:editor>`, `<mds:calendar>` (Jalali), `<mds:kanban>` and `<mds:date-picker>` |
 
 All components are RTL-first (built with logical properties, so they also work LTR), support dark mode, and follow Flux's accent color tokens — customize `--color-accent` once and both libraries follow.
 
 ## Documentation
 
-- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 73 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
+- **Reference docs**: [docs/index.html](docs/index.html) — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews, prop tables. 74 pages covering every free Flux component that ships with this package, the layout grid, and the whole `mds:*` layer.
 - **Live demo**: the component showcase lives inside the docs — Persian RTL at [docs/guides/rtl-demo.html](docs/guides/rtl-demo.html), English LTR at [docs/guides/demo.html](docs/guides/demo.html). The layout gallery is pre-rendered to static HTML from the workbench: Persian at [docs/demo/layouts.html](docs/demo/layouts.html), English at [docs/demo/layouts-en.html](docs/demo/layouts-en.html), with a language switcher on every page.
 - **AI-agent docs**: [llms.txt](llms.txt) — the same API surface in compact, machine-oriented markdown. Point your project's `CLAUDE.md`/`AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
@@ -44,7 +44,7 @@ publishes it at `https://mahdimajidzadeh.github.io/majid-ds/`, docs and demo ali
 build step runs on GitHub — the pages are committed, so regenerate them when things change:
 
 ```bash
-npm run docs            # rebuilds the 73 reference pages + docs/assets/site.css
+npm run docs            # rebuilds the 74 reference pages + docs/assets/site.css
 npm run pages           # rebuilds the 18 layout-gallery pages in docs/demo/
 ```
 
@@ -60,14 +60,14 @@ compiles to `workbench/public/demo.css` for `npm run demo:serve`.
 | Guides | Overview, Installation, Theming, Directives & helpers, AI agents |
 | Layouts | The layout grid, Header, Sidebar, Aside |
 | Components | The 32 free Flux components bundled with this package |
-| mds components | All 30 `mds:*` components, including the eighteen Flux Pro alternatives |
+| mds components | All 31 `mds:*` components, including the nineteen Flux Pro alternatives |
 
 **Flux Pro components are not documented — because the kit replaces them.** Nineteen of
 the components on fluxui.dev ship no code in the free tier, so there is nothing to preview
-or reference from Flux itself. Eighteen of the nineteen now have an open `mds:*` version
-built here: Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command,
-Composer, Context, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time
-picker and Timeline. Only Date picker is still missing; for it, see Flux's own docs.
+or reference from Flux itself. All nineteen now have an open `mds:*` version built here:
+Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command, Composer,
+Context, Date picker, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time
+picker and Timeline — each with its own page in the mds group.
 
 ### How the docs are built
 
@@ -826,6 +826,30 @@ An open implementation of Flux Pro's kanban board: columns of draggable cards, w
 Each column keeps its card ids in a hidden multiple `<select>`, so `wire:model` on a column binds an ordered array (`public array $board = ['todo' => ['1', '2'], 'doing' => ['3']];`) and a server-side change of that array moves the cards back. The board also fires a bubbling `mds-kanban-moved` event with `{ card, from, to, index }`, so one move can be persisted without diffing the whole board.
 
 Props: `label`, `disabled`, `fa` · `mds:kanban.column`: `key`, `heading`, `name`, `limit`, `empty`, `error`, `invalid`, `fa` (plus an `actions` slot) · `mds:kanban.card`: `key`, `heading`, `disabled`, `fa`.
+
+<!-- README section for mds:date-picker. Paste after the `<mds:calendar>` section. -->
+
+### `<mds:date-picker>`
+
+A date field you can type into, with a Jalali calendar in a popover — an open version of Flux Pro's
+`flux:date-picker`. It composes `<mds:calendar>` and `<mds:popover>` rather than growing a second
+calendar: the field reads «۱۴۰۵/۰۵/۲۹», `1405/05/29`, `1405-05-29` and `14050529` as the same day, and
+whatever is typed or picked, the input it binds is always ISO Gregorian `Y-m-d` in Latin digits — the
+shape `date_format:Y-m-d` validates and Carbon parses as is. Text that is not a date is refused and the
+field puts back what it had, so nothing unreadable ever becomes a wrong date.
+
+```blade
+<mds:date-picker wire:model="deliverAt" name="deliver_at" label="روز تحویل" description="در ساعات اداری"
+                 :min="now()" :max="now()->addDays(30)" with-today clearable />
+
+<mds:date-picker mode="range" wire:model="trip" :months="2" fixed-weeks />   {{-- trip.start / trip.end --}}
+<mds:date-picker format="long" selectable-header label="تاریخ تولد" />       {{-- «۲۹ مرداد ۱۴۰۵» --}}
+```
+
+Props: `value` · `mode` · `min` · `max` · `unavailable` · `months` · `calendar` · `start-day` ·
+`week-numbers` · `fixed-weeks` · `selectable-header` · `with-today` · `format` · `name` · `label` ·
+`description` · `placeholder` · `clearable` · `disabled` · `readonly` · `size` · `icon` · `position` ·
+`align` · `invalid` · `error` · `fa` · `wire:model`.
 
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 

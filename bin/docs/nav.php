@@ -12,7 +12,7 @@
 |
 | The Components group lists only the Flux components whose views actually ship
 | in the free tier. Flux's Pro-only components are absent on purpose; the
-| overview page says so, and names the eighteen that have mds replacements.
+| overview page says so — all nineteen now have mds replacements.
 */
 
 return [
@@ -107,6 +107,7 @@ return [
             'editor' => 'mds:editor',
             'calendar' => 'mds:calendar',
             'kanban' => 'mds:kanban',
+            'date-picker' => 'mds:date-picker',
         ],
     ],
 ];

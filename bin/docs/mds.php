@@ -3903,4 +3903,171 @@ $pages['kanban'] = [
     'related' => ['timeline', 'card'],
 ];
 
+// ------------------------------------------------------- mds:date-picker
+
+// ------------------------------------------------------------- mds:date-picker
+//
+// Paste into bin/docs/mds.php, and add to bin/docs/nav.php's mds group:
+//     'date-picker' => 'mds:date-picker',
+// (next to 'calendar' => 'mds:calendar').
+
+$pages['date-picker'] = [
+    'group' => 'mds',
+    'title' => 'mds:date-picker',
+    'lede' => 'A date field you can type into, with a Jalali calendar in a popover — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A text field, a button, and <a href="calendar.html"><code>mds:calendar</code></a> inside <a href="popover.html"><code>mds:popover</code></a> — nothing here re-implements a calendar. Click the chevron to pick a day, or type one: the field reads «۱۴۰۵/۰۵/۲۹» as readily as <code dir="ltr">1405/05/29</code> or <code dir="ltr">14050529</code>. Whatever you do, the hidden input holds <code dir="ltr">2026-08-20</code>.',
+            'code' => <<<'BLADE'
+            <mds:date-picker wire:model="deliverAt" label="Delivery day" value="2026-08-20" />
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The field and the model speak different languages on purpose. The reader gets a Jalali date in the digits they read; <code>Carbon</code>, your database and <code>date_format:Y-m-d</code> get an ordinary ISO Gregorian string.',
+        ],
+        [
+            'name' => 'Typing a date',
+            'text' => 'Three rules, the same in PHP and in the browser. A dashed <code dir="ltr">Y-m-d</code> from 1700 onwards is the machine form and always Gregorian. Every other separator — and a bare <code dir="ltr">YYYYMMDD</code> — is read in the field\'s own calendar, and so is a dashed date below 1700, so <code dir="ltr">1405-05-29</code> is Mordad rather than a date in 1405 AD. Anything else is not a date at all: it is refused, and the field puts back what it had.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker label="Try 1372/03/15, 13720315 or nonsense" />
+                <mds:date-picker label="Seeded from a written date" value="1405/05/29" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Nothing unreadable becomes a value. A month past twelve, the 30th of a common Esfand, a two-digit year — all refused, and the last good date stays. Press <kbd>Enter</kbd> or leave the field to commit; <kbd>Escape</kbd> puts it back.',
+        ],
+        [
+            'name' => 'How it is written back',
+            'text' => '<code>format</code> picks the shape the field writes. <code>numeric</code> is the typeable one; <code>long</code> spells the month out, and is still typeable — type numerals and it re-renders long.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker label="numeric" value="2026-08-20" />
+                <mds:date-picker format="long" label="long" value="2026-08-20" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Ranges',
+            'text' => 'A range writes both ends into one field. The panel stays open until the span is closed, and the two ends bind to dotted paths under your property — <code dir="ltr">wire:model="trip"</code> fills <code dir="ltr">trip.start</code> and <code dir="ltr">trip.end</code>, exactly as <code>mds:calendar</code> does. Typing accepts «تا», "to", a dash or a comma between the two dates.',
+            'code' => <<<'BLADE'
+            <mds:date-picker mode="range" wire:model="trip" label="Stay" :months="2" fixed-weeks
+                :value="['2026-08-20', '2026-08-26']" />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Bounds and days off',
+            'text' => 'Everything the grid understands is one prop away: <code>min</code> and <code>max</code> close the ends, <code>unavailable</code> takes out single days, <code>with-today</code> adds the shortcut, <code>week-numbers</code> the extra column. They are handed straight to <code>mds:calendar</code>.',
+            'code' => <<<'BLADE'
+            <mds:date-picker label="Delivery day" value="2026-08-24"
+                min="2026-08-16" max="2026-09-12" :unavailable="['2026-08-28', '2026-09-04']"
+                week-numbers with-today clearable />
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'Bounds may be written the way the field is: <code dir="ltr">min="۱۴۰۵/۰۵/۲۵"</code> means the same thing as <code dir="ltr">min="2026-08-16"</code>.',
+        ],
+        [
+            'name' => 'Long ago',
+            'text' => 'A date of birth is the case a calendar alone handles badly — nobody pages back three hundred months. Type it, or use <code>selectable-header</code> to jump by month and year.',
+            'code' => <<<'BLADE'
+            <mds:date-picker label="Date of birth" selectable-header format="long" value="1993-06-05" />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Where the panel opens',
+            'text' => '<code>position</code> and <code>align</code> go to the popover, so they are logical: <code>start</code> and <code>end</code> resolve against the field\'s own direction, and the panel flips when the viewport runs out of room.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker label="bottom / start (default)" />
+                <mds:date-picker position="top" align="end" label="top / end" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'The Gregorian field',
+            'text' => 'Same component, other calendar. <code>calendar="gregorian"</code> reads and writes Gregorian dates in the grid and in the field — the machine value was Gregorian all along, so nothing else changes.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker calendar="gregorian" label="Invoiced at" value="2026-08-20" />
+                <mds:date-picker calendar="gregorian" format="long" label="Invoiced at, spelled out" value="2026-08-20" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'States',
+            'text' => 'An explicit <code>error</code> wins; without one the message comes from the error bag for <code>name</code>. <code>disabled</code> takes the whole field out of reach, <code>readonly</code> keeps the calendar but stops the typing.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker name="deliver_at" label="Delivery day" error="Pick a delivery day." />
+                <mds:date-picker label="Pick only" readonly value="2026-08-20" />
+                <mds:date-picker label="Not this time" disabled value="2026-08-20" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Keyboard and screen readers',
+            'text' => 'The WAI-ARIA date-picker-dialog pattern. The field is an ordinary labelled input described by a format hint; the button carries <code>aria-haspopup="dialog"</code> and <code>aria-expanded</code>; the panel is a named <code>role="dialog"</code> around the calendar\'s <code>role="grid"</code>. <kbd>↓</kbd> in the field opens the panel and lands on the day the grid would tab to, then the calendar\'s own arrows take over; <kbd>Esc</kbd> closes and hands focus back to the button; <kbd>Enter</kbd> commits what you typed. A live region announces the selection.',
+            'code' => <<<'BLADE'
+            <mds:date-picker label="Delivery day" value="2026-08-24" with-today clearable />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Persian output',
+            'rtl' => true,
+            'text' => '<code>config(\'mds.persian_digits\')</code> — on by default in a real app, off in these docs — switches the digits, the month names, the placeholder, the range separator («تا» instead of an en dash) and every label to Persian; <code>:fa="true"</code> does it for one field. The calendar system does not move with it.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-4">
+                <mds:date-picker :fa="true" label="روز تحویل" description="در ساعات اداری" value="2026-08-20"
+                    with-today clearable />
+                <mds:date-picker :fa="true" mode="range" label="بازه‌ی اقامت" :months="2"
+                    :value="['2026-08-20', '2026-08-26']" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+            'note' => 'The visible field is Persian; the hidden input still holds <code dir="ltr">2026-08-20</code>. Machine values never change language.',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:date-picker', 'props' => [
+            ['value', 'The selection. A date object, a timestamp, an ISO string, or a date written the way the field writes them; <code>[start, end]</code> or <code>[\'start\' =&gt; …, \'end\' =&gt; …]</code> in range mode. Unreadable input renders an empty field.'],
+            ['mode', '<code>single</code> (default) or <code>range</code>.'],
+            ['min', 'Earliest selectable date.'],
+            ['max', 'Latest selectable date.'],
+            ['unavailable', 'Array of individual dates to disable inside the bounds.'],
+            ['months', 'How many months the panel shows side by side. Default: <code>1</code>.'],
+            ['calendar', '<code>jalali</code> (default) or <code>gregorian</code> — for the grid and for the field.'],
+            ['start-day', 'First column of the week, 0 (Sunday) to 6 (Saturday).'],
+            ['week-numbers', 'Adds a week-number column to the grid. Default: <code>false</code>.'],
+            ['fixed-weeks', 'Always draws six rows, so the panel never changes height. Default: <code>false</code>.'],
+            ['selectable-header', 'Month and year selects instead of the grid title. Default: <code>false</code>.'],
+            ['with-today', 'A "today" shortcut under the grid. Default: <code>false</code>.'],
+            ['format', 'How the field writes a date: <code>numeric</code> (default) or <code>long</code>.'],
+            ['name', 'Field name for a plain form post (<code>name[start]</code> / <code>name[end]</code> in range mode), and the key the error bag is read with.'],
+            ['label', 'Field label, and the accessible name of the panel and the grid.'],
+            ['description', 'Help text under the field.'],
+            ['placeholder', 'Default: <code>YYYY/MM/DD</code>, or «سال/ماه/روز» with Persian output.'],
+            ['clearable', 'Adds a clear button once there is a value. Default: <code>false</code>.'],
+            ['disabled', 'Takes the whole field out of reach. Default: <code>false</code>.'],
+            ['readonly', 'Stops the typing; the calendar still picks. Default: <code>false</code>.'],
+            ['size', 'Field height and grid cell size: <code>sm</code>, <code>lg</code>, or the default.'],
+            ['icon', 'Leading icon name, or <code>false</code> for none. Default: <code>calendar</code>.'],
+            ['position', 'Where the panel opens: <code>top</code>, <code>bottom</code> (default), <code>start</code> or <code>end</code>.'],
+            ['align', 'Alignment along that side: <code>start</code> (default), <code>center</code> or <code>end</code>.'],
+            ['invalid', 'Applies error styling.'],
+            ['error', 'Validation message. Falls back to the bag for <code>name</code>.'],
+            ['fa', 'Persian digits and Persian built-in strings. Default: <code>config(\'mds.persian_digits\')</code>.'],
+            ['wire:model', 'Binds to a Livewire property — the hidden input, or <code>x.start</code> / <code>x.end</code> in range mode.'],
+        ]],
+    ],
+    'related' => ['calendar', 'time-picker', 'popover'],
+];
+
 return $pages;

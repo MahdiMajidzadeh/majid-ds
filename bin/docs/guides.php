@@ -47,6 +47,7 @@ $demoAnchors = [
     'editor' => 'Editor',
     'calendar' => 'Calendar',
     'kanban' => 'Kanban',
+    'date-picker' => 'Date picker',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',
@@ -134,8 +135,8 @@ return [
             ],
             [
                 'name' => 'What is documented here',
-                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 32 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to eighteen of Flux\'s nineteen Pro-only components.',
-                'note' => '<p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> ship no code in the free tier, so there is nothing of Flux\'s to preview or reference here. Eighteen of them have an open <code>mds:*</code> version instead — Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command, Composer, Context, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and Timeline — each with its own page in the <strong>mds</strong> group. Only Date picker has none; for it, see Flux\'s own docs.</p>',
+                'text' => 'The <strong>Components</strong> group covers every free Flux component that ships with this package — 32 of them, each with live previews. The <strong>mds</strong> group covers this kit\'s own components, including open alternatives to all nineteen of Flux\'s Pro-only components.',
+                'note' => '<p><strong>Flux Pro components are not documented here.</strong> Nineteen of the components on <a href="https://fluxui.dev/components">fluxui.dev</a> ship no code in the free tier, so there is nothing of Flux\'s to preview or reference here. All nineteen have an open <code>mds:*</code> version instead — Accordion, Autocomplete, Calendar, Carousel, Chart, Color picker, Command, Composer, Context, Date picker, Editor, File upload, Kanban, Pillbox, Popover, Slider, Tabs, Time picker and Timeline — each with its own page in the <strong>mds</strong> group.</p>',
             ],
             [
                 'name' => 'Try it',

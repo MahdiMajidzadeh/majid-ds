@@ -19,7 +19,7 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
-4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban).
+4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban, date-picker).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
    ONE exception: `wire:key` must be written on the `<x-mds::…>` spelling. Livewire's wire:key precompiler rewrites the
@@ -1123,6 +1123,75 @@ public array $board = ['todo' => ['1', '2'], 'doing' => ['3'], 'done' => []];
 The event bubbles to `window`, so a single move can also be persisted on its own — with
 `x-on:mds-kanban-moved="$wire.moved($event.detail)"` on any ancestor, or Livewire's
 `#[On('mds-kanban-moved')] public function moved($card, $from, $to, $index) { … }` — and then no `wire:model` is needed at all.
+
+### <mds:date-picker> — a typable date field with a calendar in a popover (open version of Flux Pro's flux:date-picker)
+Composition, not a second calendar: the field is a text input, the panel is `<mds:popover>`, and the grid inside it is
+`<mds:calendar>` — so the Jalali arithmetic, the WAI-ARIA grid, the RTL placement and the focus handling all come from
+components that already exist. The visible field shows «۱۴۰۵/۰۵/۲۹» or "1405/05/29"; the hidden input carries the machine
+value, always ISO Gregorian `Y-m-d` with Latin digits, the same contract `mds:calendar` keeps.
+Props: `value` string|DateTimeInterface|int|array|null (mode `range` takes `[start, end]` or `['start' => …, 'end' => …]`;
+strings are read by the rules under Behavior, and anything unreadable renders an empty field rather than a wrong date) ·
+`mode` single|range='single' (anything else falls back to `single`; `multiple` belongs to `mds:calendar`, which has no field
+to write it into) · `min` / `max` date|null · `unavailable` array=[] (individual days disabled inside the bounds) ·
+`months` int=1 (grids side by side in the panel — 2 is the usual shape for a stay) · `calendar` jalali|gregorian='jalali' ·
+`start-day` int|null=null (0=Sunday … 6=Saturday; defaults to 6 for Jalali, 1 for Gregorian) · `week-numbers` bool=false ·
+`fixed-weeks` bool=false · `selectable-header` bool=false (month + year selects in the panel) · `with-today` bool=false
+(a "today" shortcut under the grid; in `single` mode it selects today, and the field follows) · `format` numeric|long='numeric'
+(`numeric` writes «۱۴۰۵/۰۵/۲۹», `long` writes «۲۹ مرداد ۱۴۰۵» — both stay typable, and `long` re-renders long on commit) ·
+`name` string|null (plain form post: `name` for single, `name[start]`/`name[end]` for range — and the key the error bag is read
+with) · `label` string|null (flux:label, and the accessible name of both the dialog and the grid) · `description` string|null
+(flux:description) · `placeholder` string|null=«سال/ماه/روز»/"YYYY/MM/DD" by fa · `clearable` bool=false (a clear button that
+appears once there is a value; it empties the grid too) · `disabled` bool=false (`inert` + `aria-disabled` on the whole field) ·
+`readonly` bool=false (the field cannot be typed into; the calendar still picks) · `size` sm|lg|null=null (field height, and
+the grid's cell size) · `icon` string|false='calendar' (leading `mds:icon`; `false` removes it) · `position` top|bottom|start|end='bottom'
+· `align` start|center|end='start' (both handed to `mds:popover`, so placement mirrors on an RTL page) · `invalid` bool=false ·
+`error` string|null (see Validation contract) · `fa` bool|null=config.
+`fa` and `calendar` are independent axes, exactly as in `mds:calendar`: a Jalali field in English and a Gregorian field in
+Persian are both valid.
+Behavior: the field is typable as well as pickable, and the parser is the same three rules on the server and in the browser, so
+a value seeded in PHP and one typed in the field can never mean different things. (1) `Y-m-d` with a year of 1700 or more is the
+MACHINE form — Gregorian, whatever the grid draws; that is the shape Livewire and the database hand back. (2) every other
+separator, and a bare `YYYYMMDD`, is read in the field's OWN calendar, and so is a dashed date whose year is below 1700 — so
+«۱۴۰۵/۰۵/۲۹», `1405-05-29` and `14050529` are all Mordad, not the year 1405 AD. Persian and Arabic-Indic digits are accepted
+everywhere, and the month and day may be written with one digit. (3) anything else — a month past twelve, the 30th of a common
+Esfand, a two-digit year, plain words — is not a date: it is refused, and on Enter or blur the field reverts to the last value
+it had. Nothing unreadable ever becomes a value. In `range` mode the two ends are written with a separator («۱۴۰۵/۰۵/۲۹ تا
+۱۴۰۵/۰۶/۰۴» / "1405/05/29 – 1405/06/04"); typing accepts «تا», "to", an en/em dash, a comma and a spaced hyphen between them, and
+a backwards pair is straightened out. Picking closes the panel as soon as the field has what it asked for: on the first click in
+`single` mode, on the click that closes the span in `range` mode — re-opening a range from its first day leaves the panel open.
+The typed value flows the other way too: committing a date selects it in the grid and brings its month on screen.
+ARIA contract: the WAI-ARIA date-picker-dialog pattern, non-modal. The text field is a plain labelled `<input>` (`aria-invalid`
+when invalid) described by an `.sr-only` format hint, and by the error message when there is one. The calendar button is the
+popover's trigger and carries `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` -> the panel, written on at runtime
+by `mds:popover`. The panel is `role="dialog"` named by `label` (or «تقویم»/"Calendar"), and holds the calendar's own
+`role="grid"` with the whole keyboard contract of `mds:calendar`. `ArrowDown` in the field opens the panel and lands focus on
+the day the grid would tab to; `Escape` closes it and returns focus to the trigger, and reverts uncommitted text when the field
+has focus; `Enter` commits what is typed. An `.sr-only` `role="status"` region announces the selection («انتخاب‌شده: …» /
+"Selected: …", «تاریخی انتخاب نشده است» / "No date selected"). Ids for the hint and the error are derived from `mode`,
+`calendar` and `name`, so they are stable across rebuilds and work with JavaScript off.
+Livewire contract: `wire:model*` never lands on the wrapper; it reaches the hidden control, once, per mode — `single` → one
+`<input type="hidden">`; `range` → two hidden inputs bound to dotted paths under the caller's property, modifiers kept
+(`wire:model.live="trip"` → `trip.start` / `trip.end`). Identical to `mds:calendar`, so the two are interchangeable behind the
+same property. Every commit writes the hidden control's value property and dispatches bubbling `input` and `change` events; a
+`MutationObserver` on the value ATTRIBUTE pulls a server-side change back into the field, the status region and the grid after a
+morph, and is disconnected in `destroy()`.
+Styling hooks: `data-mds-date-picker` on the root (plus `data-mds-date-picker-mode` / `-system`, and `data-invalid` /
+`data-disabled`), `-control` `-input` `-hint` `-status` `-clear` `-trigger` `-panel` `-calendar` `-value` `-start` `-end`;
+the panel and grid keep every `data-mds-popover-*` and `data-mds-calendar-*` hook of their own.
+Example:
+```blade
+<mds:date-picker wire:model.live="deliverAt" name="deliver_at" label="روز تحویل" description="در ساعات اداری"
+    :min="now()" :max="now()->addDays(30)" :unavailable="['2026-08-28']" with-today clearable />
+
+<mds:date-picker mode="range" wire:model="trip" :months="2" fixed-weeks />   {{-- trip.start / trip.end --}}
+<mds:date-picker format="long" selectable-header label="تاریخ تولد" />
+<mds:date-picker calendar="gregorian" :fa="false" name="invoiced_at" position="top" align="end" />
+```
+```php
+public ?string $deliverAt = null;                       // '2026-08-20'
+public array $trip = ['start' => null, 'end' => null];  // ISO Gregorian, both ends
+protected function rules() { return ['deliverAt' => 'required|date_format:Y-m-d']; }
+```
 
 ## CSS layer (resources/css/mds.css)
 

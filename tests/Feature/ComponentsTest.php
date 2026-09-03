@@ -1729,6 +1729,16 @@ class ComponentsTest extends TestCase
             'kanban empty column' => ['<mds:kanban><mds:kanban.column key="a" /></mds:kanban>', '>کارتی نیست</li>', '>No cards</li>'],
             'kanban card role' => ['<mds:kanban><mds:kanban.column key="a"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'aria-roledescription="کارت جابه‌جایی‌پذیر"', 'aria-roledescription="Draggable card"'],
             'kanban drag handle' => ['<mds:kanban><mds:kanban.column key="a"><mds:kanban.card key="1">y</mds:kanban.card></mds:kanban.column></mds:kanban>', 'title="دستگیره جابه‌جایی"', 'title="Drag handle"'],
+            'date picker placeholder' => ['<mds:date-picker />', 'placeholder="سال/ماه/روز"', 'placeholder="YYYY/MM/DD"'],
+            'date picker trigger' => ['<mds:date-picker />', 'aria-label="انتخاب تاریخ"', 'aria-label="Choose date"'],
+            'date picker clear' => ['<mds:date-picker clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'date picker dialog' => ['<mds:date-picker />', 'aria-label="تقویم"', 'aria-label="Calendar"'],
+            'date picker hint' => ['<mds:date-picker />', '>قالب تاریخ: سال/ماه/روز</span>', '>Date format: YYYY/MM/DD</span>'],
+            'date picker range hint' => ['<mds:date-picker mode="range" />', 'دو تاریخ با «تا»', 'two dates separated by &quot;to&quot;'],
+            'date picker status empty' => ['<mds:date-picker />', '-status>تاریخی انتخاب نشده است</span>', '-status>No date selected</span>'],
+            'date picker status chosen' => ['<mds:date-picker value="2026-08-20" />', '-status>انتخاب‌شده: ۱۴۰۵/۰۵/۲۹</span>', '-status>Selected: 1405/05/29</span>'],
+            'date picker range separator' => ['<mds:date-picker mode="range" :value="[\'2026-08-20\', \'2026-08-26\']" />', 'value="۱۴۰۵/۰۵/۲۹ تا ۱۴۰۵/۰۶/۰۴"', 'value="1405/05/29 – 1405/06/04"'],
+            'date picker long month' => ['<mds:date-picker format="long" value="2026-08-20" />', 'value="۲۹ مرداد ۱۴۰۵"', 'value="29 Mordad 1405"'],
         ];
     }
 

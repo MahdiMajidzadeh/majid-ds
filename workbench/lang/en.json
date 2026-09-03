@@ -686,5 +686,15 @@
     "زبانه‌ها": "Tabs",
     "آکاردئون": "Accordion",
     "پاپ‌اور": "Popover",
-    "برد کانبان": "Kanban board"
+    "برد کانبان": "Kanban board",
+    "انتخاب تاریخ": "Choose date",
+    "انتخاب تاریخ — mds:date-picker": "Date picker — mds:date-picker",
+    "نسخه آزاد از کامپوننت Date picker (که در Flux فقط در نسخه Pro موجود است): یک فیلد متنی که می‌شود در آن تاریخ نوشت، به‌علاوه‌ی همان تقویم شمسی داخل یک popover. هرچه بنویسید یا انتخاب کنید، مقداری که به Livewire می‌رسد تاریخ میلادی ISO است.": "An open version of the Date picker component (Pro-only in Flux): a text field you can write a date into, plus the same Jalali calendar inside a popover. Whatever you type or pick, what reaches Livewire is an ISO Gregorian date.",
+    "یک روز — تایپ کنید یا از تقویم بردارید:": "One day — type it or take it from the calendar:",
+    "تاریخ را بنویسید یا از تقویم انتخاب کنید.": "Write the date, or pick it from the calendar.",
+    "بازه‌ی سفر، دو ماه کنار هم:": "A travel range, two months side by side:",
+    "تاریخی که خیلی عقب است — با ماه و سال:": "A date far back — with month and year selects:",
+    "همان فیلد، روی تقویم میلادی:": "The same field, on the Gregorian calendar:",
+    "تاریخ صدور فاکتور": "Invoiced at",
+    "«۱۴۰۵-۰۵-۲۹» و «۱۴۰۵/۰۵/۲۹» و «۱۴۰۵۰۵۲۹» هر سه یک روزند؛ چیزی که تاریخ نیست هم هیچ‌وقت تاریخ نمی‌شود و فیلد به مقدار قبلی برمی‌گردد.": "«۱۴۰۵-۰۵-۲۹», «۱۴۰۵/۰۵/۲۹» and «۱۴۰۵۰۵۲۹» are all the same day; anything that is not a date never becomes one, and the field puts back what it had."
 }

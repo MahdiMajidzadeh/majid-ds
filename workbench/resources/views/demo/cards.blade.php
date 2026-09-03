@@ -75,6 +75,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#editor" icon="pencil-square">{{ __('ویرایشگر متن') }}</flux:navbar.item>
         <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
         <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
+        <flux:navbar.item href="#date-picker" icon="calendar">{{ __('انتخاب تاریخ') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
@@ -1510,8 +1511,6 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
 </flux:card>
 
 {{-- ============================== MDS: Kanban ============================== --}}
-{{-- workbench/resources/views/demo/cards.blade.php — paste as-is, and add
-     an id="kanban" entry to the demo navbar's table of contents. --}}
 <flux:card id="kanban" class="space-y-4">
     <flux:heading size="lg">{{ __('تخته کانبان — mds:kanban') }}</flux:heading>
     <flux:text>{{ __('نسخه آزاد از کامپوننت Kanban (که در Flux فقط در نسخه Pro موجود است) — کشیدن با ماوس و لمس، جابه‌جایی کامل با کیبورد و اعلام هر حرکت برای صفحه‌خوان.') }}</flux:text>
@@ -1545,6 +1544,68 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             <span x-show="! last">{{ __('هنوز جابه‌جایی‌ای انجام نشده است.') }}</span>
         </flux:text>
     </div>
+</flux:card>
+
+{{-- ============================== MDS: Date-Picker ============================== --}}
+<flux:card id="date-picker" class="space-y-6">
+    <flux:heading size="lg">{{ __('انتخاب تاریخ — mds:date-picker') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Date picker (که در Flux فقط در نسخه Pro موجود است): یک فیلد متنی که می‌شود در آن تاریخ نوشت، به‌علاوه‌ی همان تقویم شمسی داخل یک popover. هرچه بنویسید یا انتخاب کنید، مقداری که به Livewire می‌رسد تاریخ میلادی ISO است.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('یک روز — تایپ کنید یا از تقویم بردارید:') }}</flux:text>
+
+            <mds:date-picker
+                :label="__('روز تحویل')"
+                :description="__('تاریخ را بنویسید یا از تقویم انتخاب کنید.')"
+                name="deliver_at"
+                value="2026-08-24"
+                min="2026-08-16"
+                max="2026-09-12"
+                :unavailable="['2026-08-28', '2026-09-04']"
+                with-today
+                clearable
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('بازه‌ی سفر، دو ماه کنار هم:') }}</flux:text>
+
+            <mds:date-picker
+                :label="__('بازه‌ی اقامت')"
+                mode="range"
+                name="trip"
+                :months="2"
+                fixed-weeks
+                :value="['2026-08-26', '2026-09-08']"
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('تاریخی که خیلی عقب است — با ماه و سال:') }}</flux:text>
+
+            <mds:date-picker
+                :label="__('تاریخ تولد')"
+                format="long"
+                selectable-header
+                value="1993-06-05"
+            />
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('همان فیلد، روی تقویم میلادی:') }}</flux:text>
+
+            <mds:date-picker
+                :label="__('تاریخ صدور فاکتور')"
+                calendar="gregorian"
+                name="invoiced_at"
+                value="2026-08-20"
+                clearable
+            />
+        </div>
+    </div>
+
+    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('«۱۴۰۵-۰۵-۲۹» و «۱۴۰۵/۰۵/۲۹» و «۱۴۰۵۰۵۲۹» هر سه یک روزند؛ چیزی که تاریخ نیست هم هیچ‌وقت تاریخ نمی‌شود و فیلد به مقدار قبلی برمی‌گردد.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}
