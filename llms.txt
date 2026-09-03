@@ -577,6 +577,52 @@ nodes — the same mechanism `<mds:preview-card>` already relies on.
 </mds:popover>
 ```
 
+### <mds:accordion> — collapsible sections (open version of Flux Pro's flux:accordion)
+Compound: `<mds:accordion>` (the group) + `<mds:accordion.item>` + `<mds:accordion.heading>` + `<mds:accordion.content>`.
+Every item is a native `<details>`/`<summary>` pair, so opening, closing, Enter/Space, focus and find-in-page come from the
+browser and work with JavaScript off.
+Root props: `exclusive` bool=false (only one item open at a time) · `transition` bool=false (animate the open/close height) ·
+`name` string|null (explicit group name for the `<details name>` attribute; only used when `exclusive`) · `fa` bool|null=config
+(no digits and no microcopy of its own — accepted for parity and handed down to the parts).
+- `<mds:accordion.item>` props: `expanded` bool=false (renders the `open` attribute, so the first paint is right) ·
+  `disabled` bool=false (not focusable, not toggleable) · `heading` string|null (shortcut: renders
+  `<mds:accordion.heading>` + `<mds:accordion.content>` around the slot, escaped — pass the subcomponents instead when the
+  heading needs markup) · `fa` bool|null. Renders the `<details>`; carries `data-expanded` / `data-disabled`.
+- `<mds:accordion.heading>` props: `fa` bool|null. The `<summary>`: `role="button"`, the caller's text in a
+  `min-w-0 flex-1` span, and a chevron that rotates 180° when open. Inherits `expanded`/`disabled` from the item.
+- `<mds:accordion.content>` props: `fa` bool|null. The body. Its padding sits on an inner `pb-4` box so the height
+  animation can run the outer element down to zero.
+Behavior (Alpine): Alpine only adds what `<details>` lacks. `disabled` cancels the summary's click (and drops it from the tab
+order). `exclusive` uses the native `<details name>` group — the server writes the shared constant `mds-accordion` when no
+`name` was given (so the group works before any script runs; two unnamed accordions on one page act as one group for that
+instant) and each item swaps in a per-accordion `$id()` at init. With `transition` the `name` attribute is removed instead and
+the siblings are closed by script, animated: a Web Animations height tween of 200ms `cubic-bezier(0.4, 0, 0.2, 1)`, run on the
+content and skipped entirely under `prefers-reduced-motion` (the item then toggles natively). Re-opening mid-collapse grows
+back from wherever the box is. A nested accordion keeps its own group. Markers for tests and CSS: `data-mds-accordion`
+(+ `data-mds-accordion-exclusive`, `data-mds-accordion-name`, `data-mds-accordion-transition`), `data-mds-accordion-item`,
+`data-mds-accordion-heading`, `data-mds-accordion-content`, `data-mds-accordion-chevron`.
+ARIA contract: the `<summary>` is the button — `role="button"` with `aria-expanded` rendered server-side from `expanded` and
+kept in step by Alpine; a disabled item's summary is `aria-disabled="true"` `tabindex="-1"` `pointer-events-none`. The chevron
+is `aria-hidden`. Keyboard: Tab reaches each heading, Enter and Space toggle it — the native `<details>` behaviour. This is the
+WAI-ARIA accordion pattern's required set; the optional Up/Down/Home/End roving between headings is deliberately not
+implemented, because it would mean taking the summary's native semantics away.
+Livewire contract: no `wire:model` — the accordion holds no value. `wire:click` and `x-on:click` on a heading pass through, and
+attributes land on each part's own root, so `wire:key` belongs on `<mds:accordion.item>` in a loop. A morph that changes the
+`open` attribute fires the native `toggle` event and Alpine re-reads it (`this.expanded = this.$el.open` at init as well), so a
+server-driven `expanded` stays in sync. Style descendants off the state with `in-data-expanded:` /
+`group-open/mds-accordion:` — the item is `group/mds-accordion`.
+```blade
+<mds:accordion exclusive transition class="max-w-lg">
+    <mds:accordion.item expanded>
+        <mds:accordion.heading>ارسال و تحویل</mds:accordion.heading>
+        <mds:accordion.content>سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند.</mds:accordion.content>
+    </mds:accordion.item>
+
+    <mds:accordion.item heading="مرجوع کردن کالا">تا هفت روز، بدون پرسش.</mds:accordion.item>
+    <mds:accordion.item heading="گارانتی" disabled>به‌زودی</mds:accordion.item>
+</mds:accordion>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.

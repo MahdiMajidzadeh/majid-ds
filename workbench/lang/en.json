@@ -514,5 +514,21 @@
     "راهنمای سایز": "Size guide",
     "اندازه‌گیری چگونه انجام می‌شود؟": "How do we measure?",
     "دور سینه روی لباس صاف و دو سانتی‌متر پایین‌تر از حلقه آستین اندازه گرفته می‌شود. بین دو سایز، سایز بزرگ‌تر را انتخاب کنید.": "Chest is measured flat, across the garment, 2cm below the armhole. Between two sizes, take the larger.",
-    "پنل سوم با نگه‌داشتن نشانگر یا با فوکوس کیبورد هم باز می‌شود؛ کلیک آن را ثابت نگه می‌دارد.": "The third panel also opens on hover or keyboard focus; a click pins it open."
+    "پنل سوم با نگه‌داشتن نشانگر یا با فوکوس کیبورد هم باز می‌شود؛ کلیک آن را ثابت نگه می‌دارد.": "The third panel also opens on hover or keyboard focus; a click pins it open.",
+    "آکاردئون — mds:accordion": "Accordion — mds:accordion",
+    "نسخه آزاد از کامپوننت Accordion (که در Flux فقط در نسخه Pro موجود است) — روی details و summary بومی مرورگر، پس باز و بسته شدن، کیبورد و جستجوی درون‌صفحه بدون جاوااسکریپت هم کار می‌کند.": "An open version of the Accordion component (Pro-only in Flux) — built on the browser's own details/summary, so opening, the keyboard and find-in-page keep working with JavaScript off.",
+    "پرسش‌های پرتکرار (هر بار یک بخش، با انیمیشن):": "Frequently asked questions (one at a time, animated):",
+    "ارسال و تحویل": "Shipping and delivery",
+    "سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.": "Orders leave the warehouse within two working days and arrive within a week almost everywhere.",
+    "مرجوع کردن کالا": "Returning an item",
+    "تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.": "Seven days from delivery, no questions asked. We pay the return postage.",
+    "گارانتی کالاها": "Warranty",
+    "همه کالاهای دیجیتال دو سال گارانتی دارند که رسیدگی به آن با خود ما است.": "Every device carries a two-year warranty, handled by us rather than by the manufacturer.",
+    "حساب سازمانی": "Business accounts",
+    "به‌زودی": "Coming soon",
+    "عنوان دلخواه با نشان و آیکون:": "A custom heading with a badge and an icon:",
+    "سفارش ۱۴۸۱": "Order 1481",
+    "یکشنبه تحویل پست شد.": "Handed to the courier on Sunday.",
+    "سفارش ۱۴۷۷": "Order 1477",
+    "چهارشنبه هفته گذشته تحویل داده و امضا شد.": "Delivered last Wednesday and signed for."
 }

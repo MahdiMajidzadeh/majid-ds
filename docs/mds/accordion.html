@@ -1,0 +1,1994 @@
+<!doctype html>
+<html lang="en" class="docs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mds:accordion — Majid DS</title>
+<meta name="description" content="mds:accordion — Majid DS, an RTL/Persian-first UI kit for Laravel Livewire built on Flux UI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="docs-topbar">
+    <a class="docs-brand" href="../index.html">
+        <span class="docs-brand-mark">M</span>
+        <span class="docs-brand-name">Majid DS</span>
+        <span class="docs-brand-pill">mds</span>
+    </a>
+
+    <nav class="docs-topnav">
+        <a href="../index.html">Docs</a>
+        <a href="../guides/demo.html">Demo</a>
+        <a href="../demo/layouts-en.html">Layouts</a>
+    </nav>
+
+    <div class="docs-topbar-end">
+        <a class="docs-github" href="https://github.com/MahdiMajidzadeh/majid-ds" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+</header>
+
+<div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Documentation">
+        <details class="docs-nav" open data-docs-slug="accordion" data-docs-prefix="../">
+            <summary>Menu</summary>
+            <noscript><p class="docs-text">The navigation needs JavaScript — start from the <a href="../index.html">overview</a>.</p></noscript>
+        </details>
+    </aside>
+
+    <main class="docs-main">
+        <p class="docs-eyebrow">mds components</p>
+        <h1>mds:accordion</h1>
+        <p class="docs-lede">Collapsible sections built on native details/summary — an open version of a Flux Pro component.</p>
+        <section id="introduction" class="docs-section"><p class="docs-text">Flux's Accordion component is Pro-only. This is a working replacement, and it is deliberately thin: every item is a real <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> pair, so opening and closing, <code>Enter</code> and <code>Space</code>, focus and browser find-in-page all come from the platform — and keep working with JavaScript off. The preview is live.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+                    data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">How long does delivery take?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Orders leave the warehouse within two working days, and arrive within a week almost everywhere.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Can I return something?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Fourteen days from delivery, unused and in its original packaging. We pay the return postage.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Is there a warranty?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Every device carries a two-year warranty, handled by us rather than by the manufacturer.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;How long does delivery take?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Orders leave the warehouse within two working days, and arrive within a week almost everywhere.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Can I return something?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Fourteen days from delivery, unused and in its original packaging. We pay the return postage.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Is there a warranty?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Every device carries a two-year warranty, handled by us rather than by the manufacturer.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="one-at-a-time" class="docs-section"><h2>One at a time</h2><p class="docs-text">Add <code>exclusive</code> and opening one item closes the others. It is the native <code>&lt;details name&gt;</code> group doing the work, so it holds before any script has run; each accordion gets its own group, and nesting one inside another keeps the two apart. Pass <code>name</code> to choose the group name yourself.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+         data-mds-accordion-exclusive      data-mds-accordion-name="shipping-faq"         data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+     open      name="shipping-faq"      data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: false,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Standard shipping</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Three to five working days, free over 500,000 Toman.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="shipping-faq"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Express shipping</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Next working day in Tehran, ordered before 14:00.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="shipping-faq"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Pick-up point</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Collect from any of 120 lockers, held for 72 hours.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">exclusive</span> <span class="t-attr">name</span><span class="t-equals">=</span><span class="t-string">&quot;shipping-faq&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Standard shipping&quot;</span> <span class="t-attr">expanded</span><span class="t-punct">&gt;</span><span class="t-text">
+        Three to five working days, free over 500,000 Toman.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Express shipping&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Next working day in Tehran, ordered before 14:00.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Pick-up point&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Collect from any of 120 lockers, held for 72 hours.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="animated" class="docs-section"><h2>Animated</h2><p class="docs-text"><code>transition</code> animates the height of the body over 200ms instead of snapping it open. The tween is skipped under <code>prefers-reduced-motion</code>, where the item toggles natively — and re-opening halfway through a collapse grows back from wherever the box has got to.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+     x-data x-id="['mds-accordion']"      data-mds-accordion-exclusive          data-mds-accordion-transition     data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">What is Majid DS?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        An RTL, Persian-first UI kit for Laravel Livewire, layered on top of Flux UI's free tier rather than replacing it.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Do I still need Flux?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        Yes — the kit adds an <code>mds:</code> namespace next to <code>flux:</code>, and the two are meant to be used together.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Which Pro components does it replace?</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        Command, composer, colour picker, file upload, timeline, chart — plus this accordion and the popover.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">transition</span> <span class="t-attr">exclusive</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;What is Majid DS?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        An RTL, Persian-first UI kit for Laravel Livewire, layered on top of Flux UI&#039;s free tier rather than replacing it.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Do I still need Flux?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Yes — the kit adds an </span><span class="t-punct">&lt;</span><span class="t-tag">code</span><span class="t-punct">&gt;</span><span class="t-text">mds:</span><span class="t-punct">&lt;/</span><span class="t-tag">code</span><span class="t-punct">&gt;</span><span class="t-text"> namespace next to </span><span class="t-punct">&lt;</span><span class="t-tag">code</span><span class="t-punct">&gt;</span><span class="t-text">flux:</span><span class="t-punct">&lt;/</span><span class="t-tag">code</span><span class="t-punct">&gt;</span><span class="t-text">, and the two are meant to be used together.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Which Pro components does it replace?&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Command, composer, colour picker, file upload, timeline, chart — plus this accordion and the popover.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="open-and-disabled-items" class="docs-section"><h2>Open and disabled items</h2><p class="docs-text"><code>expanded</code> renders the <code>open</code> attribute server-side, so the first paint is already right — no flash of a closed section. <code>disabled</code> takes an item out of the tab order and refuses to open it; it is the state to use for a section that is not ready yet, not a way to hide content.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+                    data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+     open          data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Payment methods</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Every Shetab card, plus instalments over three or six months.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Invoices</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Download a VAT invoice from the order page as soon as it ships.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+                 data-disabled     x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: true,
+        transition: false,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden pointer-events-none text-zinc-400 dark:text-zinc-500 rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+     aria-disabled="true" tabindex="-1"     x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">Business accounts</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+        data-mds-accordion-content
+>
+    <div class="pb-4">
+        Coming soon.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Payment methods&quot;</span> <span class="t-attr">expanded</span><span class="t-punct">&gt;</span><span class="t-text">
+        Every Shetab card, plus instalments over three or six months.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Invoices&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        Download a VAT invoice from the order page as soon as it ships.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;Business accounts&quot;</span> <span class="t-attr">disabled</span><span class="t-punct">&gt;</span><span class="t-text">
+        Coming soon.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="headings-with-markup" class="docs-section"><h2>Headings with markup</h2><p class="docs-text">The <code>heading</code> prop is a shortcut, and its text is escaped. When the heading needs more than a string — a badge, an icon, a count — write the two subcomponents out instead.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+                 data-mds-accordion-transition     data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+     open          data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: true,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1"><span class="flex items-center gap-2">
+                <svg aria-hidden="true" data-mds-icon="" class="size-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><path d="M11 17H15M13.5 7H14.4429C15.7533 7 16.4086 7 16.9641 7.31452C17.5196 7.62904 17.89 8.20972 18.6308 9.37107C19.1502 10.1854 19.6955 10.7765 20.4622 11.3024C21.2341 11.8318 21.6012 12.0906 21.8049 12.506C22 12.9038 22 13.375 22 14.3173C22 15.5596 22 16.1808 21.651 16.5755C21.636 16.5925 21.6207 16.609 21.6049 16.625C21.2375 17 20.6594 17 19.503 17H19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 7L13.9942 9.48556C14.4813 10.7034 14.7249 11.3123 15.2328 11.6561C15.7407 12 16.3965 12 17.7081 12H21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.86957 17C3.51684 17 2.84048 17 2.42024 16.5607C2 16.1213 2 15.4142 2 14V7C2 5.58579 2 4.87868 2.42024 4.43934C2.84048 4 3.51684 4 4.86957 4H10.1304C11.4832 4 12.1595 4 12.5798 4.43934C13 4.87868 13 5.58579 13 7V17H8.69565" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                Order 1481 — shipped
+                <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-green-800 [&amp;_button]:text-green-800! dark:text-green-200 dark:[&amp;_button]:text-green-200! bg-green-400/20 dark:bg-green-400/40 [&amp;:is(button)]:hover:bg-green-400/30 dark:[button]:hover:bg-green-400/50">
+        2 items
+    </div>
+            </span></span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        <div class="flex items-center justify-between">
+                <span>Handed to the courier on Sunday.</span>
+                <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white" data-flux-button="data-flux-button">
+        Track
+    </button>
+            </div>
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1"><span class="flex items-center gap-2">
+                <svg aria-hidden="true" data-mds-icon="" class="size-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" /><path d="M12 8V12L14 14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                Order 1477 — delivered
+            </span></span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        Delivered last Wednesday and signed for.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">transition</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">expanded</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">span</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;truck&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-4 text-zinc-400&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+                Order 1481 — shipped
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:badge</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">color</span><span class="t-equals">=</span><span class="t-string">&quot;green&quot;</span><span class="t-punct">&gt;</span><span class="t-text">2 items</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:badge</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.content</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">div</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center justify-between&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text">Handed to the courier on Sunday.</span><span class="t-punct">&lt;/</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">flux:button</span> <span class="t-attr">size</span><span class="t-equals">=</span><span class="t-string">&quot;sm&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;subtle&quot;</span><span class="t-punct">&gt;</span><span class="t-text">Track</span><span class="t-punct">&lt;/</span><span class="t-tag">flux:button</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">div</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+            </span><span class="t-punct">&lt;</span><span class="t-tag">span</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;flex items-center gap-2&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+                </span><span class="t-punct">&lt;</span><span class="t-tag">mds:icon</span> <span class="t-attr">icon</span><span class="t-equals">=</span><span class="t-string">&quot;clock&quot;</span> <span class="t-attr">variant</span><span class="t-equals">=</span><span class="t-string">&quot;micro&quot;</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;size-4 text-zinc-400&quot;</span> <span class="t-punct">/</span><span class="t-punct">&gt;</span><span class="t-text">
+                Order 1477 — delivered
+            </span><span class="t-punct">&lt;/</span><span class="t-tag">span</span><span class="t-punct">&gt;</span><span class="t-text">
+        </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.heading</span><span class="t-punct">&gt;</span><span class="t-text">
+
+        </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.content</span><span class="t-punct">&gt;</span><span class="t-text">Delivered last Wednesday and signed for.</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.content</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="in-rtl" class="docs-section"><h2>In RTL</h2><p class="docs-text">The accordion has no built-in strings and prints no digits of its own, so nothing here switches language — the layout simply mirrors: the chevron moves to the left edge and the heading text starts on the right. The copy, and any digits in it, are yours.</p><div class="docs-example">
+    <div class="docs-preview docs-preview-stretch">
+        <div class="docs-preview-inner" dir="rtl"><div
+    class="divide-y divide-zinc-200 dark:divide-white/10 w-full max-w-lg"
+     x-data x-id="['mds-accordion']"      data-mds-accordion-exclusive          data-mds-accordion-transition     data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+     open      name="mds-accordion"      data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">ارسال و تحویل</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">مرجوع کردن کالا</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.
+    </div>
+</div>
+    </details>
+
+    <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">گارانتی</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        همه کالاهای دیجیتال دو سال گارانتی دارند.
+    </div>
+</div>
+    </details>
+</div></div>
+    </div>
+
+    <div class="docs-code">
+        <button type="button" class="docs-copy" aria-label="Copy code">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.75"/>
+                <path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10"/>
+            </svg>
+        </button>
+        <pre><code><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion</span> <span class="t-attr">exclusive</span> <span class="t-attr">transition</span> <span class="t-attr">class</span><span class="t-equals">=</span><span class="t-string">&quot;w-full max-w-lg&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;ارسال و تحویل&quot;</span> <span class="t-attr">expanded</span><span class="t-punct">&gt;</span><span class="t-text">
+        سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;مرجوع کردن کالا&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+
+    </span><span class="t-punct">&lt;</span><span class="t-tag">mds:accordion.item</span> <span class="t-attr">heading</span><span class="t-equals">=</span><span class="t-string">&quot;گارانتی&quot;</span><span class="t-punct">&gt;</span><span class="t-text">
+        همه کالاهای دیجیتال دو سال گارانتی دارند.
+    </span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion.item</span><span class="t-punct">&gt;</span><span class="t-text">
+</span><span class="t-punct">&lt;/</span><span class="t-tag">mds:accordion</span><span class="t-punct">&gt;</span></code></pre>
+    </div>
+</div></section><section id="reference" class="docs-section docs-reference"><h2>Reference</h2><div id="mds-accordion" class="docs-ref-block"><h3>mds:accordion</h3><p class="docs-text">The group. Renders a divided list; adds no behaviour of its own beyond the group name.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">exclusive</span></td><td>Only one item open at a time, through the native <code>&lt;details name&gt;</code> group. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">transition</span></td><td>Animate the open/close height. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">name</span></td><td>The group name to use when <code>exclusive</code>. Generated per accordion when omitted.</td></tr></tbody>
+</table></div><div id="mds-accordion-item" class="docs-ref-block"><h3>mds:accordion.item</h3><p class="docs-text">One <code>&lt;details&gt;</code>. With <code>heading</code> it renders the heading and content parts for you; otherwise put them in the slot yourself.</p><table class="docs-table">
+    <thead><tr><th>Prop</th><th>Description</th></tr></thead>
+    <tbody><tr><td><span class="docs-prop">heading</span></td><td>Heading text (escaped). Omit it and compose the two subcomponents instead.</td></tr><tr><td><span class="docs-prop">expanded</span></td><td>Render the item open. Default: <code>false</code>.</td></tr><tr><td><span class="docs-prop">disabled</span></td><td>Not focusable, and refuses to toggle. Default: <code>false</code>.</td></tr></tbody>
+</table></div><div id="mds-accordion-heading" class="docs-ref-block"><h3>mds:accordion.heading</h3><p class="docs-text">The <code>&lt;summary&gt;</code> — the toggle. Takes the item's state from it; adds the rotating chevron. Takes no props of its own.</p></div><div id="mds-accordion-content" class="docs-ref-block"><h3>mds:accordion.content</h3><p class="docs-text">The body. Its padding sits on an inner box, so the height animation can run the outer element down to zero. Takes no props of its own.</p></div></section><section class="docs-section"><h2>Related</h2><div class="docs-related"><a class="docs-related-card" href="../components/card.html"><span class="docs-related-name">Card</span><span class="docs-related-lede">A bordered surface for grouping related content.</span></a><a class="docs-related-card" href="../components/separator.html"><span class="docs-related-name">Separator</span><span class="docs-related-lede">A dividing line, optionally with a label.</span></a></div></section>
+    </main>
+
+    <aside class="docs-toc" aria-label="On this page">
+        <p class="docs-toc-title">On this page</p>
+        <nav><a href="#introduction">Introduction</a><a href="#one-at-a-time">One at a time</a><a href="#animated">Animated</a><a href="#open-and-disabled-items">Open and disabled items</a><a href="#headings-with-markup">Headings with markup</a><a href="#in-rtl">In RTL</a><a href="#reference">Reference</a><a href="#mds-accordion" class="docs-toc-sub">mds:accordion</a><a href="#mds-accordion-item" class="docs-toc-sub">mds:accordion.item</a><a href="#mds-accordion-heading" class="docs-toc-sub">mds:accordion.heading</a><a href="#mds-accordion-content" class="docs-toc-sub">mds:accordion.content</a></nav>
+    </aside>
+</div>
+
+<script src="../assets/livewire.js"></script>
+<script src="../assets/flux.js"></script>
+<script src="../assets/nav.js"></script>
+
+<script>
+// Build the sidebar from the nav data. textContent throughout — labels and
+// tags are data, never markup.
+(function () {
+    var details = document.querySelector('.docs-nav');
+    var slug = details.getAttribute('data-docs-slug');
+    var prefix = details.getAttribute('data-docs-prefix');
+
+    (window.__mdsNav || []).forEach(function (group) {
+        var wrap = document.createElement('div');
+        wrap.className = 'docs-nav-group';
+
+        var title = document.createElement('p');
+        title.className = 'docs-nav-title';
+        title.textContent = group.title;
+        wrap.appendChild(title);
+
+        var items = document.createElement('div');
+        items.className = 'docs-nav-items';
+
+        group.items.forEach(function (item) {
+            var link = document.createElement('a');
+            link.href = prefix + item.path;
+            link.textContent = item.label;
+
+            if (item.slug === slug) link.setAttribute('aria-current', 'page');
+
+            if (item.tag) {
+                var tag = document.createElement('span');
+                tag.className = 'docs-nav-tag';
+                tag.textContent = item.tag;
+                link.appendChild(document.createTextNode(' '));
+                link.appendChild(tag);
+            }
+
+            items.appendChild(link);
+        });
+
+        wrap.appendChild(items);
+        details.appendChild(wrap);
+    });
+})();
+
+// On a phone the full nav is ~2000px tall, so it starts collapsed there.
+// Without JS it stays open — the pre-fix behaviour, never worse.
+if (matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-nav').removeAttribute('open');
+}
+
+// Copy a snippet to the clipboard.
+document.querySelectorAll('.docs-copy').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(function () {
+            button.classList.add('is-copied');
+            setTimeout(function () { button.classList.remove('is-copied'); }, 1200);
+        });
+    });
+});
+
+// Scroll the sidebar to the page's own link. The sidebar is a fresh
+// element on every page, so without this a reader browsing the second half
+// of the component list re-scrolls it on every navigation.
+var currentLink = document.querySelector('.docs-sidebar a[aria-current="page"]');
+var sidebar = document.querySelector('.docs-sidebar');
+
+if (currentLink && currentLink.offsetTop > sidebar.clientHeight - 80) {
+    sidebar.scrollTop = currentLink.offsetTop - sidebar.clientHeight / 2;
+}
+
+// Highlight the section the reader is looking at in the right-hand rail.
+var links = [].slice.call(document.querySelectorAll('.docs-toc a'));
+var targets = links.map(function (a) { return document.getElementById(a.hash.slice(1)); }).filter(Boolean);
+
+if (targets.length) {
+    var mark = function () {
+        var top = window.scrollY + 120;
+        var active = targets[0];
+        targets.forEach(function (t) { if (t.offsetTop <= top) active = t; });
+        links.forEach(function (a) { a.toggleAttribute('aria-current', a.hash === '#' + active.id); });
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+}
+</script>
+
+</body>
+</html>

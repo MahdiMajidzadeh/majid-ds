@@ -614,6 +614,30 @@ An open implementation of Flux Pro's popover, API-compatible with `flux:popover`
 
 Props: `position` (`top` | `bottom` | `start` | `end`), `align` (`start` | `center` | `end`), `offset` (pixels), `arrow`, `hover` (also open on hover and keyboard focus; a click pins it), `fa`. On `<mds:popover.content>`: `arrow` (overrides the root), `closable`, `fa`. `<mds:popover.trigger>` takes no props — it wraps exactly one focusable element and writes `aria-haspopup`/`aria-expanded`/`aria-controls` onto it at runtime. The root dispatches bubbling `mds-popover-open` and `mds-popover-close` events.
 
+### `<mds:accordion>`
+
+An open implementation of Flux Pro's accordion, API-compatible with `flux:accordion`, and deliberately thin: every item is a native `<details>`/`<summary>` pair, so opening and closing, `Enter`/`Space`, focus order and the browser's find-in-page all come from the platform and keep working with JavaScript off. Alpine only adds what the element lacks — the disabled guard, the `aria-expanded` mirror, and an optional height animation:
+
+```blade
+<mds:accordion exclusive transition class="max-w-lg">
+    <mds:accordion.item heading="ارسال و تحویل" expanded>
+        سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند.
+    </mds:accordion.item>
+
+    <mds:accordion.item heading="مرجوع کردن کالا">تا هفت روز، بدون پرسش.</mds:accordion.item>
+
+    <mds:accordion.item>
+        <mds:accordion.heading>
+            گارانتی <flux:badge size="sm" color="green">دو سال</flux:badge>
+        </mds:accordion.heading>
+
+        <mds:accordion.content>رسیدگی به گارانتی با خود ماست.</mds:accordion.content>
+    </mds:accordion.item>
+</mds:accordion>
+```
+
+Props: on the root, `exclusive` (one open item at a time, through the native `<details name>` group), `transition` (animate the height; skipped under `prefers-reduced-motion`), `name` (the group name to use when `exclusive`), `fa`. On `<mds:accordion.item>`: `heading` (a shortcut for the two subcomponents; escaped), `expanded` (rendered server-side as `open`, so the first paint is right), `disabled`, `fa`. `<mds:accordion.heading>` and `<mds:accordion.content>` take only `fa` and inherit the rest.
+
 ### `<mds:discount-badge>` and `<mds:empty-state>`
 
 ```blade

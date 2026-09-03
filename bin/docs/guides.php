@@ -36,6 +36,7 @@ $demoAnchors = [
     'timeline' => 'Timeline',
     'chart' => 'Charts',
     'popover' => 'Popover',
+    'accordion' => 'Accordion',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

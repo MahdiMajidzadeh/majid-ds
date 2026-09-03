@@ -2255,4 +2255,169 @@ $pages['popover'] = [
     'related' => ['dropdown', 'tooltip', 'preview-card'],
 ];
 
+// --------------------------------------------------------- mds:accordion
+
+// ------------------------------------------------------------- mds:accordion
+
+$pages['accordion'] = [
+    'group' => 'mds',
+    'title' => 'mds:accordion',
+    'lede' => 'Collapsible sections built on native details/summary — an open version of a Flux Pro component.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'Flux\'s Accordion component is Pro-only. This is a working replacement, and it is deliberately thin: every item is a real <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> pair, so opening and closing, <code>Enter</code> and <code>Space</code>, focus and browser find-in-page all come from the platform — and keep working with JavaScript off. The preview is live.',
+            'code' => <<<'BLADE'
+            <mds:accordion class="w-full max-w-lg">
+                <mds:accordion.item heading="How long does delivery take?">
+                    Orders leave the warehouse within two working days, and arrive within a week almost everywhere.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Can I return something?">
+                    Fourteen days from delivery, unused and in its original packaging. We pay the return postage.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Is there a warranty?">
+                    Every device carries a two-year warranty, handled by us rather than by the manufacturer.
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'One at a time',
+            'text' => 'Add <code>exclusive</code> and opening one item closes the others. It is the native <code>&lt;details name&gt;</code> group doing the work, so it holds before any script has run; each accordion gets its own group, and nesting one inside another keeps the two apart. Pass <code>name</code> to choose the group name yourself.',
+            'code' => <<<'BLADE'
+            <mds:accordion exclusive name="shipping-faq" class="w-full max-w-lg">
+                <mds:accordion.item heading="Standard shipping" expanded>
+                    Three to five working days, free over 500,000 Toman.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Express shipping">
+                    Next working day in Tehran, ordered before 14:00.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Pick-up point">
+                    Collect from any of 120 lockers, held for 72 hours.
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Animated',
+            'text' => '<code>transition</code> animates the height of the body over 200ms instead of snapping it open. The tween is skipped under <code>prefers-reduced-motion</code>, where the item toggles natively — and re-opening halfway through a collapse grows back from wherever the box has got to.',
+            'code' => <<<'BLADE'
+            <mds:accordion transition exclusive class="w-full max-w-lg">
+                <mds:accordion.item heading="What is Majid DS?">
+                    An RTL, Persian-first UI kit for Laravel Livewire, layered on top of Flux UI's free tier rather than replacing it.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Do I still need Flux?">
+                    Yes — the kit adds an <code>mds:</code> namespace next to <code>flux:</code>, and the two are meant to be used together.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Which Pro components does it replace?">
+                    Command, composer, colour picker, file upload, timeline, chart — plus this accordion and the popover.
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Open and disabled items',
+            'text' => '<code>expanded</code> renders the <code>open</code> attribute server-side, so the first paint is already right — no flash of a closed section. <code>disabled</code> takes an item out of the tab order and refuses to open it; it is the state to use for a section that is not ready yet, not a way to hide content.',
+            'code' => <<<'BLADE'
+            <mds:accordion class="w-full max-w-lg">
+                <mds:accordion.item heading="Payment methods" expanded>
+                    Every Shetab card, plus instalments over three or six months.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Invoices">
+                    Download a VAT invoice from the order page as soon as it ships.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="Business accounts" disabled>
+                    Coming soon.
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Headings with markup',
+            'text' => 'The <code>heading</code> prop is a shortcut, and its text is escaped. When the heading needs more than a string — a badge, an icon, a count — write the two subcomponents out instead.',
+            'code' => <<<'BLADE'
+            <mds:accordion transition class="w-full max-w-lg">
+                <mds:accordion.item expanded>
+                    <mds:accordion.heading>
+                        <span class="flex items-center gap-2">
+                            <mds:icon icon="truck" variant="micro" class="size-4 text-zinc-400" />
+                            Order 1481 — shipped
+                            <flux:badge size="sm" color="green">2 items</flux:badge>
+                        </span>
+                    </mds:accordion.heading>
+
+                    <mds:accordion.content>
+                        <div class="flex items-center justify-between">
+                            <span>Handed to the courier on Sunday.</span>
+                            <flux:button size="sm" variant="subtle">Track</flux:button>
+                        </div>
+                    </mds:accordion.content>
+                </mds:accordion.item>
+
+                <mds:accordion.item>
+                    <mds:accordion.heading>
+                        <span class="flex items-center gap-2">
+                            <mds:icon icon="clock" variant="micro" class="size-4 text-zinc-400" />
+                            Order 1477 — delivered
+                        </span>
+                    </mds:accordion.heading>
+
+                    <mds:accordion.content>Delivered last Wednesday and signed for.</mds:accordion.content>
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'The accordion has no built-in strings and prints no digits of its own, so nothing here switches language — the layout simply mirrors: the chevron moves to the left edge and the heading text starts on the right. The copy, and any digits in it, are yours.',
+            'code' => <<<'BLADE'
+            <mds:accordion exclusive transition class="w-full max-w-lg">
+                <mds:accordion.item heading="ارسال و تحویل" expanded>
+                    سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="مرجوع کردن کالا">
+                    تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.
+                </mds:accordion.item>
+
+                <mds:accordion.item heading="گارانتی">
+                    همه کالاهای دیجیتال دو سال گارانتی دارند.
+                </mds:accordion.item>
+            </mds:accordion>
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:accordion', 'text' => 'The group. Renders a divided list; adds no behaviour of its own beyond the group name.', 'props' => [
+            ['exclusive', 'Only one item open at a time, through the native <code>&lt;details name&gt;</code> group. Default: <code>false</code>.'],
+            ['transition', 'Animate the open/close height. Default: <code>false</code>.'],
+            ['name', 'The group name to use when <code>exclusive</code>. Generated per accordion when omitted.'],
+        ]],
+        ['name' => 'mds:accordion.item', 'text' => 'One <code>&lt;details&gt;</code>. With <code>heading</code> it renders the heading and content parts for you; otherwise put them in the slot yourself.', 'props' => [
+            ['heading', 'Heading text (escaped). Omit it and compose the two subcomponents instead.'],
+            ['expanded', 'Render the item open. Default: <code>false</code>.'],
+            ['disabled', 'Not focusable, and refuses to toggle. Default: <code>false</code>.'],
+        ]],
+        ['name' => 'mds:accordion.heading', 'text' => 'The <code>&lt;summary&gt;</code> — the toggle. Takes the item\'s state from it; adds the rotating chevron. Takes no props of its own.'],
+        ['name' => 'mds:accordion.content', 'text' => 'The body. Its padding sits on an inner box, so the height animation can run the outer element down to zero. Takes no props of its own.'],
+    ],
+    'related' => ['card', 'separator'],
+];
+
 return $pages;

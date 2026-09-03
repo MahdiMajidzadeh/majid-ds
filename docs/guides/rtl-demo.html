@@ -159,6 +159,9 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>نمودار</div>
     </a>
+        <a href="#accordion" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class=" flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>آکاردئون</div>
+    </a>
         <a href="#popover" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -7619,6 +7622,430 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-4" id="accordion" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>آکاردئون — mds:accordion</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >نسخه آزاد از کامپوننت Accordion (که در Flux فقط در نسخه Pro موجود است) — روی details و summary بومی مرورگر، پس باز و بسته شدن، کیبورد و جستجوی درون‌صفحه بدون جاوااسکریپت هم کار می‌کند.</p>
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >پرسش‌های پرتکرار (هر بار یک بخش، با انیمیشن):</p>
+            <div
+    class="divide-y divide-zinc-200 dark:divide-white/10"
+     x-data x-id="['mds-accordion']"      data-mds-accordion-exclusive          data-mds-accordion-transition     data-mds-accordion
+>
+    <script >
+window.mds = window.mds || {}
+
+// Each item is a native details/summary pair, so open/close, Enter and Space,
+// focus and the expanded state all come from the browser. Alpine only adds
+// what the element lacks: the disabled guard, aria-expanded/data-expanded
+// mirrors, JS-side exclusivity (browsers without the details `name`
+// attribute, and animated closing of the sibling), and the open/close
+// animation itself. A details element hides its content the instant `open`
+// goes, so the animation runs on the content's height and the attribute is
+// only removed once the box has reached zero.
+window.mds.registerAccordion = (Alpine) => {
+    if (window.mds.accordionRegistered) return
+    window.mds.accordionRegistered = true
+
+    const DURATION = 200
+    const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+    Alpine.data('mdsAccordionItem', (config = {}) => ({
+        expanded: config.expanded ?? false,
+        disabled: config.disabled ?? false,
+        transition: config.transition ?? false,
+        exclusive: config.exclusive ?? false,
+        animation: null,
+
+        init() {
+            // The server rendered `open` from the prop; a Livewire morph or a
+            // find-in-page reveal may already disagree with the config.
+            this.expanded = this.$el.open
+
+            if (! this.exclusive) return
+
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (this.transition) {
+                // A native name group closes the sibling before any script
+                // runs — instantly. With JS on, closeSiblings() does it
+                // animated instead, so the attribute has to go.
+                this.$el.removeAttribute('name')
+            } else if (root && ! root.hasAttribute('data-mds-accordion-name')) {
+                // Unnamed accordions all rendered the same constant; give each
+                // its own group so two on one page stop closing each other.
+                this.$el.setAttribute('name', this.$id('mds-accordion'))
+            }
+        },
+
+        destroy() {
+            this.animation?.cancel()
+        },
+
+        animates() {
+            return this.transition
+                && this.$refs.content !== undefined
+                && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        },
+
+        // The summary's click — a keyboard Enter/Space arrives here as well.
+        toggle(event) {
+            if (this.disabled) {
+                event.preventDefault()
+
+                return
+            }
+
+            // Plain items toggle natively; onToggle() mirrors the result.
+            if (! this.animates()) return
+
+            event.preventDefault()
+
+            this.expanded ? this.collapse() : this.expand()
+        },
+
+        expand() {
+            if (this.disabled) return
+
+            if (this.$el.open) {
+                // Re-opened mid-collapse: grow back from wherever the box is.
+                if (! this.animation) return
+
+                const from = this.$refs.content.getBoundingClientRect().height
+
+                this.animation.cancel()
+                this.expanded = true
+                this.animate(from, this.$refs.content.offsetHeight)
+
+                return
+            }
+
+            // Fires `toggle`, and onToggle() takes it from there.
+            this.$el.open = true
+        },
+
+        collapse() {
+            if (! this.$el.open) return
+
+            if (! this.animates()) {
+                this.$el.open = false
+
+                return
+            }
+
+            const from = this.$refs.content.getBoundingClientRect().height
+
+            this.animation?.cancel()
+            this.expanded = false
+            this.animate(from, 0, () => { this.$el.open = false })
+        },
+
+        // Every change of `open`: ours, a native click, a Livewire morph, the
+        // browser closing a sibling in a name group, a find-in-page reveal.
+        onToggle() {
+            if (! this.$el.open) {
+                this.expanded = false
+
+                return
+            }
+
+            this.expanded = true
+
+            if (this.exclusive) this.closeSiblings()
+
+            if (this.animates() && ! this.animation) {
+                this.animate(0, this.$refs.content.offsetHeight)
+            }
+        },
+
+        closeSiblings() {
+            const root = this.$el.closest('[data-mds-accordion]')
+
+            if (! root) return
+
+            root.querySelectorAll('[data-mds-accordion-item][open]').forEach((sibling) => {
+                // Items of a nested accordion belong to their own group.
+                if (sibling === this.$el || sibling.closest('[data-mds-accordion]') !== root) return
+
+                Alpine.$data(sibling).collapse()
+            })
+        },
+
+        animate(from, to, done = null) {
+            const content = this.$refs.content
+
+            this.animation?.cancel()
+
+            content.style.overflow = 'hidden'
+
+            this.animation = content.animate(
+                [{ height: `${from}px` }, { height: `${to}px` }],
+                { duration: DURATION, easing: EASING },
+            )
+
+            const finish = () => {
+                this.animation = null
+                content.style.overflow = ''
+            }
+
+            this.animation.onfinish = () => {
+                finish()
+                done?.()
+            }
+            this.animation.oncancel = finish
+        },
+    }))
+}
+
+// Alpine may already be running — a wire:navigate visit executes this block
+// after alpine:init fired for the page — so register straight away then.
+if (window.Alpine) {
+    window.mds.registerAccordion(window.Alpine)
+} else {
+    document.addEventListener('alpine:init', () => window.mds.registerAccordion(window.Alpine))
+}
+</script>
+
+<details
+    class="group/mds-accordion"
+     open      name="mds-accordion"      data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">ارسال و تحویل</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.
+    </div>
+</div>
+    </details>
+
+                <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">مرجوع کردن کالا</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.
+    </div>
+</div>
+    </details>
+
+                <details
+    class="group/mds-accordion"
+         name="mds-accordion"             x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">گارانتی کالاها</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        همه کالاهای دیجیتال دو سال گارانتی دارند که رسیدگی به آن با خود ما است.
+    </div>
+</div>
+    </details>
+
+                <details
+    class="group/mds-accordion"
+         name="mds-accordion"          data-disabled     x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: true,
+        transition: true,
+        exclusive: true,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden pointer-events-none text-zinc-400 dark:text-zinc-500 rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+     aria-disabled="true" tabindex="-1"     x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1">حساب سازمانی</span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+        <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        به‌زودی
+    </div>
+</div>
+    </details>
+</div>
+        </div>
+
+        <div class="space-y-2">
+            <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm font-medium" data-flux-text >عنوان دلخواه با نشان و آیکون:</p>
+            <div
+    class="divide-y divide-zinc-200 dark:divide-white/10"
+                 data-mds-accordion-transition     data-mds-accordion
+>
+    <details
+    class="group/mds-accordion"
+     open          data-expanded         x-data="mdsAccordionItem({
+        expanded: true,
+        disabled: false,
+        transition: true,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="true"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1"><span class="flex items-center gap-2">
+                            <svg aria-hidden="true" data-mds-icon="" class="size-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.5" /><path d="M11 17H15M13.5 7H14.4429C15.7533 7 16.4086 7 16.9641 7.31452C17.5196 7.62904 17.89 8.20972 18.6308 9.37107C19.1502 10.1854 19.6955 10.7765 20.4622 11.3024C21.2341 11.8318 21.6012 12.0906 21.8049 12.506C22 12.9038 22 13.375 22 14.3173C22 15.5596 22 16.1808 21.651 16.5755C21.636 16.5925 21.6207 16.609 21.6049 16.625C21.2375 17 20.6594 17 19.503 17H19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M13 7L13.9942 9.48556C14.4813 10.7034 14.7249 11.3123 15.2328 11.6561C15.7407 12 16.3965 12 17.7081 12H21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /><path d="M4.86957 17C3.51684 17 2.84048 17 2.42024 16.5607C2 16.1213 2 15.4142 2 14V7C2 5.58579 2 4.87868 2.42024 4.43934C2.84048 4 3.51684 4 4.86957 4H10.1304C11.4832 4 12.1595 4 12.5798 4.43934C13 4.87868 13 5.58579 13 7V17H8.69565" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                            سفارش ۱۴۸۱
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-green-800 [&amp;_button]:text-green-800! dark:text-green-200 dark:[&amp;_button]:text-green-200! bg-green-400/20 dark:bg-green-400/40 [&amp;:is(button)]:hover:bg-green-400/30 dark:[button]:hover:bg-green-400/50">
+        در حال ارسال
+    </div>
+                        </span></span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="rotate-180 size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+                    <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        <div class="flex items-center justify-between gap-3">
+                            <span>یکشنبه تحویل پست شد.</span>
+                            <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white" data-flux-button="data-flux-button">
+        پیگیری مرسوله
+    </button>
+                        </div>
+    </div>
+</div>
+    </details>
+
+                <details
+    class="group/mds-accordion"
+                    x-data="mdsAccordionItem({
+        expanded: false,
+        disabled: false,
+        transition: true,
+        exclusive: false,
+    })"
+    x-bind:data-expanded="expanded ? '' : false"
+    x-on:toggle="onToggle()"
+    data-mds-accordion-item
+>
+            <summary
+    class="flex w-full list-none items-center justify-between gap-3 py-4 text-start text-sm font-medium [&amp;::-webkit-details-marker]:hidden cursor-pointer text-zinc-800 dark:text-white rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    role="button"
+    aria-expanded="false"
+    x-bind:aria-expanded="expanded ? 'true' : 'false'"
+        x-on:click="toggle($event)"
+    data-mds-accordion-heading
+>
+    <span class="min-w-0 flex-1"><span class="flex items-center gap-2">
+                            <svg aria-hidden="true" data-mds-icon="" class="size-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" /><path d="M12 8V12L14 14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+                            سفارش ۱۴۷۷
+                            <div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-xs py-1 **:data-flux-badge-icon:me-1 rounded-md px-2 text-zinc-700 [&amp;_button]:text-zinc-700! dark:text-zinc-200 dark:[&amp;_button]:text-zinc-200! bg-zinc-400/15 dark:bg-zinc-400/40 [&amp;:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50">
+        تحویل شده
+    </div>
+                        </span></span>
+
+    <svg aria-hidden="true" data-mds-icon="" class="size-4 shrink-0 text-zinc-400 motion-safe:transition-transform motion-safe:duration-200 dark:text-zinc-500" x-bind:class="{ &#039;rotate-180&#039;: expanded }" data-mds-accordion-chevron="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg>
+</summary>
+
+                    <div
+    class="text-sm text-zinc-500 dark:text-zinc-400"
+     x-ref="content"     data-mds-accordion-content
+>
+    <div class="pb-4">
+        چهارشنبه هفته گذشته تحویل داده و امضا شد.
+    </div>
+</div>
+    </details>
+</div>
+        </div>
+    </div>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>آیکون‌ها — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >آیکون‌های <a href="https://hugeicons.com" class="underline">Hugeicons</a> جایگزین heroicons در همه اجزای mds شده‌اند. مجموعه رایگان Stroke Rounded (۶٬۲۰۰ آیکون) همراه بسته می‌آید؛ نام‌های heroicons هم از طریق نقشه معادل‌ها کار می‌کنند.</p>
@@ -9635,7 +10062,7 @@ document.addEventListener('alpine:init', () => {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 

@@ -96,6 +96,7 @@ return [
             'timeline' => 'mds:timeline',
             'chart' => 'mds:chart',
             'popover' => 'mds:popover',
+            'accordion' => 'mds:accordion',
         ],
     ],
 ];

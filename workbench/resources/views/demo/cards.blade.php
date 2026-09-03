@@ -63,6 +63,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#preview-card" icon="link">{{ __('پیش‌نمایش پیوند') }}</flux:navbar.item>
         <flux:navbar.item href="#timeline" icon="clock">{{ __('خط زمانی') }}</flux:navbar.item>
         <flux:navbar.item href="#chart" icon="chart-bar">{{ __('نمودار') }}</flux:navbar.item>
+        <flux:navbar.item href="#accordion">{{ __('آکاردئون') }}</flux:navbar.item>
         <flux:navbar.item href="#popover" icon="chat-bubble-oval-left">{{ __('پاپ‌اور') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
@@ -1001,6 +1002,71 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('پنل سوم با نگه‌داشتن نشانگر یا با فوکوس کیبورد هم باز می‌شود؛ کلیک آن را ثابت نگه می‌دارد.') }}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Accordion ============================== --}}
+<flux:card id="accordion" class="space-y-4">
+    <flux:heading size="lg">{{ __('آکاردئون — mds:accordion') }}</flux:heading>
+    <flux:text>{{ __('نسخه آزاد از کامپوننت Accordion (که در Flux فقط در نسخه Pro موجود است) — روی details و summary بومی مرورگر، پس باز و بسته شدن، کیبورد و جستجوی درون‌صفحه بدون جاوااسکریپت هم کار می‌کند.') }}</flux:text>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('پرسش‌های پرتکرار (هر بار یک بخش، با انیمیشن):') }}</flux:text>
+
+            <mds:accordion exclusive transition>
+                <mds:accordion.item :heading="__('ارسال و تحویل')" expanded>
+                    {{ __('سفارش‌ها حداکثر تا دو روز کاری ارسال می‌شوند و در بیشتر شهرها کمتر از یک هفته به دستتان می‌رسد.') }}
+                </mds:accordion.item>
+
+                <mds:accordion.item :heading="__('مرجوع کردن کالا')">
+                    {{ __('تا هفت روز پس از تحویل، بدون پرسش. هزینه ارسال مرجوعی با ماست.') }}
+                </mds:accordion.item>
+
+                <mds:accordion.item :heading="__('گارانتی کالاها')">
+                    {{ __('همه کالاهای دیجیتال دو سال گارانتی دارند که رسیدگی به آن با خود ما است.') }}
+                </mds:accordion.item>
+
+                <mds:accordion.item :heading="__('حساب سازمانی')" disabled>
+                    {{ __('به‌زودی') }}
+                </mds:accordion.item>
+            </mds:accordion>
+        </div>
+
+        <div class="space-y-2">
+            <flux:text class="text-sm font-medium">{{ __('عنوان دلخواه با نشان و آیکون:') }}</flux:text>
+
+            <mds:accordion transition>
+                <mds:accordion.item expanded>
+                    <mds:accordion.heading>
+                        <span class="flex items-center gap-2">
+                            <mds:icon icon="truck" variant="micro" class="size-4 text-zinc-400" />
+                            {{ __('سفارش ۱۴۸۱') }}
+                            <flux:badge size="sm" color="green">{{ __('در حال ارسال') }}</flux:badge>
+                        </span>
+                    </mds:accordion.heading>
+
+                    <mds:accordion.content>
+                        <div class="flex items-center justify-between gap-3">
+                            <span>{{ __('یکشنبه تحویل پست شد.') }}</span>
+                            <flux:button size="sm" variant="subtle">{{ __('پیگیری مرسوله') }}</flux:button>
+                        </div>
+                    </mds:accordion.content>
+                </mds:accordion.item>
+
+                <mds:accordion.item>
+                    <mds:accordion.heading>
+                        <span class="flex items-center gap-2">
+                            <mds:icon icon="clock" variant="micro" class="size-4 text-zinc-400" />
+                            {{ __('سفارش ۱۴۷۷') }}
+                            <flux:badge size="sm" color="zinc">{{ __('تحویل شده') }}</flux:badge>
+                        </span>
+                    </mds:accordion.heading>
+
+                    <mds:accordion.content>{{ __('چهارشنبه هفته گذشته تحویل داده و امضا شد.') }}</mds:accordion.content>
+                </mds:accordion.item>
+            </mds:accordion>
+        </div>
+    </div>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}
