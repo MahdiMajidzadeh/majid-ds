@@ -896,6 +896,57 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('data-mds-command-item', $html);
     }
 
+    /**
+     * A server-side change to a bound property reaches the browser as a
+     * Livewire morph, which rewrites the hidden control's `value` attribute
+     * and nothing else. The three controls that keep their own Alpine state
+     * used to ignore that entirely: the stepper went on showing the old
+     * number, the stars the old score, the swatch the old colour, while the
+     * bound property held something different — and the next press sent the
+     * stale value back.
+     *
+     * This is invisible in rendered markup, which is why it survived so long,
+     * so the sweep pins the mechanism instead: each one watches its own
+     * control's `value` attribute and gives the observer up on teardown.
+     *
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function morphResyncing(): array
+    {
+        return [
+            'quantity' => ['<mds:quantity :value="2" wire:model="qty" />', 'mdsQuantity'],
+            'rating input' => ['<mds:rating.input :value="3" wire:model="score" />', 'mdsRatingInput'],
+            'color picker' => ['<mds:color-picker value="#ff0000" wire:model="colour" />', 'mdsColorPicker'],
+        ];
+    }
+
+    #[DataProvider('morphResyncing')]
+    public function test_bound_controls_follow_a_server_side_change(string $blade, string $component): void
+    {
+        View::share('errors', new ViewErrorBag);
+
+        $html = $this->render($blade);
+
+        $this->assertStringContainsString($component, $html);
+        $this->assertMatchesRegularExpression(
+            '/new MutationObserver\(\(\) => this\.adopt\(input\.getAttribute\(.value.\)\)\)/',
+            $html,
+            "[{$component}] does not re-read its control when the server changes the bound value.",
+        );
+        $this->assertStringContainsString("attributeFilter: ['value']", $html);
+        $this->assertStringContainsString('this.observer?.disconnect()', $html);
+
+        // The adoption is silent: a morph is the server talking, not the
+        // reader, so nothing is dispatched back or the value would echo.
+        // Bounded to the method's own body — the neighbours legitimately
+        // dispatch, and a fixed-length window would run into them.
+        $this->assertMatchesRegularExpression('/^(\s*)adopt\(raw\) \{$/m', $html);
+        preg_match('/^(\s*)adopt\(raw\) \{$(.*?)^\1\},$/ms', $html, $body);
+
+        $this->assertNotEmpty($body, "[{$component}] has no adopt() to check.");
+        $this->assertStringNotContainsString('dispatchEvent', $body[2], "[{$component}] echoes the server's own value back to it.");
+    }
+
     public function test_blade_directives(): void
     {
         $this->assertSame('۱۲۳', $this->render('@fa(123)'));

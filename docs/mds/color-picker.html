@@ -88,6 +88,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {
@@ -619,6 +658,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {
@@ -1133,6 +1211,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {
@@ -1522,6 +1639,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {
@@ -2300,6 +2456,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {

@@ -1662,6 +1662,46 @@ window.mds.registerQuantity = (Alpine) => {
         step: config.step ?? 1,
         fa: config.fa ?? true,
 
+        /*
+        | A server-side change to the bound property — a cart that resets the
+        | quantity after adding to it, or clamps it to what is in stock —
+        | reaches the browser as a Livewire morph, which rewrites the hidden
+        | input's `value` ATTRIBUTE. Nothing about that touches Alpine, so the
+        | stepper went on showing the old number while the server held a
+        | different one, and the next press sent that stale number back.
+        |
+        | The observer fires on our OWN writes too — for input[type=hidden]
+        | the value property reflects straight back to the attribute, unlike a
+        | text input — so what stops a loop is adopt() returning early once the
+        | number already matches. Verified in a browser: one press of + fires
+        | the observer once and dispatches exactly one input event.
+        */
+        init() {
+            const input = this.$refs.input
+
+            this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+            this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // The server's number, taken as given except for the bounds — and
+        // silently: a morph is not a user action, so it dispatches no event.
+        adopt(raw) {
+            const n = parseInt(raw ?? '', 10)
+
+            if (Number.isNaN(n)) return
+
+            const clamped = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+
+            if (clamped === this.value) return
+
+            this.value = clamped
+            this.$refs.input.value = clamped
+        },
+
         display() {
             return window.mds.digits(this.value, this.fa)
         },
@@ -2309,6 +2349,45 @@ window.mds.registerColorPicker = (Alpine) => {
                 // Normalize the server-rendered value to the configured format (no event)...
                 this.$nextTick(() => { if (this.$refs.input) this.$refs.input.value = this.output })
             }
+
+            /*
+            | The server can change the colour too — a palette reset, a theme
+            | loaded for editing — and that arrives as a Livewire morph, which
+            | rewrites the hidden input's `value` ATTRIBUTE. Alpine hears
+            | nothing, so the swatch, the sliders and the area cursor all went
+            | on showing the old colour while the bound property held another.
+            |
+            | The observer fires on our own writes too — for
+            | input[type=hidden] the value property reflects straight back to
+            | the attribute — so what stops a loop is adopt() returning early
+            | once the colour already matches, not the write going unseen.
+            */
+            const input = this.$refs.input
+
+            if (input) {
+                this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+                this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+            }
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent, because a morph is the server talking rather than the
+        // reader: the swatch follows, no input event goes back.
+        adopt(raw) {
+            const next = (raw ?? '').trim()
+
+            if (next === this.output) return
+
+            if (next === '') {
+                this.empty = true
+            } else {
+                this.setFromString(next)
+            }
+
+            if (this.$refs.input) this.$refs.input.value = this.empty ? '' : this.output
         },
 
         hsvToRgb(h, s, v) {
@@ -24102,6 +24181,42 @@ window.mds.registerRatingInput = (Alpine) => {
         max: config.max ?? 5,
         reverse: config.reverse ?? false,
         hover: 0,
+
+        /*
+        | A morph rewrites the hidden input's `value` attribute when the server
+        | changes the bound property — a rating cleared after a failed submit,
+        | or one loaded for editing — and nothing about that reaches Alpine, so
+        | the stars stayed on the old score. The observer fires on our own
+        | writes too — for input[type=hidden] the value property reflects back
+        | to the attribute — so the early return in adopt() is what stops a
+        | loop, not the write being invisible.
+        */
+        init() {
+            const input = this.$refs.input
+
+            this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+            this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // Silent: a morph is the server talking, not the reader, so it moves
+        // the stars without dispatching an event back. 0 is allowed here
+        // though commit() clamps to 1 — the server may legitimately clear it.
+        adopt(raw) {
+            const n = parseInt(raw ?? '', 10)
+
+            if (Number.isNaN(n)) return
+
+            const clamped = Math.min(Math.max(n, 0), this.max)
+
+            if (clamped === this.value) return
+
+            this.value = clamped
+            this.$refs.input.value = clamped
+        },
 
         commit(n) {
             this.value = Math.min(Math.max(n, 1), this.max)

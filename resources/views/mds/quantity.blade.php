@@ -62,6 +62,46 @@ window.mds.registerQuantity = (Alpine) => {
         step: config.step ?? 1,
         fa: config.fa ?? true,
 
+        /*
+        | A server-side change to the bound property — a cart that resets the
+        | quantity after adding to it, or clamps it to what is in stock —
+        | reaches the browser as a Livewire morph, which rewrites the hidden
+        | input's `value` ATTRIBUTE. Nothing about that touches Alpine, so the
+        | stepper went on showing the old number while the server held a
+        | different one, and the next press sent that stale number back.
+        |
+        | The observer fires on our OWN writes too — for input[type=hidden]
+        | the value property reflects straight back to the attribute, unlike a
+        | text input — so what stops a loop is adopt() returning early once the
+        | number already matches. Verified in a browser: one press of + fires
+        | the observer once and dispatches exactly one input event.
+        */
+        init() {
+            const input = this.$refs.input
+
+            this.observer = new MutationObserver(() => this.adopt(input.getAttribute('value')))
+            this.observer.observe(input, { attributes: true, attributeFilter: ['value'] })
+        },
+
+        destroy() {
+            this.observer?.disconnect()
+        },
+
+        // The server's number, taken as given except for the bounds — and
+        // silently: a morph is not a user action, so it dispatches no event.
+        adopt(raw) {
+            const n = parseInt(raw ?? '', 10)
+
+            if (Number.isNaN(n)) return
+
+            const clamped = Math.max(this.min, this.max === null ? n : Math.min(this.max, n))
+
+            if (clamped === this.value) return
+
+            this.value = clamped
+            this.$refs.input.value = clamped
+        },
+
         display() {
             return window.mds.digits(this.value, this.fa)
         },
