@@ -6,7 +6,8 @@
 > palette, composer, color picker, file upload, timeline and chart.
 > This file is the complete machine-oriented API reference. Human docs: docs/index.html.
 
-Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
+Requirements: PHP 8.2+, Laravel 12 or 13, Livewire 3 or 4, Tailwind CSS v4. `livewire/flux ^2.0` is installed automatically.
+(Laravel 11 is NOT supported: every 11.x release of laravel/framework and illuminate/support sits behind a Composer security advisory, so it cannot be installed.)
 
 ## Setup contract
 
@@ -21,6 +22,9 @@ Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Tailwind CSS v4. `livewire/flux
 3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
 4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban, date-picker).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
+   Every registration works on a `wire:navigate` visit too: each script registers immediately when Alpine is already
+   running and falls back to `alpine:init` when it is not, so a component first rendered on a navigated-to page is
+   still registered (`alpine:init` fires once per full page load and would never come again).
 5. Tag syntaxes are equivalent: `<mds:rating />` === `<x-mds::rating />`. Subcomponents use dots: `<mds:command.item>`.
    ONE exception: `wire:key` must be written on the `<x-mds::…>` spelling. Livewire's wire:key precompiler rewrites the
    opening tag before the namespaced compiler sees it, and the tag then fails to compile ("unexpected token endif").
@@ -125,6 +129,13 @@ produce — Persian digits, the mask's spaces, Sheba's IR prefix — so validate
 Components with values render a hidden `<input>`; `wire:model` attributes are forwarded to it and it dispatches
 bubbling `input` events on every change. Hidden values are ALWAYS Latin digits / machine formats regardless of
 Persian display. Applies to: quantity, rating.input, color-picker. `name="..."` enables plain form posts.
+The binding is two-way: a server-side change to the bound property arrives as a Livewire morph, which rewrites the
+hidden control's `value` ATTRIBUTE, and each of those three watches it (MutationObserver, `attributeFilter: ['value']`)
+and adopts what it finds — silently, dispatching nothing, since a morph is the server talking and an event would echo
+back. quantity re-clamps to `min`/`max`; rating.input accepts 0 so the server can clear a score. So resetting a cart
+quantity or clearing a rating from the server updates what is on screen. Other bound components do the same through
+their own state: calendar, date-picker, slider, time-picker, autocomplete, pillbox, editor, tabs and kanban each
+re-read their control on a morph; composer and mds:input bind a real form control that Livewire updates natively.
 `<mds:input>` is the same rule for a visible text field: it is `flux:input` with the `x-mds-digits` directive, which rewrites
 Persian/Arabic-Indic digits to Latin as they are typed or pasted, so the bound value is the machine form there too.
 
@@ -824,8 +835,11 @@ inherited by items). Everything else lands on the root `[data-mds-carousel]` div
   Renders `role="group" aria-roledescription="اسلاید"/"slide"`; Alpine writes `aria-label` «{n} از {total}» / "{n} of
   {total}" at init, since a slot cannot know its own position. Attributes land on the item.
 Behavior (Alpine `mdsCarousel`): the active slide is the first one at least 60% inside the track
-(IntersectionObserver rooted on the track), so swipes, trackpad scrolls, buttons, dots and keys all agree. `go(i)` calls
-`scrollIntoView({ inline: 'start' })` — smooth, or instant under `prefers-reduced-motion`. With `per-view` n and N slides
+(IntersectionObserver rooted on the track), so swipes, trackpad scrolls, buttons, dots and keys all agree. `go(i)` scrolls the TRACK
+(`track.scrollBy`) to put the slide's inline-start edge on the track's — smooth, or instant under
+`prefers-reduced-motion`. Never `scrollIntoView`: that walks up and scrolls every scrollable ancestor, so an
+autoplaying carousel dragged the whole page down to itself every few seconds. The offset comes from the two
+bounding rects rather than `scrollLeft`, whose origin and sign under RTL differ between engines. With `per-view` n and N slides
 there are N - n + 1 positions; the dots, `loop` and End all count positions, not slides. A MutationObserver on the track
 re-scans when a Livewire morph or an `x-for` adds or removes slides (only direct children, so a nested carousel keeps its
 own); the dots are server-rendered and follow a Livewire re-render. Keyboard, on the whole region: ArrowLeft/ArrowRight
