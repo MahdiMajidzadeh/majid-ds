@@ -93,6 +93,18 @@ Facade `MajidDs\Mds`:
 - Format tokens: Y y n m j d F(month name) l/D(weekday name) + time passthroughs H G h g i s v, A/a (قبل‌ازظهر/بعدازظهر or AM/PM). Backslash escapes a token.
 - Constants: `Jalali::MONTHS` (1-indexed Persian month names), `Jalali::WEEKDAYS` (keyed by PHP `w`, 0=Sunday).
 
+`MajidDs\Support\Iran` (static, dependency-free; every method accepts Persian/Arabic-Indic digits and ignores spaces and dashes):
+- `digits($value): string` — Latin digits and nothing else
+- `nationalId($value): bool` — 10 digits, mod-11 check digit, repeated-digit IDs (1111111111) rejected
+- `mobile($value): bool` · `normalizeMobile($value): ?string` — 0912…, 912…, +98912…, 0098912… all accepted; normalized to the 11-digit "09…" form, null when not a mobile number
+- `sheba($value): bool` · `normalizeSheba($value): ?string` — IBAN mod-97 check; "IR" may be omitted on input; normalized to "IR" + 24 digits, no spaces
+- `bankCard($value): bool` · `normalizeBankCard($value): ?string` — 16 digits passing Luhn; normalized to the digits alone
+
+`MajidDs\Rules` — Laravel `ValidationRule` objects over those checks: `new NationalId`, `new IranMobile`, `new Sheba`, `new BankCard`. Each takes an
+optional `?string $message`; otherwise the message is Persian or English by `config('mds.persian_digits')` and carries `:attribute`
+(":attribute یک کد ملی معتبر نیست." / "The :attribute is not a valid national ID."). They accept exactly what the `mds:input.*` presets
+produce — Persian digits, the mask's spaces, Sheba's IR prefix — so validate the raw value and store the `Iran::normalize*()` form.
+
 `MajidDs\Support\Charts` (static, dependency-free SVG geometry behind the `mds:chart.*` stages; public because published views call it):
 - `n(float $value): string` — coordinate rounded to 4 places (keeps rebuilds byte-identical)
 - `points(array $values, float $x0, float $y0, float $width, float $height, float $max, float $min = 0): array` — series -> [[x, y], …] on a plot box
@@ -143,7 +155,6 @@ Latin digits — what is on screen is what posts. No `fa` prop: nothing here is 
 `x-mds-digits` is registered by the kit's shared script (`mds::partials.digits`), which is on the page whenever an mds:input, quantity,
 countdown, composer, file-upload or command rendered; on such a page it may be put on any other input or textarea by hand.
 Registration guards against Alpine having already started (a `wire:navigate` visit), so it works on navigated-to pages as well.
-
 ### <mds:rating> — star display
 Props: `value` float=0 (clamped 0..max, fractions = partial fill) · `max` int=5 · `count` int|null=null (review count) · `size` sm|lg|default · `show-value` bool=true · `fa` bool|null=config.
 Renders role="img" with `aria-label="{value} / {max}"` (digits follow `fa`). RTL-correct partial fill. Inherits `fa` from product-card.

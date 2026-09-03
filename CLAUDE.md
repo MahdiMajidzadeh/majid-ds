@@ -54,7 +54,8 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
 |---|---|
 | `src/MajidDsServiceProvider.php` | directives (`@fa`, `@toman`, `@jalali`, `@mdsNonce`), component path, publishing — no font, the app owns typography |
 | `src/MdsTagCompiler.php` | compiles `<mds:x>` → Blade components, mirrors Flux's own compiler — rarely touched |
-| `src/Support/{Persian,Jalali,Icons,Charts}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons; `Charts` is the SVG geometry behind `mds:chart.*` |
+| `src/Support/{Persian,Jalali,Icons,Charts,Iran}.php` | dependency-free helpers; `Icons::ALIASES`/`OVERRIDES` map heroicon names to Hugeicons; `Charts` is the SVG geometry behind `mds:chart.*`; `Iran` checks and normalizes national IDs, mobiles, Sheba and card numbers |
+| `src/Rules/` | Laravel validation rules over `Iran` (`NationalId`, `IranMobile`, `Sheba`, `BankCard`), bilingual messages by `mds.persian_digits` |
 | `resources/views/mds/` | the components — anonymous Blade views, subcomponents in subdirs (`command/item.blade.php` = `<mds:command.item>`) |
 | `resources/css/mds.css` | the kit's CSS layer; component rules MUST stay in `@layer components` (unlayered rules beat Tailwind utilities) |
 | `bin/docs/` | docs content as PHP arrays, one file per group (`mds.php`, `flux.php`, `nav.php`…); `bin/build-docs.php` renders each snippet through real Blade |

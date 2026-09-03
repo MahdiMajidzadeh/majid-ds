@@ -77,7 +77,7 @@ class LlmsTxtTest extends TestCase
 
     public function test_every_public_helper_is_documented(): void
     {
-        foreach (['Persian', 'Jalali', 'Charts', 'Icons'] as $class) {
+        foreach (['Persian', 'Jalali', 'Charts', 'Icons', 'Iran'] as $class) {
             $reflection = new ReflectionClass('MajidDs\\Support\\'.$class);
 
             $this->assertStringContainsString("`MajidDs\\Support\\{$class}`", $this->llms, "The PHP API section does not introduce {$class}.");
