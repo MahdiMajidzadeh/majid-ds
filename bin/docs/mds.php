@@ -4070,4 +4070,155 @@ $pages['date-picker'] = [
     'related' => ['calendar', 'time-picker', 'popover'],
 ];
 
+// ----------------------------------------------------------- mds:border-beam
+
+$pages['border-beam'] = [
+    'group' => 'mds',
+    'title' => 'mds:border-beam',
+    'lede' => 'A comet of light lapping the border of whatever it wraps.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'A wrapper that traces one bright head with a tail fading to transparent around its own border, forever. The beam is a conic sweep masked down to a hairline ring, so it follows the wrapper\'s <code>border-radius</code> exactly — a rounded card or a full pill, with no radius prop to keep in sync. Give the wrapper the size and radius of the content it wraps; that is what the beam traces.',
+            'code' => <<<'BLADE'
+            <mds:border-beam class="w-full max-w-xs rounded-2xl">
+                <div class="flex min-h-32 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                    Deploying to production
+                </div>
+            </mds:border-beam>
+            BLADE,
+            'note' => '<p><strong>The beam is decoration, and only decoration.</strong> The layer is <code>aria-hidden</code> and <code>pointer-events-none</code>, so it never reaches a screen reader and never swallows a click — and under <code>prefers-reduced-motion</code> it is dropped entirely, since a looping beam has no resting frame to fall back to. Never let it be the only sign that something is happening: pair it with text, a spinner or a status message.</p>',
+        ],
+        [
+            'name' => 'Color',
+            'text' => 'The default is your theme\'s <code>--color-accent</code>, which reads on light and dark alike. <code>color</code> takes any CSS color — a token, a hex, <code>oklch()</code> — and lights the head of the comet; the tail always fades to transparent, so pass a solid color rather than a gradient. Over a colored surface, pick for contrast against <em>that</em> surface, not against the page.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <mds:border-beam class="w-40 rounded-2xl" length="20">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Accent</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-40 rounded-2xl" length="20" color="#10b981">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Emerald</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-40 rounded-2xl" length="20" color="#a78bfa">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Violet</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-40 rounded-2xl" length="20" color="#f59e0b">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Amber</div>
+                </mds:border-beam>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Length, thickness and speed',
+            'text' => '<code>length</code> is a share of one lap rather than a pixel count, so the comet keeps its proportions whatever the element\'s size: small reads as a travelling spark, large as a long sweeping streak. <code>thickness</code> is in pixels and <code>speed</code> is the seconds one lap takes.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <mds:border-beam class="w-44 rounded-2xl" length="3" speed="3">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Short and quick</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-44 rounded-2xl" length="30" speed="10">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Long and slow</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-44 rounded-2xl" thickness="3">
+                    <div class="flex min-h-24 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">Three pixels thick</div>
+                </mds:border-beam>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Staggering a group',
+            'text' => 'A row of beams starting together looks mechanical. A negative <code>delay</code> starts a beam mid-lap, which spreads a group around its own cycle.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <mds:border-beam class="w-40 rounded-2xl" :delay="0">
+                    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">delay 0</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-40 rounded-2xl" :delay="-2">
+                    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">delay -2</div>
+                </mds:border-beam>
+
+                <mds:border-beam class="w-40 rounded-2xl" :delay="-4">
+                    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-5 text-center text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-200">delay -4</div>
+                </mds:border-beam>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Reveal on interaction',
+            'text' => '<code>reveal-on</code> keeps the beam hidden and paused until an interaction, then fades it in — so it always starts its lap from the top rather than resuming wherever an invisible one had got to. <code>hover</code> is pointer-only; <code>press</code> works on touch as well; pass both to combine them. Since a touch screen has no hover, <code>show-on-touch</code> keeps a hover beam permanently visible there instead of never showing it. <code>press-scale</code> shrinks the ring with a button\'s own press.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-8">
+                <mds:border-beam class="rounded-full" reveal-on="hover" show-on-touch press-scale>
+                    <flux:button variant="outline" class="rounded-full">Hover me</flux:button>
+                </mds:border-beam>
+
+                <mds:border-beam class="rounded-full" reveal-on="press" press-scale>
+                    <flux:button variant="outline" class="rounded-full">Press me</flux:button>
+                </mds:border-beam>
+
+                <mds:border-beam class="rounded-full" reveal-on="hover press" press-scale>
+                    <flux:button variant="outline" class="rounded-full">Either one</flux:button>
+                </mds:border-beam>
+            </div>
+            BLADE,
+        ],
+        [
+            'name' => 'Driven from Livewire',
+            'text' => 'For a state your server owns — a request in flight, a deploy running — drive the beam with the <code>reveal</code> boolean instead of an interaction. It is OR\'d with <code>reveal-on</code>, so «beam on hover, and also while it is thinking» is both props together. There is no Alpine here and nothing to bind: the beam is CSS, and a Livewire re-render flips the attribute.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-8">
+                <mds:border-beam class="rounded-full" color="#a78bfa" length="15" speed="2" :reveal="true">
+                    <flux:button variant="outline" icon="sparkles" class="rounded-full">Thinking…</flux:button>
+                </mds:border-beam>
+
+                <mds:border-beam class="rounded-full" color="#a78bfa" length="15" speed="2" :reveal="false">
+                    <flux:button variant="outline" icon="sparkles" class="rounded-full">Idle</flux:button>
+                </mds:border-beam>
+            </div>
+            BLADE,
+            'note' => '<p>Written in an app that would be <code>:reveal="$thinking"</code> on one component — the two above are the same markup with the boolean pinned each way, so a static page can show both halves.</p>',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'A lap reads the way the page reads. On an RTL page the beam is mirrored, so it laps counter-clockwise and still leads with its bright head. No prop is involved — the layer follows the page\'s <code>dir</code>.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <mds:border-beam class="w-full max-w-xs rounded-2xl">
+                    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                        در حال تحلیل داده‌های شما
+                    </div>
+                </mds:border-beam>
+
+                <mds:border-beam class="rounded-full" reveal-on="hover" show-on-touch press-scale>
+                    <flux:button variant="outline" class="rounded-full">نشانگر را بیاورید</flux:button>
+                </mds:border-beam>
+            </div>
+            BLADE,
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:border-beam', 'text' => 'A <code>&lt;div&gt;</code> wrapper. Set the size and radius on it with classes — the beam traces the wrapper, not the slot.', 'props' => [
+            ['color', 'Head of the comet; the tail fades to transparent. Any CSS color. Default: <code>var(--color-accent)</code>.'],
+            ['length', 'How much of one lap the comet spans, in percent. Default: <code>10</code>.'],
+            ['thickness', 'Ring thickness in pixels. Default: <code>1</code>.'],
+            ['speed', 'Seconds for one full lap. Default: <code>5</code>.'],
+            ['delay', 'Seconds before the first lap. Negative starts mid-lap — how a row is staggered. Default: <code>0</code>.'],
+            ['reveal-on', 'Reveal only on interaction: <code>hover</code>, <code>press</code>, or both. Omit for always-on.'],
+            ['reveal', 'Controlled visibility for a server-driven state; OR\'d with <code>reveal-on</code>.'],
+            ['show-on-touch', 'With <code>reveal-on="hover"</code>, stay visible on touch screens, which have no hover. Default: <code>false</code>.'],
+            ['press-scale', 'Shrink the ring while pressed, to track a button\'s own press. Default: <code>false</code>.'],
+        ]],
+    ],
+    'related' => ['card', 'skeleton', 'progress'],
+];
+
 return $pages;

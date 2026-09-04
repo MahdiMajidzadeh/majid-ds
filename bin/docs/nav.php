@@ -108,6 +108,7 @@ return [
             'calendar' => 'mds:calendar',
             'kanban' => 'mds:kanban',
             'date-picker' => 'mds:date-picker',
+            'border-beam' => 'mds:border-beam',
         ],
     ],
 ];
