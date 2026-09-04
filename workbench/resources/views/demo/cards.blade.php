@@ -76,6 +76,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#calendar" icon="calendar">{{ __('تقویم') }}</flux:navbar.item>
         <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
         <flux:navbar.item href="#date-picker" icon="calendar">{{ __('انتخاب تاریخ') }}</flux:navbar.item>
+        <flux:navbar.item href="#border-beam" icon="sparkles">{{ __('پرتو حاشیه') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
@@ -1606,6 +1607,38 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('«۱۴۰۵-۰۵-۲۹» و «۱۴۰۵/۰۵/۲۹» و «۱۴۰۵۰۵۲۹» هر سه یک روزند؛ چیزی که تاریخ نیست هم هیچ‌وقت تاریخ نمی‌شود و فیلد به مقدار قبلی برمی‌گردد.') }}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Border beam ============================== --}}
+<flux:card id="border-beam" class="space-y-6">
+    <flux:heading size="lg">{{ __('پرتو حاشیه — mds:border-beam') }}</flux:heading>
+    <flux:text>{{ __('یک دنباله‌ی نور که دور حاشیه‌ی هرچه در بر بگیرد می‌چرخد. هیچ اسکریپتی ندارد؛ تماماً CSS است و شعاع گوشه را از خودِ قاب به ارث می‌برد، پس هم روی کارت با گوشه‌ی گرد می‌نشیند هم روی دکمه‌ی کاملاً گرد. روی صفحه‌ی راست‌چین، چرخش هم آینه می‌شود.') }}</flux:text>
+
+    <div class="flex flex-wrap items-center gap-6">
+        <mds:border-beam class="w-full max-w-xs rounded-2xl" length="20" speed="4">
+            <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                {{ __('در حال تحلیل داده‌های شما') }}
+            </div>
+        </mds:border-beam>
+
+        <mds:border-beam class="w-full max-w-xs rounded-2xl" color="#a78bfa" length="30" speed="8" thickness="2">
+            <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                {{ __('دنباله‌ی بلندتر، کندتر، ضخیم‌تر') }}
+            </div>
+        </mds:border-beam>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-6">
+        <mds:border-beam class="rounded-full" reveal-on="hover press" show-on-touch press-scale>
+            <flux:button variant="outline" icon="sparkles" class="rounded-full">{{ __('نشانگر را بیاورید') }}</flux:button>
+        </mds:border-beam>
+
+        <mds:border-beam class="rounded-full" color="#a78bfa" length="15" speed="2" :reveal="true">
+            <flux:button variant="outline" class="rounded-full">{{ __('در حال فکر کردن…') }}</flux:button>
+        </mds:border-beam>
+    </div>
+
+    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}

@@ -696,5 +696,13 @@
     "تاریخی که خیلی عقب است — با ماه و سال:": "A date far back — with month and year selects:",
     "همان فیلد، روی تقویم میلادی:": "The same field, on the Gregorian calendar:",
     "تاریخ صدور فاکتور": "Invoiced at",
-    "«۱۴۰۵-۰۵-۲۹» و «۱۴۰۵/۰۵/۲۹» و «۱۴۰۵۰۵۲۹» هر سه یک روزند؛ چیزی که تاریخ نیست هم هیچ‌وقت تاریخ نمی‌شود و فیلد به مقدار قبلی برمی‌گردد.": "«۱۴۰۵-۰۵-۲۹», «۱۴۰۵/۰۵/۲۹» and «۱۴۰۵۰۵۲۹» are all the same day; anything that is not a date never becomes one, and the field puts back what it had."
+    "«۱۴۰۵-۰۵-۲۹» و «۱۴۰۵/۰۵/۲۹» و «۱۴۰۵۰۵۲۹» هر سه یک روزند؛ چیزی که تاریخ نیست هم هیچ‌وقت تاریخ نمی‌شود و فیلد به مقدار قبلی برمی‌گردد.": "«۱۴۰۵-۰۵-۲۹», «۱۴۰۵/۰۵/۲۹» and «۱۴۰۵۰۵۲۹» are all the same day; anything that is not a date never becomes one, and the field puts back what it had.",
+    "پرتو حاشیه": "Border beam",
+    "پرتو حاشیه — mds:border-beam": "Border beam — mds:border-beam",
+    "یک دنباله‌ی نور که دور حاشیه‌ی هرچه در بر بگیرد می‌چرخد. هیچ اسکریپتی ندارد؛ تماماً CSS است و شعاع گوشه را از خودِ قاب به ارث می‌برد، پس هم روی کارت با گوشه‌ی گرد می‌نشیند هم روی دکمه‌ی کاملاً گرد. روی صفحه‌ی راست‌چین، چرخش هم آینه می‌شود.": "A comet of light lapping the border of whatever it wraps. There is no script behind it — it is CSS all the way down, and it inherits the corner radius from the wrapper itself, so it sits on a rounded card and on a fully round button alike. On a right-to-left page the lap is mirrored too.",
+    "در حال تحلیل داده‌های شما": "Analyzing your data",
+    "دنباله‌ی بلندتر، کندتر، ضخیم‌تر": "Longer tail, slower, thicker",
+    "نشانگر را بیاورید": "Bring the pointer over",
+    "در حال فکر کردن…": "Thinking…",
+    "پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.": "The beam is decoration and nothing else: it stays hidden from screen readers, never swallows a click, and is not drawn at all for anyone who asked for less motion. So never let it be the only sign of a state — put text or a spinner next to it."
 }

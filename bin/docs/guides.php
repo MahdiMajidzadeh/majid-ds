@@ -48,6 +48,7 @@ $demoAnchors = [
     'calendar' => 'Calendar',
     'kanban' => 'Kanban',
     'date-picker' => 'Date picker',
+    'border-beam' => 'Border beam',
     'icons' => 'Icons',
     'table' => 'Table & pagination',
     'mds' => 'mds components',

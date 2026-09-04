@@ -278,6 +278,17 @@
     
             <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>انتخاب تاریخ</div>
     </a>
+        <a href="#border-beam" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
+        <div class="relative">
+                            <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+</svg>
+
+                    
+                    </div>
+    
+            <div class="ms-3 flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block" data-content>پرتو حاشیه</div>
+    </a>
         <a href="#icons" class="px-3 h-8 flex items-center rounded-lg relative  text-zinc-500 dark:text-white/80  data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px] [--hover-fill:color-mix(in_oklab,_var(--color-accent-content),_transparent_90%)] hover:text-zinc-800 dark:hover:text-white data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content) hover:bg-zinc-800/5 dark:hover:bg-white/10 hover:data-current:bg-(--hover-fill) data-current:after:bg-(--color-accent-content)" data-flux-navbar-items="data-flux-navbar-items">
         <div class="relative">
                             <svg class="shrink-0 [:where(&amp;)]:size-6 size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -23305,6 +23316,72 @@ if (window.Alpine) {
 </div>
 
 
+<div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="border-beam" data-flux-card>
+    <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>پرتو حاشیه — mds:border-beam</div>
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >یک دنباله‌ی نور که دور حاشیه‌ی هرچه در بر بگیرد می‌چرخد. هیچ اسکریپتی ندارد؛ تماماً CSS است و شعاع گوشه را از خودِ قاب به ارث می‌برد، پس هم روی کارت با گوشه‌ی گرد می‌نشیند هم روی دکمه‌ی کاملاً گرد. روی صفحه‌ی راست‌چین، چرخش هم آینه می‌شود.</p>
+    <div class="flex flex-wrap items-center gap-6">
+        <div
+    style="--mds-beam-color: var(--color-accent, currentColor); --mds-beam-length: 20%; --mds-beam-thickness: 1px; --mds-beam-speed: 4s; --mds-beam-delay: 0s" class="relative w-full max-w-xs rounded-2xl"
+                    data-mds-border-beam
+>
+    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                در حال تحلیل داده‌های شما
+            </div>
+
+    
+    <span class="mds-beam" aria-hidden="true"></span>
+</div>
+
+        <div
+    style="--mds-beam-color: #a78bfa; --mds-beam-length: 30%; --mds-beam-thickness: 2px; --mds-beam-speed: 8s; --mds-beam-delay: 0s" class="relative w-full max-w-xs rounded-2xl"
+                    data-mds-border-beam
+>
+    <div class="flex min-h-28 items-center justify-center rounded-2xl border border-zinc-200 px-6 text-center text-sm font-medium text-zinc-800 dark:border-white/10 dark:text-white">
+                دنباله‌ی بلندتر، کندتر، ضخیم‌تر
+            </div>
+
+    
+    <span class="mds-beam" aria-hidden="true"></span>
+</div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-6">
+        <div
+    style="--mds-beam-color: var(--color-accent, currentColor); --mds-beam-length: 10%; --mds-beam-thickness: 1px; --mds-beam-speed: 5s; --mds-beam-delay: 0s" class="relative rounded-full"
+     data-mds-beam-reveal="hover press"          data-mds-beam-touch      data-mds-beam-press-scale     data-mds-border-beam
+>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]   rounded-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M5 4a.75.75 0 0 1 .738.616l.252 1.388A1.25 1.25 0 0 0 6.996 7.01l1.388.252a.75.75 0 0 1 0 1.476l-1.388.252A1.25 1.25 0 0 0 5.99 9.996l-.252 1.388a.75.75 0 0 1-1.476 0L4.01 9.996A1.25 1.25 0 0 0 3.004 8.99l-1.388-.252a.75.75 0 0 1 0-1.476l1.388-.252A1.25 1.25 0 0 0 4.01 6.004l.252-1.388A.75.75 0 0 1 5 4ZM12 1a.75.75 0 0 1 .721.544l.195.682c.118.415.443.74.858.858l.682.195a.75.75 0 0 1 0 1.442l-.682.195a1.25 1.25 0 0 0-.858.858l-.195.682a.75.75 0 0 1-1.442 0l-.195-.682a1.25 1.25 0 0 0-.858-.858l-.682-.195a.75.75 0 0 1 0-1.442l.682-.195a1.25 1.25 0 0 0 .858-.858l.195-.682A.75.75 0 0 1 12 1ZM10 11a.75.75 0 0 1 .728.568.968.968 0 0 0 .704.704.75.75 0 0 1 0 1.456.968.968 0 0 0-.704.704.75.75 0 0 1-1.456 0 .968.968 0 0 0-.704-.704.75.75 0 0 1 0-1.456.968.968 0 0 0 .704-.704A.75.75 0 0 1 10 11Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span>نشانگر را بیاورید</span>
+    </button>
+
+    
+    <span class="mds-beam" aria-hidden="true"></span>
+</div>
+
+        <div
+    style="--mds-beam-color: #a78bfa; --mds-beam-length: 15%; --mds-beam-thickness: 1px; --mds-beam-speed: 2s; --mds-beam-delay: 0s" class="relative rounded-full"
+     data-mds-beam-reveal=""      data-mds-beam-shown             data-mds-border-beam
+>
+    <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]   rounded-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        در حال فکر کردن…
+    </button>
+
+    
+    <span class="mds-beam" aria-hidden="true"></span>
+</div>
+    </div>
+
+    <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70 text-sm text-zinc-500 dark:text-zinc-400" data-flux-text >پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.</p>
+</div>
+
+
 <div class="border [:where(&amp;)]:bg-white [:where(&amp;)]:border-zinc-200 dark:[:where(&amp;)]:bg-white/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl space-y-6" id="icons" data-flux-card>
     <div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading>آیکون‌ها — mds:icon</div>
     <p class="[:where(&amp;)]:font-normal [:where(&amp;)]:text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-text >آیکون‌های <a href="https://hugeicons.com" class="underline">Hugeicons</a> جایگزین heroicons در همه اجزای mds شده‌اند. مجموعه رایگان Stroke Rounded (۶٬۲۰۰ آیکون) همراه بسته می‌آید؛ نام‌های heroicons هم از طریق نقشه معادل‌ها کار می‌کنند.</p>
@@ -25383,7 +25460,7 @@ if (window.Alpine) {
 
     <aside class="docs-toc" aria-label="On this page">
         <p class="docs-toc-title">On this page</p>
-        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#editor" class="docs-toc-sub">Editor</a><a href="#calendar" class="docs-toc-sub">Calendar</a><a href="#kanban" class="docs-toc-sub">Kanban</a><a href="#date-picker" class="docs-toc-sub">Date picker</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
+        <nav><a href="#showcase">Showcase</a><a href="#typography" class="docs-toc-sub">Typography</a><a href="#buttons" class="docs-toc-sub">Buttons</a><a href="#badges" class="docs-toc-sub">Badges</a><a href="#avatars" class="docs-toc-sub">Avatars &amp; icons</a><a href="#forms" class="docs-toc-sub">Forms</a><a href="#overlays" class="docs-toc-sub">Overlays &amp; toasts</a><a href="#command" class="docs-toc-sub">Command palette</a><a href="#color-picker" class="docs-toc-sub">Color picker</a><a href="#file-upload" class="docs-toc-sub">File upload</a><a href="#composer" class="docs-toc-sub">Composer</a><a href="#preview-card" class="docs-toc-sub">Preview card</a><a href="#timeline" class="docs-toc-sub">Timeline</a><a href="#chart" class="docs-toc-sub">Charts</a><a href="#popover" class="docs-toc-sub">Popover</a><a href="#accordion" class="docs-toc-sub">Accordion</a><a href="#slider" class="docs-toc-sub">Slider</a><a href="#time-picker" class="docs-toc-sub">Time picker</a><a href="#tabs" class="docs-toc-sub">Tabs</a><a href="#autocomplete" class="docs-toc-sub">Autocomplete</a><a href="#carousel" class="docs-toc-sub">Carousel</a><a href="#context" class="docs-toc-sub">Context menu</a><a href="#pillbox" class="docs-toc-sub">Pillbox</a><a href="#editor" class="docs-toc-sub">Editor</a><a href="#calendar" class="docs-toc-sub">Calendar</a><a href="#kanban" class="docs-toc-sub">Kanban</a><a href="#date-picker" class="docs-toc-sub">Date picker</a><a href="#border-beam" class="docs-toc-sub">Border beam</a><a href="#icons" class="docs-toc-sub">Icons</a><a href="#table" class="docs-toc-sub">Table &amp; pagination</a><a href="#mds" class="docs-toc-sub">mds components</a></nav>
     </aside>
 </div>
 
