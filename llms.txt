@@ -1208,6 +1208,45 @@ public array $trip = ['start' => null, 'end' => null];  // ISO Gregorian, both e
 protected function rules() { return ['deliverAt' => 'required|date_format:Y-m-d']; }
 ```
 
+### <mds:border-beam> — a comet of light lapping the border of whatever it wraps
+Props: `color` any CSS color='var(--color-accent)' (lights the head of the comet; the tail always fades to transparent,
+so pass a solid color, not a gradient) · `length` number=10 (share of ONE LAP in percent, not pixels, so the comet keeps
+its proportions at any size) · `thickness` px number=1 · `speed` seconds per lap=5 · `delay` seconds=0 (NEGATIVE starts
+the beam mid-lap — that is how a row of cards is desynchronised) · `reveal-on` `hover`|`press`|both, as a space-separated
+string or an array (omit for always-on; an unknown keyword is dropped and the beam stays always-on) · `reveal` bool
+(controlled, for a server-driven state; OR'd with `reveal-on`) · `show-on-touch` bool=false (with `reveal-on="hover"`,
+stay visible on touch screens, which have no hover, instead of never showing) · `press-scale` bool=false (shrink the ring
+while pressed, to track a button's own press).
+Renders a `<div>` wrapper (`position: relative`) around the slot plus one `<span class="mds-beam" aria-hidden>`; every other
+attribute, `class` and `style` included, lands on the wrapper. SET THE SIZE AND RADIUS ON THE WRAPPER — the beam is
+`border-radius: inherit`, so it traces the wrapper, not the slot; give the wrapper the same radius as the content inside it
+(`rounded-2xl` card, `rounded-full` pill) and there is no radius prop to keep in sync.
+Behavior: NO Alpine and no script — it is CSS only. The beam is a conic gradient rotated by the registered
+`--mds-beam-angle` property and masked to a hairline ring; props travel as inline custom properties
+(`--mds-beam-color/-length/-thickness/-speed/-delay`), and `reveal-on`/`reveal`/`show-on-touch`/`press-scale` as
+`data-mds-beam-reveal` / `-shown` / `-touch` / `-press-scale` on the wrapper. A hidden beam is also paused, so it always
+starts a lap from the top rather than resuming mid-lap.
+Livewire contract: no `wire:model`. Drive it with `:reveal="$thinking"` — a re-render flips the attribute and the CSS does
+the rest. RTL: the lap is mirrored under `dir="rtl"` (counter-clockwise, still leading with the bright head); no prop.
+Accessibility: the layer is `aria-hidden` and `pointer-events-none`, so it never reaches assistive tech and never
+intercepts a click, and the slot stays in normal flow. Under `prefers-reduced-motion: reduce` the layer is hidden
+ENTIRELY rather than parked at a corner — a looping beam has no resting frame. So never make the beam the only signal for
+a state (loading, recording): pair it with text, a spinner or a status message, and keep the content's own border and
+contrast intact.
+```blade
+<mds:border-beam class="w-full max-w-xs rounded-2xl" length="20" speed="4">
+    <flux:card class="rounded-2xl">در حال تحلیل داده‌های شما</flux:card>
+</mds:border-beam>
+
+<mds:border-beam class="rounded-full" reveal-on="hover press" show-on-touch press-scale>
+    <flux:button variant="outline" class="rounded-full">دستیار هوشمند</flux:button>
+</mds:border-beam>
+
+<mds:border-beam class="rounded-full" :reveal="$thinking" color="#a78bfa" length="15" speed="2">
+    <flux:button variant="outline" class="rounded-full">{{ $thinking ? 'در حال فکر کردن…' : 'بپرس' }}</flux:button>
+</mds:border-beam>
+```
+
 ## CSS layer (resources/css/mds.css)
 
 - No `@theme` and no font: the kit does not set `--font-sans` or load a face. See Fonts.
@@ -1221,6 +1260,11 @@ protected function rules() { return ['deliverAt' => 'required|date_format:Y-m-d'
 - `[data-mds-icon] ...` — icon default size (1.5rem) and the opt-in `--mds-icon-stroke` rule.
 - `[data-mds-timeline] ...` — the timeline grid, connector lines and indicator states. Cascade layers outrank specificity, so if this
   were unlayered it would swallow classes users put on an indicator (e.g. `bg-green-500`).
+- `@property --mds-beam-angle` + `@keyframes mds-beam` + `.mds-beam` (mds:border-beam) — the conic sweep, masked to a
+  hairline ring. The registration lives INSIDE `@layer components` on purpose: a property registration is not a style
+  rule, so the layer costs nothing and the whole component stays in one block. `@property` is what makes the `<angle>`
+  interpolable at all. Reveal/press state is selected off `[data-mds-beam-reveal|-shown|-touch|-press-scale]`;
+  `[dir='rtl'] .mds-beam` mirrors the lap, and `prefers-reduced-motion: reduce` hides the layer.
 - `[data-mds-chart] ...` — chart card chrome, stages, tracks and the heatmap tone ladder.
   The chart ink is currentColor: the stage sets zinc-950/white and every fill/stroke is an opacity step of it,
   so a text utility (`text-accent`) on a stage recolors the whole chart. Knobs: `--mds-chart-radius` (card,

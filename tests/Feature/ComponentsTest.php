@@ -643,6 +643,103 @@ class ComponentsTest extends TestCase
         $this->assertStringContainsString('closeDelay: 50', $html);
     }
 
+    public function test_border_beam_wraps_its_slot_in_a_decorative_ring(): void
+    {
+        $html = $this->render('<mds:border-beam class="rounded-2xl"><button>Deploy</button></mds:border-beam>');
+
+        $this->assertStringContainsString('data-mds-border-beam', $html);
+        $this->assertStringContainsString('<button>Deploy</button>', $html);
+        // Decoration: skipped by assistive tech, never in the way of a click.
+        $this->assertMatchesRegularExpression('/<span class="mds-beam" aria-hidden="true">/', $html);
+        // No interaction asked for, so nothing hides the beam.
+        $this->assertStringNotContainsString('data-mds-beam-reveal', $html);
+    }
+
+    public function test_border_beam_defaults_are_written_as_custom_properties(): void
+    {
+        $html = $this->render('<mds:border-beam />');
+
+        $this->assertStringContainsString('--mds-beam-color: var(--color-accent, currentColor)', $html);
+        $this->assertStringContainsString('--mds-beam-length: 10%', $html);
+        $this->assertStringContainsString('--mds-beam-thickness: 1px', $html);
+        $this->assertStringContainsString('--mds-beam-speed: 5s', $html);
+        $this->assertStringContainsString('--mds-beam-delay: 0s', $html);
+    }
+
+    public function test_border_beam_tuning_props_reach_the_custom_properties(): void
+    {
+        $html = $this->render('<mds:border-beam color="#A78BFA" length="30" thickness="1.5" speed="2" :delay="-4" />');
+
+        $this->assertStringContainsString('--mds-beam-color: #A78BFA', $html);
+        $this->assertStringContainsString('--mds-beam-length: 30%', $html);
+        $this->assertStringContainsString('--mds-beam-thickness: 1.5px', $html);
+        $this->assertStringContainsString('--mds-beam-speed: 2s', $html);
+        // A negative delay starts the lap mid-cycle — how a row is staggered.
+        $this->assertStringContainsString('--mds-beam-delay: -4s', $html);
+    }
+
+    public function test_border_beam_keeps_a_callers_own_style_attribute(): void
+    {
+        $html = $this->render('<mds:border-beam style="width: 12rem" />');
+
+        $this->assertStringContainsString('--mds-beam-speed: 5s', $html);
+        $this->assertStringContainsString('width: 12rem', $html);
+        $this->assertSame(1, substr_count($html, 'style='), 'The wrapper emitted two style attributes.');
+    }
+
+    public function test_border_beam_reveal_on_accepts_one_keyword_or_several(): void
+    {
+        $this->assertStringContainsString(
+            'data-mds-beam-reveal="hover"',
+            $this->render('<mds:border-beam reveal-on="hover" />'),
+        );
+
+        $this->assertStringContainsString(
+            'data-mds-beam-reveal="hover press"',
+            $this->render('<mds:border-beam reveal-on="hover press" />'),
+        );
+
+        $this->assertStringContainsString(
+            'data-mds-beam-reveal="hover press"',
+            $this->render('<mds:border-beam :reveal-on="[\'hover\', \'press\']" />'),
+        );
+    }
+
+    public function test_border_beam_drops_a_reveal_keyword_it_has_no_selector_for(): void
+    {
+        // A typo must not reach a selector: the beam falls back to always-on
+        // rather than to a rule that can never match.
+        $html = $this->render('<mds:border-beam reveal-on="focus" />');
+
+        $this->assertStringNotContainsString('focus', $html);
+        $this->assertStringNotContainsString('data-mds-beam-reveal', $html);
+    }
+
+    public function test_border_beam_controlled_reveal_hides_the_beam_from_interaction(): void
+    {
+        // An empty reveal list is the point: no interaction can show the beam,
+        // so the boolean is the only thing driving it.
+        $html = $this->render('<mds:border-beam :reveal="false" />');
+
+        $this->assertStringContainsString('data-mds-beam-reveal=""', $html);
+        $this->assertStringNotContainsString('data-mds-beam-shown', $html);
+
+        $this->assertStringContainsString('data-mds-beam-shown', $this->render('<mds:border-beam :reveal="true" />'));
+    }
+
+    public function test_border_beam_touch_and_press_flags_are_opt_in(): void
+    {
+        $plain = $this->render('<mds:border-beam reveal-on="hover" />');
+
+        $this->assertStringNotContainsString('data-mds-beam-touch', $plain);
+        $this->assertStringNotContainsString('data-mds-beam-press-scale', $plain);
+
+        $html = $this->render('<mds:border-beam reveal-on="hover" show-on-touch press-scale />');
+
+        $this->assertStringContainsString('data-mds-beam-touch', $html);
+        $this->assertStringContainsString('data-mds-beam-press-scale', $html);
+    }
+
     public function test_timeline_renders_an_ordered_list_with_state_attributes(): void
     {
         $html = $this->render('<mds:timeline horizontal size="lg" align="start"><mds:timeline.item /></mds:timeline>');

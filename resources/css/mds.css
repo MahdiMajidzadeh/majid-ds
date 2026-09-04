@@ -824,3 +824,116 @@
         --mds-slider-thumb: #e4e4e7;
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Border beam (mds:border-beam)
+|--------------------------------------------------------------------------
+|
+| One comet of light lapping the wrapper's own border: a conic gradient
+| rotated by an animated angle, then masked down to a hairline ring.
+|
+| The angle is a registered custom property — @property is what makes an
+| <angle> interpolable, so `from var(--mds-beam-angle)` can be animated at
+| all; an unregistered custom property would jump from 0deg to 360deg in one
+| step. Registering it inside @layer components is deliberate: the layer is
+| about which style rules a caller can override with a utility class, and a
+| property registration is not a style rule, so nothing is given up by
+| keeping the whole component in one block.
+|
+| The ring is the mask trick, not a border: `padding` sets the thickness, and
+| the content box is subtracted from the padding box so only that rim paints.
+| Radius comes from `border-radius: inherit`, so the beam traces whatever the
+| wrapper is — rounded-xl card or full pill — with no radius prop to keep in
+| sync.
+*/
+
+@layer components {
+    @property --mds-beam-angle {
+        syntax: '<angle>';
+        inherits: false;
+        initial-value: 0deg;
+    }
+
+    @keyframes mds-beam {
+        to {
+            --mds-beam-angle: 360deg;
+        }
+    }
+
+    .mds-beam {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        padding: var(--mds-beam-thickness, 1px);
+        background: conic-gradient(
+            from var(--mds-beam-angle),
+            transparent,
+            var(--mds-beam-color, var(--color-accent, currentColor)) var(--mds-beam-length, 10%),
+            transparent calc(var(--mds-beam-length, 10%) * 1.2)
+        );
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        animation: mds-beam var(--mds-beam-speed, 5s) linear var(--mds-beam-delay, 0s) infinite;
+        transition:
+            opacity 500ms ease-out,
+            transform 150ms ease-out;
+    }
+
+    /* A lap reads left-to-right; on an RTL page it should lead the other way. */
+    [dir='rtl'] .mds-beam {
+        transform: scaleX(-1);
+    }
+
+    /*
+    | `reveal-on` / `reveal`: hidden and paused until something shows it, so
+    | the beam always starts its lap from the top rather than resuming
+    | wherever an invisible one had got to.
+    */
+    [data-mds-beam-reveal] > .mds-beam {
+        opacity: 0;
+        animation-play-state: paused;
+    }
+
+    [data-mds-beam-reveal~='hover']:hover > .mds-beam,
+    [data-mds-beam-reveal~='press']:active > .mds-beam,
+    [data-mds-beam-shown] > .mds-beam {
+        opacity: 1;
+        animation-play-state: running;
+    }
+
+    /* Touch has no hover to reveal with: keep it up, or leave it hidden. */
+    @media (hover: none) {
+        [data-mds-beam-reveal~='hover'][data-mds-beam-touch] > .mds-beam {
+            opacity: 1;
+            animation-play-state: running;
+        }
+    }
+
+    /* Track a pressed button's own active-press scale. */
+    [data-mds-beam-press-scale]:active > .mds-beam {
+        transform: translateY(1px) scale(0.97);
+    }
+
+    [dir='rtl'] [data-mds-beam-press-scale]:active > .mds-beam {
+        transform: scaleX(-1) translateY(1px) scale(0.97);
+    }
+
+    /*
+    | A looping beam has no resting frame to fall back to — parked at one
+    | corner it reads as a stray mark — so reduced motion drops the layer.
+    | Never make it the only signal for a state; pair it with text.
+    */
+    @media (prefers-reduced-motion: reduce) {
+        .mds-beam {
+            display: none;
+        }
+    }
+}
