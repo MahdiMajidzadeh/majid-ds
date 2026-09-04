@@ -153,5 +153,4 @@ class DocsTest extends TestCase
 
         return '';
     }
-
 }
