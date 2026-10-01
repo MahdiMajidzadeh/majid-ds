@@ -124,7 +124,7 @@ $pages['mds-icon'] = [
             ['label', 'Accessible label. Without it the icon is <code>aria-hidden</code>.'],
         ]],
     ],
-    'related' => ['icon'],
+    'related' => ['icon', 'icon-picker'],
 ];
 
 // ----------------------------------------------------------------- mds:input
@@ -1462,6 +1462,106 @@ $pages['color-picker'] = [
         ]],
     ],
     'related' => ['input', 'field'],
+];
+
+// ------------------------------------------------------------ mds:icon-picker
+
+$pages['icon-picker'] = [
+    'group' => 'mds',
+    'title' => 'mds:icon-picker',
+    'lede' => 'A searchable grid of Hugeicons that fills a form field with an icon name.',
+    'sections' => [
+        [
+            'name' => 'Introduction',
+            'lead' => true,
+            'text' => 'For the places an app lets people choose an icon — a category, a menu entry, a status. The field holds the icon <em>name</em>, so what comes back is exactly what <code>&lt;mds:icon&gt;</code> takes. Every tile is rendered on the server once and the preview is cloned from it, so no icon source ships to the browser. Live — open it.',
+            'code' => <<<'BLADE'
+            <mds:icon-picker
+                label="Category icon"
+                description="Shown on the category card."
+                value="shopping-cart-01"
+                name="icon"
+                clearable
+                class="max-w-xs"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Your own set',
+            'text' => 'Nothing passed means the kit\'s curated default — <code>Icons::PICKER</code>, 154 everyday icons. Pass <code>:icons</code> with a list of Hugeicons names to offer exactly what makes sense for the field. <code>Icons::names()</code> gives the whole free set when a screen truly needs all 6,200 — a few megabytes of SVG, so keep that to an admin page.',
+            'code' => <<<'BLADE'
+            <mds:icon-picker
+                label="Status icon"
+                :icons="['checkmark-circle-02', 'clock-01', 'alert-02', 'cancel-circle', 'delivery-truck-01', 'package', 'rocket-01', 'fire']"
+                :columns="4"
+                class="max-w-xs"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Labelled icons',
+            'text' => 'A <code>name =&gt; label</code> map labels each tile. The label is the tooltip and the accessible name, and the search matches it as well as the name — the way a Persian user finds an icon.',
+            'code' => <<<'BLADE'
+            <mds:icon-picker
+                label="Menu icon"
+                :icons="['home-01' => 'Home', 'search-01' => 'Search', 'shopping-cart-01' => 'Cart', 'user' => 'Account', 'settings-02' => 'Settings', 'notification-01' => 'Alerts', 'favourite' => 'Wishlist', 'store-01' => 'Store']"
+                value="home-01"
+                class="max-w-xs"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'Disabled and invalid',
+            'text' => '<code>disabled</code> makes the whole control inert. An <code>error</code> message, or a validation message under the field\'s <code>name</code>, marks it invalid.',
+            'code' => <<<'BLADE'
+            <div class="flex flex-col gap-6">
+                <mds:icon-picker label="Disabled" value="package" disabled class="max-w-xs" />
+                <mds:icon-picker label="Required" name="icon" error="Pick an icon for the category." class="max-w-xs" />
+            </div>
+            BLADE,
+            'align' => 'stretch',
+        ],
+        [
+            'name' => 'In RTL',
+            'rtl' => true,
+            'text' => 'The built-in strings — the placeholder, the search box, the empty line, clear — follow <code>config(\'mds.persian_digits\')</code>, which is on by default in a real app and off in these docs. Icon names stay LTR inside the field. The grid flows right-to-left and the left/right arrow keys follow the eye.',
+            'code' => <<<'BLADE'
+            <mds:icon-picker
+                label="آیکون دسته‌بندی"
+                description="روی کارت دسته‌بندی نمایش داده می‌شود."
+                :icons="['home-01' => 'خانه', 'search-01' => 'جستجو', 'shopping-cart-01' => 'سبد خرید', 'user' => 'کاربر', 'settings-02' => 'تنظیمات', 'notification-01' => 'اعلان', 'favourite' => 'علاقه‌مندی', 'store-01' => 'فروشگاه']"
+                value="store-01"
+                clearable
+                class="max-w-xs"
+            />
+            BLADE,
+            'align' => 'stretch',
+        ],
+    ],
+    'reference' => [
+        ['name' => 'mds:icon-picker', 'props' => [
+            ['value', 'The chosen icon name.'],
+            ['icons', 'A list of Hugeicons names, or a <code>name =&gt; label</code> map. Default: <code>Icons::PICKER</code>.'],
+            ['variant', 'Icon style for the tiles and the preview, as on <code>mds:icon</code>.'],
+            ['label', 'Field label.'],
+            ['description', 'Smaller text under the label.'],
+            ['placeholder', 'Trigger text while nothing is picked.'],
+            ['search-placeholder', 'Placeholder of the search box.'],
+            ['empty', 'Text shown when no icon matches the search.'],
+            ['columns', 'Tiles per row. Default: <code>8</code>.'],
+            ['clearable', 'Adds a clear button. Default: <code>false</code>.'],
+            ['size', 'Options: <code>sm</code>.'],
+            ['disabled', 'Disables the control.'],
+            ['invalid', 'Marks the control as invalid.'],
+            ['error', 'Error message under the field.'],
+            ['name', 'Field name for a plain form.'],
+            ['wire:model', 'Binds to a Livewire property.'],
+        ]],
+    ],
+    'related' => ['mds-icon', 'input', 'field'],
 ];
 
 // ----------------------------------------------------------- mds:file-upload

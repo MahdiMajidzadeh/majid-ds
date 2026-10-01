@@ -92,6 +92,7 @@ return [
             'command' => 'mds:command',
             'composer' => 'mds:composer',
             'color-picker' => 'mds:color-picker',
+            'icon-picker' => 'mds:icon-picker',
             'file-upload' => 'mds:file-upload',
             'timeline' => 'mds:timeline',
             'chart' => 'mds:chart',

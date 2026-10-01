@@ -38,7 +38,7 @@ Everything is RTL-first, built with logical properties so it works left-to-right
 
 The component reference is deliberately not in this file. It lives in two places, both kept honest by the test suite so neither can quietly go stale:
 
-- **[The docs site](https://mahdimajidzadeh.github.io/majid-ds/)** — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews and prop tables. 75 pages covering every free Flux component bundled here, the layout grid, and the whole `mds:*` layer. It also ships in the repo, so [docs/index.html](docs/index.html) opens straight from disk.
+- **[The docs site](https://mahdimajidzadeh.github.io/majid-ds/)** — one page per component, laid out like [fluxui.dev](https://fluxui.dev/components/callout): grouped nav, live previews and prop tables. 76 pages covering every free Flux component bundled here, the layout grid, and the whole `mds:*` layer. It also ships in the repo, so [docs/index.html](docs/index.html) opens straight from disk.
 - **[llms.txt](llms.txt)** — the same API in one compact, machine-readable file: props, slots, behaviour and the Livewire contract for each component. Point your project's `CLAUDE.md` or `AGENTS.md` at `vendor/mahdimajidzadeh/ds/llms.txt` so coding agents use the kit correctly.
 
 Two demos render the whole kit at once: [RTL demo](docs/guides/rtl-demo.html) in Persian, [demo](docs/guides/demo.html) in English, plus a [layout gallery](docs/demo/layouts.html).
@@ -221,7 +221,7 @@ npm run demo:serve      # then open http://127.0.0.1:8720/demo
 `docs/` is a committed static site — GitHub Pages serves it as-is, with no build step — so regenerate it whenever a view, the CSS or a docs page changes:
 
 ```bash
-npm run docs            # the 75 reference pages + docs/assets/site.css
+npm run docs            # the 76 reference pages + docs/assets/site.css
 npm run pages           # the 18 layout-gallery pages in docs/demo/
 ```
 
