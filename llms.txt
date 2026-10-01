@@ -20,7 +20,7 @@ Requirements: PHP 8.2+, Laravel 12 or 13, Livewire 3 or 4, Tailwind CSS v4. `liv
    paths, so without this the utility classes inside the kit's Blade views are never generated.
    `@custom-variant dark (&:where(.dark, .dark *));`
 3. Layout: `<html lang="fa" dir="rtl">`; `@fluxAppearance` in <head>; `@fluxScripts` before </body>. Load a Persian font yourself — see Fonts. Under a CSP, register the nonce with `Vite::useCspNonce()` — see Content Security Policy.
-4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban, date-picker).
+4. Alpine is REQUIRED for interactive components (input, quantity, countdown, rating.input, command, composer, color-picker, file-upload, preview-card, chart.heatmap, popover, accordion, slider, time-picker, tabs, autocomplete, carousel, context, pillbox, editor, calendar, kanban, date-picker, icon-picker).
    Livewire injects Alpine only on pages rendering a Livewire component; on static pages add `@livewireScripts`.
    Every registration works on a `wire:navigate` visit too: each script registers immediately when Alpine is already
    running and falls back to `alpine:init` when it is not, so a component first rendered on a navigated-to page is
@@ -407,17 +407,40 @@ resolve only from `mds.icons.sets`.
 Resolution order for a name: `Icons::OVERRIDES` -> the literal Hugeicons name -> `Icons::ALIASES` -> `flux:icon`.
 So a real Hugeicons name always wins, heroicon names still work, and an unknown name still renders as a heroicon —
 unless `mds.icons.strict` is `true`, in which case it renders nothing instead of ever touching `flux:icon`.
-`MajidDs\Support\Icons` (static): `ALIASES` (49 heroicon names with no Hugeicons counterpart, e.g.
+`MajidDs\Support\Icons` (static): `ALIASES` (52 heroicon names with no Hugeicons counterpart, e.g.
 `magnifying-glass` -> `search-01`, `x-mark` -> `cancel-01`, `cloud-arrow-up` -> `cloud-upload`, `document` -> `file-01`,
 `exclamation-triangle` -> `alert-02`, `photo` -> `image-01`, `trash` -> `delete-02`, `users` -> `user-multiple`,
 `banknotes` -> `banknote`, `paper-airplane` -> `sent`, `microphone` -> `mic-01`) · `OVERRIDES` (6 names Hugeicons also has but draws differently: `arrow-up|down|left|right`
 are chevrons there, `moon` is full not crescent, `map-pin` is a pin on a map) · `STYLES` · `VARIANTS` ·
 `FREE_SET` ('hugeicons', the blade-icons set name of the bundled free set) · `PRO_PREFIX` ('mds-hugeicons', Pro sets register as `{PRO_PREFIX}-{style}`) ·
+`PICKER` (the 154-name curated default set behind `<mds:icon-picker>`) · `names(): list<string>` (every name in the bundled free set, sorted — 6,200 of them) ·
 `available(): bool` (a Hugeicons source is registered) · `style(?string $variant): string` · `prefixes(string $style): list<string>` ·
 `svg(string $name, ?string $variant, array<string, mixed> $attributes): ?Svg` (attribute values are escaped by `<mds:icon>` before this call — blade-icons does not).
 NOTE: `stroke` is opt-in because 478 free icons vary stroke weight on purpose — do not force a global width.
 NOTE: `<flux:*>` components (button, badge, navbar, callout, ...) resolve their own `icon` prop internally and keep
 rendering heroicons. Only `mds:*` components and `<mds:icon>` use Hugeicons.
+
+### <mds:icon-picker> — icon picker (a searchable Hugeicons grid that fills a form field)
+Props: `value` string|null (a Hugeicons name, e.g. `shopping-cart-01`) · `name` · `icons` array|null (the menu: a list of names, or a
+`name => label` map so a Persian word finds its icon; null = `Icons::PICKER`, 154 curated everyday icons) · `variant` string|null
+(a Flux variant or Hugeicons style, as on `<mds:icon>`; applies to every tile and the preview) · `label`/`description` (flux:field chrome) ·
+`placeholder` string|null (trigger text while nothing is picked; default «انتخاب آیکون» / "Pick an icon") · `search-placeholder` string|null
+(default «جستجوی آیکون…» / "Search icons…") · `empty` string|null (no-match line; default «آیکونی یافت نشد.» / "No icons found.") ·
+`columns` int=8 (tiles per row; also the up/down keyboard stride) · `clearable` bool=false («پاک کردن» / "Clear") · `size` sm ·
+`disabled` bool=false (`inert` + `aria-disabled` on the whole control) · `invalid` bool=false · `error` string|null (see Validation contract —
+sits in its own field, so the message renders) · `fa` bool|null=config.
+wire:model forwarded to the hidden input, which holds the icon NAME (Latin, exactly as given in `icons`) and emits bubbling `input` events on
+pick and clear; feed it straight back to `<mds:icon :icon="$icon">`. A server-side change (Livewire morph) is adopted silently.
+Rendering: every option's SVG is drawn server-side once (`role="option"` tiles under a `role="listbox"` grid, each with
+`data-mds-icon-picker-option="<name>"` and `aria-label`/`title` = label or name), and the trigger's preview is cloned from the chosen tile —
+the client never needs an icon source. So the cost is proportional to `icons`: the default set is a few dozen KB; `:icons="Icons::names()"`
+(all 6,200) is a few MB of HTML, fine for one admin screen, wrong as a default.
+Search: substring on the name (hyphens read as spaces, so "search 01" finds `search-01`) and on the label; Persian/Arabic letter and digit
+variants fold together like `mds:command`. Keyboard: Down from the search box enters the grid; arrows move by one (left/right are visual,
+so they swap on an RTL page) or by `columns` (up/down); Up past the first row returns to the search box; Enter/Space picks; Escape closes.
+Accessibility: the popover is `role="dialog"` named by `label` else `placeholder`; the trigger has `aria-expanded`, `aria-haspopup="dialog"`
+and `aria-controls`; opening moves focus to the search box and closing returns it to the trigger. The no-match line is `role="status"`.
+Data attributes: `data-mds-icon-picker` (wrapper), `-trigger`, `-panel`, `-search`, `-grid`, `-option`, `-empty`.
 
 ### <mds:timeline> — timeline (open version of Flux Pro's flux:timeline)
 Container, renders `<ol>`. Props: `horizontal` bool=false (indicators along a row, content beneath) ·

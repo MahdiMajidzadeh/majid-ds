@@ -28,6 +28,41 @@ class IconsTest extends TestCase
         $this->assertSame([], $missing, 'Alias targets not found in the free set.');
     }
 
+    /**
+     * The picker's default set is a hand-written list, so it can rot the same
+     * way the alias map can — and a dead name there is a blank tile in every
+     * form that uses the default.
+     */
+    public function test_every_picker_default_exists_in_the_bundled_free_set_once(): void
+    {
+        $dir = dirname(__DIR__, 2).'/vendor/afatmustafa/blade-hugeicons/resources/svg';
+
+        $missing = array_values(array_filter(Icons::PICKER, fn (string $name) => ! file_exists($dir.'/'.$name.'.svg')));
+
+        $this->assertSame([], $missing, 'Picker defaults not found in the free set.');
+        $this->assertSame(Icons::PICKER, array_values(array_unique(Icons::PICKER)), 'The picker default set repeats a name.');
+        $this->assertGreaterThan(100, count(Icons::PICKER));
+    }
+
+    public function test_names_lists_the_whole_free_set_sorted(): void
+    {
+        $names = Icons::names();
+
+        // Measured against the directory itself rather than a pinned count,
+        // so a Hugeicons upgrade changes nothing here.
+        $dir = dirname(__DIR__, 2).'/vendor/afatmustafa/blade-hugeicons/resources/svg';
+
+        $this->assertCount(count(glob($dir.'/*.svg') ?: []), $names);
+        $this->assertGreaterThan(5000, count($names));
+        $this->assertContains('search-01', $names);
+        $this->assertNotContains('search-01.svg', $names);
+
+        $sorted = $names;
+        sort($sorted);
+
+        $this->assertSame($sorted, $names, 'names() must be sorted so docs rebuilds stay byte-identical.');
+    }
+
     public function test_every_override_target_exists_in_the_bundled_free_set(): void
     {
         $dir = dirname(__DIR__, 2).'/vendor/afatmustafa/blade-hugeicons/resources/svg';

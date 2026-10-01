@@ -130,12 +130,86 @@ class Icons
     ];
 
     /**
+     * The default set <mds:icon-picker> offers: a hundred-odd everyday icons
+     * spanning navigation, people, commerce, files, feedback and devices. Real
+     * Hugeicons names, not heroicon aliases, so the picker never depends on
+     * the alias table. Pass `:icons` to the picker to use any other set —
+     * `names()` gives the whole free set when a form really needs it all.
+     */
+    public const PICKER = [
+        // Navigation and controls...
+        'home-01', 'search-01', 'menu-01', 'more-horizontal', 'more-vertical', 'filter', 'grid-view', 'list-view',
+        'dashboard-square-01', 'settings-02', 'preference-horizontal', 'refresh', 'add-01', 'remove-01', 'cancel-01',
+        'cancel-circle', 'tick-01', 'checkmark-circle-02', 'arrow-up-02', 'arrow-down-02', 'arrow-left-02', 'arrow-right-02',
+        'arrow-up-right-01', 'login-01', 'logout-01', 'link-01', 'share-01', 'eye', 'view-off', 'cursor-01',
+        // Feedback and status...
+        'alert-02', 'alert-circle', 'help-circle', 'information-circle', 'notification-01', 'flag-01', 'star', 'favourite',
+        'bookmark-01', 'sparkles', 'fire', 'flash', 'idea', 'magic-wand-01', 'rocket-01', 'award-01', 'champion', 'crown', 'medal-01',
+        // People and messaging...
+        'user', 'user-add-01', 'user-settings-01', 'user-multiple', 'mail-01', 'inbox', 'sent', 'call', 'message-01',
+        'bubble-chat', 'chat-bot', 'ai-brain-01', 'robot-01', 'mic-01',
+        // Time and place...
+        'calendar-01', 'calendar-03', 'clock-01', 'time-01', 'location-01', 'map-pin', 'pin-location-01', 'global', 'earth',
+        'translate', 'language-square',
+        // Commerce...
+        'shopping-cart-01', 'shopping-bag-01', 'store-01', 'package', 'delivery-truck-01', 'truck', 'credit-card', 'wallet-01',
+        'banknote', 'dollar-circle', 'coins-01', 'discount-tag-01', 'percent-circle', 'tag-01', 'gift', 'invoice-01',
+        'balance-scale', 'briefcase-01', 'building-01', 'house-01',
+        // Files and media...
+        'file-01', 'file-02', 'folder-01', 'note-01', 'task-01', 'clipboard', 'copy-01', 'archive-02', 'attachment-01',
+        'image-01', 'camera-01', 'video-01', 'music-note-01', 'headphones', 'printer', 'pencil-edit-01', 'edit-02',
+        'delete-02', 'download-01', 'upload-01', 'cloud-upload', 'cloud-download', 'cloud',
+        // Data and devices...
+        'chart-01', 'analytics-up', 'analytics-down', 'pie-chart', 'bar-chart', 'database', 'server-stack-01', 'code',
+        'source-code', 'smart-phone-01', 'computer', 'laptop', 'tablet-01', 'wifi-01', 'bluetooth',
+        // Safety and the world...
+        'square-lock-01', 'square-unlock-01', 'key-01', 'shield-01', 'security-check', 'sun-03', 'moon-02', 'leaf-01',
+        'plant-01', 'rain', 'umbrella', 'car-01', 'bus-01', 'airplane-01', 'hospital-01', 'medicine-02', 'book-01', 'school',
+        'graduate-male', 'paint-brush-01', 'color-picker', 'layout-01',
+    ];
+
+    /**
      * Is a Hugeicons source available at all? False in apps that skipped the
      * blade-hugeicons dependency and configured no Pro sets.
      */
     public static function available(): bool
     {
         return class_exists(Factory::class);
+    }
+
+    /**
+     * Every icon name in the bundled free set, sorted — the full menu for
+     * `<mds:icon-picker :icons="Icons::names()">`. Six thousand names, so a
+     * picker fed all of them renders a few megabytes of SVG: fine for an
+     * admin screen that needs the lot, wrong as a default.
+     *
+     * @return list<string>
+     */
+    public static function names(): array
+    {
+        if (! static::available()) {
+            return [];
+        }
+
+        // The directory blade-hugeicons registered, wherever Composer put it
+        // — this package may itself be sitting under an app's vendor/.
+        $set = app(Factory::class)->all()[static::FREE_SET] ?? [];
+
+        $names = [];
+
+        // Older blade-icons releases keep the registered directory under
+        // `path`; newer ones normalise it into `paths`.
+        foreach ((array) ($set['paths'] ?? $set['path'] ?? []) as $dir) {
+            foreach (glob($dir.'/*.svg') ?: [] as $path) {
+                $names[] = basename($path, '.svg');
+            }
+        }
+
+        $names = array_values(array_unique($names));
+
+        sort($names);
+
+        return $names;
     }
 
     /**

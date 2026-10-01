@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use MajidDs\Mds;
+use MajidDs\Support\Icons;
 use MajidDs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -292,6 +293,80 @@ class ComponentsTest extends TestCase
         $html = $this->render('<mds:color-picker :swatches="false" />');
 
         $this->assertStringNotContainsString('data-mds-color-picker-swatches', $html);
+    }
+
+    public function test_icon_picker_renders_trigger_panel_and_the_default_set(): void
+    {
+        $html = $this->render('<mds:icon-picker label="آیکون دسته" value="shopping-cart-01" name="icon" clearable />');
+
+        $this->assertStringContainsString('data-mds-icon-picker', $html);
+        $this->assertStringContainsString('data-mds-icon-picker-trigger', $html);
+        $this->assertStringContainsString('data-mds-icon-picker-panel', $html);
+        $this->assertStringContainsString('data-mds-icon-picker-search', $html);
+        $this->assertStringContainsString('data-mds-icon-picker-grid', $html);
+        $this->assertStringContainsString('name="icon"', $html);
+        $this->assertStringContainsString('value="shopping-cart-01"', $html);
+        $this->assertStringContainsString('آیکون دسته', $html);
+        $this->assertStringContainsString('role="dialog"', $html);
+        $this->assertStringContainsString('role="listbox"', $html);
+        // Every icon of the curated default set is an option with its SVG drawn
+        // once, server-side — the client never needs an icon source of its own.
+        // (role="option" rather than the data attribute: the Alpine script
+        // mentions the attribute's selector once, which would skew the count.)
+        $this->assertSame(count(Icons::PICKER), substr_count($html, 'role="option"'));
+        $this->assertStringContainsString('data-mds-icon-picker-option="shopping-cart-01"', $html);
+        // The shared Alpine component is registered, not only referenced.
+        $this->assertStringContainsString("Alpine.data('mdsIconPicker'", $html);
+        $this->assertStringContainsString('x-data="mdsIconPicker(', $html);
+    }
+
+    public function test_icon_picker_takes_a_custom_list_or_a_labelled_map(): void
+    {
+        $list = $this->render('<mds:icon-picker :icons="[\'home-01\', \'search-01\']" :columns="4" />');
+
+        $this->assertSame(2, substr_count($list, 'role="option"'));
+        $this->assertStringContainsString('aria-label="home-01"', $list);
+        $this->assertStringContainsString('data-mds-haystack="home 01"', $list);
+        $this->assertStringContainsString('grid-template-columns: repeat(4, minmax(0, 1fr))', $list);
+        $this->assertStringContainsString('columns: 4', $list);
+
+        // A map labels the options, so a Persian word finds its icon too.
+        $map = $this->render('<mds:icon-picker :icons="[\'home-01\' => \'خانه\', \'search-01\' => \'جستجو\']" />');
+
+        $this->assertStringContainsString('aria-label="خانه"', $map);
+        $this->assertStringContainsString('title="خانه"', $map);
+        $this->assertStringContainsString('data-mds-haystack="home 01 خانه"', $map);
+        $this->assertStringContainsString('data-mds-icon-picker-option="search-01"', $map);
+    }
+
+    public function test_icon_picker_forwards_wire_model_to_the_hidden_input(): void
+    {
+        $html = $this->render('<mds:icon-picker wire:model="icon" />');
+
+        $this->assertBindingReachesControl($html, 'input[^>]*type="hidden"', 'wire:model="icon"');
+    }
+
+    public function test_icon_picker_disabled_state_and_error_bag_fallback(): void
+    {
+        $disabled = $this->render('<mds:icon-picker disabled />');
+
+        $this->assertStringContainsString('inert', $disabled);
+        $this->assertStringContainsString('aria-disabled="true"', $disabled);
+
+        View::share('errors', (new ViewErrorBag)->put('default', new MessageBag([
+            'icon' => ['یک آیکون انتخاب کنید.'],
+        ])));
+
+        $bag = $this->render('<mds:icon-picker name="icon" />');
+
+        $this->assertStringContainsString('یک آیکون انتخاب کنید.', $bag);
+        $this->assertStringContainsString('data-flux-error', $bag);
+        $this->assertStringContainsString('border-red-500', $bag);
+
+        $explicit = $this->render('<mds:icon-picker name="icon" error="پیام دستی" />');
+
+        $this->assertStringContainsString('پیام دستی', $explicit);
+        $this->assertStringNotContainsString('یک آیکون انتخاب کنید.', $explicit);
     }
 
     public function test_empty_state_renders_icon_title_description_and_actions(): void
@@ -1014,6 +1089,7 @@ class ComponentsTest extends TestCase
             'quantity' => ['<mds:quantity :value="2" wire:model="qty" />', 'mdsQuantity'],
             'rating input' => ['<mds:rating.input :value="3" wire:model="score" />', 'mdsRatingInput'],
             'color picker' => ['<mds:color-picker value="#ff0000" wire:model="colour" />', 'mdsColorPicker'],
+            'icon picker' => ['<mds:icon-picker value="home-01" wire:model="icon" />', 'mdsIconPicker'],
         ];
     }
 
@@ -1775,6 +1851,11 @@ class ComponentsTest extends TestCase
             'stepper' => ['<mds:stepper :steps="[\'a\', \'b\']" :current="1" />', 'aria-label="مراحل"', 'aria-label="Steps"'],
             'color picker trigger' => ['<mds:color-picker type="button" />', 'aria-label="انتخاب رنگ"', 'aria-label="Pick a color"'],
             'color picker clear' => ['<mds:color-picker clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
+            'icon picker dialog' => ['<mds:icon-picker />', 'aria-label="انتخاب آیکون"', 'aria-label="Pick an icon"'],
+            'icon picker placeholder' => ['<mds:icon-picker />', '>انتخاب آیکون</span>', '>Pick an icon</span>'],
+            'icon picker search' => ['<mds:icon-picker />', 'placeholder="جستجوی آیکون…"', 'placeholder="Search icons…"'],
+            'icon picker empty state' => ['<mds:icon-picker />', 'آیکونی یافت نشد.', 'No icons found.'],
+            'icon picker clear' => ['<mds:icon-picker clearable />', 'aria-label="پاک کردن"', 'aria-label="Clear"'],
             'color picker area' => ['<mds:color-picker type="button" />', 'aria-label="اشباع و روشنایی"', 'aria-label="Saturation and brightness"'],
             'color picker hue' => ['<mds:color-picker type="button" />', 'aria-label="رنگ"', 'aria-label="Hue"'],
             'color picker opacity' => ['<mds:color-picker type="button" alpha />', 'aria-label="شفافیت"', 'aria-label="Opacity"'],
