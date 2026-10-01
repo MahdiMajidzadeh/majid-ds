@@ -704,5 +704,16 @@
     "دنباله‌ی بلندتر، کندتر، ضخیم‌تر": "Longer tail, slower, thicker",
     "نشانگر را بیاورید": "Bring the pointer over",
     "در حال فکر کردن…": "Thinking…",
-    "پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.": "The beam is decoration and nothing else: it stays hidden from screen readers, never swallows a click, and is not drawn at all for anyone who asked for less motion. So never let it be the only sign of a state — put text or a spinner next to it."
+    "پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.": "The beam is decoration and nothing else: it stays hidden from screen readers, never swallows a click, and is not drawn at all for anyone who asked for less motion. So never let it be the only sign of a state — put text or a spinner next to it.",
+    "انتخاب آیکون": "Icon picker",
+    "انتخاب آیکون — mds:icon-picker": "Icon picker — mds:icon-picker",
+    "یک شبکه‌ی قابل جستجو از آیکون‌های Hugeicons که نام آیکون را در فیلد فرم می‌گذارد — همان نامی که mds:icon می‌گیرد. همه‌ی کاشی‌ها یک بار در سرور کشیده می‌شوند و پیش‌نمایش از همان کاشی کپی می‌شود، پس هیچ منبع آیکونی به مرورگر نمی‌رود.": "A searchable grid of Hugeicons that puts the icon's name in a form field — the very name mds:icon takes. Every tile is drawn once on the server and the preview is cloned from that tile, so no icon source ever ships to the browser.",
+    "آیکون دسته‌بندی": "Category icon",
+    "روی کارت دسته‌بندی نمایش داده می‌شود.": "Shown on the category card.",
+    "آیکون منو، با برچسب فارسی": "Menu icon, labelled in Persian",
+    "با نام انگلیسی یا واژه‌ی فارسی جستجو کنید.": "Search by the English name or the Persian word.",
+    "کاربر": "User",
+    "اعلان": "Alerts",
+    "فروشگاه": "Store",
+    "با کلید پایین از جعبه‌ی جستجو وارد شبکه شوید، با کلیدهای جهت‌دار بین کاشی‌ها بروید و با Enter انتخاب کنید. مجموعه‌ی پیش‌فرض ۱۵۴ آیکون روزمره است؛ با :icons هر فهرستی بدهید.": "Press Down in the search box to enter the grid, move between tiles with the arrow keys and pick with Enter. The default set is 154 everyday icons; pass any list with :icons."
 }

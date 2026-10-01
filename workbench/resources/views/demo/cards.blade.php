@@ -77,6 +77,7 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
         <flux:navbar.item href="#kanban" icon="squares-2x2">{{ __('برد کانبان') }}</flux:navbar.item>
         <flux:navbar.item href="#date-picker" icon="calendar">{{ __('انتخاب تاریخ') }}</flux:navbar.item>
         <flux:navbar.item href="#border-beam" icon="sparkles">{{ __('پرتو حاشیه') }}</flux:navbar.item>
+        <flux:navbar.item href="#icon-picker" icon="squares-plus">{{ __('انتخاب آیکون') }}</flux:navbar.item>
         <flux:navbar.item href="#icons" icon="sparkles">{{ __('آیکون‌ها') }}</flux:navbar.item>
         <flux:navbar.item href="#table">{{ __('جدول') }}</flux:navbar.item>
         <flux:navbar.item href="#mds" :badge="__('جدید')" badge-color="lime">{{ __('اجزای mds') }}</flux:navbar.item>
@@ -1639,6 +1640,32 @@ $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
     </div>
 
     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('پرتو فقط تزئین است: از دید صفحه‌خوان پنهان می‌ماند، جلوی کلیک را نمی‌گیرد، و اگر کاربر حرکت کمتر خواسته باشد اصلاً کشیده نمی‌شود. پس هیچ‌وقت تنها نشانه‌ی یک وضعیت نباشد؛ کنارش متن یا اسپینر بگذارید.') }}</flux:text>
+</flux:card>
+
+{{-- ============================== MDS: Icon picker ============================== --}}
+<flux:card id="icon-picker" class="space-y-6">
+    <flux:heading size="lg">{{ __('انتخاب آیکون — mds:icon-picker') }}</flux:heading>
+    <flux:text>{{ __('یک شبکه‌ی قابل جستجو از آیکون‌های Hugeicons که نام آیکون را در فیلد فرم می‌گذارد — همان نامی که mds:icon می‌گیرد. همه‌ی کاشی‌ها یک بار در سرور کشیده می‌شوند و پیش‌نمایش از همان کاشی کپی می‌شود، پس هیچ منبع آیکونی به مرورگر نمی‌رود.') }}</flux:text>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <mds:icon-picker
+            :label="__('آیکون دسته‌بندی')"
+            :description="__('روی کارت دسته‌بندی نمایش داده می‌شود.')"
+            value="shopping-cart-01"
+            name="category_icon"
+            clearable
+        />
+
+        <mds:icon-picker
+            :label="__('آیکون منو، با برچسب فارسی')"
+            :description="__('با نام انگلیسی یا واژه‌ی فارسی جستجو کنید.')"
+            :icons="['home-01' => __('خانه'), 'search-01' => __('جستجو'), 'shopping-cart-01' => __('سبد خرید'), 'user' => __('کاربر'), 'settings-02' => __('تنظیمات'), 'notification-01' => __('اعلان'), 'favourite' => __('علاقه‌مندی'), 'store-01' => __('فروشگاه')]"
+            value="home-01"
+            :columns="4"
+        />
+    </div>
+
+    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('با کلید پایین از جعبه‌ی جستجو وارد شبکه شوید، با کلیدهای جهت‌دار بین کاشی‌ها بروید و با Enter انتخاب کنید. مجموعه‌ی پیش‌فرض ۱۵۴ آیکون روزمره است؛ با :icons هر فهرستی بدهید.') }}</flux:text>
 </flux:card>
 
 {{-- ============================== Icons ============================== --}}
