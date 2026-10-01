@@ -892,7 +892,7 @@ class ComponentsTest extends TestCase
 
     public function test_icon_falls_back_to_flux_for_unmapped_names(): void
     {
-        $html = $this->render('<mds:icon icon="arrow-trending-up" />');
+        $html = $this->render('<mds:icon icon="queue-list" />');
 
         $this->assertStringContainsString('data-flux-icon', $html);
     }
@@ -901,7 +901,7 @@ class ComponentsTest extends TestCase
     {
         config(['mds.icons.strict' => true]);
 
-        $html = $this->render('<mds:icon icon="arrow-trending-up" />');
+        $html = $this->render('<mds:icon icon="queue-list" />');
 
         $this->assertStringNotContainsString('data-flux-icon', $html);
         $this->assertStringNotContainsString('<svg', $html);

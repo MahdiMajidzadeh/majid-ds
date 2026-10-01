@@ -88,6 +88,9 @@ class Icons
         'eye-slash' => 'view-off',
         'archive-box' => 'archive-02',
         'chart-bar' => 'chart-01',
+        'arrow-trending-up' => 'analytics-up',
+        'arrow-trending-down' => 'analytics-down',
+        'scale' => 'balance-scale',
         // People and messaging...
         'users' => 'user-multiple',
         'chat-bubble-left-right' => 'bubble-chat',
