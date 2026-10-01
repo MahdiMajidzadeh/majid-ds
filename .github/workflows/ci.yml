@@ -12,15 +12,19 @@ name: CI
 # Action versions are kept on their latest major on purpose. GitHub retires a
 # Node runtime roughly yearly and then forces old actions onto the new one with
 # a deprecation warning on every run; trailing a major means collecting those
-# warnings for something no workflow here depends on. All four run on node24
-# today — checkout v7, setup-node v7, ramsey/composer-install v4 (which is what
-# pulls in a node24 actions/cache) and setup-php v2, whose v2 is current.
+# warnings for something no workflow here depends on. All three run on node24
+# today — checkout v7, ramsey/composer-install v4 (which is what pulls in a
+# node24 actions/cache) and setup-php v2, whose v2 is current.
 #
-# Deliberately NOT here: anything that publishes. Packagist is wired to this
-# repository by webhook and takes the version from the git tag on its own, and
-# GitHub Pages serves docs/ straight off the branch with no build step. A
-# release workflow would be a second, slower way to do what already happens —
-# which is why the one that existed before was reverted.
+# Deliberately NOT here: anything that publishes, and the docs site. Packagist
+# is wired to this repository by webhook and takes the version from the git
+# tag on its own, and GitHub Pages serves main's docs/ folder with no build
+# step. A release workflow would be a second, slower way to do what already
+# happens — which is why the one that existed before was reverted. The one
+# tag-triggered workflow, docs.yml, publishes nowhere: it regenerates docs/
+# when a version is tagged and commits the result back to main. The job that
+# used to rebuild the site on every push and fail on a dirty tree is gone with
+# it, so a pull request no longer carries the generated pages.
 
 on:
   push:
@@ -145,44 +149,3 @@ jobs:
       # Pinned to level 7 over src/ regardless of the runtime — see CLAUDE.md
       # for why level 8 is not on.
       - run: composer analyse
-
-  docs:
-    name: Docs are up to date
-    runs-on: ubuntu-latest
-
-    # docs/ is committed and GitHub Pages serves it as-is, with no build step
-    # anywhere. So a change to a view, to the CSS, or to a docs page that
-    # forgets `npm run docs` ships a site that disagrees with the code, and
-    # nothing downstream would catch it. Both builders are deterministic — they
-    # pin the clock and the CSRF token precisely so this check is possible —
-    # which is what lets a rebuild that dirties git mean something is stale.
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: intl, mbstring, dom, libxml
-          coverage: none
-
-      - uses: ramsey/composer-install@v4
-        env:
-          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
-
-      - run: npm ci
-
-      - run: npm run docs
-
-      - run: npm run pages
-
-      - name: Fail if the committed site is stale
-        run: |
-          if ! git diff --exit-code --stat; then
-            echo "::error::docs/ is behind the source. Run 'npm run docs && npm run pages' and commit the result."
-            exit 1
-          fi

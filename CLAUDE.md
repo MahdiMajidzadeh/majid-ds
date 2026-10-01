@@ -46,10 +46,14 @@ all fail the run (vendor noise is scoped out by `<source>`). A `markTestSkipped`
 is therefore never a quiet fallback: fix the environment or fix the test. Drop
 a local `phpunit.xml` beside it to override; it is gitignored.
 
-`docs/` is a **committed** static site (GitHub Pages serves it as-is, no CI build).
-Any change to a component's view, CSS, or docs content is not done until
-`npm run docs` and (if the demo shows it) `npm run pages` have been re-run —
-and until `llms.txt` describes it. That file is the API contract agents
+`docs/` is a **committed** static site (GitHub Pages serves main's `docs/` as-is,
+no build step). It is regenerated at release time: the `Docs` workflow
+(`.github/workflows/docs.yml`) runs on every `v*` tag, rebuilds the pages from
+`main`, and commits whatever changed back to `main`. So a change to a view, CSS
+or docs content need not ship its generated pages — run `npm run docs` and (if
+the demo shows it) `npm run pages` locally to look at the result, and commit the
+output or not as you like; the tag catches up either way. What a change IS not
+done without is `llms.txt` describing it. That file is the API contract agents
 generate code against, and `LlmsTxtTest` fails the build when a prop, helper,
 config key or directive exists in code but not there (see step 5 below). It
 checks names, not prose: when behaviour changes — keyboard handling, what an
@@ -141,7 +145,9 @@ checks names, not prose: when behaviour changes — keyboard handling, what an
    public static method on the Support classes and every config key and
    directive must be named — so a new prop, helper or key fails
    `composer check` until llms.txt says so.
-6. `npm run docs && npm run pages && vendor/bin/phpunit`.
+6. `vendor/bin/phpunit`, then `npm run docs && npm run pages` to look at the
+   page and the demo card. Committing the generated output is optional: the
+   release tag regenerates and commits `docs/` on its own.
 
 ## Verifying visually
 

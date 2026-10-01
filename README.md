@@ -218,14 +218,14 @@ npm run demo:css        # compile the demo stylesheet, once
 npm run demo:serve      # then open http://127.0.0.1:8720/demo
 ```
 
-`docs/` is a committed static site — GitHub Pages serves it as-is, with no build step — so regenerate it whenever a view, the CSS or a docs page changes:
+`docs/` is a committed static site — GitHub Pages serves it as-is, with no build step. It is regenerated on every release tag by the `Docs` workflow, which rebuilds the pages and commits them to `main`, so a pull request need not carry the generated HTML. To preview a change locally, run the builders yourself:
 
 ```bash
 npm run docs            # the 76 reference pages + docs/assets/site.css
 npm run pages           # the 18 layout-gallery pages in docs/demo/
 ```
 
-Both builders are deterministic, so a rebuild that dirties git means something actually changed — which is what lets CI rebuild and fail on a dirty tree.
+Both builders are deterministic, so a rebuild that dirties git means something actually changed — which is what lets the release workflow commit only when the site is behind the code.
 
 ### The workbench demo
 
