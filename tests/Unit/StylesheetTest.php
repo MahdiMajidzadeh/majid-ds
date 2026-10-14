@@ -69,4 +69,28 @@ class StylesheetTest extends TestCase
 
         $this->assertArrayNotHasKey('mdsFonts', Blade::getCustomDirectives(), 'The @mdsFonts directive was removed on purpose.');
     }
+
+    /**
+     * Flux pads its input with logical ps-N / pe-N for icons and trailing
+     * buttons. An `ltr` input is direction:ltr, so those land on the wrong
+     * physical side; mds.css mirrors each one. When Flux adds a padding step,
+     * this fails instead of a viewable password quietly growing a gap again.
+     */
+    public function test_every_flux_input_padding_is_mirrored_for_ltr_inputs(): void
+    {
+        $flux = (string) file_get_contents(dirname(__DIR__, 2).'/vendor/livewire/flux/stubs/resources/views/flux/input/index.blade.php');
+        $css = (string) file_get_contents(dirname(__DIR__, 2).'/resources/css/mds.css');
+
+        preg_match_all("/'(p[se])-(\\d+)'/", $flux, $matches, PREG_SET_ORDER);
+        $this->assertNotEmpty($matches, 'Could not find Flux input padding classes.');
+
+        foreach ($matches as [, $side, $step]) {
+            $physical = $side === 'ps' ? 'padding-right' : 'padding-left';
+            $this->assertStringContainsString(
+                "input[data-ltr]).{$side}-{$step} { {$physical}: calc(var(--spacing) * {$step}); }",
+                $css,
+                "Flux pads inputs with {$side}-{$step}, but mds.css does not mirror it for ltr inputs.",
+            );
+        }
+    }
 }

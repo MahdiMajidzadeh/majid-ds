@@ -160,7 +160,7 @@ price -> discount-badge. An explicit `:fa` on the child still wins. Subcomponent
 ### <mds:input> — Flux's input, Latin digits whatever keyboard typed them
 Props: `only` bool=false (keep digits alone; also sets `inputmode="numeric"` unless the caller passes their own — do NOT combine with
 Flux's `mask`, which owns the value's shape; digits still arrive Latin under a mask) · `ltr` bool=false (adds
-`data-ltr`, which mds.css keeps left-to-right and end-aligned inside an RTL form — `type="tel"` already gets that).
+`data-ltr`, which mds.css keeps left-to-right and end-aligned inside an RTL form, with Flux's icon/button padding mirrored back to the RTL sides — `type="tel"` already gets that).
 Everything else is `flux:input`'s own and passes through unchanged: `label`, `description`, `placeholder`, `icon`, `icon:trailing`,
 `clearable`, `copyable`, `viewable`, `mask`, `type`, `size`, `invalid`, `wire:model`, `name`, `class` — including Flux's validation
 state from `$errors` (so, like any flux:input, it needs the shared `$errors` bag: a real request, or `View::share('errors', new ViewErrorBag)`).
@@ -1276,7 +1276,7 @@ contrast intact.
 - `[x-cloak] { display: none !important }` — the ONE rule kept outside `@layer components` on purpose: it must beat whatever the
   component sets while Alpine boots. Everything below is inside `@layer components`, so any Tailwind utility a caller adds wins
   (a test walks the stylesheet's top level and fails on any other unlayered rule).
-- `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs).
+- `[dir='rtl'] input[type='tel'], [dir='rtl'] input[data-ltr]` — direction:ltr, text-align:end (phone/code inputs); an `@layer utilities` block mirrors Flux's `ps-*`/`pe-*` padding so leading icons and viewable/clearable/copyable buttons keep their room.
 - `.mds-checker` — checkerboard backdrop for transparent colors; tokens `--mds-checker-dark` / `--mds-checker-light`, with a `.dark` pairing.
 - `.mds-range` — gradient range-slider styling (color-picker hue/alpha); thumb via `--mds-thumb` (dark pairing), and its own
   `:focus-visible` ring because `appearance: none` drops the native one.

@@ -89,6 +89,32 @@
 }
 
 /*
+| LTR inputs in RTL forms (the direction:ltr rule at the top of the layer
+| above) need Flux's padding mirrored. Flux pads the input with logical
+| ps-N / pe-N classes for its leading icon and trailing buttons (viewable,
+| clearable, copyable, kbd, loading). Once the control is direction:ltr those
+| resolve to the opposite physical side, while the icons stay put in the RTL
+| wrapper: a viewable password gets a gap before its dots and no room for the
+| eye. The text itself must stay LTR (a spaced card number would reorder under
+| plaintext bidi), so the padding moves instead. This sits in @layer
+| utilities because a components-layer rule cannot beat a utility; the values
+| use Tailwind's own spacing scale, so they track it.
+*/
+@layer utilities {
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).ps-3 { padding-right: calc(var(--spacing) * 3); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).ps-10 { padding-right: calc(var(--spacing) * 10); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-3 { padding-left: calc(var(--spacing) * 3); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-10 { padding-left: calc(var(--spacing) * 10); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-16 { padding-left: calc(var(--spacing) * 16); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-23 { padding-left: calc(var(--spacing) * 23); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-30 { padding-left: calc(var(--spacing) * 30); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-37 { padding-left: calc(var(--spacing) * 37); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-44 { padding-left: calc(var(--spacing) * 44); }
+    [dir='rtl'] :is(input[type='tel'], input[data-ltr]).pe-51 { padding-left: calc(var(--spacing) * 51); }
+}
+
+
+/*
 |--------------------------------------------------------------------------
 | Icons (mds:icon)
 |--------------------------------------------------------------------------
