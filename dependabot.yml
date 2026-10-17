@@ -1,0 +1,50 @@
+version: 2
+
+updates:
+  # PHP library — no composer.lock, so keep version ranges wide rather than bumping them
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      timezone: "Asia/Tehran"
+    versioning-strategy: widen        # ^12.0|^13.0 → ^12.0|^13.0|^14.0, never drops old support
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3                 # skip brand-new releases (supply-chain safety)
+    labels: ["dependencies", "php"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+    groups:
+      dev-tools:
+        dependency-type: "development"   # larastan, pint, testbench, phpunit
+        update-types: ["minor", "patch"]
+
+  # Tailwind CLI for the docs and demo build (private, dev-only)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      timezone: "Asia/Tehran"
+    cooldown:
+      default-days: 3
+    labels: ["dependencies", "javascript"]
+    commit-message:
+      prefix: "deps-dev"
+    groups:
+      tailwind:
+        patterns: ["tailwindcss", "@tailwindcss/*"]
+
+  # Workflows (ci.yml, docs.yml)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      timezone: "Asia/Tehran"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
